@@ -1,0 +1,43 @@
+{
+  "name": "reactant",
+  "version": "0.1.0",
+  "description": "boilerplate for react",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack -p --progress --color",
+    "build-dev": "webpack-dev-server -p -w --progress --color"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xorkevin/reactant.git"
+  },
+  "author": "xorkevin",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/xorkevin/reactant/issues"
+  },
+  "homepage": "https://github.com/xorkevin/reactant#readme",
+  "devDependencies": {
+    "babel-core": "^6.24.1",
+    "babel-eslint": "^7.2.1",
+    "babel-loader": "^6.4.1",
+    "babel-preset-latest": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "css-loader": "^0.28.0",
+    "eslint": "^3.19.0",
+    "eslint-plugin-react": "^6.10.3",
+    "extract-text-webpack-plugin": "^2.1.0",
+    "node-sass": "^4.5.2",
+    "nodemon": "^1.11.0",
+    "sass-loader": "^6.0.3",
+    "webpack": "^2.3.3",
+    "webpack-dev-server": "^2.4.2"
+  },
+  "dependencies": {
+    "react": "^15.5.3",
+    "react-dom": "^15.5.3",
+    "react-router-dom": "^4.0.0"
+  }
+}
