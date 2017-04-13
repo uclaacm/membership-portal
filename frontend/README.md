@@ -1,5 +1,5 @@
-# reactant
-boilerplate for react
+# governor-acm
+frontend for acm internal tooling
 
 
 #### confirm webpack and react setup
