@@ -2,29 +2,39 @@ import React from 'react';
 import {connect} from 'react-redux';
 
 import Config from 'config';
-
+import {Action} from 'reducer';
 
 class Home extends React.Component {
   render(){
     return <div>
-      {Config.info.msg}<br/>
-      Path: {this.props.urlPath}<br/>
-      <button onClick={()=>{this.props.printlog(Config.info.msg);}}>Print</button>
+      <div>{Config.info.msg}</div>
+      <div>Path: {this.props.urlPath}</div>
+      <div>
+        <button onClick={()=>{this.props.getTime(Config.info.msg);}}>Get Time</button>
+        {this.props.loading && <span>Loading</span>}
+        {!this.props.loading && this.props.success && <span>Time: {this.props.time}</span>}
+        {!this.props.loading && this.props.err && <span>Time: Error({this.props.err})</span>}
+      </div>
     </div>;
   }
 }
 
 const mapStateToProps = (state)=>{
+  const h = state.Health;
   return {
+    loading: h.get('loading'),
+    success: h.get('success'),
+    time: h.get('time'),
+    err: h.get('err'),
     urlPath: state.router.location.pathname,
   };
 };
 
 const mapDispatchToProps = (dispatch)=>{
   return {
-    printlog: (input)=>{
+    getTime: (input)=>{
       console.log(input);
-      // dispatch(action);
+      dispatch(Action.TimeGet());
     },
   };
 };

@@ -1,5 +1,6 @@
 import 'main.scss';
 
+import 'babel-polyfill';
 import React from 'react';
 import {Provider} from 'react-redux';
 import {Route, Switch, Redirect} from 'react-router-dom';

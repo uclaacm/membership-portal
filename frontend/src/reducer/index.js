@@ -1,22 +1,27 @@
 import {createStore, combineReducers, applyMiddleware} from 'redux';
 import createHistory from 'history/createBrowserHistory';
 import {routerReducer, routerMiddleware, push} from 'react-router-redux';
+import thunk from 'redux-thunk';
 
-// import reducers from './reducers';
+import {Health, TimeGet} from './health';
 
 
 const history = createHistory();
-const middleware = routerMiddleware(history);
+const routing = routerMiddleware(history);
 
 const store = createStore(
   combineReducers({
-    // ...reducers,
+    Health,
     router: routerReducer,
   }),
-  applyMiddleware(middleware)
+  applyMiddleware(routing, thunk)
 );
+
+const Action = {
+  TimeGet,
+};
 
 
 export {
-  store, history,
+  store, history, Action,
 }
