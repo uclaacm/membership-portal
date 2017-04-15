@@ -33,13 +33,25 @@ let User = db.define('user', {
 		type: Sequelize.STRING,
 		allowNull: false
 	},
-	password: {
+	hash: {
 		type: Sequelize.STRING,
 		allowNull: false
 	},
 	salt: {
 		type: Sequelize.STRING,
 		allowNull: false
+	},
+	year: {
+		type: Sequelize.INTEGER,
+		allowNull: false
+	},
+	major: {
+		type: Sequelize.STRING,
+		allowNull: false
+	},
+	points: {
+		type: Sequelize.INTEGER,
+		defaultValue: 0
 	},
 	lastLogin: {
 		type: Sequelize.DATE,
