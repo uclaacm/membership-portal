@@ -30,7 +30,7 @@ if (env === "production") {
 	config.session.secret = "77ea260f6918c0d8c3b6c35514d3b1a4fc69f01adbf7d2412611de97c3f0f2dc";
 	config.session.uri = "redis://127.0.0.1:6379/0";
 	
-	config.database.uri = "postgres://acm:ACM_dev!@127.0.0.1/membership_portal";
+	config.database.uri = "postgres://acm:ACM_dev!@127.0.0.1:4000/membership_portal";
 	
 	config.cache.uri = "redis://127.0.0.1:6379/0";
 	config.cache.keys = keys;
