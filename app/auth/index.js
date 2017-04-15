@@ -21,7 +21,9 @@ let configAuth = (server) => {
 
 	// Let the express server use the passport.
 	server.use(passport.initialize());
-	server.use(passport.session());
+	
+	// No need for sessions if we're using JWT
+	//server.use(passport.session());
 };
 
 // middleware to determine whether a user is authenticated

@@ -22,7 +22,8 @@ server.use(bodyParser.json());
 server.use('/api', app.api.router);
 
 // Use sessions
-server.use(app.session);
+// No need for sessions yet!
+// server.use(app.session);
 
 // Configure authentication
 app.auth.configAuth(server);
