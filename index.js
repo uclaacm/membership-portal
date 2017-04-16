@@ -47,7 +47,7 @@ if (cluster.isMaster) {
 		cluster.fork();
 	
 	cluster.on('exit', (worker, code, signal) => {
-		log.info("Worker PID %s died. Restarting...", worker.process.pid);
+		log.info("Worker PID %s died (%s). Restarting...", worker.process.pid, signal);
 		cluster.fork();
 	});
 } else {
