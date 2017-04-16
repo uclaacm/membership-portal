@@ -1,8 +1,10 @@
 const express = require('express');
 const config = require('../config');
+const error = require('../error');
 const log = require('../logger');
+
 let passport = require('passport');
-let db = require('../db');
+let User = require('../db').User;
 let router = express.Router();
 
 let configAuth = (server) => {
@@ -16,7 +18,7 @@ let configAuth = (server) => {
 	// Deserializing users: lookup a user by id (how we serialized) and find the 
 	//   rest of the user info
 	passport.deserializeUser((id, done) => {
-		return db.User.findById(id).then(user => done(null, user)).catch(err => done(err, null));
+		return User.findById(id).then(user => done(null, user)).catch(err => done(err, null));
 	});
 
 	// Let the express server use the passport.
@@ -30,7 +32,7 @@ let configAuth = (server) => {
 let authenticated = (req, res, next) => {
 	if (req.user) 
 		return next();
-	return next(new Error("Unauthorized access"));
+	return next(new error.Unauthorized());
 };
 
 

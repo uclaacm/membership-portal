@@ -24,7 +24,7 @@ if (env === "production") {
 	config.logging.level = "debug";
 } else {
 	config.port = 5000;
-	config.host = "http://localhost:" + config.port;
+	config.host = "http://127.0.0.1";
 	config.numCPUs = require('os').cpus().length;
 	
 	config.session.secret = "77ea260f6918c0d8c3b6c35514d3b1a4fc69f01adbf7d2412611de97c3f0f2dc";
