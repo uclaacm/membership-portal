@@ -18,7 +18,10 @@ server.use(morgan('dev'));
 server.use(bodyParser.urlencoded({ extended: true }));
 server.use(bodyParser.json());
 
-// Hack Data API
+// Setup and sync database
+app.db.setup();
+
+// Data API
 server.use('/api', app.api.router);
 
 // Use sessions
@@ -29,12 +32,13 @@ server.use('/api', app.api.router);
 app.auth.configAuth(server);
 server.use('/auth', app.auth.router);
 
-// Hack School routes (requires authentication)
-server.use('/hackschool', app.auth.authenticated, app.hackschool.router);
-
 // Register Opbeat monitoring error handler
 if (app.config.isProduction)
 	server.use(opbeat.middleware.express());
+
+// Register error middleware
+server.use(app.error.errorHandler);
+server.use(app.error.notFoundHandler);
 
 // Create workers
 if (cluster.isMaster) {
