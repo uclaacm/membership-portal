@@ -10,13 +10,6 @@ router.route('/past')
 	Event.getPastEvents().then(events => {
 		res.json({ error: null, events: events.map(e => e.getPublic()) });
 	}).catch(next);
-})
-.post((req, res, next) => {
-	if (!req.isAdmin)
-		return next(new error.Forbidden());
-	return next(new error.NotImplemented());
-	// post request must be in req.body.event
-	// validate and insert
 });
 
 router.route('/future')
@@ -37,6 +30,25 @@ router.route('/:uuid')
 			res.json({ error: null, event: event ? event.getPublic() : null });
 		}).catch(next);
 	}
-});
+})
+.all((req, res, next) => {
+	if (!req.isAdmin)
+		return next(new error.Forbidden());
+})
+.post((req, res, next) => {
+	if (req.params.uuid)
+		return next(new error.BadRequest());
+	return next(new error.NotImplemented());
+})
+.patch((req, res, next) => {
+	if (!req.params.uuid)
+		return next(new error.BadRequest());
+	return next(new error.NotImplemented());
+})
+.delete((req, res, next) => {
+	if (!req.params.uuid)
+		return next(new error.BadRequest());
+	return next(new error.NotImplemented());
+})
 
 module.exports = { router };
