@@ -46,3 +46,13 @@ The following commands are also available:
 - `make build` – only run the image build
 - `make run` – only run in detached mode
 - `make run-dev` – only run in attached mode
+
+### Accessing the Server
+
+If you're running Vagrant, the virtual machine is setup to forward port `8192` (host) to `8080` (guest). To access the server, run:
+
+```Bash
+$ curl http://127.0.0.1:8192/api/v1/health
+```
+
+If you're not running Vagrant, you can simply access the server through its Docker port directly (`8080`)
