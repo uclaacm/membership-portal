@@ -5,7 +5,7 @@ const config = require('../config');
 bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);
 
-let client = redis.createClient({ url: config.cache.uri });
+let client = redis.createClient({ url: config.redis.uri });
 let get = (key) => {
 	return client.getAsync(key);
 };

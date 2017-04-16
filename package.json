@@ -4,7 +4,7 @@
   "description": "The ACM Membership Portal",
   "main": "index.js",
   "engines": {
-    "node": ">=6.9.0 <=6.9.2"
+    "node": ">=6.9.0 <=6.10.2"
   },
   "scripts": {
     "start": "node index",

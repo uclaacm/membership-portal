@@ -10,6 +10,6 @@ let opts = {
 };
 
 if (config.session.uri)
-    opts.store = new RedisStore({ url: config.session.uri });
+    opts.store = new RedisStore({ url: config.redis.uri });
 
 module.exports = session(opts);

@@ -5,40 +5,44 @@ The ACM Membership Portal
 
 ### Prerequisites
 
-You must have Node.js >=6.9.0 <=6.9.2, Redis, and PostgreSQL installed.
+You must have either Docker or Vagrant installed and the repository cloned.  `cd` to the respository.
 
-### Setup
+### Setup (Vagrant)
 
-Make sure the postgres server is running. To configure your environment, run:
+If you don't want to use vagrant and simply want to deploy with Docker, you can skip this section.
+
+The Vagrantfile is setup to include all the system dependencies, including Docker. Simply run these commands and the virtual machine will be completely set up.
+
+```bash
+$ vagrant up --provision
+$ vagrant ssh
+$ cd /vagrant
+```
+
+### Deploy
+
+The very first time you deploy, you need to also run `make setup`. Subsequently, you can just run:
 
 ```Bash
-$ npm run dev-setup
+$ make
 ```
 
-In another window, make sure the redis server is running
+To stop all services (including the databases):
 
 ```Bash
-$ redis-server
+$ make stop
 ```
 
-
-
-### Installation
-
-Installing the website by cloning this repository and running:
-
-```shell
-$ npm install
-```
-Then start the website:
+To run in development mode:
 
 ```Bash
-$ npm start
+$ make dev
 ```
 
+The following commands are also available:
 
-
-### Notes
-
-- Everytime you pull from the repository, make sure to run `npm install` incase any of the dependencies have changed.
-- Redis is an **in-memory database**. If you shutdown your computer or kill the redis server, sessions will not persist. If you need to shut down your computer or restart the redis server *and* want the data in the database to be restored the next time, make sure to run the command `redis-cli shutdown` to safely shutdown the server.
+- `make logs` – attach to the standard output of the process and view the logs
+- `make reset` – completely obliterate the currently build images
+- `make build` – only run the image build
+- `make run` – only run in detached mode
+- `make run-dev` – only run in attached mode

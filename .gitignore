@@ -1,1 +1,3 @@
 node_modules
+npm-debug.log
+app/config/SESSION_SECRET
