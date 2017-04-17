@@ -21,9 +21,6 @@ server.use(bodyParser.json());
 // Setup and sync database
 app.db.setup();
 
-// Data API
-server.use('/api', app.api.router);
-
 // Use sessions
 // No need for sessions yet!
 // server.use(app.session);
@@ -31,6 +28,9 @@ server.use('/api', app.api.router);
 // Configure authentication
 app.auth.configAuth(server);
 server.use('/auth', app.auth.router);
+
+// Data API
+server.use('/api', app.api.router);
 
 // Register Opbeat monitoring error handler
 if (app.config.isProduction)
