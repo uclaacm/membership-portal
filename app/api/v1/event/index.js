@@ -1,7 +1,6 @@
 const express = require('express');
 let router = express.Router();
 
-const log = require('../../../logger');
 const error = require('../../../error');
 const Event = require('../../../db').Event;
 
