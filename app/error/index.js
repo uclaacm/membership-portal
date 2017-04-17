@@ -1,4 +1,4 @@
-const logger = require('../logger');
+const logger = null//require('../logger');
 
 class HTTPError extends Error {
     constructor(status, message) {
@@ -10,31 +10,33 @@ class HTTPError extends Error {
     }
 }
 
+class UserError extends HTTPError {
+    constructor(message) {
+        super(200, message || "User Error");
+    }
+}
+
 class BadRequest extends HTTPError {
     constructor(message) {
-		message = message || "Bad Request";
-        super(400, message);
+        super(400, message || "Bad Request");
     }
 }
 
 class Unauthorized extends HTTPError {
     constructor(message) {
-		message = message || "Unauthorized request";
-        super(401, message);
+        super(401, message || "Unauthorized request");
     }
 }
 
 class Forbidden extends HTTPError {
     constructor(message) {
-		message = message || "Permission denied"; 
-        super(403, message);
+        super(403, message || "Permission denied");
     }
 }
 
 class NotFound extends HTTPError {
     constructor(message) {
-		message = message || "Resource not found";
-        super(404, message);
+        super(404, message || "Resource not found");
     }
 }
 
@@ -46,15 +48,13 @@ class TooManyRequests extends HTTPError {
 
 class InternalServerError extends HTTPError {
     constructor(message) {
-		message = message || "Internal server error";
-        super(500, message);
+        super(500, message || "Internal server error");
     }
 }
 
 class NotImplemented extends HTTPError {
     constructor(message) {
-		message = message || "Not Implemented";
-        super(501, message);
+        super(501, message || "Not Implemented");
     }
 }
 
@@ -94,4 +94,4 @@ let notFoundHandler = (req, res, next) => {
     });
 };
 
-module.exports = { BadRequest, Unauthorized, Forbidden, NotFound, TooManyRequests, InternalServerError, NotImplemented, NotAvailable, errorHandler, notFoundHandler };
+module.exports = { HTTPError, BadRequest, Unauthorized, Forbidden, NotFound, TooManyRequests, InternalServerError, NotImplemented, NotAvailable, errorHandler, notFoundHandler };
