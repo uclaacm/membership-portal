@@ -10,9 +10,10 @@ let db = new Sequelize(config.database.db, config.database.user, config.database
 
 let User = require('./schema/user')(Sequelize, db);
 let Event = require('./schema/event')(Sequelize, db);
+let Attendance = require('./schema/attendance')(Sequelize, db);
 
 let setup = (force) => {
     db.sync({ force: !!force });
 };
 
-module.exports = { User, Event, setup }; 
+module.exports = { User, Event, Attendance, setup }; 
