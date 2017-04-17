@@ -69,6 +69,9 @@ module.exports = (Sequelize, db) => {
             findByUUID: function(uuid) {
                 return this.findOne({ where : { uuid } });
             },
+            eventExists: function(uuid) {
+                return this.count({ where: { uuid } }).then(c => c !== 0);
+            },
             getPastEvents: function() {
                 let now = new Date();
                 return this.findAll({ where: { startDate : { $lte : now } } });

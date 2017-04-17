@@ -77,6 +77,9 @@ module.exports = (Sequelize, db) => {
 		},
 		
 		instanceMethods: {
+			addPoints: function(points) {
+				return this.increment({ points });
+			},
 			getPublicProfile: function() {
 				return {
 					firstName : this.getDataValue('firstName'),
@@ -85,7 +88,6 @@ module.exports = (Sequelize, db) => {
 					points    : this.getDataValue('points'),
 				};
 			},
-
 			getUserProfile: function() {
 				return {
 					firstName : this.getDataValue('firstName'),
