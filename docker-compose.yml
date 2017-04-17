@@ -4,7 +4,9 @@ services:
   postgres:
     image: postgres
     ports:
-    - "5432"
+      - "5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   redis:
     image: redis
@@ -28,3 +30,6 @@ services:
       - REDIS_PORT=6379
       - PORT=8080
       - HOST=localhost
+
+volumes:
+  postgres_data:
