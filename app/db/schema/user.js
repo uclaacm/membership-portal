@@ -1,5 +1,5 @@
 module.exports = (Sequelize, db) => {
-	return db.define('user', {
+	let User = db.define('user', {
 		id: {
 			type: Sequelize.INTEGER,
 			autoIncrement: true,
@@ -74,36 +74,37 @@ module.exports = (Sequelize, db) => {
 				unique: true,
 				fields: ['accessCode']
 			}
-		],
-		classMethods: {
-			findByUUID: function(uuid) {
-				return this.findOne({ where : { uuid } });
-			}
-		},
-		
-		instanceMethods: {
-			addPoints: function(points) {
-				return this.increment({ points });
-			},
-			getPublicProfile: function() {
-				return {
-					firstName : this.getDataValue('firstName'),
-					lastName  : this.getDataValue('lastName'),
-					picture   : this.getDataValue('picture'),
-					points    : this.getDataValue('points'),
-				};
-			},
-			getUserProfile: function() {
-				return {
-					firstName : this.getDataValue('firstName'),
-					lastName  : this.getDataValue('lastName'),
-					picture   : this.getDataValue('picture'),
-					email     : this.getDataValue('email'),
-					year      : this.getDataValue('year'),
-					major     : this.getDataValue('major'),
-					points    : this.getDataValue('points'),	
-				};
-			}
-		}
+		]
 	});
+
+	User.findByUUID = function(uuid) {
+		return this.findOne({ where : { uuid } });
+	};
+
+	User.Instance.prototype.addPoints = function(points) {
+		return this.increment({ points });
+	};
+
+	User.Instance.prototype.getPublicProfile = function() {
+		return {
+			firstName : this.getDataValue('firstName'),
+			lastName  : this.getDataValue('lastName'),
+			picture   : this.getDataValue('picture'),
+			points    : this.getDataValue('points'),
+		};
+	};
+
+	User.Instance.prototype.getUserProfile = function() {
+		return {
+			firstName : this.getDataValue('firstName'),
+			lastName  : this.getDataValue('lastName'),
+			picture   : this.getDataValue('picture'),
+			email     : this.getDataValue('email'),
+			year      : this.getDataValue('year'),
+			major     : this.getDataValue('major'),
+			points    : this.getDataValue('points'),	
+		};
+	};
+
+	return User;
 };

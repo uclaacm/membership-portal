@@ -1,5 +1,5 @@
 module.exports = (Sequelize, db) => {
-    return db.define('event', {
+    let Event = db.define('event', {
         id: {
 			type: Sequelize.INTEGER,
 			autoIncrement: true,
@@ -72,40 +72,42 @@ module.exports = (Sequelize, db) => {
                 method: 'BTREE',
                 fields: ['endDate', { attribute: 'title', collate: 'en_US', order: 'DESC' }]
             }
-        ],
-        classMethods: {
-            findByUUID: function(uuid) {
-                return this.findOne({ where : { uuid } });
-            },
-            eventExists: function(uuid) {
-                return this.count({ where: { uuid } }).then(c => c !== 0);
-            },
-            getPastEvents: function() {
-                let now = new Date();
-                return this.findAll({ where: { startDate : { $lte : now } } });
-            },
-            getFutureEvents: function() {
-                let now = new Date();
-                return this.findAll({ where: { startDate : { $gte : now } } });
-            }
-        },
-
-        instanceMethods: {
-            getPublic: function() {
-                return {
-                    uuid             : this.getDataValue('uuid'),
-                    organization     : this.getDataValue('organization'),
-					committee        : this.getDataValue('committee'),
-					cover            : this.getDataValue('cover'),
-					title            : this.getDataValue('title'),
-					description      : this.getDataValue('description'),
-					location         : this.getDataValue('location'),
-                    eventLink        : this.getDataValue('eventLink'),
-					startDate        : this.getDataValue('startDate'),
-					endDate          : this.getDataValue('endDate'),
-					attendancePoints : this.getDataValue('attendancePoints'),
-                };
-            }
-        }
+        ]
     });
+    
+    Event.findByUUID = function(uuid) {
+        return this.findOne({ where : { uuid } });
+    };
+
+    Event.eventExists = function(uuid) {
+        return this.count({ where: { uuid } }).then(c => c !== 0);
+    };
+
+    Event.getPastEvents = function() {
+        let now = new Date();
+        return this.findAll({ where: { startDate : { $lte : now } } });
+    };
+
+    Event.getFutureEvents = function() {
+        let now = new Date();
+        return this.findAll({ where: { startDate : { $gte : now } } });
+    };
+
+    Event.Instance.prototype.getPublic = function() {
+        return {
+            uuid             : this.getDataValue('uuid'),
+            organization     : this.getDataValue('organization'),
+            committee        : this.getDataValue('committee'),
+            cover            : this.getDataValue('cover'),
+            title            : this.getDataValue('title'),
+            description      : this.getDataValue('description'),
+            location         : this.getDataValue('location'),
+            eventLink        : this.getDataValue('eventLink'),
+            startDate        : this.getDataValue('startDate'),
+            endDate          : this.getDataValue('endDate'),
+            attendancePoints : this.getDataValue('attendancePoints'),
+        };
+    };
+
+    return Event;
 };

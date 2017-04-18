@@ -1,5 +1,5 @@
 module.exports = (Sequelize, db) => {
-    return db.define('attendance', {
+    let Attendance = db.define('attendance', {
         id: {
 			type: Sequelize.INTEGER,
 			autoIncrement: true,
@@ -35,30 +35,33 @@ module.exports = (Sequelize, db) => {
                 unique: false,
                 fields: ['event']
             }
-        ],
-        classMethods: {
-            getAttendanceForUser: function(user) {
-                return this.findAll({ where: { user } });
-            },
-            getAttendanceForEvent: function(event) {
-                return this.findAll({ where: { event } });
-            },
-            userAttendedEvent: function(user, event) {
-                return this.count({ where : { user, event } }).then(c => c !== 0);
-            },
-            attendEvent: function(user, event) {
-                return this.create({ user, event });
-            }
-        },
-        instanceMethods: {
-            getPublic: function() {
-                return {
-                    uuid  : this.getDataValue('uuid'),
-                    user  : this.getDataValue('user'),
-                    event : this.getDataValue('event'),
-                    date  : this.getDataValue('date')
-                };
-            }
-        }
+        ]
     });
+
+    Attendance.getAttendanceForUser = function(user) {
+        return this.findAll({ where: { user } });
+    };
+
+    Attendance.getAttendanceForEvent = function(event) {
+        return this.findAll({ where: { event } });
+    };
+
+    Attendance.userAttendedEvent = function(user, event) {
+        return this.count({ where : { user, event } }).then(c => c !== 0);
+    };
+
+    Attendance.attendEvent = function(user, event) {
+        return this.create({ user, event });
+    };
+
+    Attendance.Instance.prototype.getPublic = function() {
+        return {
+            uuid  : this.getDataValue('uuid'),
+            user  : this.getDataValue('user'),
+            event : this.getDataValue('event'),
+            date  : this.getDataValue('date')
+        };
+    };
+
+    return Attendance;
 };
