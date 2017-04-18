@@ -50,10 +50,6 @@ Vagrant.configure("2") do |config|
   #   # Customize the amount of memory on the VM:
     vb.memory = "8192"
     vb.cpus = "4"
-	vb.customize ["modifyvm", :id, "--ioapic", "on"]
-
-	vb.customize ["modifyvm", :id, "--usb", "on"]
-	vb.customize ["modifyvm", :id, "--usbehci", "on"]
   end
 
   config.vm.network "forwarded_port", guest: 8080, host: 8192
@@ -75,12 +71,12 @@ Vagrant.configure("2") do |config|
     apt-get update
     apt-get install -y build-essential git vim apt-transport-https ca-certificates curl software-properties-common
 	
-	curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o docker.gpg && apt-key add docker.gpg && rm docker.gpg
-	add-apt-repository "deb https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-	apt-get update
-	apt-get install -y docker-ce
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o docker.gpg && apt-key add docker.gpg && rm docker.gpg
+    add-apt-repository "deb https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+    apt-get update
+    apt-get install -y docker-ce
 
-	curl -fsSL "https://github.com/docker/compose/releases/download/1.12.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-	chmod +x /usr/local/bin/docker-compose
+    curl -fsSL "https://github.com/docker/compose/releases/download/1.12.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    chmod +x /usr/local/bin/docker-compose
   SHELL
 end

@@ -14,9 +14,9 @@ If you don't want to use vagrant and simply want to deploy with Docker, you can 
 The Vagrantfile is setup to include all the system dependencies, including Docker. Simply run these commands and the virtual machine will be completely set up.
 
 ```bash
-$ vagrant up --provision
-$ vagrant ssh
-$ cd /vagrant
+user@local$ vagrant up --provision
+user@local$ vagrant ssh
+vagrant@acm$ cd /vagrant
 ```
 
 ### Deploy
@@ -42,14 +42,14 @@ $ make dev
 The following commands are also available:
 
 - `make logs` – attach to the standard output of the process and view the logs
-- `make reset` – completely obliterate the currently build images
+- `make reset` – completely obliterate the currently built images
 - `make build` – only run the image build
 - `make run` – only run in detached mode
 - `make run-dev` – only run in attached mode
 
 ### Accessing the Server
 
-If you're running Vagrant, the virtual machine is setup to forward port `8192` (host) to `8080` (guest). To access the server, run:
+If you're running Vagrant, the virtual machine is setup to forward port `8192` (host) to `8080` (guest). To access the server from outside the virtual machine, run:
 
 ```Bash
 $ curl http://127.0.0.1:8192/api/v1/health
