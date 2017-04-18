@@ -14,7 +14,8 @@ module.exports = (Sequelize, db) => {
 		},
 		email: {
 			type: Sequelize.STRING,
-			allowNull: false
+			allowNull: false,
+			validate: { isEmail: true }
 		},
 		state: {
 			type: Sequelize.ENUM('PENDING', 'ACTIVE', 'BLOCKED', 'PASSWORD_RESET'),
@@ -25,11 +26,13 @@ module.exports = (Sequelize, db) => {
 		},
 		firstName: {
 			type: Sequelize.STRING,
-			allowNull: false
+			allowNull: false,
+			validate: { len: [2, 30] }
 		},
 		lastName: {
 			type: Sequelize.STRING,
-			allowNull: false
+			allowNull: false,
+			validate: { len: [2, 30] }
 		},
 		hash: {
 			type: Sequelize.STRING,
@@ -41,11 +44,13 @@ module.exports = (Sequelize, db) => {
 		},
 		year: {
 			type: Sequelize.INTEGER,
-			allowNull: false
+			allowNull: false,
+			validate: { isIn: [[1, 2, 3, 4, 5]] }
 		},
 		major: {
 			type: Sequelize.STRING,
-			allowNull: false
+			allowNull: false,
+			validate: { len: [2, 64] }
 		},
 		points: {
 			type: Sequelize.INTEGER,

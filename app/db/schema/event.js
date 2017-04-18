@@ -11,27 +11,33 @@ module.exports = (Sequelize, db) => {
 		},
         organization: {
             type: Sequelize.STRING,
-            defaultValue: "ACM"
+            defaultValue: "ACM",
+            validate: { len: [3, 255] }
         },
         committee: {
             type: Sequelize.ENUM("ICPC","Hack","VRCG","AI","ACM-W")
         },
         cover: {
-            type: Sequelize.STRING
+            type: Sequelize.STRING,
+            validate: { len: [3, 255] }
         },
         title: {
             type: Sequelize.STRING,
-            allowNull: false
+            allowNull: false,
+            validate: { len: [3, 255] }
         },
         description: {
             type: Sequelize.TEXT,
-            allowNull: false
+            allowNull: false,
+            validate: { is: /^.{3,}$/ }
         },
         location: {
-            type: Sequelize.STRING
+            type: Sequelize.STRING,
+            validate: { len: [3, 255] }
         },
         eventLink: {
-            type: Sequelize.STRING
+            type: Sequelize.STRING,
+            validate: { len: [3, 255] }
         },
         startDate: {
             type: Sequelize.DATE,
@@ -42,11 +48,13 @@ module.exports = (Sequelize, db) => {
             allowNull: false
         },
         attendanceCode: {
-            type: Sequelize.STRING
+            type: Sequelize.STRING,
+            validate: { len: [3, 255] }
         },
         attendancePoints: {
             type: Sequelize.INTEGER,
-            defaultValue: 0
+            defaultValue: 0,
+            validate: { min: 0 }
         }
     }, {
         indexes: [

@@ -1,10 +1,16 @@
-const logger = null//require('../logger');
+const logger = require('../logger');
 
 class HTTPError extends Error {
-    constructor(status, message) {
+    constructor(name, status, message) {
+        if (message === undefined ){
+            message = status;
+            status = name;
+            name = this.constructor.name;
+        }
+
         super(message);
         
-        this.name = this.constructor.name;
+        this.name = name;
         this.status = status;
         this.message = message;
     }
@@ -69,7 +75,7 @@ let errorHandler = (err, req, res, next) => {
         err = new InternalServerError("An unknown error occurred");
     if (!err.status)
         err = new InternalServerError(err.message);
-    
+
     if (err.status < 500)
         logger.warn("%s [%d]: %s", err.name, err.status, err.message);
     else
