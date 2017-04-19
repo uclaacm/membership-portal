@@ -23,11 +23,11 @@ class App extends React.Component {
         <div>
           <SideBar/>
           <DashBoard/>
-        //   <Switch>
-        //     <Route exact path="/" component={Home}/>
-        //     <Route path="/about" component={About}/>
-        //     <Redirect to="/"/>
-        //   </Switch>
+        {/*   <Switch>
+             <Route exact path="/" component={Home}/>
+             <Route path="/about" component={About}/>
+             <Redirect to="/"/>
+           </Switch>*/}
         </div>
       </ConnectedRouter>
     </Provider>);
