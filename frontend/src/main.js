@@ -28,6 +28,7 @@ class App extends React.Component {
              <Route path="/about" component={About}/>
              <Redirect to="/"/>
            </Switch>*/}
+
         </div>
       </ConnectedRouter>
     </Provider>);
