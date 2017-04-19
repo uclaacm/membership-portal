@@ -9,27 +9,28 @@ import {render} from 'react-dom';
 
 import {store, history} from 'reducer';
 
-import Navbar from 'view/navbar';
+//import Navbar from 'view/navbar';
 import Home from 'container/home';
 import About from 'container/about';
 import SideBar from 'view/Sidebar/index';
+import DashBoard from 'view/DashBoard/index';
 
 
 class App extends React.Component {
   render(){
-    return <Provider store={store}>
+    return (<Provider store={store}>
       <ConnectedRouter history={history}>
         <div>
-          <Navbar/>
-          <Sidebar/>
-          <Switch>
-            <Route exact path="/" component={Home}/>
-            <Route path="/about" component={About}/>
-            <Redirect to="/"/>
-          </Switch>
+          <SideBar/>
+          <DashBoard/>
+        //   <Switch>
+        //     <Route exact path="/" component={Home}/>
+        //     <Route path="/about" component={About}/>
+        //     <Redirect to="/"/>
+        //   </Switch>
         </div>
       </ConnectedRouter>
-    </Provider>;
+    </Provider>);
   }
 }
 

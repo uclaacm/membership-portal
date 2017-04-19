@@ -5,10 +5,10 @@ import Organization from './organization';
 import Points from './points';
 import UserName from './userName';
 
-class Sidebar extends React.Component {
+class SideBar extends React.Component {
     render () {
         return(
-            <div>
+            <div className="sidebar">
                 <UserName userName="BOB" />
                 <Organization org="ACM" />
                 <Points points="23" />
@@ -17,4 +17,4 @@ class Sidebar extends React.Component {
     }
 }
 
-export default Sidebar;
+export default SideBar;
