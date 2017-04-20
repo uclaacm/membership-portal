@@ -42,6 +42,11 @@
       "from": "basic-auth@>=1.1.0 <1.2.0",
       "resolved": "https://registry.npmjs.org/basic-auth/-/basic-auth-1.1.0.tgz"
     },
+    "bcryptjs": {
+      "version": "2.4.3",
+      "from": "bcryptjs@latest",
+      "resolved": "https://registry.npmjs.org/bcryptjs/-/bcryptjs-2.4.3.tgz"
+    },
     "bluebird": {
       "version": "3.5.0",
       "from": "bluebird@>=3.3.4 <4.0.0",
