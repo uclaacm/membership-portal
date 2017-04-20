@@ -29,7 +29,6 @@
     "express-session": "^1.14.2",
     "jsonwebtoken": "^7.3.0",
     "morgan": "^1.7.0",
-    "opbeat": "^4.4.0",
     "passport": "^0.3.2",
     "pg": "^6.1.5",
     "redis": "^2.6.5",
