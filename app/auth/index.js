@@ -1,6 +1,5 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
 
 const config = require('../config');
 const error = require('../error');
@@ -26,8 +25,7 @@ const authenticated = (adminMode=false)=>{
 		}
 
 		const token = authHead[1];
-		// TODO: update secret
-		jwt.verify(token, 'secret', (err, decoded)=>{
+		jwt.verify(token, config.session.secret, (err, decoded)=>{
 			if(err){
 				return next(new error.Unauthorized());
 			}
@@ -52,33 +50,32 @@ router.post("/login", (req, res, next) => {
 	}
 	User.findByEmail(req.body.email).then((user)=>{
 		// TODO:
-		// - update secret
 		// - add admin to payload
 		// - salt field is not used on user model
-		bcrypt.compare(req.body.password, user.getDataValue('hash')).then((verified) => {
-		  if(verified){
-				jwt.sign({
-					uuid     : user.getDataValue('uuid'),
-					email    : user.getDataValue('email'),
-					firstName: user.getDataValue('firstName'),
-					lastName : user.getDataValue('lastName'),
-					admin    : false
-				}, 'secret', {expiresIn: dayseconds}, (err, token)=>{
-					if(err){
-						return next(new error.BadRequest(err.message));
-					}
-					res.json({
-						error: null,
-						token: token
-					});
-				});
-			} else {
-				return next(new error.BadRequest('incorrect email or password'));
+		if (!user) {
+			throw new error.UserError('Invalid email or password');
+		}
+		return user.verifyPassword(req.body.password).then(verified => {
+			if (!verified) {
+				throw new error.UserError('Invalid email or password');
 			}
+			jwt.sign({
+				uuid     : user.getDataValue('uuid'),
+				email    : user.getDataValue('email'),
+				firstName: user.getDataValue('firstName'),
+				lastName : user.getDataValue('lastName'),
+				admin    : user.isAdmin()
+			}, config.session.secret, {expiresIn: dayseconds}, (err, token)=>{
+				if (err) {
+					return next(new error.InternalServerError(err.message));
+				}
+				res.json({
+					error: null,
+					token: token
+				});
+			});
 		});
-	}).catch((err)=>{
-		return next(new error.BadRequest('incorrect email or password'));
-	});
+	}).catch(next);
 });
 
 router.post("/register", (req, res, next) => {
