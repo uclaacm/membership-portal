@@ -1,4 +1,3 @@
-const opbeat = require('opbeat');
 const cluster = require('cluster');
 const express = require('express');
 const morgan = require('morgan');
@@ -30,10 +29,6 @@ server.use('/auth', app.auth.router);
 
 // Data API
 server.use('/api', app.api.router);
-
-// Register Opbeat monitoring error handler
-if (app.config.isProduction)
-	server.use(opbeat.start().middleware.express());
 
 // Register error middleware
 server.use(app.db.errorHandler);
