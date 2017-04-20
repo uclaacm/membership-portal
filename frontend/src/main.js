@@ -12,8 +12,8 @@ import {store, history} from 'reducer';
 //import Navbar from 'view/navbar';
 import Home from 'container/home';
 import About from 'container/about';
-import SideBar from 'view/Sidebar/index';
-import DashBoard from 'view/DashBoard/index';
+import SideBar from 'components/Sidebar/';
+import DashBoard from 'components/DashBoard/';
 
 
 class App extends React.Component {

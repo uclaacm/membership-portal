@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 
-import SingleDay from '../SingleDay/index';
+import SingleDay from '../SingleDay/';
 
 class EventsList extends React.Component {
     render () {

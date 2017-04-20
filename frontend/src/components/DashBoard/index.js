@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 
-import DaysList from '../DaysList/index';
+import DaysList from '../DaysContainer/';
 
 class DashBoard extends React.Component {
     render () {
