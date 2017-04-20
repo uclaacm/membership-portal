@@ -1,6 +1,6 @@
 const express = require('express');
-const app = require('../../..');
-const User = app.db.User;
+const User = require('../../../db').User;
+const error = require('../../../error');
 let router = express.Router();
 
 router.route('/')
@@ -9,11 +9,11 @@ router.route('/')
 })
 .patch((req, res, next) => {
     if (!req.body.user.password)
-        return next(new app.error.BadRequest('Missing password field'));
+        return next(new error.BadRequest('Missing password field'));
 
     req.user.verifyPassword(req.body.user.password).then(verified => {
         if (!verified)
-            throw new app.error.Unauthorized('Invalid credentials');
+            throw new error.Unauthorized('Invalid credentials');
 
         if (req.body.user.firstName && req.body.user.firstName.length > 0)
             req.user.firstName = req.body.user.firstName;
@@ -26,7 +26,7 @@ router.route('/')
 
         if (req.body.user.newPassword && req.body.user.confPassword) {
             if (req.body.user.newPassword !== req.body.user.confPassword)
-                throw new app.error.BadRequest('Passwords do not match');
+                throw new error.BadRequest('Passwords do not match');
             return User.generateSaltAndHash(req.body.user.newPassword).then((salt, hash) => {
                 req.user.hash = hash;
                 req.user.salt = salt;

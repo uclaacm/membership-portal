@@ -1,8 +1,8 @@
 const express = require('express');
 let router = express.Router();
 
-const app = require('../../..');
-const Event = app.db.Event;
+const error = require('../../../error');
+const Event = require('../../../db').Event;
 
 router.route('/past')
 .get((req, res, next) => {
@@ -32,22 +32,22 @@ router.route('/:uuid')
 })
 .all((req, res, next) => {
 	if (!req.user.isAdmin())
-		return next(new app.error.Forbidden());
+		return next(new error.Forbidden());
 })
 .post((req, res, next) => {
 	if (req.params.uuid)
-		return next(new app.error.BadRequest());
-	return next(new app.error.NotImplemented());
+		return next(new error.BadRequest());
+	return next(new error.NotImplemented());
 })
 .patch((req, res, next) => {
 	if (!req.params.uuid)
-		return next(new app.error.BadRequest());
-	return next(new app.error.NotImplemented());
+		return next(new error.BadRequest());
+	return next(new error.NotImplemented());
 })
 .delete((req, res, next) => {
 	if (!req.params.uuid)
-		return next(new app.error.BadRequest());
-	return next(new app.error.NotImplemented());
+		return next(new error.BadRequest());
+	return next(new error.NotImplemented());
 })
 
 module.exports = { router };

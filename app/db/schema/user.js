@@ -124,15 +124,15 @@ module.exports = (Sequelize, db) => {
 		return bcrypt.compare(password, this.getDataValue('hash'));
 	};
 
-	User.Instance.prototype.isAdmin() = function() {
+	User.Instance.prototype.isAdmin = function() {
 		return this.getDataValue('accessType') === 'ADMIN';
 	};
 
-	User.Instance.prototype.isStandard() = function() {
+	User.Instance.prototype.isStandard = function() {
 		return this.getDataValue('accessType') === 'STANDARD';
 	};
 
-	User.Instance.prototype.isRestricted() = function() {
+	User.Instance.prototype.isRestricted = function() {
 		return this.getDataValue('accessType') === 'RESTRICTED';
 	};
 
