@@ -1,3 +1,5 @@
+const bcrypt = require('bcryptjs');
+
 module.exports = (Sequelize, db) => {
 	let User = db.define('user', {
 		id: {
@@ -89,6 +91,10 @@ module.exports = (Sequelize, db) => {
 		return this.findOne({ where : { email } });
 	};
 
+	User.generateSaltAndHash = function(password) {
+		// TODO: return a promise that returns (salt, hash)
+	}
+
 	User.Instance.prototype.addPoints = function(points) {
 		return this.increment({ points });
 	};
@@ -112,6 +118,10 @@ module.exports = (Sequelize, db) => {
 			major      : this.getDataValue('major'),
 			points     : this.getDataValue('points')
 		};
+	};
+
+	User.Instance.prototype.verifyPassword = function(password) {
+		return bcrypt.compare(password, this.getDataValue('hash'));
 	};
 
 	User.Instance.prototype.isAdmin() = function() {
