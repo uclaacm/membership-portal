@@ -115,15 +115,15 @@ module.exports = (Sequelize, db) => {
 	};
 
 	User.Instance.prototype.isAdmin() = function() {
-		this.getDataValue('accessType') === 'ADMIN';
+		return this.getDataValue('accessType') === 'ADMIN';
 	};
 
 	User.Instance.prototype.isStandard() = function() {
-		this.getDataValue('accessType') === 'STANDARD';
+		return this.getDataValue('accessType') === 'STANDARD';
 	};
 
 	User.Instance.prototype.isRestricted() = function() {
-		this.getDataValue('accessType') === 'RESTRICTED';
+		return this.getDataValue('accessType') === 'RESTRICTED';
 	};
 
 	return User;

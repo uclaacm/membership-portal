@@ -1,11 +1,10 @@
 const express = require('express');
-const config = require('../config');
-const error = require('../error');
-const log = require('../logger');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
-let passport = require('passport');
+const config = require('../config');
+const error = require('../error');
+const log = require('../logger');
 let User = require('../db').User;
 let router = express.Router();
 
@@ -14,9 +13,6 @@ const dayseconds = 86400;
 const dayweek = dayseconds * 6;
 
 
-let configAuth = (server) => {
-};
-
 // middleware to determine whether a user is authenticated
 const authenticated = (adminMode=false)=>{
 	return (req, res, next) => {
@@ -24,8 +20,8 @@ const authenticated = (adminMode=false)=>{
 		if(!authHeader){
 			return next(new error.Unauthorized());
 		}
-	  const authHead = authHeader.split(' ');
-	  if(authHead.length != 2 || authHead[0] !== 'Bearer' || authHead[1].length < 1){
+		const authHead = authHeader.split(' ');
+		if(authHead.length != 2 || authHead[0] !== 'Bearer' || authHead[1].length < 1){
 			return next(new error.Unauthorized());
 		}
 
@@ -72,6 +68,7 @@ router.post("/login", (req, res, next) => {
 						return next(new error.BadRequest(err.message));
 					}
 					res.json({
+						error: null,
 						token: token
 					});
 				});
@@ -84,8 +81,8 @@ router.post("/login", (req, res, next) => {
 	});
 });
 
-router.post("/register", (req, res) => {
-	res.json({ error: "Not implemented" });
+router.post("/register", (req, res, next) => {
+	return next(new error.NotImplemented());
 });
 
-module.exports = { router, configAuth, authenticated };
+module.exports = { router, authenticated };

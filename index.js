@@ -26,7 +26,6 @@ app.db.setup();
 // server.use(app.session);
 
 // Configure authentication
-app.auth.configAuth(server);
 server.use('/auth', app.auth.router);
 
 // Data API
