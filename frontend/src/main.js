@@ -10,8 +10,8 @@ import {render} from 'react-dom';
 import {store, history} from 'reducer';
 
 //import Navbar from 'view/navbar';
-import Home from 'container/home';
-import About from 'container/about';
+import Home from 'containers/home';
+import About from 'containers/about';
 import SideBar from 'components/Sidebar/';
 import DashBoard from 'components/DashBoard/';
 
