@@ -17,6 +17,10 @@ module.exports = (Sequelize, db) => {
 			allowNull: false,
 			validate: { isEmail: true }
 		},
+		accessType: {
+			type: Sequelize.ENUM('RESTRICTED','STANDARD','ADMIN'),
+			defaultValue: 'STANDARD'
+		},
 		state: {
 			type: Sequelize.ENUM('PENDING', 'ACTIVE', 'BLOCKED', 'PASSWORD_RESET'),
 			defaultValue: 'PENDING'
@@ -100,14 +104,26 @@ module.exports = (Sequelize, db) => {
 
 	User.Instance.prototype.getUserProfile = function() {
 		return {
-			firstName : this.getDataValue('firstName'),
-			lastName  : this.getDataValue('lastName'),
-			picture   : this.getDataValue('picture'),
-			email     : this.getDataValue('email'),
-			year      : this.getDataValue('year'),
-			major     : this.getDataValue('major'),
-			points    : this.getDataValue('points'),
+			firstName  : this.getDataValue('firstName'),
+			lastName   : this.getDataValue('lastName'),
+			picture    : this.getDataValue('picture'),
+			email      : this.getDataValue('email'),
+			year       : this.getDataValue('year'),
+			major      : this.getDataValue('major'),
+			points     : this.getDataValue('points')
 		};
+	};
+
+	User.Instance.prototype.isAdmin() = function() {
+		this.getDataValue('accessType') === 'ADMIN';
+	};
+
+	User.Instance.prototype.isStandard() = function() {
+		this.getDataValue('accessType') === 'STANDARD';
+	};
+
+	User.Instance.prototype.isRestricted() = function() {
+		this.getDataValue('accessType') === 'RESTRICTED';
 	};
 
 	return User;
