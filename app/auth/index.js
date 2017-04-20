@@ -48,10 +48,33 @@ let configAuth = (server) => {
 };
 
 // middleware to determine whether a user is authenticated
-let authenticated = (req, res, next) => {
-	if (req.user)
-		return next();
-	return next(new error.Unauthorized());
+const authenticated = (adminMode=false)=>{
+	return (req, res, next) => {
+		const authHeader = req.get('Authorization');
+		if(!authHeader){
+			return next(new error.Unauthorized());
+		}
+	  const authHead = authHeader.split(' ');
+	  if(authHead.length != 2 || authHead[0] !== 'Bearer' || authHead[1].length < 1){
+			return next(new error.Unauthorized());
+		}
+
+		const token = authHead[1];
+		// TODO: update secret
+	  const jwtsecret = 'secret';
+	  const decoded = jwtFactory.verify(jwtsecret, token);
+		const payload = decoded.payload;
+		if(decoded.err){
+			return next(new error.Unauthorized());
+		}
+
+    if(admin && !payload.admin){
+			return next(new error.Unauthorized());
+    }
+
+		// TODO: pass on user info
+    return next();
+	};
 };
 
 
@@ -75,7 +98,8 @@ router.post("/login", (req, res, next) => {
 					uuid     : this.getDataValue('uuid'),
 					email    : this.getDataValue('email'),
 					firstName: this.getDataValue('firstName'),
-					lastName : this.getDataValue('lastName'),,
+					lastName : this.getDataValue('lastName'),
+					admin    : false
 				})
 			});
 		} else {
