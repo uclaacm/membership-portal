@@ -4,7 +4,7 @@ module.exports = (Sequelize, db) => {
 			type: Sequelize.INTEGER,
 			autoIncrement: true,
 			primaryKey: true
-		}, 
+		},
 		uuid: {
 			type: Sequelize.UUID,
 			defaultValue: Sequelize.UUIDV4
@@ -81,6 +81,10 @@ module.exports = (Sequelize, db) => {
 		return this.findOne({ where : { uuid } });
 	};
 
+	User.findByEmail = function(email) {
+		return this.findOne({ where : { email } });
+	};
+
 	User.Instance.prototype.addPoints = function(points) {
 		return this.increment({ points });
 	};
@@ -102,7 +106,7 @@ module.exports = (Sequelize, db) => {
 			email     : this.getDataValue('email'),
 			year      : this.getDataValue('year'),
 			major     : this.getDataValue('major'),
-			points    : this.getDataValue('points'),	
+			points    : this.getDataValue('points'),
 		};
 	};
 
