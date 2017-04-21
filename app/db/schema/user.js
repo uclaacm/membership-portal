@@ -1,4 +1,6 @@
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
+const HASH_ROUNDS = 10;
 
 module.exports = (Sequelize, db) => {
 	let User = db.define('user', {
@@ -33,18 +35,14 @@ module.exports = (Sequelize, db) => {
 		firstName: {
 			type: Sequelize.STRING,
 			allowNull: false,
-			validate: { len: [2, 30] }
+			validate: { len: [2, 255] }
 		},
 		lastName: {
 			type: Sequelize.STRING,
 			allowNull: false,
-			validate: { len: [2, 30] }
+			validate: { len: [2, 255] }
 		},
 		hash: {
-			type: Sequelize.STRING,
-			allowNull: false
-		},
-		salt: {
 			type: Sequelize.STRING,
 			allowNull: false
 		},
@@ -56,7 +54,7 @@ module.exports = (Sequelize, db) => {
 		major: {
 			type: Sequelize.STRING,
 			allowNull: false,
-			validate: { len: [2, 64] }
+			validate: { len: [2, 255] }
 		},
 		points: {
 			type: Sequelize.INTEGER,
@@ -79,7 +77,12 @@ module.exports = (Sequelize, db) => {
 			{
 				unique: true,
 				fields: ['accessCode']
-			}
+			},
+			{
+                name: 'points_btree_index',
+                method: 'BTREE',
+                fields: ['points', { attribute: 'points', order: 'DESC' }]
+            }
 		]
 	});
 
@@ -91,9 +94,23 @@ module.exports = (Sequelize, db) => {
 		return this.findOne({ where : { email } });
 	};
 
-	User.generateSaltAndHash = function(password) {
-		// TODO: return a promise that returns (salt, hash)
-	}
+	User.findByAccessCode = function(accessCode) {
+		return this.findOne({ where : { accessCode } });
+	};
+
+	User.generateHash = function(password) {
+		return bcrypt.hash(password, HASH_ROUNDS);
+	};
+
+	User.generateAccessCode = function() {
+		return new Promise((resolve, reject) => {
+			crypto.randomBytes(16, (err, data) => {
+				if (err)
+					return reject(err);
+				resolve(data.toString('hex'));
+			});
+		});
+	};
 
 	User.Instance.prototype.addPoints = function(points) {
 		return this.increment({ points });
@@ -124,6 +141,13 @@ module.exports = (Sequelize, db) => {
 		return bcrypt.compare(password, this.getDataValue('hash'));
 	};
 
+	User.Instance.prototype.updatePassword = function(password) {
+		let self = this;
+		return this.generateHash(password).then(hash => {
+			self.hash = hash;
+		});
+	};
+
 	User.Instance.prototype.isAdmin = function() {
 		return this.getDataValue('accessType') === 'ADMIN';
 	};
@@ -134,6 +158,18 @@ module.exports = (Sequelize, db) => {
 
 	User.Instance.prototype.isRestricted = function() {
 		return this.getDataValue('accessType') === 'RESTRICTED';
+	};
+
+	User.Instance.prototype.isActive = function() {
+		return this.getDataValue('state') === 'ACTIVE';
+	};
+
+	User.Instance.prototype.isPending = function() {
+		return this.getDataValue('state') === 'PENDING';
+	};
+
+	User.Instance.prototype.isBlocked = function() {
+		return this.getDataValue('state') === 'BLOCKED';
 	};
 
 	return User;

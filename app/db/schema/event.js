@@ -65,22 +65,26 @@ module.exports = (Sequelize, db) => {
             {
                 name: 'start_date_index',
                 method: 'BTREE',
-                fields: ['startDate', { attribute: 'title', collate: 'en_US', order: 'DESC' }]
+                fields: ['startDate', { attribute: 'startDate', collate: 'en_US', order: 'DESC' }]
             },
             {
                 name: 'end_date_index',
                 method: 'BTREE',
-                fields: ['endDate', { attribute: 'title', collate: 'en_US', order: 'DESC' }]
+                fields: ['endDate', { attribute: 'endDate', collate: 'en_US', order: 'DESC' }]
             }
         ]
     });
     
     Event.findByUUID = function(uuid) {
-        return this.findOne({ where : { uuid } });
+        return this.findOne({ where: { uuid } });
     };
 
     Event.eventExists = function(uuid) {
         return this.count({ where: { uuid } }).then(c => c !== 0);
+    };
+
+    Event.destroyByUUID = function(uuid) {
+        return this.destroy({ where: { uuid } });
     };
 
     Event.getPastEvents = function() {
