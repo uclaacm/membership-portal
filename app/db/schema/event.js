@@ -1,3 +1,5 @@
+const _ = require('underscore');
+
 module.exports = (Sequelize, db) => {
     let Event = db.define('event', {
         id: {
@@ -16,6 +18,10 @@ module.exports = (Sequelize, db) => {
         },
         committee: {
             type: Sequelize.ENUM("ICPC","Hack","VRCG","AI","ACM-W")
+        },
+        thumb: {
+            type: Sequelize.STRING,
+            validate: { len: [3, 255] }
         },
         cover: {
             type: Sequelize.STRING,
@@ -41,11 +47,13 @@ module.exports = (Sequelize, db) => {
         },
         startDate: {
             type: Sequelize.DATE,
-            allowNull: false
+            allowNull: false,
+            validate: { isDate: true }
         },
         endDate: {
             type: Sequelize.DATE,
-            allowNull: false
+            allowNull: false,
+            validate: { isDate: true }
         },
         attendanceCode: {
             type: Sequelize.STRING,
@@ -65,12 +73,12 @@ module.exports = (Sequelize, db) => {
             {
                 name: 'start_date_index',
                 method: 'BTREE',
-                fields: ['startDate', { attribute: 'startDate', collate: 'en_US', order: 'DESC' }]
+                fields: ['startDate', { attribute: 'startDate', order: 'DESC' }]
             },
             {
                 name: 'end_date_index',
                 method: 'BTREE',
-                fields: ['endDate', { attribute: 'endDate', collate: 'en_US', order: 'DESC' }]
+                fields: ['endDate', { attribute: 'endDate', order: 'DESC' }]
             }
         ]
     });
@@ -95,6 +103,21 @@ module.exports = (Sequelize, db) => {
     Event.getFutureEvents = function() {
         let now = new Date();
         return this.findAll({ where: { startDate : { $gte : now } } });
+    };
+
+    Event.sanitize = function(event) {
+        event = _.pick(event, ['committee', 'cover', 'thumb', 'title', 'description', 'location', 'eventLink', 'startDate', 'endDate', 'attendanceCode', 'attendancePoints']);
+        if (event.committee !== undefined && event.committee.length === 0)
+            delete event.committee;
+        if (event.attendanceCode !== undefined && event.attendanceCode.length === 0)
+            delete event.attendanceCode;
+        if (event.attendancePoints !== undefined) {
+            let points = parseInt(event.attendancePoints);
+            if (points === NaN || points < 0)
+                delete event.attendancePoints;
+        }
+
+        return event;
     };
 
     Event.Instance.prototype.getPublic = function() {
