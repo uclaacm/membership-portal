@@ -7,40 +7,33 @@ const log = require('../logger');
 let User = require('../db').User;
 let router = express.Router();
 
-
 const dayseconds = 86400;
 const dayweek = dayseconds * 6;
 
-
-// middleware to determine whether a user is authenticated
-const authenticated = (adminMode=false)=>{
+const authenticated = () => {
 	return (req, res, next) => {
 		const authHeader = req.get('Authorization');
-		if(!authHeader){
+		if (!authHeader)
 			return next(new error.Unauthorized());
-		}
+		
 		const authHead = authHeader.split(' ');
-		if(authHead.length != 2 || authHead[0] !== 'Bearer' || authHead[1].length < 1){
+		if(authHead.length != 2 || authHead[0] !== 'Bearer' || authHead[1].length < 1)
 			return next(new error.Unauthorized());
-		}
 
 		const token = authHead[1];
-		jwt.verify(token, config.session.secret, (err, decoded)=>{
-			if(err){
+		jwt.verify(token, config.session.secret, (err, decoded) => {
+			if(err)
 				return next(new error.Unauthorized());
-			}
-			const payload = decoded.payload;
-			if(adminMode && !payload.admin){
-				return next(new error.Unauthorized());
-			}
 
-			// TODO: pass on user info
-			return next();
+			User.findByUUID(decoded.uuid).then(user => {
+				if (!user)
+					throw new error.Unauthorized();
+				req.user = user;
+			}).then(next).catch(next);
 		});
 	};
 };
 
-// TODO: implement login
 router.post("/login", (req, res, next) => {
 	if(!req.body.email || req.body.email.length < 1)
 		return next(new error.BadRequest('Email must be provided'));
@@ -59,12 +52,9 @@ router.post("/login", (req, res, next) => {
 		return user.verifyPassword(req.body.password).then(verified => {
 			if (!verified)
 				throw new error.UserError('Invalid email or password');
-		}).then(new Promise((resolve, reject) => {
+		}).then(() => new Promise((resolve, reject) => {
 			jwt.sign({
 				uuid     : user.getDataValue('uuid'),
-				email    : user.getDataValue('email'),
-				firstName: user.getDataValue('firstName'),
-				lastName : user.getDataValue('lastName'),
 				admin    : user.isAdmin()
 			}, config.session.secret, {expiresIn: dayseconds}, (err, token) => {
 				return err ? reject(err) : resolve(token);
@@ -75,6 +65,7 @@ router.post("/login", (req, res, next) => {
 	}).catch(next);
 });
 
+// TODO: implement registration API
 router.post("/register", (req, res, next) => {
 	return next(new error.NotImplemented());
 });
