@@ -4,14 +4,21 @@ import Config from 'config';
 import Organization from './organization';
 import Points from './points';
 import UserName from './userName';
+import ProfilePicture from './profilePicture';
+import Checkin from './checkin';
+import Leaderboard from './leaderboard';
 
 class SideBar extends React.Component {
     render () {
         return(
             <div className="sidebar">
-                <UserName userName="BOB" />
-                <Organization org="ACM" />
-                <Points points="23" />
+                <ProfilePicture pic="https://media.licdn.com/mpr/mpr/shrinknp_200_200/AAEAAQAAAAAAAAeeAAAAJDU1OGQ3NGZhLTY1MjgtNGYzNS1iMDc5LTliODhlMzg1NjJmMw.jpg"/>
+                <Organization org="UCLA ACM" />
+                <UserName userName="Vic Yeh" />
+                <Checkin/>
+                <Points level="2" points="23" />
+
+                <Leaderboard/>
             </div>
         )
     }

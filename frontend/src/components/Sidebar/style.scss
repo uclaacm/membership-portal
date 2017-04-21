@@ -6,10 +6,93 @@
     left: 0;
     bottom: 0;
     width: $sidebar-width;
-    background:#000;
-    color: white;
+    background: $primary-color;
+    color: $white;
+    padding-top: 100px;
 
     .side-tag {
         text-align: center;
+        margin: 0px;
+        padding: 0px;
     }
+
+    .side-img {
+        display: block;
+        margin: auto;
+        border-radius: 50%;
+        margin-bottom: 2 * $sidebar-vertical-spacing;
+    }
+
+    .org {
+        font-size: 15px;
+    }
+
+    .username {
+        margin-top: $sidebar-vertical-spacing;
+        margin-bottom: $sidebar-vertical-spacing;
+        font-size: 40px;
+    }
+
+    .check-in {
+        margin-top: 10px;
+        border-radius: 15px;
+        font-size: 15px;
+        display: block;
+        margin: auto;
+        background: $white;
+        color: $black;
+        padding: 10px;
+        width: $checkin-width;
+        border: 0px;       
+    }
+
+    .points-component {
+        width: $sidebar-width;
+        height: auto;
+        margin: 0 auto;
+        margin-left: 25px;
+        bottom: 70px;
+        position: absolute;
+    }
+
+    .points-bar {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    .pts {
+        margin: 0px;
+        display: inline-block;
+    }
+
+    .points-earned {
+        background: $secondary-color;
+        color: $secondary-color;
+    }
+
+    .points-left {
+        background: $ternary-color;
+        color: $ternary-color;
+    }
+
+    .num-points {
+        display: block;
+        float: right;
+        margin-right: 50px;
+    }
+
+
+        
+    .leaderboard {
+        position: absolute;
+        bottom: 0px;
+        width: $sidebar-width;
+        border: 0px;
+        background: $secondary-color;
+        color: $white;
+        font-size: 12px;
+        height: 40px;
+        display: block;
+    }
+
 }

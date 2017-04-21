@@ -1,9 +1,14 @@
 import React, { PropTypes } from 'react'
+import PointsBar from './pointsBar'
 
 class Points extends React.Component {
     render () {
         return(
-            <h3 className="side-tag">{this.props.points}</h3>
+            <div className="points-component">
+                <span>Level {this.props.level}</span>
+                <PointsBar points={this.props.points}/>
+                <span className="num-points">{this.props.points} / 100 points</span>
+            </div>
         );
     }
 }
