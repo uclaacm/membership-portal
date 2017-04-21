@@ -1,11 +1,10 @@
-
 import React, { PropTypes } from 'react'
 
 class UserName extends React.Component {
     render () {
         return (
             <div>
-                <h3 className="side-tag">{this.props.userName}</h3>
+                <h3 className="side-tag username">{this.props.userName}</h3>
             </div>
         );
     }
