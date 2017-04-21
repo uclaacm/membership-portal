@@ -27,10 +27,9 @@ router.route('/')
         if (req.body.user.newPassword && req.body.user.confPassword) {
             if (req.body.user.newPassword !== req.body.user.confPassword)
                 throw new error.BadRequest('Passwords do not match');
-            return User.generateSaltAndHash(req.body.user.newPassword).then((salt, hash) => {
-                req.user.hash = hash;
-                req.user.salt = salt;
-            });
+            if (req.body.user.newPassword.length < 8)
+                throw new error.BadRequest('New password must be at least 8 characters');
+            return req.user.updatePassword(req.body.user.newPassword);
         }
     }).then(req.user.save).then((user) => {
         res.json({ error: null, user: user.getUserProfile() });

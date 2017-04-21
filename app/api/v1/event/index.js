@@ -20,7 +20,7 @@ router.route('/future')
 
 router.route('/:uuid')
 .get((req, res, next) => {
-	if (!req.params.uuid) {
+	if (!req.params.uuid || !req.params.uuid.trim()) {
 		Event.findAll().then(events => {
 			res.json({ error: null, events: events.map(e => e.getPublic()) });
 		}).catch(next);
@@ -42,12 +42,21 @@ router.route('/:uuid')
 .patch((req, res, next) => {
 	if (!req.params.uuid)
 		return next(new error.BadRequest());
-	return next(new error.NotImplemented());
+	Event.findByUUID(req.params.uuid).then(event => {
+		if (!event)
+			throw new error.BadRequest('No such event found');
+		// TODO: edit the event
+		return event.save();
+	}).then(event => {
+		res.json({ error: null, event: event.getPublic() });
+	}).next();
 })
 .delete((req, res, next) => {
 	if (!req.params.uuid)
 		return next(new error.BadRequest());
-	return next(new error.NotImplemented());
+	Event.destroyByUUID(req.params.uuid).then(numDeleted => {
+		res.json({ error: null, numDeleted: numDeleted });
+	}).catch(next);
 })
 
 module.exports = { router };
