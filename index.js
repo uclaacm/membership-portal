@@ -17,9 +17,6 @@ server.use(morgan('dev'));
 server.use(bodyParser.urlencoded({ extended: true }));
 server.use(bodyParser.json());
 
-// Setup and sync database
-app.db.setup();
-
 // Use sessions
 // No need for sessions yet!
 // server.use(app.session);
@@ -28,7 +25,7 @@ app.db.setup();
 server.use('/auth', app.auth.router);
 
 // Data API
-server.use('/api', app.api.router);
+server.use('/api', app.auth.authenticated(), app.api.router);
 
 // Register error middleware
 server.use(app.db.errorHandler);
@@ -37,6 +34,9 @@ server.use(app.error.notFoundHandler);
 
 // Create workers
 if (cluster.isMaster) {
+	// Do once: Setup and sync database
+	app.db.setup();
+	
 	log.debug("Creating %d cluster workers...", app.config.numCPUs);
 	for (let i = 0; i < app.config.numCPUs; i++)
 		cluster.fork();
