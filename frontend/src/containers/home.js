@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 
 import Config from 'config';
-import {Action} from 'reducer';
+import {Action} from 'reducers';
 
 class Home extends React.Component {
   render(){
