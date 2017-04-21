@@ -3,7 +3,7 @@ default: build run
 dev: build run-dev
 
 setup:
-	if [ ! $$(docker volume ls | grep "postgres_data") ]; then docker volume create postgres_data; fi
+	if [ ! $(docker volume ls | grep "postgres_data") ]; then docker volume create postgres_data; fi
 	if [ ! -f app/config/SESSION_SECRET ]; then cat /dev/urandom | od -N 32 -t x4 -An | tr -d '\n ' > app/config/SESSION_SECRET; fi
 
 build:
@@ -26,3 +26,4 @@ stop:
 reset:
 	-docker rm $$(docker ps -aq)
 	-docker rmi nkansal/membership
+	-docker volume rm postgres_data
