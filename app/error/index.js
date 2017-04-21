@@ -30,7 +30,7 @@ class BadRequest extends HTTPError {
 
 class Unauthorized extends HTTPError {
     constructor(message) {
-        super(401, message || "Unauthorized request");
+        super(401, message || "Unauthorized");
     }
 }
 
@@ -100,4 +100,4 @@ let notFoundHandler = (req, res, next) => {
     });
 };
 
-module.exports = { HTTPError, BadRequest, Unauthorized, Forbidden, NotFound, TooManyRequests, InternalServerError, NotImplemented, NotAvailable, errorHandler, notFoundHandler };
+module.exports = { HTTPError, UserError, BadRequest, Unauthorized, Forbidden, NotFound, TooManyRequests, InternalServerError, NotImplemented, NotAvailable, errorHandler, notFoundHandler };
