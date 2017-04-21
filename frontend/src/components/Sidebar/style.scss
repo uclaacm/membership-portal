@@ -16,41 +16,50 @@
         padding: 0px;
     }
 
+    .settings-img {
+        width: 30px;
+        height: 30px;
+        position: absolute;
+        top: 15px;
+        left: 15px;
+    }
+
     .side-img {
         display: block;
         margin: auto;
         border-radius: 50%;
         margin-bottom: 2 * $sidebar-vertical-spacing;
+        border: 1px solid $secondary-color;    
     }
 
     .org {
-        font-size: 15px;
+        font-size: $org-fontsize;
     }
 
     .username {
         margin-top: $sidebar-vertical-spacing;
         margin-bottom: $sidebar-vertical-spacing;
-        font-size: 40px;
+        font-size: $username-fontsize;
     }
 
     .check-in {
-        margin-top: 10px;
+        margin-top: $sidebar-vertical-spacing;
         border-radius: 15px;
-        font-size: 15px;
+        font-size: $checkin-fontsize;
         display: block;
         margin: auto;
         background: $white;
         color: $black;
-        padding: 10px;
+        padding: $sidebar-vertical-spacing;
         width: $checkin-width;
-        border: 0px;       
+        border: 1px solid $secondary-color;       
     }
 
     .points-component {
         width: $sidebar-width;
         height: auto;
         margin: 0 auto;
-        margin-left: 25px;
+        margin-left: 25px;              //this is 10% of sidebar width I believe. There's some inline styling that must be accounted for too.. :(
         bottom: 70px;
         position: absolute;
     }
@@ -78,7 +87,7 @@
     .num-points {
         display: block;
         float: right;
-        margin-right: 50px;
+        margin-right: 50px;             //this is 2*10% of sidebar width I believe
     }
 
 
