@@ -2,15 +2,15 @@ const logger = require('../logger');
 
 class HTTPError extends Error {
     constructor(name, status, message) {
-        if (message === undefined ){
+        if (message === undefined){
             message = status;
             status = name;
-            name = this.constructor.name;
+            name = undefined;
         }
 
         super(message);
         
-        this.name = name;
+        this.name = name ? name : this.constructor.name;
         this.status = status;
         this.message = message;
     }
