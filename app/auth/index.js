@@ -42,44 +42,55 @@ const authenticated = (adminMode=false)=>{
 
 // TODO: implement login
 router.post("/login", (req, res, next) => {
-	if(!req.body.email || req.body.email.length < 1){
-		return next(new error.BadRequest('email must be provided'));
-	}
-	if(!req.body.password || req.body.password.length < 1){
-		return next(new error.BadRequest('password must be provided'));
-	}
+	if(!req.body.email || req.body.email.length < 1)
+		return next(new error.BadRequest('Email must be provided'));
+
+	if(!req.body.password || req.body.password.length < 1)
+		return next(new error.BadRequest('Password must be provided'));
+	
 	User.findByEmail(req.body.email).then((user)=>{
-		// TODO:
-		// - add admin to payload
-		// - salt field is not used on user model
-		if (!user) {
+		if (!user)
 			throw new error.UserError('Invalid email or password');
-		}
+		if (user.isPending())
+			throw new error.UserError('Please activate your account. Check your email for an activation email');
+		if (user.isBlocked())
+			throw new error.Forbidden('Your account has been blocked');
+
 		return user.verifyPassword(req.body.password).then(verified => {
-			if (!verified) {
+			if (!verified)
 				throw new error.UserError('Invalid email or password');
-			}
+		}).then(new Promise((resolve, reject) => {
 			jwt.sign({
 				uuid     : user.getDataValue('uuid'),
 				email    : user.getDataValue('email'),
 				firstName: user.getDataValue('firstName'),
 				lastName : user.getDataValue('lastName'),
 				admin    : user.isAdmin()
-			}, config.session.secret, {expiresIn: dayseconds}, (err, token)=>{
-				if (err) {
-					return next(new error.InternalServerError(err.message));
-				}
-				res.json({
-					error: null,
-					token: token
-				});
+			}, config.session.secret, {expiresIn: dayseconds}, (err, token) => {
+				return err ? reject(err) : resolve(token);
 			});
-		});
+		}));
+	}).then(token => {
+		res.json({ error: null, token: token });
 	}).catch(next);
 });
 
 router.post("/register", (req, res, next) => {
 	return next(new error.NotImplemented());
+});
+
+router.get('/activate/:accessCode', (req, res, next) => {
+	if (!req.params.accessCode)
+		return next(new error.BadRequest('Invalid access code'));
+	User.findByAccessCode(req.params.accessCode).then(user => {
+		if (!user)
+			throw new error.BadRequest('Invalid access code or no such user');
+		if (!user.isPending())
+			throw new error.BadRequest('This user does not need activation');
+		return user.update({ state: 'ACTIVE' });
+	}).then(user => {
+		res.json({ error: null });
+	}).catch(next);
 });
 
 module.exports = { router, authenticated };
