@@ -18,7 +18,7 @@ router.route('/future')
 	}).catch(next);
 });
 
-router.route('/:uuid')
+router.route('/:uuid?')
 .get((req, res, next) => {
 	if (!req.params.uuid || !req.params.uuid.trim()) {
 		Event.findAll().then(events => {
@@ -35,18 +35,20 @@ router.route('/:uuid')
 		return next(new error.Forbidden());
 })
 .post((req, res, next) => {
-	if (req.params.uuid)
+	if (req.params.uuid || !req.body.event)
 		return next(new error.BadRequest());
-	return next(new error.NotImplemented());
+	
+	Event.create(Event.sanitize(req.body.event)).then(event => {
+		res.json({ error: null, event: event.getPublic() });
+	}).catch(next);
 })
 .patch((req, res, next) => {
-	if (!req.params.uuid)
+	if (!req.params.uuid || !req.params.uuid.trim() || !req.body.event)
 		return next(new error.BadRequest());
 	Event.findByUUID(req.params.uuid).then(event => {
 		if (!event)
 			throw new error.BadRequest('No such event found');
-		// TODO: edit the event
-		return event.save();
+		return event.update(Event.sanitize(req.body.event));
 	}).then(event => {
 		res.json({ error: null, event: event.getPublic() });
 	}).next();
