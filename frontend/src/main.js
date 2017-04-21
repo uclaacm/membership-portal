@@ -7,7 +7,7 @@ import {Route, Switch, Redirect} from 'react-router-dom';
 import {ConnectedRouter} from 'react-router-redux';
 import {render} from 'react-dom';
 
-import {store, history} from 'reducer';
+import {store, history} from 'reducers';
 
 //import Navbar from 'view/navbar';
 import Home from 'containers/home';
