@@ -16,8 +16,8 @@ let Attendance = require('./schema/attendance')(Sequelize, db);
 let setup = () => {
     db.sync().then(() => {
         if (config.isDevelopment) {
-            User.findOrCreate({ where: { email: 'admin' }, defaults: {
-                email: 'admin',
+            User.findOrCreate({ where: { email: 'admin@ucla.edu' }, defaults: {
+                email: 'admin@ucla.edu',
                 accessType: 'ADMIN',
                 state: 'ACTIVE',
                 firstName: 'Nikhil',

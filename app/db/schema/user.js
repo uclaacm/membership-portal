@@ -19,7 +19,14 @@ module.exports = (Sequelize, db) => {
 		email: {
 			type: Sequelize.STRING,
 			allowNull: false,
-			validate: { isEmail: true }
+			validate: {
+				isEmail: {
+					msg: "The email you entered is not valid"
+				},
+                notEmpty: {
+    				msg: "The email is a required field"
+                }
+			}
 		},
 		accessType: {
 			type: Sequelize.ENUM('RESTRICTED','STANDARD','ADMIN'),
@@ -35,26 +42,63 @@ module.exports = (Sequelize, db) => {
 		firstName: {
 			type: Sequelize.STRING,
 			allowNull: false,
-			validate: { len: [2, 255] }
+			validate: {
+				len: {
+					args: [2, 255],
+					msg: "Your first name must be at least 2 characters long"
+				},
+                notEmpty: {
+    				msg: "The first name is a required field"
+                }
+			}
 		},
 		lastName: {
 			type: Sequelize.STRING,
 			allowNull: false,
-			validate: { len: [2, 255] }
+			validate: {
+				len: {
+					args: [2, 255],
+					msg: "Your last name must be at least 2 characters long"
+				},
+                notEmpty: {
+    				msg: "The last name is a required field"
+                }
+			}
 		},
 		hash: {
 			type: Sequelize.STRING,
-			allowNull: false
+			allowNull: false,
+			validate: {
+				notEmpty: {
+					msg: "The password cannot be empty"
+				}
+			}
 		},
 		year: {
 			type: Sequelize.INTEGER,
 			allowNull: false,
-			validate: { isIn: [[1, 2, 3, 4, 5]] }
+			validate: { 
+				isIn: {
+					args: [[1, 2, 3, 4, 5]],
+					msg: "Your year must be one of [1, 2, 3, 4, 5]"
+				},
+                notEmpty: {
+    				msg: "The year is a required field"
+                }
+			}
 		},
 		major: {
 			type: Sequelize.STRING,
 			allowNull: false,
-			validate: { len: [2, 255] }
+			validate: {
+				len: {
+					args: [2, 255],
+					msg: "Your major must be at least 2 characters long"
+				},
+                notEmpty: {
+    				msg: "The major is a required field"
+                }
+			}
 		},
 		points: {
 			type: Sequelize.INTEGER,

@@ -11,11 +11,29 @@ module.exports = (Sequelize, db) => {
 		},
         user: {
             type: Sequelize.UUID,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                isUUID: {
+                    args: 4,
+                    msg: "Invalid value for user UUID"
+                },
+                notEmpty: {
+                    msg: "The user UUID is a required field"
+                }
+            }
         },
         event: {
             type: Sequelize.UUID,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                isUUID: {
+                    args: 4,
+                    msg: "Invalid value for user UUID"
+                },
+                notEmpty: {
+                    msg: "The user UUID is a required field"
+                }
+            }
         },
         date: {
             type: Sequelize.DATE,

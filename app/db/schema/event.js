@@ -14,55 +14,126 @@ module.exports = (Sequelize, db) => {
         organization: {
             type: Sequelize.STRING,
             defaultValue: "ACM",
-            validate: { len: [3, 255] }
+            validate: {
+				len: {
+					args: [2, 255],
+					msg: "The organization name must be at least 2 characters long"
+				}
+			}
         },
         committee: {
-            type: Sequelize.ENUM("ICPC","Hack","VRCG","AI","ACM-W")
+            type: Sequelize.ENUM("ICPC","Hack","VRCG","AI","ACM-W"),
+            validate: {
+                isIn: {
+                    args: [["ICPC","Hack","VRCG","AI","ACM-W"]],
+                    msg: "If specified, the committee must be one of ['ICPC','Hack','VRCG','AI','ACM-W']"
+                }
+            }
         },
         thumb: {
             type: Sequelize.STRING,
-            validate: { len: [3, 255] }
+            validate: {
+				len: {
+					args: [3, 255],
+					msg: "If specified, the thumbnail URL must be at least 3 characters long"
+				}
+			}
         },
         cover: {
             type: Sequelize.STRING,
-            validate: { len: [3, 255] }
+            validate: {
+				len: {
+					args: [3, 255],
+					msg: "The cover image URL must be at least 3 characters long"
+				}
+			}
         },
         title: {
             type: Sequelize.STRING,
             allowNull: false,
-            validate: { len: [3, 255] }
+            validate: {
+				len: {
+					args: [3, 255],
+					msg: "The title must be at least 3 characters long"
+				},
+                notEmpty: {
+                    msg: "The title field is required"
+                }
+			}
         },
         description: {
             type: Sequelize.TEXT,
             allowNull: false,
-            validate: { is: /^.{3,}$/ }
+            validate: {
+                is: {
+                    args: /^.{3,}$/,
+                    msg: "The description must be at least 3 characters long"
+                },
+                notEmpty: {
+                    msg: "The description field is required"
+                }
+            }
         },
         location: {
             type: Sequelize.STRING,
-            validate: { len: [3, 255] }
+            validate: {
+				len: {
+					args: [3, 255],
+					msg: "The location must be at least 3 characters long"
+				}
+			}
         },
         eventLink: {
             type: Sequelize.STRING,
-            validate: { len: [3, 255] }
+            validate: {
+				len: {
+					args: [3, 255],
+					msg: "The event link must be at least 3 characters long"
+				}
+			}
         },
         startDate: {
             type: Sequelize.DATE,
             allowNull: false,
-            validate: { isDate: true }
+            validate: {
+                isDate: {
+                    msg: "The start date must be a date"
+                },
+                notEmpty: {
+    				msg: "The start date is a required field"
+                }
+            }
         },
         endDate: {
             type: Sequelize.DATE,
             allowNull: false,
-            validate: { isDate: true }
+            validate: {
+                isDate: {
+                    msg: "The end date must be a date"
+                },
+                notEmpty: {
+    				msg: "The end date is a required field"
+                }
+            }
         },
         attendanceCode: {
             type: Sequelize.STRING,
-            validate: { len: [3, 255] }
+            validate: {
+				len: {
+					args: [3, 255],
+					msg: "The attendance code must be at least 3 characters long"
+				}
+			}
         },
         attendancePoints: {
             type: Sequelize.INTEGER,
             defaultValue: 0,
-            validate: { min: 0 }
+            validate: {
+				min: {
+					args: 0,
+					msg: "The attendance points must be at least 0"
+				}
+			}
         }
     }, {
         indexes: [
