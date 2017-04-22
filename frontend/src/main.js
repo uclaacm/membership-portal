@@ -22,6 +22,7 @@ import routes from './routes';
 
 class App extends React.Component {
   render(){
+      
     return (<Provider store={store}>
       <ConnectedRouter history={history}>
         <div>
