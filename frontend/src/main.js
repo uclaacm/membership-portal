@@ -36,6 +36,7 @@ class App extends React.Component {
         </div>
       </ConnectedRouter>
     </Provider>);
+
   }
 }
 
