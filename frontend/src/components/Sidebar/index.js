@@ -8,6 +8,7 @@ import ProfilePicture from './profilePicture';
 import Checkin from './checkin';
 import Leaderboard from './leaderboard';
 import Settings from './settings';
+import Position from './position';
 
 class SideBar extends React.Component {
     render () {
@@ -17,8 +18,9 @@ class SideBar extends React.Component {
                 <ProfilePicture pic="https://media.licdn.com/mpr/mpr/shrinknp_200_200/AAEAAQAAAAAAAAeeAAAAJDU1OGQ3NGZhLTY1MjgtNGYzNS1iMDc5LTliODhlMzg1NjJmMw.jpg"/>
                 <Organization org="UCLA ACM" />
                 <UserName userName="Vic Yeh" />
+                <Position pos="Member"/>
                 <Checkin/>
-                <Points level="2" points="23" />
+                <Points level="2" points="10" />
 
                 <Leaderboard/>
             </div>
