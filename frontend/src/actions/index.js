@@ -35,7 +35,7 @@ export function fetchUser(token) {
     }
 }
 
-export function registerUser(user) => {
+export function registerUser(user) {
     return async (dispatch) => {
         try {
             const response = await fetch(config.routes.auth.register, {
@@ -77,20 +77,6 @@ export function loginUser({ email, password }) {
     });
     }
   }
-
-export function registerUser({ email, firstName, lastName, password }) {
-  return function(dispatch) {
-    axios.post(`${API_URL}/auth/register`, { email, firstName, lastName, password })
-    .then(response => {
-      cookie.save('token', response.data.token, { path: '/' });
-      dispatch({ type: AUTH_USER });
-      window.location.href = CLIENT_ROOT_URL + '/dashboard';
-    })
-    .catch((error) => {
-      errorHandler(dispatch, error.response, AUTH_ERROR)
-    });
-  }
-}
 
 export function logoutUser() {
   return function (dispatch) {
