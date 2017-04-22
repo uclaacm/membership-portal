@@ -3,6 +3,7 @@ import Immutable from 'immutable';
 import Config from 'config';
 import C from 'constants';
 
+import C from 'constants';
 
 const storageAvailable = (type)=>{
 	try {
