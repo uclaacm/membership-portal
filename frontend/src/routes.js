@@ -4,6 +4,7 @@ import { Route, IndexRoute } from 'react-router-dom';
 import App from './components/App';
 import Dashboard from './components/DashBoard/';
 
+
 export default (
     <Route path="/" component={App}>
         <IndexRoute component={HomePage} />
