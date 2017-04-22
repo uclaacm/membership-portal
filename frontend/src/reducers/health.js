@@ -3,6 +3,7 @@ import Immutable from 'immutable';
 import Config from 'config';
 import C from 'constants';
 
+import C from 'constants';
 
 const storageAvailable = (type)=>{
 	try {
@@ -93,6 +94,7 @@ const initState = ()=>{
 
 const Health = (state=initState(), action)=>{
   switch (action.type) {
+
     case C.TIME_GET:
       return state.withMutations((val)=>{
         val.set('loading', true);
@@ -100,6 +102,7 @@ const Health = (state=initState(), action)=>{
         val.set('time', '');
         val.set('err', '');
       });
+
     case C.TIME_UPDATE:
       return state.withMutations((val)=>{
         val.set('loading', false);
@@ -107,6 +110,7 @@ const Health = (state=initState(), action)=>{
         val.set('time', action.time);
         val.set('err', '');
       });
+
     case C.TIME_UPDATE_ERR:
       return defaultState.withMutations((val)=>{
         val.set('loading', false);
