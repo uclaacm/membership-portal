@@ -9,6 +9,7 @@ import {render} from 'react-dom';
 
 import {store, history} from 'reducers';
 
+
 //import Navbar from 'view/navbar';
 import Home from 'containers/home';
 import About from 'containers/about';
@@ -17,6 +18,7 @@ import SideBar from 'components/Sidebar';
 import DashBoard from 'components/Dashboard';
 import Register from 'components/Register';
 
+import routes from './routes';
 
 class App extends React.Component {
   render(){
@@ -39,8 +41,10 @@ class App extends React.Component {
   }
 }
 
-
 render(
-  <App/>,
+  <Provider store={store}>
+      <ConnectedRouter history={history} routes={routes}>
+      </ConnectedRouter>
+  </Provider>,
   document.getElementById('mount')
 );
