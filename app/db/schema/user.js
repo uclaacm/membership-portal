@@ -23,9 +23,9 @@ module.exports = (Sequelize, db) => {
 				isEmail: {
 					msg: "The email you entered is not valid"
 				},
-                notEmpty: {
-    				msg: "The email is a required field"
-                }
+				notEmpty: {
+					msg: "The email is a required field"
+				}
 			}
 		},
 		accessType: {
@@ -47,9 +47,9 @@ module.exports = (Sequelize, db) => {
 					args: [2, 255],
 					msg: "Your first name must be at least 2 characters long"
 				},
-                notEmpty: {
-    				msg: "The first name is a required field"
-                }
+				notEmpty: {
+					msg: "The first name is a required field"
+				}
 			}
 		},
 		lastName: {
@@ -60,9 +60,9 @@ module.exports = (Sequelize, db) => {
 					args: [2, 255],
 					msg: "Your last name must be at least 2 characters long"
 				},
-                notEmpty: {
-    				msg: "The last name is a required field"
-                }
+				notEmpty: {
+					msg: "The last name is a required field"
+				}
 			}
 		},
 		hash: {
@@ -82,9 +82,9 @@ module.exports = (Sequelize, db) => {
 					args: [[1, 2, 3, 4, 5]],
 					msg: "Your year must be one of [1, 2, 3, 4, 5]"
 				},
-                notEmpty: {
-    				msg: "The year is a required field"
-                }
+				notEmpty: {
+					msg: "The year is a required field"
+				}
 			}
 		},
 		major: {
@@ -95,9 +95,9 @@ module.exports = (Sequelize, db) => {
 					args: [2, 255],
 					msg: "Your major must be at least 2 characters long"
 				},
-                notEmpty: {
-    				msg: "The major is a required field"
-                }
+				notEmpty: {
+					msg: "The major is a required field"
+				}
 			}
 		},
 		points: {
@@ -123,10 +123,10 @@ module.exports = (Sequelize, db) => {
 				fields: ['accessCode']
 			},
 			{
-                name: 'points_btree_index',
-                method: 'BTREE',
-                fields: ['points', { attribute: 'points', order: 'DESC' }]
-            }
+				name: 'points_btree_index',
+				method: 'BTREE',
+				fields: ['points', { attribute: 'points', order: 'DESC' }]
+			}
 		]
 	});
 

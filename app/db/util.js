@@ -6,7 +6,7 @@ let applyDelta = (delta, target) => {
 			if (delta[key].constructor === String && delta[key].trim() === "-" ||
 				delta[key].constructor === Array && delta[key].length === 1 && delta[key][0].trim() === '-') {
 				target[key] = undefined;
-			} else 
+			} else
 				target[key] = delta[key]
 		}
 	}
@@ -18,4 +18,4 @@ let update = function(from, to) {
 	applyDelta(from, to);
 };
 
-module.exports = { update }; 
+module.exports = { update };

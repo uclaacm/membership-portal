@@ -4,7 +4,7 @@ let router = express.Router();
 
 router.route('/')
 .get((req, res, next) => {
-    next(new error.NotImplemented());
+	next(new error.NotImplemented());
 });
 
 module.exports = { router };

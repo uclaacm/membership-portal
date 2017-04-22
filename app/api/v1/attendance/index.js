@@ -8,38 +8,38 @@ const Attendance = require('../../../db').Attendance;
 
 router.route('/:uuid')
 .get((req, res, next) => {
-    let getAttendance = req.params.uuid ? Attendance.getAttendanceForEvent : Attendnace.getAttendanceForUser;
-    let uuid = req.params.uuid ? req.params.uuid : req.user.uuid;
+	let getAttendance = req.params.uuid ? Attendance.getAttendanceForEvent : Attendnace.getAttendanceForUser;
+	let uuid = req.params.uuid ? req.params.uuid : req.user.uuid;
 
-    getAttendance(uuid).then(attendance => {
-        res.json({ error: null, attendance: attendance.map(a => a.getPublic()) });
-    }).catch(next);
+	getAttendance(uuid).then(attendance => {
+		res.json({ error: null, attendance: attendance.map(a => a.getPublic()) });
+	}).catch(next);
 });
 
 router.route('/attend/:uuid')
 .post((req, res, next) => {
-    if (!req.params.uuid || !req.body.event.attendanceCode)
-        return next(new error.BadRequest());
+	if (!req.params.uuid || !req.body.event.attendanceCode)
+		return next(new error.BadRequest());
 
-    Event.eventExists(req.params.uuid).then(exists => {
-        if (!exists)
-            throw new error.UserError("An event with that ID doesn't exist");
+	Event.eventExists(req.params.uuid).then(exists => {
+		if (!exists)
+			throw new error.UserError("An event with that ID doesn't exist");
 
-    }).then(Attendance.userAttendedEvent(req.user.uuid, req.params.uuid)).then(attended => {
-        if (attended)
-            throw new error.UserError("You already attended this event");
+	}).then(Attendance.userAttendedEvent(req.user.uuid, req.params.uuid)).then(attended => {
+		if (attended)
+			throw new error.UserError("You already attended this event");
 
-    }).then(Event.findByUUID(req.params.uuid)).then(event => {
-        if (req.body.event.attendanceCode.toLowerCase().trim() !== event.attendanceCode.toLowerCase().trim())
-            throw new error.UserError("Incorrect Attendance Code");
+	}).then(Event.findByUUID(req.params.uuid)).then(event => {
+		if (req.body.event.attendanceCode.toLowerCase().trim() !== event.attendanceCode.toLowerCase().trim())
+			throw new error.UserError("Incorrect Attendance Code");
 
-        return Promise.all([
-            Attendance.attendEvent(req.user.uuid, req.params.uuid),
-            req.user.addPoints(event.attendancePoints)
-        ]);
-    }).then(() => {
-        res.json({ error: null });
-    }).catch(next);    
+		return Promise.all([
+			Attendance.attendEvent(req.user.uuid, req.params.uuid),
+			req.user.addPoints(event.attendancePoints)
+		]);
+	}).then(() => {
+		res.json({ error: null });
+	}).catch(next);    
 });
 
 module.exports = { router };
