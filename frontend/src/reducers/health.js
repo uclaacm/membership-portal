@@ -1,6 +1,7 @@
 import Immutable from 'immutable';
 
 import Config from 'config';
+import C from 'constants';
 
 
 const storageAvailable = (type)=>{
@@ -27,14 +28,14 @@ const TIME_UPDATE_ERR = Symbol('TIME_UPDATE_ERR');
 
 const TimeUpdate = (time)=>{
   return {
-    type: TIME_UPDATE,
+    type: C.TIME_UPDATE,
     time,
   };
 };
 
 const TimeUpdateErr = (err)=>{
   return {
-    type: TIME_UPDATE_ERR,
+    type: C.TIME_UPDATE_ERR,
     err,
   };
 };
@@ -42,7 +43,7 @@ const TimeUpdateErr = (err)=>{
 const TimeGet = ()=>{
   return async (dispatch)=>{
     dispatch({
-      type: TIME_GET,
+      type: C.TIME_GET,
     });
     try {
       const response = await fetch(Config.health.url, {
@@ -92,21 +93,21 @@ const initState = ()=>{
 
 const Health = (state=initState(), action)=>{
   switch (action.type) {
-    case TIME_GET:
+    case C.TIME_GET:
       return state.withMutations((val)=>{
         val.set('loading', true);
         val.set('success', false);
         val.set('time', '');
         val.set('err', '');
       });
-    case TIME_UPDATE:
+    case C.TIME_UPDATE:
       return state.withMutations((val)=>{
         val.set('loading', false);
         val.set('success', true);
         val.set('time', action.time);
         val.set('err', '');
       });
-    case TIME_UPDATE_ERR:
+    case C.TIME_UPDATE_ERR:
       return defaultState.withMutations((val)=>{
         val.set('loading', false);
         val.set('success', false);
