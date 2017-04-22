@@ -28,29 +28,29 @@
         display: block;
         margin: auto;
         border-radius: 50%;
-        margin-bottom: 2 * $sidebar-vertical-spacing;
+        margin-bottom: 1.5*$sidebar-vertical-spacing;
         border: 5px solid $white;    
         height: 150px;
     }
 
     .org {
         font-size: $org-fontsize;
-        color: $ternary-color;
+        color: $quaternary-color;
     }
 
     .username {
-        margin-top: $sidebar-vertical-spacing;
+        margin-top: 5px;
+        margin-bottom: 5px;
         font-size: $username-fontsize;
     }
 
     .pos {
-        font-size: $org-fontsize;
-        margin-bottom: $sidebar-vertical-spacing;
-        color: $ternary-color;
+        font-size: $pos-fontsize;
+        margin-bottom: 2*$sidebar-vertical-spacing;
+        color: $quaternary-color;
     }
 
     .check-in {
-        margin-top: $sidebar-vertical-spacing;
         border-radius: 20px;
         font-size: $checkin-fontsize;
         display: block;
@@ -97,8 +97,8 @@
     }
 
     .points-left {
-        background: $ternary-color;
-        color: $ternary-color;
+        background: $tertiary-color;
+        color: $tertiary-color;
     }
 
     .num-points {
@@ -107,8 +107,6 @@
         margin-right: 50px;             //this is 2*10% of sidebar width I believe
     }
 
-
-        
     .leaderboard {
         position: absolute;
         bottom: 0px;
