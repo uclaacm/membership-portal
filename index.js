@@ -22,10 +22,10 @@ server.use(bodyParser.json());
 // server.use(app.session);
 
 // Configure authentication
-server.use('/auth', app.auth.router);
+server.use('/app/auth', app.auth.router);
 
 // Data API
-server.use('/api', app.auth.authenticated(), app.api.router);
+server.use('/app/api', app.auth.authenticated(), app.api.router);
 
 // Register error middleware
 server.use(app.db.errorHandler);
