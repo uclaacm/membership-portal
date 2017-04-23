@@ -1,10 +1,10 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 
-const config = require('../config');
-const error = require('../error');
-const log = require('../logger');
-let User = require('../db').User;
+const config = require('../../../config');
+const error = require('../../../error');
+const log = require('../../../logger');
+let User = require('../../../db').User;
 let router = express.Router();
 
 const dayseconds = 86400;

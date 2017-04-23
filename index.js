@@ -21,11 +21,8 @@ server.use(bodyParser.json());
 // No need for sessions yet!
 // server.use(app.session);
 
-// Configure authentication
-server.use('/app/auth', app.auth.router);
-
-// Data API
-server.use('/app/api', app.auth.authenticated(), app.api.router);
+// Route the API
+server.use('/app/api', app.api.router);
 
 // Register error middleware
 server.use(app.db.errorHandler);
