@@ -42,7 +42,7 @@ router.post("/login", (req, res, next) => {
 		if (!user)
 			throw new error.UserError('Invalid email or password');
 		if (user.isPending())
-			throw new error.UserError('Please activate your account. Check your email for an activation email');
+			throw new error.Forbidden('Please activate your account. Check your email for an activation email');
 		if (user.isBlocked())
 			throw new error.Forbidden('Your account has been blocked');
 

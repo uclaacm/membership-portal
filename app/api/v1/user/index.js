@@ -8,12 +8,14 @@ router.route('/')
     res.json({ error: null, user: req.user.getUserProfile() });
 })
 .patch((req, res, next) => {
+    if (!req.body.user)
+        return next(new error.BadRequest());
     if (!req.body.user.password)
-        return next(new error.BadRequest('Missing password field'));
+        return next(new error.BadRequest('The password field is required'));
 
     req.user.verifyPassword(req.body.user.password).then(verified => {
         if (!verified)
-            throw new error.Unauthorized('Invalid credentials');
+            throw new error.Unauthorized('Invalid password');
 
         if (req.body.user.firstName && req.body.user.firstName.length > 0)
             req.user.firstName = req.body.user.firstName;
@@ -26,10 +28,12 @@ router.route('/')
 
         if (req.body.user.newPassword && req.body.user.confPassword) {
             if (req.body.user.newPassword !== req.body.user.confPassword)
-                throw new error.BadRequest('Passwords do not match');
+                throw new error.UserError('Passwords do not match');
             if (req.body.user.newPassword.length < 8)
-                throw new error.BadRequest('New password must be at least 8 characters');
+                throw new error.UserError('New password must be at least 8 characters');
             return req.user.updatePassword(req.body.user.newPassword);
+        } else if (!!req.body.user.newPassword ^ !!req.body.user.confPassword) {
+            throw new error.UserError('Passwords do not match');
         }
     }).then(req.user.save).then((user) => {
         res.json({ error: null, user: user.getUserProfile() });
