@@ -13,9 +13,9 @@ services:
     ports:
       - "6379"
 
-  membership:
+  backend:
     build: .
-    image: nkansal/membership
+    image: nkansal/backend
     ports:
       - "8080:8080"
     links:
@@ -30,6 +30,15 @@ services:
       - REDIS_PORT=6379
       - PORT=8080
       - HOST=localhost
+  
+  nginx:
+    build: ./static
+    image: nkansal/static
+    links:
+      - backend
+    ports:
+      - "80:80"
+      - "443:443"
 
 volumes:
   postgres_data:
