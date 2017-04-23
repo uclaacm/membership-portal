@@ -2,7 +2,6 @@ const express = require('express');
 let router = express.Router();
 
 const error = require('../../../error');
-const User = require('../../../db').User;
 const Event = require('../../../db').Event;
 const Attendance = require('../../../db').Attendance;
 

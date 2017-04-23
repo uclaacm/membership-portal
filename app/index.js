@@ -5,6 +5,5 @@ module.exports = {
 	cache: require('./cache'),
 	config: require('./config'),
 	logger: require('./logger'),
-	session: require('./session'),
-	hackschool: require('./hackschool')
+	session: require('./session')
 };
