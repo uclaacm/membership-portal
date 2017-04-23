@@ -1,6 +1,5 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-
 const config = require('../../../config');
 const error = require('../../../error');
 const log = require('../../../logger');
@@ -10,28 +9,26 @@ let router = express.Router();
 const dayseconds = 86400;
 const dayweek = dayseconds * 6;
 
-const authenticated = () => {
-	return (req, res, next) => {
-		const authHeader = req.get('Authorization');
-		if (!authHeader)
-			return next(new error.Unauthorized());
-		
-		const authHead = authHeader.split(' ');
-		if(authHead.length != 2 || authHead[0] !== 'Bearer' || authHead[1].length < 1)
+const authenticated = (req, res, next) => {
+	const authHeader = req.get('Authorization');
+	if (!authHeader)
+		return next(new error.Unauthorized());
+	
+	const authHead = authHeader.split(' ');
+	if(authHead.length != 2 || authHead[0] !== 'Bearer' || authHead[1].length < 1)
+		return next(new error.Unauthorized());
+
+	const token = authHead[1];
+	jwt.verify(token, config.session.secret, (err, decoded) => {
+		if(err)
 			return next(new error.Unauthorized());
 
-		const token = authHead[1];
-		jwt.verify(token, config.session.secret, (err, decoded) => {
-			if(err)
-				return next(new error.Unauthorized());
-
-			User.findByUUID(decoded.uuid).then(user => {
-				if (!user)
-					throw new error.Unauthorized();
-				req.user = user;
-			}).then(next).catch(next);
-		});
-	};
+		User.findByUUID(decoded.uuid).then(user => {
+			if (!user)
+				throw new error.Unauthorized();
+			req.user = user;
+		}).then(next).catch(next);
+	});
 };
 
 router.post("/login", (req, res, next) => {

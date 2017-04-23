@@ -1,12 +1,12 @@
 const express = require('express');
-const auth = require('./auth');
+const auth = require('./auth').authenticated;
 let router = express.Router();
 
 // Route each API
-router.use('/user', auth.authenticated(), require('./user').router);
-router.use('/event', auth.authenticated(), require('./event').router);
-router.use('/attendance', auth.authenticated(), require('./attendance').router);
-router.use('/leaderboard', auth.authenticated(), require('./leaderboard').router);
+router.use('/user', auth, require('./user').router);
+router.use('/event', auth, require('./event').router);
+router.use('/attendance', auth, require('./attendance').router);
+router.use('/leaderboard', auth, require('./leaderboard').router);
 
 // Public API
 router.use('/auth', require('./auth').router);
