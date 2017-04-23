@@ -49,10 +49,10 @@ The following commands are also available:
 
 ### Accessing the Server
 
-If you're running Vagrant, the virtual machine is setup to forward port `8192` (host) to `8080` (guest). To access the server from outside the virtual machine, run:
+If you're running Vagrant, the virtual machine is setup to forward port `8080` (host) to `80` (guest). To access the server from outside the virtual machine, run:
 
 ```Bash
-$ curl http://127.0.0.1:8192/api/v1/health
+$ curl http://127.0.0.1:8080/api/v1/health
 ```
 
-If you're not running Vagrant, you can simply access the server through its Docker port directly (`8080`)
+If you're not running Vagrant, you can simply access the server through its Docker port directly (`80`)
