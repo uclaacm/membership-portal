@@ -1,14 +1,14 @@
 # Need a custom image here so that we can incorporate an npm build too
-FROM ubuntu:xenial
+# Alpine is super light
+FROM alpine:3.5
 
 # Download and install nginx
 # RUN echo "deb http://archive.ubuntu.com/ubuntu/ raring main universe" >> /etc/apt/sources.list
-RUN apt-get update
-RUN apt-get install -y vim curl wget dialog net-tools build-essential nginx
+RUN apk update
+RUN apk add curl nginx bash
 
-# Download and install nodejs
-RUN curl -sL https://deb.nodesource.com/setup_6.x | bash -
-RUN apt-get install -y nodejs
+# Download and add nodejs
+RUN apk add --update nodejs
 
 # Create directories
 #   /working is the build directory
@@ -31,6 +31,7 @@ RUN cp -rv pages/* ../static/
 RUN cp -rv lib/build/* ../static/build/
 
 # Copy the configuration file
+RUN mkdir -p /run/nginx
 COPY nginx.conf /etc/nginx/
 WORKDIR /var/www/membership/static
 
