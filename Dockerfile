@@ -1,5 +1,5 @@
 # load the 6.10.2 LTS node.js image
-FROM node:boron
+FROM node:boron-alpine
 
 # create the working directory
 RUN mkdir -p /var/www/membership
