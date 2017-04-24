@@ -1,5 +1,8 @@
-# load the 6.10.2 LTS node.js image
-FROM node:boron-alpine
+# load the alpine base image
+FROM alpine:3.5
+
+RUN apk update && apk upgrade
+RUN apk add curl bash python make gcc g++ nodejs=6.9.2-r1
 
 # create the working directory
 RUN mkdir -p /var/www/membership
