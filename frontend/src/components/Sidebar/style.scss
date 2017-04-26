@@ -60,7 +60,7 @@
         color: $white;
         padding: $sidebar-vertical-spacing;
         width: $checkin-width;
-        height: 50px;
+        height: $input-button-size;
         border: 1px solid $secondary-color;       
     }
     .checkin-button {

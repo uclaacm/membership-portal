@@ -5,7 +5,7 @@ class SingleDay extends React.Component {
         return(
             <div>
                 <h2 className="data">{this.props.date}</h2>
-                <p>Filler Text</p>
+                <p>{this.props.event}</p>
             </div>
         );
     }

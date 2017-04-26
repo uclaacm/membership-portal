@@ -8,5 +8,6 @@ export default {
   nav: [
     ['Home', '/'],
     ['About', '/about'],
+    ['Login', '/login'],
   ]
 }

@@ -7,7 +7,7 @@ class EventsList extends React.Component {
         let k=[];
         return(
             <div>
-                <SingleDay date="06/06/2017" />
+                <SingleDay date="06/06/2017" event="Negotiate Offer" />
             </div>
         );
     }

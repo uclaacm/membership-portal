@@ -12,6 +12,7 @@ import {store, history} from 'reducers';
 //import Navbar from 'view/navbar';
 import Home from 'containers/home';
 import About from 'containers/about';
+import Login from 'containers/login';
 import SideBar from 'components/Sidebar/';
 import DashBoard from 'components/DashBoard/';
 
@@ -21,13 +22,14 @@ class App extends React.Component {
     return (<Provider store={store}>
       <ConnectedRouter history={history}>
         <div>
-          <SideBar/>
-          <DashBoard/>
-        {/*   <Switch>
+          {/*<SideBar/>
+          <DashBoard/>*/}
+           <Switch>
              <Route exact path="/" component={Home}/>
              <Route path="/about" component={About}/>
+             <Route path="/login" component={Login}/>
              <Redirect to="/"/>
-           </Switch>*/}
+           </Switch>
 
         </div>
       </ConnectedRouter>
