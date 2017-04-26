@@ -61,7 +61,8 @@
         padding: $sidebar-vertical-spacing;
         width: $checkin-width;
         height: $input-button-size;
-        border: 1px solid $secondary-color;       
+        border: 1px solid $secondary-color;
+        box-shadow: 0 3px 0 $tertiary-color;      
     }
     .checkin-button {
         height: $checkin-fontsize - 5px;
