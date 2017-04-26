@@ -5,7 +5,7 @@ class LoginPassword extends React.Component {
         return(
             <div className="login-input">
                 <p>Password</p>
-                <input type="password"></input>
+                <input type="password" placeholder="********" ></input>
             </div>
         );
     }

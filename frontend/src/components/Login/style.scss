@@ -24,12 +24,37 @@
       text-align: left;
       margin-bottom: $sidebar-vertical-spacing;
 
+      input {
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          box-sizing: border-box;
+          height: 30px;
+          padding: 5px;
+      }
+
       p {
         margin: 0px;
       }
 
       input {
         width: $sidebar-input-width;
+      }
+    }
+
+    .sign-in {
+        margin-top: 20px;
+
+      .forgot-password {
+          margin-top: 10px;
+          color: $secondary-color;
+      }
+    }
+
+    .sign-up {
+          margin-top: 130px;
+      
+      .new-account {
+          margin-bottom: 10px;
       }
     }
 

@@ -5,7 +5,7 @@ class LoginEmail extends React.Component {
         return(
             <div className="login-input">
                 <p>Email</p>
-                <input type="text"></input>
+                <input type="text" placeholder="example@ucla.edu"></input>
             </div>
         );
     }
