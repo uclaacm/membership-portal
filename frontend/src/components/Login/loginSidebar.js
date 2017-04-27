@@ -9,6 +9,7 @@ class LoginSidebar extends React.Component {
     render () {
         return(
             <div className="login-sidebar">
+                <div className="first-container"></div>
                 <Logo pic="https://pbs.twimg.com/profile_images/821079138060496896/7yR9rQOY.jpg"/>
                 <LoginEmail/>
                 <LoginPassword/>

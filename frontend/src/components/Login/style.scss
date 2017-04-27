@@ -1,21 +1,22 @@
 @import "styles/vars";
 
+
 .login-sidebar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: $sidebar-width;
-    background: $primary-color;
-    color: $white;
+    position: relative;
     padding-top: 100px;
+    padding-bottom: 50px;
+    height: 100%;
+    width: $sidebar-width;
+    background: $gray1;
+    color: $gray3;
+    font-size: 12px;
 
     .login-logo {
         display: block;
         margin: auto;
-        margin-bottom: 1.5*$sidebar-vertical-spacing;
         border: 5px solid $white;    
-        height: 150px;
+        height: 170px;
+        margin-bottom: 20px;
     }
 
     .login-input {
@@ -23,9 +24,11 @@
       margin: auto;
       text-align: left;
       margin-bottom: $sidebar-vertical-spacing;
+      
 
       input {
-          border: 1px solid #ccc;
+          border: 1px solid $gray2;
+          background-color: $gray1;
           border-radius: 4px;
           box-sizing: border-box;
           height: 30px;
@@ -44,18 +47,18 @@
     .sign-in {
         margin-top: 20px;
 
-      .forgot-password {
-          margin-top: 10px;
-          color: $secondary-color;
-      }
+        .forgot-password {
+            margin-top: 10px;
+            color: $secondary-color;
+        }
     }
 
     .sign-up {
           margin-top: 100px;
-      
-      .new-account {
-          margin-bottom: 10px;
-      }
+
+          .new-account {
+              margin-bottom: 10px;
+          }
     }
 
     .input-button {
@@ -69,8 +72,14 @@
         padding: $sidebar-vertical-spacing;
         width: $checkin-width;
         height: $input-button-size;
-        border: 1px solid $secondary-color;
-        box-shadow: 0 3px 0 #000;    
+        border: none;
+        box-shadow: 0 3px 0 $primary-color;
+        outline: none; 
+    }
+
+    .sign-in-button {
+        background: $light-green;
+        box-shadow: 0 3px 0 $dark-green;    
     }
 
     .input-text {
@@ -82,5 +91,6 @@
         color: inherit;
         text-decoration: inherit;
         font-weight: inherit;
+        font-size: 14px;
     }
 }
