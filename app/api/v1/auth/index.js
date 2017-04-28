@@ -13,7 +13,7 @@ const authenticated = (req, res, next) => {
 	const authHeader = req.get('Authorization');
 	if (!authHeader)
 		return next(new error.Unauthorized());
-	
+
 	const authHead = authHeader.split(' ');
 	if(authHead.length != 2 || authHead[0] !== 'Bearer' || authHead[1].length < 1)
 		return next(new error.Unauthorized());
@@ -37,7 +37,7 @@ router.post("/login", (req, res, next) => {
 
 	if(!req.body.password || req.body.password.length < 1)
 		return next(new error.BadRequest('Password must be provided'));
-	
+
 	User.findByEmail(req.body.email).then((user)=>{
 		if (!user)
 			throw new error.UserError('Invalid email or password');
@@ -64,7 +64,21 @@ router.post("/login", (req, res, next) => {
 
 // TODO: implement registration API
 router.post("/register", (req, res, next) => {
-	return next(new error.NotImplemented());
+	if (!req.body.user)
+		return next(new error.BadRequest('User must be provided'));
+	if (!req.body.user.password)
+		return next(new error.BadRequest('Password must be provided'));
+	if (req.body.user.password.length < 10)
+		return next(new error.BadRequest('Password should be at least 10 characters long'));
+
+	let userModel = User.sanitize(req.body.user);
+	userModel.state = 'ACTIVE'; // TODO: implement email auth instead of just active
+	User.generateHash(req.body.user.password).then(hash => {
+		userModel.hash = hash;
+		User.create(userModel).then(user => {
+			res.json({ error: null, user: user.getPublic() });
+		}).catch(next);
+	}).catch(next);
 });
 
 router.get('/activate/:accessCode', (req, res, next) => {

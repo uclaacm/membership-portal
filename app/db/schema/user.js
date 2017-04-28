@@ -77,7 +77,7 @@ module.exports = (Sequelize, db) => {
 		year: {
 			type: Sequelize.INTEGER,
 			allowNull: false,
-			validate: { 
+			validate: {
 				isIn: {
 					args: [[1, 2, 3, 4, 5]],
 					msg: "Your year must be one of [1, 2, 3, 4, 5]"
@@ -154,6 +154,11 @@ module.exports = (Sequelize, db) => {
 				resolve(data.toString('hex'));
 			});
 		});
+	};
+
+	User.sanitize = function(user) {
+		user = _.pick(user, ['picture', 'email', 'firstName', 'lastName', 'year', 'major']);
+		return user;
 	};
 
 	User.Instance.prototype.addPoints = function(points) {
