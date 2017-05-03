@@ -1,0 +1,15 @@
+@import "styles/vars";
+
+
+.register-component {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: $cobalt;
+}
+.card {
+    width: 552px;
+    height: 307px;
+    background: $white;
+}

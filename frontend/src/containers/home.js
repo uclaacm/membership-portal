@@ -3,19 +3,22 @@ import {connect} from 'react-redux';
 
 import Config from 'config';
 import {Action} from 'reducers';
+import Sidebar from 'components/Sidebar'
 
 class Home extends React.Component {
   render(){
     return <div>
-      <div>{Config.info.msg}</div>
+      {/*<div>{Config.info.msg}</div>
       <div>Path: {this.props.urlPath}</div>
       <div>
         <button onClick={()=>{this.props.getTime(Config.info.msg);}}>Get Time</button>
         {this.props.loading && <span>Loading</span>}
         {!this.props.loading && this.props.success && <span>Time: {this.props.time}</span>}
         {!this.props.loading && this.props.err && <span>Time: Error({this.props.err})</span>}
-      </div>
+      </div>*/}
+        <Sidebar/>
     </div>;
+
   }
 }
 
