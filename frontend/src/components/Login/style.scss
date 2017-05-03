@@ -1,11 +1,31 @@
 @import "styles/vars";
 
+html, body {
+    margin: 0px;
+    height: 100%;
+    min-height: 100%;
+}
+
+
+.login {
+    height: 100vh;
+}
+
+.login-tile {
+    display: inline-block;
+}
+
+
+
+.login-tile {
+    display: inline-block;
+}
 
 .login-sidebar {
+    display: inline-block;
     position: relative;
     padding-top: 100px;
     padding-bottom: 50px;
-    height: 100%;
     width: $sidebar-width;
     background: $gray1;
     color: $gray3;
@@ -54,11 +74,12 @@
     }
 
     .sign-up {
-          margin-top: 100px;
+        margin-top: 100px;
+        background: $gray1;
 
-          .new-account {
-              margin-bottom: 10px;
-          }
+        .new-account {
+            margin-bottom: 10px;
+        }
     }
 
     .input-button {
@@ -73,8 +94,8 @@
         width: $checkin-width;
         height: $input-button-size;
         border: none;
-        box-shadow: 0 3px 0 $primary-color;
         outline: none; 
+        box-shadow: 0 3px 0 $primary-color;
     }
 
     .sign-in-button {
