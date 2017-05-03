@@ -7,29 +7,29 @@ html, body {
 }
 
 
-.login {
-    height: 100vh;
-}
-
 .login-tile {
+    position: relative;
     display: inline-block;
 }
 
 
-
-.login-tile {
-    display: inline-block;
-}
 
 .login-sidebar {
-    display: inline-block;
     position: relative;
-    padding-top: 100px;
-    padding-bottom: 50px;
+    display: inline-block;
+    height: 100vh;
+    background: $cobalt;
     width: $sidebar-width;
-    background: $gray1;
-    color: $gray3;
+    max-height: 1000px;
+    // background: $cobalt;
+    color: $white;
     font-size: 12px;
+
+    .login-container {
+        background: $cobalt;
+        padding-top: 50px;
+        padding-bottom: 50px;
+    }
 
     .login-logo {
         display: block;
@@ -48,8 +48,7 @@ html, body {
 
       input {
           border: 1px solid $gray2;
-          background-color: $gray1;
-          border-radius: 4px;
+          border-radius: 5px;
           box-sizing: border-box;
           height: 30px;
           padding: 5px;
@@ -69,13 +68,13 @@ html, body {
 
         .forgot-password {
             margin-top: 10px;
-            color: $secondary-color;
+            color: $white;
+            text-decoration: underline;
         }
     }
 
     .sign-up {
         margin-top: 100px;
-        background: $gray1;
 
         .new-account {
             margin-bottom: 10px;
@@ -95,7 +94,7 @@ html, body {
         height: $input-button-size;
         border: none;
         outline: none; 
-        box-shadow: 0 3px 0 $primary-color;
+        box-shadow: 0 3px 0 $cobalt;
     }
 
     .sign-in-button {
