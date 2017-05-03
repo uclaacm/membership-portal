@@ -1,7 +1,11 @@
 @import "components/Sidebar/style";
-@import "components/DashBoard/style";
+@import "components/Dashboard/style";
+@import "components/Login/style";
+
 @import "styles/vars";
 
-body {
-
+html, body {
+    margin: 0px;
+    height: 100%;
+    min-height: 100%;
 }

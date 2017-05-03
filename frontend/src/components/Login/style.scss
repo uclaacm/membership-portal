@@ -1,0 +1,116 @@
+@import "styles/vars";
+
+html, body {
+    margin: 0px;
+    height: 100%;
+    min-height: 100%;
+}
+
+
+.login-tile {
+    position: relative;
+    display: inline-block;
+}
+
+
+
+.login-sidebar {
+    position: relative;
+    display: inline-block;
+    height: 100vh;
+    background: $cobalt;
+    width: $sidebar-width;
+    max-height: 1000px;
+    // background: $cobalt;
+    color: $white;
+    font-size: 12px;
+
+    .login-container {
+        background: $cobalt;
+        padding-top: 50px;
+        padding-bottom: 50px;
+    }
+
+    .login-logo {
+        display: block;
+        margin: auto;
+        border: 5px solid $white;    
+        height: 170px;
+        margin-bottom: 20px;
+    }
+
+    .login-input {
+      width: $sidebar-input-width;
+      margin: auto;
+      text-align: left;
+      margin-bottom: $sidebar-vertical-spacing;
+      
+
+      input {
+          border: 1px solid $gray2;
+          border-radius: 5px;
+          box-sizing: border-box;
+          height: 30px;
+          padding: 5px;
+      }
+
+      p {
+        margin: 0px;
+      }
+
+      input {
+        width: $sidebar-input-width;
+      }
+    }
+
+    .sign-in {
+        margin-top: 20px;
+
+        .forgot-password {
+            margin-top: 10px;
+            color: $white;
+            text-decoration: underline;
+        }
+    }
+
+    .sign-up {
+        margin-top: 100px;
+
+        .new-account {
+            margin-bottom: 10px;
+        }
+    }
+
+    .input-button {
+        border-radius: 100px;
+        border-bottom: 5px solid $white;
+        font-size: $checkin-fontsize;
+        display: block;
+        margin: auto;
+        background: $secondary-color;
+        color: $white;
+        padding: $sidebar-vertical-spacing;
+        width: $checkin-width;
+        height: $input-button-size;
+        border: none;
+        outline: none; 
+        box-shadow: 0 3px 0 $cobalt;
+    }
+
+    .sign-in-button {
+        background: $light-green;
+        box-shadow: 0 3px 0 $dark-green;    
+    }
+
+    .input-text {
+      display: block;
+      text-align: center;
+    }
+
+    a, a:link, a:visited, a:hover, a:active {
+        color: inherit;
+        text-decoration: inherit;
+        font-weight: inherit;
+        font-size: 14px;
+    }
+}

@@ -28,31 +28,45 @@
         display: block;
         margin: auto;
         border-radius: 50%;
-        margin-bottom: 2 * $sidebar-vertical-spacing;
-        border: 1px solid $secondary-color;    
+        margin-bottom: 1.5*$sidebar-vertical-spacing;
+        border: 5px solid $white;    
+        height: 150px;
     }
 
     .org {
         font-size: $org-fontsize;
+        color: $quaternary-color;
     }
 
     .username {
-        margin-top: $sidebar-vertical-spacing;
-        margin-bottom: $sidebar-vertical-spacing;
+        margin-top: 5px;
+        margin-bottom: 5px;
         font-size: $username-fontsize;
     }
 
+    .pos {
+        font-size: $pos-fontsize;
+        margin-bottom: 2*$sidebar-vertical-spacing;
+        color: $quaternary-color;
+    }
+
     .check-in {
-        margin-top: $sidebar-vertical-spacing;
-        border-radius: 15px;
+        border-radius: 20px;
+        border-bottom: 5px solid $white;
         font-size: $checkin-fontsize;
         display: block;
         margin: auto;
-        background: $white;
-        color: $black;
+        background: $secondary-color;
+        color: $white;
         padding: $sidebar-vertical-spacing;
         width: $checkin-width;
-        border: 1px solid $secondary-color;       
+        height: $input-button-size;
+        border: 1px solid $secondary-color;
+        box-shadow: 0 3px 0 $tertiary-color;      
+    }
+    .checkin-button {
+        height: $checkin-fontsize - 5px;
+        margin-right: 5px;
     }
 
     .points-component {
@@ -64,24 +78,29 @@
         position: absolute;
     }
 
-    .points-bar {
-        margin-top: 5px;
-        margin-bottom: 5px;
+    .level-font {
+        font-size: 20px;
     }
+
+    // .points-bar {
+    //     margin-top: 5px;
+    //     margin-bottom: 5px;
+    // }
 
     .pts {
         margin: 0px;
         display: inline-block;
+        height: 10px;
     }
 
     .points-earned {
-        background: $secondary-color;
-        color: $secondary-color;
+        background: $white;
+        color: $white;
     }
 
     .points-left {
-        background: $ternary-color;
-        color: $ternary-color;
+        background: $tertiary-color;
+        color: $tertiary-color;
     }
 
     .num-points {
@@ -90,8 +109,6 @@
         margin-right: 50px;             //this is 2*10% of sidebar width I believe
     }
 
-
-        
     .leaderboard {
         position: absolute;
         bottom: 0px;
