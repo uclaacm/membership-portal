@@ -2,10 +2,13 @@ import React, { PropTypes } from 'react'
 import Button from "components/Button/index"
 
 class DetailsCard extends React.Component {
-    
     render () {
+        var buttonStyle = '';
+        if(this.props.type === "confirm-details") {
+            buttonStyle = "green";
+        }
         return(
-            <div className="card details-card">
+            <div className={"card details-card " + this.props.type}>
                 <div className="inner">
                     <p className="header">Account Details</p>
 
@@ -25,7 +28,7 @@ class DetailsCard extends React.Component {
                         <p className="text">Password</p>
                         <input className="input-large"></input>
                     </div>
-                    <Button className="btn" style="gray" text="Finish"/>
+                    <Button className="btn" style={buttonStyle || "gray"} text="Finish"/>
                 </div>
             </div>
         );
