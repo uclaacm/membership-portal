@@ -5,18 +5,33 @@
       text-align: center;
       border-radius: 100px;
       font-size: $checkin-fontsize;
-      // display: block;
-      // margin: auto;
+
       // background: $secondary-color;
       color: $white;
       padding: $sidebar-vertical-spacing;
       width: $checkin-width;
       height: $input-button-size;
       border: none;
-      outline: none; 
+      outline: none;
 }
 
 .blue {
     background: $azul;
     box-shadow: 0 4px 0 $cobalt;
+}
+
+.green {
+    background: $light-green;
+    box-shadow: 0 4px 0 $dark-green;
+}
+
+.red {
+    background: $light-red;
+    box-shadow: 0 4px 0 $dark-red;
+}
+
+.gray {
+    background: $white;
+    border: solid 3px $gray1;
+    color: $gray1;
 }

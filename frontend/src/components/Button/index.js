@@ -4,26 +4,8 @@ import React, { PropTypes } from 'react'
 class Button extends React.Component {
     
     render () {
-        // var backgroundColor = this.props.backgroundColor;
-        // var borderColor = this.props.borderColor;
-        // var text = this.props.text;
-
-        // const colorScheme = styles[this.props.color];
-        // if(this.props.color ==='blue') {
-        //     colorScheme = styles.blue;
-        // }
-
-        // if(this.props.color ==='green') {
-        //     colorScheme = styles.blue;
-        // }
-
-        // if(this.props.color ==='red') {
-        //     colorScheme = styles.blue;
-        // }
-
-//http://stackoverflow.com/questions/32230635/passing-in-class-names-to-react-components
         return(
-            <div>
+            <div className={this.props.className}>
                 <button className={"generic-button " + this.props.style}>{this.props.text}</button>
             </div>
         );
