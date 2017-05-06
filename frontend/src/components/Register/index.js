@@ -10,10 +10,10 @@ class RegisterComponent extends React.Component {
     render () {
         return(
             <div className="register-component">
-                <UrlConfirmCard/>
-              {/*<NameConfirmCard name="Ram Goli"/>
+                {/*<UrlConfirmCard/>*/}
+              {/*<NameConfirmCard name="Ram Goli"/>*/}
               <DetailsCard/>
-              <DetailsCard type="confirm-details"/>*/}
+              {/*<DetailsCard type="confirm-details"/>*/}
             </div>
         )
     }
