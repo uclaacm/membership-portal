@@ -33,6 +33,7 @@ router.route('/:uuid?')
 .all((req, res, next) => {
 	if (!req.user.isAdmin())
 		return next(new error.Forbidden());
+	return next();
 })
 .post((req, res, next) => {
 	if (req.params.uuid || !req.body.event)

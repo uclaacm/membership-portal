@@ -15,27 +15,31 @@ router.route('/:uuid')
 	}).catch(next);
 });
 
-router.route('/attend/:uuid')
+router.route('/attend')
 .post((req, res, next) => {
-	if (!req.params.uuid || !req.body.event.attendanceCode)
+	if (!req.body.event.attendanceCode)
 		return next(new error.BadRequest());
 
-	Event.eventExists(req.params.uuid).then(exists => {
-		if (!exists)
-			throw new error.UserError("An event with that ID doesn't exist");
+	let now = new Date();
+	Event.findByAttendanceCode(req.body.event.attendanceCode).then(event => {
+		if (!event)
+			throw new error.UserError("An event with that attendance code doesn't exist");
+		
+		if (now < event.startDate || now > event.endDate)
+			throw new error.UserError("You can only enter the attendance code during the event");
+		
+		return Attendance.userAttendedEvent(req.user.uuid, event.uuid).then(attended => {
+			if (attended)
+				throw new error.UserError("You have already attended this event");
 
-	}).then(Attendance.userAttendedEvent(req.user.uuid, req.params.uuid)).then(attended => {
-		if (attended)
-			throw new error.UserError("You already attended this event");
+			if (req.body.event.attendanceCode.toLowerCase().trim() !== event.attendanceCode.toLowerCase().trim())
+				throw new error.UserError("Incorrect Attendance Code");	
 
-	}).then(Event.findByUUID(req.params.uuid)).then(event => {
-		if (req.body.event.attendanceCode.toLowerCase().trim() !== event.attendanceCode.toLowerCase().trim())
-			throw new error.UserError("Incorrect Attendance Code");
-
-		return Promise.all([
-			Attendance.attendEvent(req.user.uuid, req.params.uuid),
-			req.user.addPoints(event.attendancePoints)
-		]);
+			return Promise.all([
+				Attendance.attendEvent(req.user.uuid, event.uuid),
+				req.user.addPoints(event.attendancePoints)
+			]);
+		});
 	}).then(() => {
 		res.json({ error: null });
 	}).catch(next);    

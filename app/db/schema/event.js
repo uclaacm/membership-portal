@@ -158,6 +158,10 @@ module.exports = (Sequelize, db) => {
 		return this.findOne({ where: { uuid } });
 	};
 
+	Event.findByAttendanceCode = function(attendanceCode) {
+		return this.findOne({ where: { attendanceCode }});
+	};
+
 	Event.eventExists = function(uuid) {
 		return this.count({ where: { uuid } }).then(c => c !== 0);
 	};

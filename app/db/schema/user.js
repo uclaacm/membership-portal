@@ -13,7 +13,7 @@ module.exports = (Sequelize, db) => {
 			type: Sequelize.UUID,
 			defaultValue: Sequelize.UUIDV4
 		},
-		picture: {
+		profileId: {
 			type: Sequelize.STRING
 		},
 		email: {
@@ -157,7 +157,7 @@ module.exports = (Sequelize, db) => {
 	};
 
 	User.sanitize = function(user) {
-		user = _.pick(user, ['picture', 'email', 'firstName', 'lastName', 'year', 'major']);
+		user = _.pick(user, ['profileId', 'email', 'firstName', 'lastName', 'year', 'major']);
 		return user;
 	};
 
@@ -178,7 +178,8 @@ module.exports = (Sequelize, db) => {
 		return {
 			firstName  : this.getDataValue('firstName'),
 			lastName   : this.getDataValue('lastName'),
-			picture    : this.getDataValue('picture'),
+			// TODO: change this to generate profile image
+			picture    : this.getDataValue('profileId'),
 			email      : this.getDataValue('email'),
 			year       : this.getDataValue('year'),
 			major      : this.getDataValue('major'),

@@ -42,7 +42,7 @@ router.post("/login", (req, res, next) => {
 		if (!user)
 			throw new error.UserError('Invalid email or password');
 		if (user.isPending())
-			throw new error.Forbidden('Please activate your account. Check your email for an activation email');
+			throw new error.Unauthorized('Please activate your account. Check your email for an activation email');
 		if (user.isBlocked())
 			throw new error.Forbidden('Your account has been blocked');
 
@@ -75,9 +75,9 @@ router.post("/register", (req, res, next) => {
 	userModel.state = 'ACTIVE'; // TODO: implement email auth instead of just active
 	User.generateHash(req.body.user.password).then(hash => {
 		userModel.hash = hash;
-		User.create(userModel).then(user => {
-			res.json({ error: null, user: user.getPublic() });
-		}).catch(next);
+		return User.create(userModel);
+	}).then(user => {
+		res.json({ error: null, user: user.getPublic() });
 	}).catch(next);
 });
 
@@ -88,7 +88,7 @@ router.get('/activate/:accessCode', (req, res, next) => {
 		if (!user)
 			throw new error.BadRequest('Invalid access code or no such user');
 		if (!user.isPending())
-			throw new error.BadRequest('This user does not need activation');
+			throw new error.BadRequest('Your account does not need to be activated');
 		return user.update({ state: 'ACTIVE' });
 	}).then(user => {
 		res.json({ error: null });
