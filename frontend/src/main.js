@@ -14,7 +14,7 @@ import {store, history} from 'reducers';
 import Home from 'containers/home';
 import About from 'containers/about';
 import Login from 'containers/login';
-import SideBar from 'components/Sidebar/';
+import SideBar from 'components/Sidebar/sidebar';
 import DashBoard from 'components/DashBoard/';
 import Register from 'components/Register';
 
@@ -42,6 +42,7 @@ class App extends React.Component {
 
   }
 }
+
 
 // class App extends React.Component {
 //   render(){

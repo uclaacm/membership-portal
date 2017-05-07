@@ -1,8 +1,6 @@
 import React, { PropTypes } from 'react';
 
-import SideBar from './components/Sidebar/sidebar';
-
-import React, { PropTypes } from 'react'
+import SideBar from './Sidebar/sidebar';
 
 class App extends React.Component {
     render () {

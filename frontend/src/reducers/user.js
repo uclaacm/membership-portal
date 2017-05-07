@@ -3,22 +3,20 @@ import Immutable from 'immutable';
 import Config from 'config';
 
 const FETCH_USER = Symbol('FETCH_USER');
-const LOGOUT_USER = Symbol('LOGOUT_USER');
 const FETCH_USER_ERR = Symbol('FETCH_USER_ERR');
-const REGISTER_USER_ERR = Symbol('REGISTER_USER_ERR');
 
 const defaultState = Immutable.fromJS({
-    'authenticated' : false,
-    'user': {
-        'firstName': '',
-        'lastName': '',
-        'picture': '',
-        'email': '',
-        'year': 0,
-        'major': '',
-        'points': 0,
-    }
+    profile: {},
+    message: '',
+    error: ''
 });
+
+const fetchUser = (payload) => {
+    return ({
+        type: FETCH_USER,
+        payload
+    });
+}
 
 const fetchUserError = (err) => {
     return ({
@@ -27,20 +25,9 @@ const fetchUserError = (err) => {
     });
 }
 
-const registerUserError = (err) => {
-    return ({
-        type: REGISTER_USER_ERR,
-        err
-    });
-}
-
 function fetchUser(token) {
 
     return async (dispatch) => {
-        dispatch({
-            type: FETCH_USER
-        });
-
         try {
             const response = await fetch(config.routes.user, {
               method: 'GET',
@@ -51,7 +38,7 @@ function fetchUser(token) {
             const status = await response.status;
             if (status >=200 && status<300) {
                 const data = await response.json();
-                //TODO do something with this data!
+                dispatch(fetchUser(data));
             } else {
                 throw new Error('Could not get user from api server');
             }
@@ -61,8 +48,6 @@ function fetchUser(token) {
     }
 }
 
-
-
 const initialState = () => defaultState;
 
 export default function (state=initialState(), action) {
@@ -70,13 +55,13 @@ export default function (state=initialState(), action) {
 
         case FETCH_USER:
             return state.withMutations(val => {
-                val.set('authenticated', true);
+                val.set('profile', action.payload);
             });
 
-        case LOGOUT_USER:
+        case FETCH_USER_ERR:
             return state.withMutations(val => {
-                val.set('authenticated', false);
-            });
+                val.set('error', action.payload);
+            })
 
         default:
             return state;
