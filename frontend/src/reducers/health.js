@@ -3,8 +3,6 @@ import Immutable from 'immutable';
 import Config from 'config';
 import C from 'constants';
 
-import C from 'constants';
-
 const storageAvailable = (type)=>{
 	try {
 		var storage = window[type],
@@ -29,14 +27,14 @@ const TIME_UPDATE_ERR = Symbol('TIME_UPDATE_ERR');
 
 const TimeUpdate = (time)=>{
   return {
-    type: C.TIME_UPDATE,
+    type: TIME_UPDATE,
     time,
   };
 };
 
 const TimeUpdateErr = (err)=>{
   return {
-    type: C.TIME_UPDATE_ERR,
+    type: TIME_UPDATE_ERR,
     err,
   };
 };
@@ -44,7 +42,7 @@ const TimeUpdateErr = (err)=>{
 const TimeGet = ()=>{
   return async (dispatch)=>{
     dispatch({
-      type: C.TIME_GET,
+      type: TIME_GET,
     });
     try {
       const response = await fetch(Config.health.url, {
