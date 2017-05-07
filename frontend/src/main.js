@@ -2,7 +2,7 @@ import 'main.scss';
 
 import 'babel-polyfill';
 import React from 'react';
-import {Provider} from 'react-redux';
+import {Provider, createStore} from 'react-redux';
 import {Route, Switch, Redirect} from 'react-router-dom';
 import {ConnectedRouter} from 'react-router-redux';
 import {render} from 'react-dom';
@@ -41,10 +41,28 @@ class App extends React.Component {
   }
 }
 
+// class App extends React.Component {
+//   render(){
+//     return (
+//         <Provider store={store}>
+//             <ConnectedRouter history={history}>
+//                 <div>
+//                     <SideBar/>
+//                     <DashBoard/>
+//                     {/*   <Switch>
+//                         <Route exact path="/" component={Home}/>
+//                         <Route path="/about" component={About}/>
+//                         <Redirect to="/"/>
+//                         </Switch>*/}
+//                 </div>
+//             </ConnectedRouter>
+//         </Provider>);
+//   }
+// }
+
 render(
   <Provider store={store}>
-      <ConnectedRouter history={history} routes={routes}>
-      </ConnectedRouter>
+      <ConnectedRouter history={history} routes={routes} />
   </Provider>,
   document.getElementById('mount')
 );

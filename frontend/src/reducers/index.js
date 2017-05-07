@@ -21,7 +21,6 @@ const Action = {
   TimeGet,
 };
 
-
 export {
   store, history, Action,
 }
