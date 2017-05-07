@@ -14,7 +14,7 @@ input {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: $cobalt;
+  background: $primary-blue;
 }
 
 .card {
@@ -64,7 +64,7 @@ input {
         outline: none;
 
         &:focus {
-            border: solid 1px $azul;
+            border: solid 1px $secondary-blue;
         }
     }
     &.confirm-details {
@@ -81,7 +81,7 @@ input {
         display: inline-block;
     }
     input:focus ~ p {
-        color: $azul;
+        color: $secondary-blue;
     }
 
     .header {
@@ -167,6 +167,6 @@ input {
         text-decoration: inherit;
         font-weight: inherit;
         font-size: 14px;
-        color: $azul;
+        color: $secondary-blue;
     }
 }
