@@ -43,7 +43,6 @@ class App extends React.Component {
   }
 }
 
-
 // class App extends React.Component {
 //   render(){
 //     return (
@@ -63,11 +62,9 @@ class App extends React.Component {
 //   }
 // }
 
-
 render(
   <Provider store={store}>
-      <ConnectedRouter history={history} routes={routes}>
-      </ConnectedRouter>
+      <ConnectedRouter history={history} routes={routes} />
   </Provider>,
   document.getElementById('mount')
 );

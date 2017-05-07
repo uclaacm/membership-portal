@@ -35,6 +35,7 @@ export function fetchUser(token) {
     }
 }
 
+
 export function registerUser(user) {
     return async (dispatch) => {
         try {
