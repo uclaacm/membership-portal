@@ -14,7 +14,7 @@ input {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: $primary-blue;
+  background: $primaryblue;
 }
 
 .card {
@@ -36,7 +36,7 @@ input {
     .name {
         font-size: 24px;
         font-weight: bold;
-        color: $black-60;
+        color: $secondaryblack;
         margin-bottom: 39px;
     }
 
@@ -64,7 +64,7 @@ input {
         outline: none;
 
         &:focus {
-            border: solid 1px $secondary-blue;
+            border: solid 1px $secondaryblue;
         }
     }
     &.confirm-details {
@@ -81,7 +81,7 @@ input {
         display: inline-block;
     }
     input:focus ~ p {
-        color: $secondary-blue;
+        color: $secondaryblue;
     }
 
     .header {
@@ -91,7 +91,7 @@ input {
         font-size: 20px;
         font-weight: bold;
         text-align: center;
-        color: $black-60;
+        color: $secondaryblack;
     }
 
     .input-large {
@@ -111,7 +111,7 @@ input {
         font-size: 11px;
         font-family: 'Lato', sans-serif;
         font-weight: bold;
-        color: $black-60;
+        color: $secondaryblack;
         text-align: left;
         margin-bottom: 5px;
     }
@@ -167,6 +167,6 @@ input {
         text-decoration: inherit;
         font-weight: inherit;
         font-size: 14px;
-        color: $secondary-blue;
+        color: $secondaryblue;
     }
 }

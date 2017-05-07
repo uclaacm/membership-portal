@@ -18,15 +18,15 @@ html, body {
     position: relative;
     display: inline-block;
     height: 100vh;
-    background: $primary-blue;
+    background: $primaryblue;
     width: $sidebar-width;
     max-height: 1000px;
-    // background: $primary-blue;
+    // background: $primaryblue;
     color: $white;
     font-size: 12px;
 
     .login-container {
-        background: $primary-blue;
+        background: $primaryblue;
         padding-top: 50px;
         padding-bottom: 50px;
     }
@@ -94,7 +94,7 @@ html, body {
         height: $input-button-size;
         border: none;
         outline: none; 
-        box-shadow: 0 3px 0 $primary-blue;
+        box-shadow: 0 3px 0 $primaryblue;
     }
 
     .sign-in-button {
