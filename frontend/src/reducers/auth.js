@@ -128,4 +128,4 @@ const Auth = (state=initState(), action) => {
 
 export {
     Auth, loginUser, logoutUser
-};
+}
