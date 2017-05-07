@@ -1,0 +1,172 @@
+@import "styles/vars";
+
+p {
+    margin: 0;
+}
+
+input {
+  border: 0;
+  padding: 0;
+}
+
+.register-component {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: $primary-blue;
+}
+
+.card {
+    width: 552px;
+    height: 307px;
+    background: $white;
+    text-align: center;
+}
+
+.name-confirm-card {
+    .question {
+        font-size: 36px;
+        font-weight: bold;
+        color: $black;
+        margin-top: 65px;
+        margin-bottom: 27px;
+    }
+
+    .name {
+        font-size: 24px;
+        font-weight: bold;
+        color: $black-60;
+        margin-bottom: 39px;
+    }
+
+    .btn {
+        display: inline-block;
+        margin: 0 auto;
+        margin-left: 8px;
+        margin-right: 8px;
+    }
+}
+
+.details-card {
+    .inner {
+        width: 300px;
+        margin: auto;
+        text-align: center;
+    }
+    input {
+        border-radius: 5px;
+        border: solid 1px $gray2;
+        height: 20px;
+        margin-bottom: 5px;
+        padding: 9px;
+        font-size: 17px;
+        outline: none;
+
+        &:focus {
+            border: solid 1px $secondary-blue;
+        }
+    }
+    &.confirm-details {
+        input {
+            border: solid 1px $light-green;
+        }
+
+        .text {
+            color: $light-green;
+        }
+    }
+
+    .email {
+        display: inline-block;
+    }
+    input:focus ~ p {
+        color: $secondary-blue;
+    }
+
+    .header {
+        margin-top: 13px;
+        margin-bottom: 5px;
+        font-family: Lato;
+        font-size: 20px;
+        font-weight: bold;
+        text-align: center;
+        color: $black-60;
+    }
+
+    .input-large {
+        width: 283px;
+    }
+
+    .input-major {
+        width: 185px;
+        margin-right: 9px;
+    }
+
+    .input-year {
+        width: 66px;
+    }
+
+    .text {
+        font-size: 11px;
+        font-family: 'Lato', sans-serif;
+        font-weight: bold;
+        color: $black-60;
+        text-align: left;
+        margin-bottom: 5px;
+    }
+
+    .align {
+      display: inline-block;
+    }
+
+    .btn {
+        display: inline-block;
+        margin: 0 auto;
+        margin-top: 5px;
+    }
+}
+
+
+.url-confirm-card {
+    .question {
+        font-size: 36px;
+        font-weight: bold;
+        color: $black;
+        margin-top: 65px;
+        margin-bottom: 27px;
+    }
+
+    .fb-url {
+        display: inline-block;
+        margin-right: 5px;
+    }
+
+    input {
+        display: inline-block;
+        border-radius: 5px;
+        border: solid 1px $gray2;
+        height: 20px;
+        margin-bottom: 5px;
+        padding: 9px;
+        font-size: 17px;
+        outline: none;
+    }
+
+    .btn {
+        margin-top: 10px;
+        margin-bottom: 20px;
+        display: inline-block;
+        margin: 0 auto;
+        margin-left: 8px;
+        margin-right: 8px;
+    }
+
+    a {
+        color: inherit;
+        text-decoration: inherit;
+        font-weight: inherit;
+        font-size: 14px;
+        color: $secondary-blue;
+    }
+}

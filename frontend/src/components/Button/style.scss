@@ -1,0 +1,37 @@
+@import "styles/vars";
+
+.generic-button {
+      display: block;
+      text-align: center;
+      border-radius: 100px;
+      font-size: $checkin-fontsize;
+
+      // background: $secondary-color;
+      color: $white;
+      padding: $sidebar-vertical-spacing;
+      width: $checkin-width;
+      height: $input-button-size;
+      border: none;
+      outline: none;
+}
+
+.blue {
+    background: $secondary-blue;
+    box-shadow: 0 4px 0 $primary-blue;
+}
+
+.green {
+    background: $light-green;
+    box-shadow: 0 4px 0 $dark-green;
+}
+
+.red {
+    background: $light-red;
+    box-shadow: 0 4px 0 $dark-red;
+}
+
+.gray {
+    background: $white;
+    border: solid 3px $gray1;
+    color: $gray1;
+}

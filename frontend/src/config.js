@@ -9,5 +9,6 @@ export default {
     ['Home', '/'],
     ['About', '/about'],
     ['Login', '/login'],
+    ['Register', '/register'],
   ]
 }

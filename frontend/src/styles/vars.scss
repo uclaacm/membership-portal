@@ -3,19 +3,23 @@ $sidebar-vertical-spacing: 10px;
 $checkin-width: 120px;
 $sidebar-input-width: $sidebar-width - 50px;
 
+$primaryblue: rgb(30, 75, 135);
+$secondaryblue: rgb(39, 123, 234);
+$primaryblack: rgba(0, 0, 0, 0.8);
+$secondaryblack: rgba(0, 0, 0, 0.6);
+$disabled: rgba(0, 0, 0, 0.2);
 
-$cobalt: #1e4b87;
-$black-60: rgba(0, 0, 0, 0.6);
-$azul: #277bea;
-$black-20: rgba(0, 0, 0, 0.2);
-$black-80: rgba(0, 0, 0, 0.8);
+
+
 
 $primary-color: #214D85;
 $secondary-color: #2F7EE6;
 $tertiary-color: #8FA5C2;
 $quaternary-color: #D2DBE7;
-$light-green: #40DA6F;
-$dark-green: #2A8948;
+$light-green: #34dc6a;
+$dark-green: #248a45;
+$light-red: #f74e4e;
+$dark-red: #c14b4b;
 
 $white: #FFFFFF;
 $gray1: #D8D8D8;
