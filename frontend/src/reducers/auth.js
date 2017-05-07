@@ -32,15 +32,18 @@ const AuthUserError = err => {
     }
 }
 
-const loginUser = (email, password) => {
+const LoginUser = (email, password) => {
     return async (dispatch) => {
+        console.log(`in dispatch: ${email}, ${password}`)
         dispatch({
             type: USER_GET
         });
         try {
-            const response = await (Config.routes.auth.login, {
+            var header = {"Content-Type": "multipart/form-data", 'Origin': 'https://foo.bar', 'Access-Control-Request-Method': 'GET', 'Access-Control-Request-Headers': 'X-Requested-With'};
+            const response = await fetch(Config.API_URL + Config.routes.auth.login, {
                 method: 'POST',
-                body: {"password": password, "email": email}
+                body: {"password": password, "email": email},
+                headers: header
             });
             const status = await response.status;
             if (status >= 200 && status < 300) {
@@ -48,14 +51,16 @@ const loginUser = (email, password) => {
                 setStorage("token", data.token);
                 dispatch(AUTH_USER);
                 window.location.href = `${Config.CLIENT_ROOT_URL}/dashboard`;
+            } else { //TODO: Better error messages!
+                throw new Error("Could not log in");
             }
         } catch (err) {
-            dispatch(AuthUserError("Could not log in user"));
+            dispatch(AuthUserError(err.message));
         }
     }
 }
 
-const logoutUser = (error) => {
+const LogoutUser = (error) => {
     return async (dispatch) => {
         dispatch({
             type: UNAUTH_USER,
@@ -65,7 +70,7 @@ const logoutUser = (error) => {
         window.location.href = `${Config.CLIENT_ROOT_URL}/login`;
     }
 }
-/*
+
 function registerUser(user) {
     return async (dispatch) => {
         try {
@@ -89,7 +94,7 @@ function registerUser(user) {
         }
     }
 }
-*/
+
 
 ///////////////
 /// STATE ///
@@ -102,7 +107,10 @@ const defaultState = Immutable.fromJS({
     authenticated: false
 });
 
-const initState = () => defaultState;
+const initState = () => {
+
+    return defaultState;
+}
 
 const Auth = (state=initState(), action) => {
     switch (action.type) {
@@ -116,16 +124,19 @@ const Auth = (state=initState(), action) => {
         case UNAUTH_USER:
             return state.withMutations(val => {
                 val.set('authenticated', false);
-                val.set('error': action.payload);
+                val.set('error': '');
             });
 
         case AUTH_ERROR:
             return state.withMutations(val => {
-                val.set('error', action.payload);
-            })
+                val.set('error', action.err);
+            });
+
+        default:
+            return state;
     }
 }
 
 export {
-    Auth, loginUser, logoutUser
+    Auth, LoginUser, LogoutUser
 }

@@ -6,7 +6,6 @@ import Dashboard from './components/DashBoard/';
 
 export default (
     <Route path="/" component={App}>
-        <IndexRoute component={HomePage} />
         <Route path="register" component={Register} />
         <Route path="login" component={Login} />
         <Route path="dashboard" component={DashBoard} />

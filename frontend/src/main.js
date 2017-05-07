@@ -16,6 +16,7 @@ import About from 'containers/about';
 import Login from 'containers/login';
 import SideBar from 'components/Sidebar';
 import DashBoard from 'components/Dashboard';
+
 import Register from 'components/Register';
 
 import routes from './routes';
@@ -40,6 +41,7 @@ class App extends React.Component {
 
   }
 }
+
 
 // class App extends React.Component {
 //   render(){
