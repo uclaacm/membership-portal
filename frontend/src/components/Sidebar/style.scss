@@ -6,7 +6,7 @@
     width: $sidebar-width;
     background: $primaryblue;
     color: $white;
-
+    min-height: 650px;
 
     .sidebar-container {
         background: $primaryblue;
@@ -27,7 +27,7 @@
     }
 
     .profile-picture {
-         padding-top: 100px;
+         padding-top: 70px;
         .profile-img {
             display: block;
             margin: auto;
@@ -55,34 +55,72 @@
         color: $quaternary-color;
     }
 
-    .check-in {
-        border-radius: 20px;
-        border-bottom: 5px solid $white;
-        font-size: $checkin-fontsize;
-        display: block;
-        margin: auto;
-        background: $secondary-color;
-        color: $white;
-        padding: $sidebar-vertical-spacing;
-        width: $checkin-width;
-        height: $input-button-size;
-        border: 1px solid $secondary-color;
-        box-shadow: 0 3px 0 $tertiary-color;
+    
+    .navigation {
+        text-align: center;
+        .navigation-tile {
+            background: $secondaryblue;
+            width: 120.5px;
+            height: 115px;
+            border-radius: 5px;
+            background-color: $secondaryblue;
+            box-shadow: 0 4px 0 0 #3167ae;
+            color: $white;
+            margin: 7px;
+            display: inline-block;
+            
+            .icon {
+                height: 40px;
+                color: $white;
+                margin-top: 32px;
+            }
 
-        .checkin-button {
-            height: $checkin-fontsize - 5px;
-            margin-right: 5px;
+            &:hover {
+                background: $white;
+                .icon, p {
+                    color: $secondaryblue;
+                }
+                box-shadow: 0 2px 0 0 #c0c0c0;
+            }
         }
     }
+    
+    
+    // .check-in {
+    //     border-radius: 20px;
+    //     border-bottom: 5px solid $white;
+    //     font-size: $checkin-fontsize;
+    //     display: block;
+    //     margin: auto;
+    //     background: $secondary-color;
+    //     color: $white;
+    //     padding: $sidebar-vertical-spacing;
+    //     width: $checkin-width;
+    //     height: $input-button-size;
+    //     border: 1px solid $secondary-color;
+    //     box-shadow: 0 3px 0 $tertiary-color;
+
+    //     .checkin-button {
+    //         height: $checkin-fontsize - 5px;
+    //         margin-right: 5px;
+    //     }
+    // }
     
 
     .points-component {
         position: fixed;
         bottom: 0px;
-        width: $sidebar-width - 25px;
+        width: $sidebar-width;
         margin: 0 auto;
-        padding-left: 25px;              //this is 10% of sidebar width I believe. There's some inline styling that must be accounted for too.. :(
+        // padding-left: 25px;              //this is 10% of sidebar width I believe. There's some inline styling that must be accounted for too.. :(
         background: $secondaryblue;
+        padding-top: 10px;
+        padding-bottom: 10px;
+
+        .points-wrapper {
+            background: $secondaryblue;
+            padding-left: 25px;
+        }
 
         .level-font {
             font-size: 20px;
@@ -106,6 +144,13 @@
             display: block;
             float: right;
             margin-right: 25px;             //this is 2*10% of sidebar width I believe
+        }
+    }
+
+    @media only screen and (max-height: 710px) {
+        .points-component {
+            position: absolute;
+            top: 625px;
         }
     }
 
