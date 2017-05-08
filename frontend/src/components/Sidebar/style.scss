@@ -1,14 +1,16 @@
 @import "styles/vars";
 
 .sidebar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
+    position: relative;
+    height: 100vh;
     width: $sidebar-width;
-    background: $primary-color;
+    background: $primaryblue;
     color: $white;
-    padding-top: 100px;
+
+
+    .sidebar-container {
+        background: $primaryblue;
+    }
 
     .side-tag {
         text-align: center;
@@ -24,13 +26,16 @@
         left: 15px;
     }
 
-    .side-img {
-        display: block;
-        margin: auto;
-        border-radius: 50%;
-        margin-bottom: 1.5*$sidebar-vertical-spacing;
-        border: 5px solid $white;    
-        height: 150px;
+    .profile-picture {
+         padding-top: 100px;
+        .profile-img {
+            display: block;
+            margin: auto;
+            border-radius: 50%;
+            margin-bottom: 1.5*$sidebar-vertical-spacing;
+            border: 5px solid $white;    
+            height: 150px;
+        }
     }
 
     .org {
@@ -62,52 +67,49 @@
         width: $checkin-width;
         height: $input-button-size;
         border: 1px solid $secondary-color;
-        box-shadow: 0 3px 0 $tertiary-color;      
+        box-shadow: 0 3px 0 $tertiary-color;
+
+        .checkin-button {
+            height: $checkin-fontsize - 5px;
+            margin-right: 5px;
+        }
     }
-    .checkin-button {
-        height: $checkin-fontsize - 5px;
-        margin-right: 5px;
-    }
+    
 
     .points-component {
-        width: $sidebar-width;
-        height: auto;
+        position: fixed;
+        bottom: 0px;
+        width: $sidebar-width - 25px;
         margin: 0 auto;
-        margin-left: 25px;              //this is 10% of sidebar width I believe. There's some inline styling that must be accounted for too.. :(
-        bottom: 70px;
-        position: absolute;
+        padding-left: 25px;              //this is 10% of sidebar width I believe. There's some inline styling that must be accounted for too.. :(
+        background: $secondaryblue;
+
+        .level-font {
+            font-size: 20px;
+        }
+
+        .pts {
+            margin: 0px;
+            display: inline-block;
+            height: 10px;
+        }
+
+        .points-earned {
+            background: $white;
+        }
+
+        .points-left {
+            background: $tertiary-color;
+        }
+
+        .num-points {
+            display: block;
+            float: right;
+            margin-right: 25px;             //this is 2*10% of sidebar width I believe
+        }
     }
 
-    .level-font {
-        font-size: 20px;
-    }
 
-    // .points-bar {
-    //     margin-top: 5px;
-    //     margin-bottom: 5px;
-    // }
-
-    .pts {
-        margin: 0px;
-        display: inline-block;
-        height: 10px;
-    }
-
-    .points-earned {
-        background: $white;
-        color: $white;
-    }
-
-    .points-left {
-        background: $tertiary-color;
-        color: $tertiary-color;
-    }
-
-    .num-points {
-        display: block;
-        float: right;
-        margin-right: 50px;             //this is 2*10% of sidebar width I believe
-    }
 
     .leaderboard {
         position: absolute;

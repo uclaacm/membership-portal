@@ -4,7 +4,7 @@ class UserName extends React.Component {
     render () {
         return (
             <div>
-                <h3 className="side-tag username">{this.props.userName}</h3>
+                <h3 className="side-tag username Display-2White">{this.props.userName}</h3>
             </div>
         );
     }
