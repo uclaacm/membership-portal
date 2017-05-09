@@ -1,6 +1,76 @@
 @import "styles/vars";
 
-.dashboard {
-    position: absolute;
-    left: $sidebar-width;
+.events-dashboard {
+
+    margin-left: $sidebar-width;
+    padding: 30px;
+
+    // float: left;
+    // background: green;
+
+    .earlier-events-icon {
+        position: relative;
+        text-align: center;
+    }
+
+    .checkin-button {
+        // float: right;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+    }
+
+    
 }
+
+
+.event-tile {
+    border-top: 1px solid $black;
+    padding-top: 15px;
+    padding-bottom: 10px;
+    white-space:nowrap;
+    overflow:hidden;
+
+    .img-wrapper {
+        display: inline-block;
+    }
+    .event-img {
+        height: 100px;
+        margin-right: 20px;
+    }
+    .event-info-wrapper {
+        display: inline-block;
+        white-space:nowrap;
+        overflow:hidden;
+        vertical-align: top;
+        margin-top: 20px;
+
+        .event-info-right, .event-info-left {
+            display: inline-block;
+
+        }
+        .event-info-left {
+            width: 400px;
+        }
+
+        .event-info {
+            height: 29px;
+            display: block; 
+
+            .event-icon {
+                text-align: center;
+                width: 20px;
+                margin-right: 7px;
+            }   
+        }
+
+        .event-info-right {
+            padding-left: 20px;
+        }
+
+        // .event-info-left {
+            
+        // }
+    }
+}
+

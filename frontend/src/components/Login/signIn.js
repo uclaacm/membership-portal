@@ -7,7 +7,6 @@ class SignIn extends React.Component {
         return(
             <div className="sign-in">
                 <Button className="input-button" style="green" text="Sign In"/>
-                {/*<button className="input-button sign-in-button">Sign In</button>*/}
                 <a className="input-text forgot-password Body-2White" href="#">I forgot my password</a>
             </div>
         );

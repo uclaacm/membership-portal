@@ -23,8 +23,6 @@ class App extends React.Component {
     return (<Provider store={store}>
       <ConnectedRouter history={history}>
         <div>
-          {/*<SideBar/>
-          <DashBoard/>*/}
            <Switch>
              <Route exact path="/" component={Home}/>
              <Route path="/about" component={About}/>

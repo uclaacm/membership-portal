@@ -1,15 +1,17 @@
 import React, { PropTypes } from 'react'
+import Sidebar from 'components/Sidebar'
+import EventsDashboard from './eventsDashboard'
 
-import EventsList from '../DaysContainer/';
 
-class DashBoard extends React.Component {
+class Dashboard extends React.Component {
     render () {
         return(
             <div className="dashboard">
-                <EventsList/>
+                <Sidebar/>
+                <EventsDashboard/>
             </div>
         );
     }
 }
 
-export default DashBoard;
+export default Dashboard;
