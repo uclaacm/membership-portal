@@ -11,7 +11,7 @@ class LoginSidebar extends React.Component {
             <div className="login-sidebar">
                 <div className="login-container">
                     <Logo pic="https://pbs.twimg.com/profile_images/821079138060496896/7yR9rQOY.jpg"/>
-                    <LoginEmail username/>
+                    <LoginEmail/>
                     <LoginPassword/>
                     <SignIn/>
                     <SignUp/>

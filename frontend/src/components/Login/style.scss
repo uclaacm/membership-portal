@@ -82,19 +82,11 @@ html, body {
     }
 
     .input-button {
-        border-radius: 100px;
-        border-bottom: 5px solid $white;
-        font-size: $checkin-fontsize;
         display: block;
         margin: auto;
-        background: $secondary-color;
-        color: $white;
-        padding: $sidebar-vertical-spacing;
         width: $checkin-width;
-        height: $input-button-size;
         border: none;
         outline: none; 
-        box-shadow: 0 3px 0 $primaryblue;
     }
 
     .sign-in-button {
