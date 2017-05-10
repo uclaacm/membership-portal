@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react'
 import EventTile from './eventTile'
+import EventDropdown from './eventDropdown'
 
 class EventDay extends React.Component {
     render () {
@@ -16,7 +17,10 @@ class EventDay extends React.Component {
                 
                 {
                     eventsForTheDay.map(function(ev, i) {
-                        return <EventTile event={ev} key={i}/>
+                        return <div>
+                                  <EventTile event={ev} key={i}/>
+                                  <EventDropdown/>
+                               </div>
                     })
                 }
 
