@@ -5,14 +5,27 @@ import EventDay from './eventDay'
 
 class EventsDashboard extends React.Component {
     render () {
-        const events = [{date: "Wednesday, April 19th", imgUrl: "imgUrl", org: "ACM Hack", time: "6:15pm-8:15pm", title: "Hack Sprint Session 1",                   location: "Sproul Lecture Room"}, 
-                        {date: "Thursday, April 20th", imgUrl: "imgUrl", org: "ACM", time: "6:00pm-7:00pm", title: "How to Negotiate an Offer",     location: "Boelter 4760"}]
+        const fullEventsList = this.props.events;
+        // console.log(this.props.events.length);
+        // for(let i = 0; i < this.props.events.length; i++) {
+        //     console.log(this.props.events[i]);
+        // }
+        // console.log(this.props.events[0]);
+
         return(
             <div className="events-dashboard">
                 <EarlierEventsIcon/>
                 <Button className="checkin-button" style="blue" text="Check In"/>
-                <EventDay date="Wednesday, April 19th"/>
-                <EventDay date="Thursday, April 20th"/>
+                {/*Map the entire json object... will have to update this later.*/}
+                {
+                    fullEventsList.map(function(singleDay, i) {
+                        return <EventDay singleDayEventsList={singleDay} key={i}/>
+                    })
+                }
+
+
+                {/*<EventDay date="Wednesday, April 19th"/>
+                <EventDay date="Thursday, April 20th"/>*/}
             </div>
         );
     }
