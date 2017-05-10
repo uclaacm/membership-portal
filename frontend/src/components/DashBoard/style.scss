@@ -28,8 +28,9 @@
     border-top: 1px solid $black;
     padding-top: 15px;
     padding-bottom: 10px;
-    white-space:nowrap;
-    overflow:hidden;
+
+            white-space:nowrap;
+        overflow:hidden;
 
     .img-wrapper {
         display: inline-block;
@@ -43,11 +44,10 @@
         white-space:nowrap;
         overflow:hidden;
         vertical-align: top;
-        margin-top: 20px;
+        margin-top: 17px; 
 
         .event-info-right, .event-info-left {
             display: inline-block;
-
         }
         .event-info-left {
             width: 400px;
@@ -55,13 +55,8 @@
 
         .event-info {
             height: 29px;
-            display: block; 
-
-            .event-icon {
-                text-align: center;
-                width: 20px;
-                margin-right: 7px;
-            }   
+            // word-wrap: normal;
+            white-space: normal;
         }
 
         .event-info-right {
