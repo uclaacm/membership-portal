@@ -10,6 +10,7 @@
 
     .sidebar-container {
         background: $primaryblue;
+        height: 954px;
     }
 
     .side-tag {
@@ -147,12 +148,12 @@
         }
     }
 
-    @media only screen and (max-height: 710px) {
-        .points-component {
-            position: absolute;
-            top: 625px;
-        }
-    }
+    // @media only screen and (max-height: 710px) {
+    //     .points-component {
+    //         position: absolute;
+    //         top: 625px;
+    //     }
+    // }
 
 
 

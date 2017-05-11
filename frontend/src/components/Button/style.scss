@@ -1,42 +1,57 @@
 @import "styles/vars";
 
-.generic-button {
-      display: block;
-      text-align: center;
-      border-radius: 100px;
-      font-size: $checkin-fontsize;
+.button-component {
+    .button-icon {
+        display: inline-block;
+        text-align: center;
+        margin-right: 10px;
+    }
 
-      // background: $secondary-color;
-      color: $white;
-      padding: $sidebar-vertical-spacing;
-      width: $checkin-width;
-      height: $input-button-size;
-      border: none;
-      outline: none;
-}
+    .generic-button {
+        display: block;
+        text-align: center;
+        border-radius: 100px;
+        font-size: $checkin-fontsize;
 
-.blue {
-    background: $secondaryblue;
-    box-shadow: 0 4px 0 $primaryblue;
-}
+        // background: $secondary-color;
+        color: $white;
+        padding: $sidebar-vertical-spacing;
+        width: $checkin-width;
+        height: $input-button-size;
+        border: none;
+        outline: none;
+    }
 
-.blue-signup {
-    background: $secondaryblue;
-    box-shadow: 0 4px 0 #3167ae;
-}
+    .blue {
+        background: $secondaryblue;
+        box-shadow: 0 4px 0 $primaryblue;
+    }
 
-.green {
-    background: $light-green;
-    box-shadow: 0 4px 0 $dark-green;
-}
+    .blue-signup {
+        background: $secondaryblue;
+        box-shadow: 0 4px 0 #3167ae;
+    }
 
-.red {
-    background: $light-red;
-    box-shadow: 0 4px 0 $dark-red;
-}
+    .green {
+        background: $light-green;
+        box-shadow: 0 4px 0 $dark-green;
+    }
 
-.gray {
-    background: $white;
-    border: solid 3px $gray1;
-    color: $gray1;
+    .red {
+        background: $light-red;
+        box-shadow: 0 4px 0 $dark-red;
+    }
+
+    .gray {
+        background: $white;
+        border: solid 3px $gray1;
+        color: $gray1;
+    }
+
+    .event-button {
+        background: $secondaryblue;
+        width: $event-img-width;
+        height: 34px;
+        font-size: 14px;
+    }
 }
