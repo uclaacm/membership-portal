@@ -7,24 +7,17 @@
     overflow-y: auto;
     max-height: 954px;
 
-    // float: left;
-    // background: green;
-
     .earlier-events-icon {
         position: relative;
         text-align: center;
     }
 
     .checkin-button {
-        // float: right;
         position: fixed;
         top: 20px;
         right: 20px;
-    }
-
-    
+    }  
 }
-
 
 .event-tile {
     border-top: 1px solid $black;
@@ -75,10 +68,6 @@
         .event-info-right {
             padding-left: 20px;
         }
-
-        // .event-info-left {
-            
-        // }
     }
 }
 
