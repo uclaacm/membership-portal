@@ -39,11 +39,14 @@ const LoginUser = (email, password) => {
             type: USER_GET
         });
         try {
-            var header = {"Content-Type": "multipart/form-data", 'Origin': 'https://foo.bar', 'Access-Control-Request-Method': 'GET', 'Access-Control-Request-Headers': 'X-Requested-With'};
+            console.log("hello", JSON.stringify({"password": password, "email": email}));
             const response = await fetch(Config.API_URL + Config.routes.auth.login, {
                 method: 'POST',
-                body: {"password": password, "email": email},
-                headers: header
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({"password": password, "email": email}),
             });
             const status = await response.status;
             if (status >= 200 && status < 300) {

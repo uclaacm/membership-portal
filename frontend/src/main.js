@@ -1,6 +1,8 @@
 import 'main.scss';
 
 import 'babel-polyfill';
+import 'whatwg-fetch';
+
 import React from 'react';
 import {Provider, createStore} from 'react-redux';
 import {Route, Switch, Redirect} from 'react-router-dom';
@@ -13,7 +15,7 @@ import {store, history} from 'reducers';
 import Home from 'containers/home';
 import About from 'containers/about';
 import Login from 'containers/login';
-import SideBar from 'components/Sidebar';
+//import SideBar from 'components/Sidebar';
 import DashBoard from 'components/Dashboard';
 
 import Register from 'components/Register';
