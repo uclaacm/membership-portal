@@ -77,7 +77,7 @@ router.post("/register", (req, res, next) => {
 		userModel.hash = hash;
 		return User.create(userModel);
 	}).then(user => {
-		res.json({ error: null, user: user.getPublic() });
+		res.json({ error: null, user: user.getPublicProfile() });
 	}).catch(next);
 });
 

@@ -30,7 +30,7 @@ services:
       - REDIS_PORT=6379
       - PORT=8080
       - HOST=localhost
-  
+
   nginx:
     build: ./static
     image: nkansal/static
