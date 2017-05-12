@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import Config from 'config';
 import {Action} from 'reducers';
 import Sidebar from 'components/Sidebar'
-import DashBoard from 'components/DashBoard'
+import Dashboard from 'components/Dashboard'
 
 class Home extends React.Component {
   render(){
@@ -17,7 +17,7 @@ class Home extends React.Component {
         {!this.props.loading && this.props.success && <span>Time: {this.props.time}</span>}
         {!this.props.loading && this.props.err && <span>Time: Error({this.props.err})</span>}
       </div>*/}
-        <DashBoard/>
+        <Dashboard/>
     </div>;
 
   }
