@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 
 import Config from 'config';
 import {Action} from 'reducers';
-import Sidebar from 'components/Sidebar'
+import Sidebar from 'components/Sidebar/sidebar'
 
 class Home extends React.Component {
   render(){

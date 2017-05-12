@@ -9,7 +9,6 @@ import {render} from 'react-dom';
 
 import {store, history} from 'reducers';
 
-
 //import Navbar from 'view/navbar';
 import Home from 'containers/home';
 import About from 'containers/about';
@@ -17,8 +16,6 @@ import Login from 'containers/login';
 import SideBar from 'components/Sidebar/sidebar';
 import DashBoard from 'components/DashBoard/';
 import Register from 'components/Register';
-
-import routes from './routes';
 
 class App extends React.Component {
   render(){
@@ -64,8 +61,6 @@ class App extends React.Component {
 // }
 
 render(
-  <Provider store={store}>
-      <ConnectedRouter history={history} routes={routes} />
-  </Provider>,
+  <App />,
   document.getElementById('mount')
 );
