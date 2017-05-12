@@ -16,7 +16,7 @@ class EventDropdown extends React.Component {
 
                     </div>
                     <div className="dropdown-right">
-                        <p className="Subheader-2Secondary">{event.description}</p>
+                        <p className="Subheader-2Secondary">{event.description}</p> 
                     </div>
                 </div>
                 <div className="minimize">
