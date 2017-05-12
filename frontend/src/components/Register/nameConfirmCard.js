@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react'
-import Button from "components/Button/index"
+import Button from 'components/Button/index'
 
 class NameConfirmCard extends React.Component {
     

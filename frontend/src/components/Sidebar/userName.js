@@ -1,13 +1,13 @@
 import React, { PropTypes } from 'react'
 
-class UserName extends React.Component {
+class Username extends React.Component {
     render () {
         return (
             <div>
-                <h3 className="side-tag username Display-2White">{this.props.userName}</h3>
+                <h3 className="side-tag username Display-2White">{this.props.username}</h3>
             </div>
         );
     }
 };
 
-export default UserName;
+export default Username;

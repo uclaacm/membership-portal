@@ -36,7 +36,7 @@ input {
     .name {
         font-size: 24px;
         font-weight: bold;
-        color: $secondaryblack;
+        color: $--secondaryblack;
         margin-bottom: 39px;
     }
 
@@ -91,7 +91,7 @@ input {
         font-size: 20px;
         font-weight: bold;
         text-align: center;
-        color: $secondaryblack;
+        color: $--secondaryblack;
     }
 
     .input-large {
@@ -111,7 +111,7 @@ input {
         font-size: 11px;
         font-family: 'Lato', sans-serif;
         font-weight: bold;
-        color: $secondaryblack;
+        color: $--secondaryblack;
         text-align: left;
         margin-bottom: 5px;
     }
