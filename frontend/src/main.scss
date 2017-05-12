@@ -1,11 +1,11 @@
 @import "components/Sidebar/style";
-@import "components/Dashboard/style";
+@import "components/DashBoard/style";
 @import "components/Login/style";
 @import "components/Register/style";
 @import "components/Button/style";
 
-@import "styles/vars";
-@import "styles/fonts";
+@import "./styles/vars";
+@import "./styles/fonts";
 
 html, body {
     margin: 0px;
