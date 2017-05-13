@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
 
 import Config from 'config';
-
+import C from 'constants';
 
 const storageAvailable = (type)=>{
 	try {
@@ -92,21 +92,27 @@ const initState = ()=>{
 
 const Health = (state=initState(), action)=>{
   switch (action.type) {
+
     case TIME_GET:
+
       return state.withMutations((val)=>{
         val.set('loading', true);
         val.set('success', false);
         val.set('time', '');
         val.set('err', '');
       });
+
     case TIME_UPDATE:
+
       return state.withMutations((val)=>{
         val.set('loading', false);
         val.set('success', true);
         val.set('time', action.time);
         val.set('err', '');
       });
+
     case TIME_UPDATE_ERR:
+
       return defaultState.withMutations((val)=>{
         val.set('loading', false);
         val.set('success', false);

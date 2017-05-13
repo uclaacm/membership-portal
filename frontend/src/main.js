@@ -1,8 +1,10 @@
 import 'main.scss';
 
 import 'babel-polyfill';
+import 'whatwg-fetch';
+
 import React from 'react';
-import {Provider} from 'react-redux';
+import {Provider, createStore} from 'react-redux';
 import {Route, Switch, Redirect} from 'react-router-dom';
 import {ConnectedRouter} from 'react-router-redux';
 import {render} from 'react-dom';
@@ -13,18 +15,22 @@ import {store, history} from 'reducers';
 import Home from 'containers/home';
 import About from 'containers/about';
 import Login from 'containers/login';
-import SideBar from 'components/Sidebar';
+//import SideBar from 'components/Sidebar';
 import DashBoard from 'components/Dashboard';
+
 import Register from 'components/Register';
 
+//for redirect routes that require Authentication
+import requireAuth from 'containers/requireAuth';
 
 class App extends React.Component {
   render(){
+
     return (<Provider store={store}>
       <ConnectedRouter history={history}>
         <div>
            <Switch>
-             <Route exact path="/" component={Home}/>
+             <Route exact path="/" component={requireAuth(Home)}/>
              <Route path="/about" component={About}/>
              <Route path="/login" component={Login}/>
              <Route path="/register" component={Register}/>
@@ -34,11 +40,31 @@ class App extends React.Component {
         </div>
       </ConnectedRouter>
     </Provider>);
+
   }
 }
 
 
+// class App extends React.Component {
+//   render(){
+//     return (
+//         <Provider store={store}>
+//             <ConnectedRouter history={history}>
+//                 <div>
+//                     <SideBar/>
+//                     <DashBoard/>
+//                     {/*   <Switch>
+//                         <Route exact path="/" component={Home}/>
+//                         <Route path="/about" component={About}/>
+//                         <Redirect to="/"/>
+//                         </Switch>*/}
+//                 </div>
+//             </ConnectedRouter>
+//         </Provider>);
+//   }
+// }
+
 render(
-  <App/>,
+  <App />,
   document.getElementById('mount')
 );
