@@ -2,7 +2,7 @@
 FROM alpine:3.5
 
 RUN apk update && apk upgrade
-RUN apk add curl bash python make gcc g++ nodejs=6.9.5-r0
+RUN apk add curl bash python make gcc g++ 'nodejs<6.10'
 
 # create the working directory
 RUN mkdir -p /var/www/membership
