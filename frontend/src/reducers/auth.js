@@ -2,7 +2,7 @@ import Immutable from 'immutable';
 
 import Config from 'config';
 
-const setStorage = (kev,item) => {
+const setStorage = (key,item) => {
     localStorage.setItem(key, item);
 }
 
@@ -52,8 +52,7 @@ const LoginUser = (email, password) => {
             if (status >= 200 && status < 300) {
                 const data = await response.json();
                 setStorage("token", data.token);
-                dispatch(AUTH_USER);
-                window.location.href = `${Config.CLIENT_ROOT_URL}/dashboard`;
+                dispatch(AuthUser());
             } else { //TODO: Better error messages!
                 throw new Error("Could not log in");
             }
@@ -111,8 +110,21 @@ const defaultState = Immutable.fromJS({
 });
 
 const initState = () => {
+    //TODO: check if there is a token
+    const usertoken = localStorage.getItem("token");
+    console.log(`token: ${usertoken}`);
 
-    return defaultState;
+    if (usertoken === null) {
+        return defaultState;
+    } else {
+        console.log("what the fuck");
+        return Immutable.fromJS({
+            error: '',
+            message: '',
+            content: '',
+            authenticated: true
+        });
+    }
 }
 
 const Auth = (state=initState(), action) => {

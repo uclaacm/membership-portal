@@ -3,11 +3,25 @@ import {connect} from 'react-redux';
 import {Action} from 'reducers';
 import LoginComponent from 'components/Login'
 
+import { replace } from 'react-router-redux';
+
 
 class Login extends React.Component {
 
     handleLogin(email, password) {
         this.props.login(email, password);
+    }
+
+    componentWillMount() {
+        if (this.props.authenticated) {
+            this.props.redirectHome();
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.authenticated) {
+            this.props.redirectHome();
+        }
     }
 
     render() {
@@ -33,6 +47,9 @@ const mapDispatchToProps = (dispatch)=>{
   return {
       login: (email, password) => {
           dispatch(Action.LoginUser(email, password));
+      },
+      redirectHome: () => {
+          dispatch(replace('/'));
       }
   };
 };

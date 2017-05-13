@@ -29,7 +29,7 @@ class LoginForm extends React.Component {
                 <p>Email</p>
                 <input type="text" placeholder="example@ucla.edu" ref="email"></input>
                 <p>Password</p>
-                <input type="text" placeholder="********" ref="password"></input>
+                <input type="password" placeholder="********" ref="password"></input>
                 {this.renderAlert()}
                 <div className="sign-in">
                     <button className="input-button sign-in-button" type="submit">Sign In</button>

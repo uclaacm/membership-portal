@@ -3,7 +3,7 @@ export default {
         url: 'http://localhost:8080/api/health/check',
     },
     API_URL: 'http://localhost',
-    CLIENT_ROOT_URL: 'http://localhost:3000',
+    CLIENT_ROOT_URL: 'http://localhost',
     info: {
         msg: 'Hello World!',
     },

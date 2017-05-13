@@ -1,31 +1,43 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
+import {replace} from 'react-router-redux';
+
 export default function (ComposedComponent) {
     class Authentication extends React.Component {
         componentWillMount() {
             if (!this.props.authenticated) {
-                this.context.router.push('/login');
+                this.props.redirectLogin();
             }
         }
 
         componentWillUpdate(nextProps) {
-            if (!this.props.authenticated) {
-                this.context.router.push('/login');
+            if (!nextProps.authenticated) {
+                this.props.redirectLogin();
             }
         }
 
         render() {
+            console.log(`authenticated: ${this.props.authenticated}`);
             return <ComposedComponent {...this.props} />;
         }
     }
 
-    mapStateToProps = (state) => {
+    const mapStateToProps = (state) => {
         const A = state.Auth;
         return {
-            authenticated: A.get("authenticated")
+            authenticated: A.get("authenticated"),
         }
     }
 
-    return connect(mapStateToProps)(Authentication);
+    const mapDispatchToProps = (dispatch) => {
+        return {
+            redirectLogin: () => {
+                console.log("user is not logged in. redirecting...");
+                dispatch(replace('/login'));
+            }
+        }
+    }
+
+    return connect(mapStateToProps, mapDispatchToProps)(Authentication);
 }

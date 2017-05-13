@@ -20,6 +20,9 @@ import DashBoard from 'components/Dashboard';
 
 import Register from 'components/Register';
 
+//for redirect routes that require Authentication
+import requireAuth from 'containers/requireAuth';
+
 class App extends React.Component {
   render(){
 
@@ -27,7 +30,7 @@ class App extends React.Component {
       <ConnectedRouter history={history}>
         <div>
            <Switch>
-             <Route exact path="/" component={Home}/>
+             <Route exact path="/" component={requireAuth(Home)}/>
              <Route path="/about" component={About}/>
              <Route path="/login" component={Login}/>
              <Route path="/register" component={Register}/>
