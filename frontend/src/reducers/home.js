@@ -56,7 +56,7 @@ const UpdateEventsError = (error) => {
     });
 }
 
-const GetCurrentEvents = (id) => {
+const GetCurrentEvents = () => {
     return async (dispatch) => {
         try {
             const response = await fetch(Config.API_URL + Config.routes.events, {

@@ -7,6 +7,11 @@ import {Action} from 'reducers';
 import Dashboard from 'components/Dashboard'
 
 class Home extends React.Component {
+
+    handleGetEvents() {
+        this.props.fetchEvents();
+    }
+
   render(){
     return <div>
       {/*<div>{Config.info.msg}</div>
@@ -17,30 +22,32 @@ class Home extends React.Component {
         {!this.props.loading && this.props.success && <span>Time: {this.props.time}</span>}
         {!this.props.loading && this.props.err && <span>Time: Error({this.props.err})</span>}
       </div>*/}
-        <Dashboard/>
+        <Dashboard fetchEvents={this.handleGetEvents.bind(this)}
+                    events={this.props.events}/>
     </div>;
 
   }
 }
 
 const mapStateToProps = (state)=>{
-  const h = state.Health;
-  return {
-    loading: h.get('loading'),
-    success: h.get('success'),
-    time: h.get('time'),
-    err: h.get('err'),
-    urlPath: state.router.location.pathname,
-  };
+    const e = state.Events;
+    return {
+        events: h.get('events'),
+        error: h.get('error'),
+    };
 };
 
 const mapDispatchToProps = (dispatch)=>{
-  return {
-    getTime: (input)=>{
-      console.log(input);
-      dispatch(Action.TimeGet());
-    },
-  };
+    return {
+        fetchEvents: () => {
+            dispatch(Action.GetCurrentEvents());
+        },
+
+        getTime: (input)=>{
+            console.log(input);
+            dispatch(Action.TimeGet());
+        },
+    };
 };
 
 
