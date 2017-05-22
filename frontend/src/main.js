@@ -15,8 +15,12 @@ import {store, history} from 'reducers';
 import Home from 'containers/home';
 import About from 'containers/about';
 import Login from 'containers/login';
+import Profile from 'containers/profile';
+import Leaderboard from 'containers/leaderboard';
+import Resources from 'containers/resources';
 //import SideBar from 'components/Sidebar';
 import DashBoard from 'components/Dashboard';
+
 
 import Register from 'components/Register';
 
@@ -34,6 +38,9 @@ class App extends React.Component {
              <Route path="/about" component={About}/>
              <Route path="/login" component={Login}/>
              <Route path="/register" component={Register}/>
+             <Route path="/profile" component={Profile}/>
+             <Route path="/leaderboard" component={Leaderboard}/>
+             <Route path="/resources" component={Resources}/>
              <Redirect to="/"/>
            </Switch>
 

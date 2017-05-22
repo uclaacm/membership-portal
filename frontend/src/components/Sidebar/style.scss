@@ -34,7 +34,7 @@
             margin: auto;
             border-radius: 50%;
             margin-bottom: 1.5*$sidebar-vertical-spacing;
-            border: 5px solid $white;    
+            border: 5px solid $white;
             height: 150px;
         }
     }
@@ -56,7 +56,7 @@
         color: $quaternary-color;
     }
 
-    
+
     .navigation {
         text-align: center;
         .navigation-tile {
@@ -69,7 +69,8 @@
             color: $white;
             margin: 7px;
             display: inline-block;
-            
+            transition: 0.125s;
+            transition-timing-function: ease-in-out;
             .icon {
                 height: 40px;
                 color: $white;
@@ -82,11 +83,13 @@
                     color: $secondaryblue;
                 }
                 box-shadow: 0 2px 0 0 #c0c0c0;
+                transform: translateY(2px);
+                cursor: pointer;
             }
         }
     }
-    
-    
+
+
     // .check-in {
     //     border-radius: 20px;
     //     border-bottom: 5px solid $white;
@@ -106,7 +109,7 @@
     //         margin-right: 5px;
     //     }
     // }
-    
+
 
     .points-component {
         position: fixed;
