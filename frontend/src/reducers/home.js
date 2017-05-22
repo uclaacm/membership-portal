@@ -1,4 +1,4 @@
-import immutable from 'immutable';
+import Immutable from 'immutable';
 import Config from 'config';
 
 /////////////////
@@ -56,35 +56,35 @@ const UpdateEventsError = (error) => {
     });
 }
 
+
+
 const GetCurrentEvents = () => {
     return async (dispatch) => {
         try {
-            const response = await fetch(Config.API_URL + Config.routes.events, {
+            const response = await fetch(Config.API_URL + Config.routes.events.event, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${getFromStorage("token")}`
-                },
-                body: JSON.stringify({"password": password, "email": email}),
+                }
             });
             const status = await response.status;
+            const data = await response.json();
+
             if (status >= 200 && status < 300) {
-                const data = await response.json();
                 const events = data.events;
+                console.log(`we got events: ${events}`);
                 dispatch(UpdateEvents(events));
             } else {
-                if (data.error) {
-                    throw new Error(data.error);
-                } else {
-                    throw new Error('Error fetching events');
-                }
+                throw new Error('Error fetching events');
             }
         } catch (err) {
             dispatch(UpdateEventsError(err));
         }
     }
 }
+
 
 ///////////////
 /// STATE /////
@@ -122,6 +122,6 @@ const Events = (state=initState(), action) => {
     }
 }
 
-export default {
+export {
     Events, GetCurrentEvents
 }

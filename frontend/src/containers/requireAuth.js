@@ -18,7 +18,6 @@ export default function (ComposedComponent) {
         }
 
         render() {
-            console.log(`authenticated: ${this.props.authenticated}`);
             return <ComposedComponent {...this.props} />;
         }
     }

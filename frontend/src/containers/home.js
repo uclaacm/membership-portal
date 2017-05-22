@@ -12,6 +12,10 @@ class Home extends React.Component {
         this.props.fetchEvents();
     }
 
+    componentWillMount() {
+        this.props.fetchEvents();
+    }
+
   render(){
     return <div>
       {/*<div>{Config.info.msg}</div>
@@ -23,7 +27,8 @@ class Home extends React.Component {
         {!this.props.loading && this.props.err && <span>Time: Error({this.props.err})</span>}
       </div>*/}
         <Dashboard fetchEvents={this.handleGetEvents.bind(this)}
-                    events={this.props.events}/>
+                    events={this.props.events}
+                    error={this.props.error} />
     </div>;
 
   }
@@ -32,8 +37,8 @@ class Home extends React.Component {
 const mapStateToProps = (state)=>{
     const e = state.Events;
     return {
-        events: h.get('events'),
-        error: h.get('error'),
+        events: e.get('events'),
+        error: e.get('error'),
     };
 };
 
