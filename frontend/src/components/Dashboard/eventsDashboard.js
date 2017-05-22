@@ -15,7 +15,7 @@ class EventsDashboard extends React.Component {
     render () {
         if (this.props.error) {
             this.renderError(this.props.error);
-        } else {
+        } else {Ó
             const fullEventsList = this.props.events;
             return(
                 <div className="events-dashboard">
