@@ -27,7 +27,7 @@ router.route('/:uuid?')
 	if (!req.params.uuid || !req.params.uuid.trim()) {
 		let offset = parseInt(req.query.offset);
 		let limit = parseInt(req.query.limit);
-		Event.findAll(offset, limit).then(events => {
+		Event.getAll(offset, limit).then(events => {
 			res.json({ error: null, events: events.map(e => e.getPublic()) });
 		}).catch(next);
 	} else {

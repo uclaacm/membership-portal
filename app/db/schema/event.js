@@ -158,7 +158,7 @@ module.exports = (Sequelize, db) => {
 	Event.getAll = function(offset, limit) {
 		if (!offset || offset < 0) offset = 0;
 		if (!limit || limit < 0)  limit = undefined;
-		return this.findAll({ offset: offset, limit: limit, order: [['startDate', 'ASC']] });
+		return this.findAll({ offset, limit, order: [['startDate', 'ASC']] });
 	};
 	
 	Event.findByUUID = function(uuid) {
