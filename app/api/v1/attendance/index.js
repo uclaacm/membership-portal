@@ -23,7 +23,7 @@ router.route('/attend')
 	let now = new Date();
 	Event.findByAttendanceCode(req.body.event.attendanceCode).then(event => {
 		if (!event)
-			throw new error.UserError("An event with that attendance code doesn't exist");
+			throw new error.BadRequest("An event with that attendance code doesn't exist");
 		
 		if (now < event.startDate || now > event.endDate)
 			throw new error.UserError("You can only enter the attendance code during the event");
@@ -31,9 +31,6 @@ router.route('/attend')
 		return Attendance.userAttendedEvent(req.user.uuid, event.uuid).then(attended => {
 			if (attended)
 				throw new error.UserError("You have already attended this event");
-
-			if (req.body.event.attendanceCode.toLowerCase().trim() !== event.attendanceCode.toLowerCase().trim())
-				throw new error.UserError("Incorrect Attendance Code");	
 
 			return Promise.all([
 				Attendance.attendEvent(req.user.uuid, event.uuid),

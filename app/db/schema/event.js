@@ -118,6 +118,8 @@ module.exports = (Sequelize, db) => {
 		},
 		attendanceCode: {
 			type: Sequelize.STRING,
+			unique: true,
+			allowNull: false,
 			validate: {
 				len: {
 					args: [3, 255],
