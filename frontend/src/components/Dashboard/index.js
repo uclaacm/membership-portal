@@ -50,7 +50,7 @@ class Dashboard extends React.Component {
         return(
             <div className="dashboard">
                 <Sidebar/>
-                <EventsDashboard events={eventList}/>
+                <EventsDashboard events={this.props.events} error={this.props.error}/>
             </div>
         );
     }

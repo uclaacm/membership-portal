@@ -16,7 +16,6 @@ class LoginForm extends React.Component {
 
     renderAlert() {
         if (this.props.error) {
-            console.log('error received');
             return(
                 <span><strong>Error</strong> {this.props.error}</span>
             );

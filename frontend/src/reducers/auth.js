@@ -34,12 +34,10 @@ const AuthUserError = err => {
 
 const LoginUser = (email, password) => {
     return async (dispatch) => {
-        console.log(`in dispatch: ${email}, ${password}`)
         dispatch({
             type: USER_GET
         });
         try {
-            console.log("hello", JSON.stringify({"password": password, "email": email}));
             const response = await fetch(Config.API_URL + Config.routes.auth.login, {
                 method: 'POST',
                 headers: {
@@ -112,12 +110,9 @@ const defaultState = Immutable.fromJS({
 const initState = () => {
     //TODO: check if there is a token
     const usertoken = localStorage.getItem("token");
-    console.log(`token: ${usertoken}`);
-
-    if (usertoken === null) {
+    if (!localStorage.getItem("token")) {
         return defaultState;
     } else {
-        console.log("what the fuck");
         return Immutable.fromJS({
             error: '',
             message: '',

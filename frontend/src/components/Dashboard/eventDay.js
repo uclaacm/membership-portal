@@ -4,7 +4,6 @@ import EventDropdown from './eventDropdown'
 
 class EventDay extends React.Component {
     render () {
-      console.log("EventDay", this.props.singleDayEventsList.events);
       const numEvents = this.props.singleDayEventsList.events.length;
       const eventsForTheDay = this.props.singleDayEventsList.events;
         return(
@@ -14,7 +13,7 @@ class EventDay extends React.Component {
                     eventsForTheDay.map(function(ev, i) {
                         return <div>
                                   <EventTile event={ev} key={i}/>
-                                  <EventDropdown event={ev} key={i + numEvents}/> 
+                                  <EventDropdown event={ev} key={i + numEvents}/>
                                </div>
                     })
                 }
@@ -24,5 +23,3 @@ class EventDay extends React.Component {
 }
 
 export default EventDay;
-
-

@@ -18,7 +18,6 @@ export default function (ComposedComponent) {
         }
 
         render() {
-            console.log(`authenticated: ${this.props.authenticated}`);
             return <ComposedComponent {...this.props} />;
         }
     }
@@ -33,7 +32,6 @@ export default function (ComposedComponent) {
     const mapDispatchToProps = (dispatch) => {
         return {
             redirectLogin: () => {
-                console.log("user is not logged in. redirecting...");
                 dispatch(replace('/login'));
             }
         }

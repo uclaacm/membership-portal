@@ -5,6 +5,7 @@ import thunk from 'redux-thunk';
 
 import {Health, TimeGet} from './health';
 import {Auth, LoginUser, LogoutUser} from './auth';
+import {Events, GetCurrentEvents} from './home';
 
 const history = createHistory();
 const routing = routerMiddleware(history);
@@ -13,13 +14,14 @@ const store = createStore(
   combineReducers({
     Health,
     Auth,
+    Events,
     router: routerReducer,
   }),
   applyMiddleware(routing, thunk)
 );
 
 const Action = {
-  TimeGet, LoginUser, LogoutUser
+  TimeGet, LoginUser, LogoutUser, GetCurrentEvents
 };
 
 export {

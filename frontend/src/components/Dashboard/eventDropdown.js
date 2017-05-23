@@ -3,7 +3,6 @@ import Button from 'components/Button/index'
 
 class EventDropdown extends React.Component {
     render () {
-        console.log(this.props.event);
         const event = this.props.event;
         return(
             <div className="event-dropdown">
@@ -16,7 +15,7 @@ class EventDropdown extends React.Component {
 
                     </div>
                     <div className="dropdown-right">
-                        <p className="Subheader-2Secondary">{event.description}</p> 
+                        <p className="Subheader-2Secondary">{event.description}</p>
                     </div>
                 </div>
                 <div className="minimize">
