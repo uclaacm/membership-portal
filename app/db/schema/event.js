@@ -129,10 +129,9 @@ module.exports = (Sequelize, db) => {
 		},
 		attendancePoints: {
 			type: Sequelize.INTEGER,
-			defaultValue: 0,
+			allowNull: false,
 			validate: {
-				min: {
-					args: 0,
+				notEmpty: {
 					msg: "The attendance points must be at least 0"
 				}
 			}
