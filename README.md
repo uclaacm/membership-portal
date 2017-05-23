@@ -20,8 +20,8 @@ If you don't want to use vagrant and simply want to deploy with Docker, you can 
 The Vagrantfile is setup to include all the system dependencies, including Docker. Simply run these commands and the virtual machine will be completely set up.
 
 ```bash
-user@local:~$ vagrant up --provision
-user@local:~$ vagrant ssh
+user@local:~/membership-portal$ vagrant up --provision
+user@local:~/membership-portal$ vagrant ssh
 vagrant@acm:~$ cd /vagrant
 ```
 
