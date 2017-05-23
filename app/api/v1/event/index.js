@@ -6,14 +6,18 @@ const Event = require('../../../db').Event;
 
 router.route('/past')
 .get((req, res, next) => {
-	Event.getPastEvents().then(events => {
+	let offset = parseInt(req.query.offset);
+	let limit = parseInt(req.query.limit);
+	Event.getPastEvents(offset, limit).then(events => {
 		res.json({ error: null, events: events.map(e => e.getPublic()) });
 	}).catch(next);
 });
 
 router.route('/future')
 .get((req, res, next) => {
-	Event.getFutureEvents().then(events => {
+	let offset = parseInt(req.query.offset);
+	let limit = parseInt(req.query.limit);
+	Event.getFutureEvents(offset, limit).then(events => {
 		res.json({ error: null, events: events.map(e => e.getPublic()) });
 	}).catch(next);
 });
@@ -21,7 +25,9 @@ router.route('/future')
 router.route('/:uuid?')
 .get((req, res, next) => {
 	if (!req.params.uuid || !req.params.uuid.trim()) {
-		Event.findAll().then(events => {
+		let offset = parseInt(req.query.offset);
+		let limit = parseInt(req.query.limit);
+		Event.findAll(offset, limit).then(events => {
 			res.json({ error: null, events: events.map(e => e.getPublic()) });
 		}).catch(next);
 	} else {

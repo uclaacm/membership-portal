@@ -155,13 +155,19 @@ module.exports = (Sequelize, db) => {
 			}
 		]
 	});
+
+	Event.getAll = function(offset, limit) {
+		if (!offset || offset < 0) offset = 0;
+		if (!limit || limit < 0)  limit = undefined;
+		return this.findAll({ offset, limit, order: [['startDate', 'ASC']] });
+	};
 	
 	Event.findByUUID = function(uuid) {
 		return this.findOne({ where: { uuid } });
 	};
 
 	Event.findByAttendanceCode = function(attendanceCode) {
-		return this.findOne({ where: { attendanceCode }});
+		return this.findOne({ where: { attendanceCode } });
 	};
 
 	Event.eventExists = function(uuid) {
@@ -172,14 +178,18 @@ module.exports = (Sequelize, db) => {
 		return this.destroy({ where: { uuid } });
 	};
 
-	Event.getPastEvents = function() {
+	Event.getPastEvents = function(offset, limit) {
+		if (!offset || offset < 0) offset = 0;
+		if (!limit || limit < 0)  limit = undefined;
 		let now = new Date();
-		return this.findAll({ where: { startDate : { $lte : now } } });
+		return this.findAll({ where: { startDate : { $lt : now } }, order: [['startDate', 'ASC']], offset, limit });
 	};
 
-	Event.getFutureEvents = function() {
+	Event.getFutureEvents = function(offset, limit) {
+		if (!offset || offset < 0) offset = 0;
+		if (!limit || limit < 0)  limit = undefined;
 		let now = new Date();
-		return this.findAll({ where: { startDate : { $gte : now } } });
+		return this.findAll({ where: { startDate : { $gte : now } }, order: [['startDate', 'ASC']], offset, limit });
 	};
 
 	Event.sanitize = function(event) {

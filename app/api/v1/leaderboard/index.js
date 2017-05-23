@@ -5,16 +5,10 @@ let router = express.Router();
 
 router.route('/')
 .get((req, res, next) => {
-	let offset = parseInt(req.query.offset) || 0;
-	    offset = offset > 0 ? offset : 0;
-	let limit  = parseInt(req.query.limit) || 50;
-	    limit  = limit > 0 ? limit : 50;
+	let offset = parseInt(req.query.offset);
+	let limit = parseInt(req.query.limit);
 	
-	User.findAll({
-		order: [['points', 'DESC']],
-		offset: offset,
-		limit: limit
-	}).then(users => {
+	User.getLeaderboard(offset, limit).then(users => {
 		req.json({ error: null, scoreboard: users.map(u => u.getUserProfile()) });
 	}).catch(next);
 });

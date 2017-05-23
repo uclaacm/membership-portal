@@ -157,6 +157,12 @@ module.exports = (Sequelize, db) => {
 		});
 	};
 
+	User.getLeaderboard = function(offset, limit) {
+		if (!offset || offset < 0) offset = 0;
+		if (!limit || limit < 0)  limit = undefined;
+		return this.findAll({ offset, limit, order: [['points', 'DESC']] });
+	};
+
 	User.sanitize = function(user) {
 		user = _.pick(user, ['profileId', 'email', 'firstName', 'lastName', 'year', 'major']);
 		return user;
