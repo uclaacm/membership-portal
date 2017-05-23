@@ -74,7 +74,6 @@ const GetCurrentEvents = () => {
 
             if (status >= 200 && status < 300) {
                 const events = data.events;
-                console.log(`we got events: ${events}`);
                 dispatch(UpdateEvents(events));
             } else {
                 throw new Error('Error fetching events');
@@ -108,13 +107,13 @@ const Events = (state=initState(), action) => {
     switch(action.type) {
         case UPDATE_EVENTS:
             return state.withMutations(val => {
-                val.set('events': action.events)
+                val.set('events', action.events)
             });
 
         case UPDATE_EVENTS_ERROR:
             return state.withMutations(val => {
                 val.set('error', action.error);
-                val.set('events': []);
+                val.set('events', []);
             });
 
         default:

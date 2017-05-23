@@ -5,7 +5,6 @@ import EventsDashboard from './eventsDashboard'
 
 class Dashboard extends React.Component {
     render () {
-        console.log(`events: ${this.props.events}`);
         const eventList =
         [
             {
@@ -51,7 +50,7 @@ class Dashboard extends React.Component {
         return(
             <div className="dashboard">
                 <Sidebar/>
-                <EventsDashboard events={eventList} error={this.props.error}/>
+                <EventsDashboard events={this.props.events} error={this.props.error}/>
             </div>
         );
     }

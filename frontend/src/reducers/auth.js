@@ -38,7 +38,6 @@ const LoginUser = (email, password) => {
             type: USER_GET
         });
         try {
-            console.log("hello", JSON.stringify({"password": password, "email": email}));
             const response = await fetch(Config.API_URL + Config.routes.auth.login, {
                 method: 'POST',
                 headers: {

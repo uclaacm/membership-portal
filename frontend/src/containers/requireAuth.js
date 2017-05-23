@@ -32,7 +32,6 @@ export default function (ComposedComponent) {
     const mapDispatchToProps = (dispatch) => {
         return {
             redirectLogin: () => {
-                console.log("user is not logged in. redirecting...");
                 dispatch(replace('/login'));
             }
         }

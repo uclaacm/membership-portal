@@ -1,6 +1,8 @@
 import React from 'react';
 import {connect} from 'react-redux';
 
+import moment from 'moment';
+
 import Config from 'config';
 import {Action} from 'reducers';
 //import Sidebar from 'components/Sidebar'
@@ -13,7 +15,9 @@ class Home extends React.Component {
     }
 
     componentWillMount() {
-        this.props.fetchEvents();
+        if (this.props.authenticated) {
+            this.props.fetchEvents();
+        }
     }
 
   render(){
@@ -36,8 +40,30 @@ class Home extends React.Component {
 
 const mapStateToProps = (state)=>{
     const e = state.Events;
+    const k = e.get('events');
+    let eventDays = [];
+    for(let i = 0; i < k.length; i++){
+        const event = {
+                "img": k[i].cover,
+                "org": k[i].committee,
+                "time": moment(k[i].startDate).format('h:mm:ss a'),
+                "title": k[i].title,
+                "location": k[i].location,
+                "description": k[i].description,
+                "attendancePoints": k[i].attendancePoints
+        };
+        if(eventDays.length < 1 || moment(k[i].startDate).format('dddd, MMMM Do YYYY') !== eventDays[eventDays.length - 1].date){
+            eventDays.push({
+                "date": moment(k[i].startDate).format('dddd, MMMM Do YYYY'),
+                "events": [event]
+            });
+        } else {
+            eventDays[eventDays.length - 1].events.push(event);
+        }
+    }
     return {
-        events: e.get('events'),
+        events: eventDays,
+        authenticated: state.Auth.get('authenticated'),
         error: e.get('error'),
     };
 };
@@ -49,7 +75,6 @@ const mapDispatchToProps = (dispatch)=>{
         },
 
         getTime: (input)=>{
-            console.log(input);
             dispatch(Action.TimeGet());
         },
     };

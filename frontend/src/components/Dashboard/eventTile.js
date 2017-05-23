@@ -2,7 +2,6 @@ import React, { PropTypes } from 'react'
 
 class EventTile extends React.Component {
     render () {
-        console.log(this.props.event);
         return(
             <div className="event-tile">
                 <div className="img-wrapper">
@@ -20,16 +19,14 @@ class EventTile extends React.Component {
                         </div>
                         <div className="event-info">
                             <i className="fa fa-map-marker event-icon" aria-hidden="true"></i>
-                            <span className="Subheader-2Secondary">{this.props.event.location}</span>  
+                            <span className="Subheader-2Secondary">{this.props.event.location}</span>
                         </div>
                     </div>
                 </div>
- 
+
             </div>
         );
     }
 }
 
 export default EventTile;
-
-
