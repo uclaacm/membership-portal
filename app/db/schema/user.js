@@ -160,7 +160,7 @@ module.exports = (Sequelize, db) => {
 	User.getLeaderboard = function(offset, limit) {
 		if (!offset || offset < 0) offset = 0;
 		if (!limit || limit < 0)  limit = undefined;
-		return this.findAll({ offset, limit, order: [['points', 'DESC']] });
+		return this.findAll({ offset: offset, limit: limit, order: [['points', 'DESC']] });
 	};
 
 	User.sanitize = function(user) {
