@@ -7,6 +7,15 @@ const app = require('./app');
 const log = app.logger;
 let server = express();
 
+// enable CORS in development
+if (app.config.isDevelopment) {
+	server.use(function(req, res, next) {
+		res.header("Access-Control-Allow-Origin", "*");
+		res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+		next();
+	});
+}
+
 // Use gzip compression to reduce bandwidth usage
 server.use(compression());
 
