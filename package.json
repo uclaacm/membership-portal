@@ -7,8 +7,7 @@
     "node": ">=6.9.0 <=6.10.2"
   },
   "scripts": {
-    "start": "node index",
-	"dev-setup": "node scripts/dev-setup.js"
+    "start": "node index"
   },
   "repository": {
     "type": "git",

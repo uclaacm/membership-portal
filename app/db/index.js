@@ -2,6 +2,7 @@ const Sequelize = require('sequelize');
 const logger = require('../logger');
 const config = require('../config');
 const error = require('../error');
+const devSetup = require('./dev-setup');
 
 let db = new Sequelize(config.database.db, config.database.user, config.database.password, {
 	dialect: 'postgres',
@@ -13,8 +14,8 @@ let User = require('./schema/user')(Sequelize, db);
 let Event = require('./schema/event')(Sequelize, db);
 let Attendance = require('./schema/attendance')(Sequelize, db);
 
-let setup = (force) => {
-	return db.sync({ force: !!force });
+let setup = () => {
+	return db.sync({ force: true }).then(() => devSetup(User, Event, Attendance));
 };
 
 let errorHandler = (err, req, res, next) => {
