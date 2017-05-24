@@ -1,9 +1,9 @@
 export default {
     health: {
-        url: 'http://localhost:8080/api/health/check',
+        url: '/app/api/health/check',
     },
-    API_URL: 'http://localhost',
-    CLIENT_ROOT_URL: 'http://localhost',
+    API_URL: '/app',
+    CLIENT_ROOT_URL: '',
     info: {
         msg: 'Hello World!',
     },
@@ -14,15 +14,15 @@ export default {
         ['Register', '/register'],
         ],
     routes: {
-        user: '/app/api/v1/user',
+        user: '/api/v1/user',
         auth: {
-            register: '/app/api/v1/auth/register',
-            login: '/app/api/v1/auth/login'
+            register: '/api/v1/auth/register',
+            login: '/api/v1/auth/login'
         },
         events: {
-            event: '/app/api/v1/event',
-            past: '/app/api/v1/event/past',
-            future: '/app/api/v1/event/future'
+            event: '/api/v1/event',
+            past: '/api/v1/event/past',
+            future: '/api/v1/event/future'
         }
     }
 };
