@@ -36,9 +36,9 @@ router.route('/attend')
 				Attendance.attendEvent(req.user.uuid, event.uuid),
 				req.user.addPoints(event.attendancePoints)
 			]);
+		}).then(() => {
+			res.json({ error: null, event: event.getPublic() });
 		});
-	}).then(() => {
-		res.json({ error: null });
 	}).catch(next);    
 });
 
