@@ -32,6 +32,9 @@ module.exports = {
     modules: [path.resolve(__dirname, "src"), "node_modules"],
   },
   plugins: [
+      new webpack.DefinePlugin({
+          'process.env.WEBPACK': JSON.stringify(process.env.WEBPACK || '')
+      }),
     new ExtractTextPlugin('build/[name].css'),
   ],
   watchOptions: {

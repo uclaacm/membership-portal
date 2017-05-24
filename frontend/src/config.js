@@ -2,7 +2,7 @@ export default {
     health: {
         url: '/app/api/health/check',
     },
-    API_URL: '/app',
+    API_URL: process.env.WEBPACK ? 'http://localhost:8080/app' : '/app',
     CLIENT_ROOT_URL: '',
     info: {
         msg: 'Hello World!',
@@ -23,6 +23,9 @@ export default {
             event: '/api/v1/event',
             past: '/api/v1/event/past',
             future: '/api/v1/event/future'
+        },
+        attendance: {
+            attend: '/api/v1/attendance/attend',
         }
     }
 };
