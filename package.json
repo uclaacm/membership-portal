@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node index",
-    "dev-setup": "bash scripts/dev-setup.sh"
+	"dev-setup": "node scripts/dev-setup.js"
   },
   "repository": {
     "type": "git",

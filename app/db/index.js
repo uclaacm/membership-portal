@@ -13,34 +13,8 @@ let User = require('./schema/user')(Sequelize, db);
 let Event = require('./schema/event')(Sequelize, db);
 let Attendance = require('./schema/attendance')(Sequelize, db);
 
-let setup = () => {
-	db.sync({force: true}).then(() => {
-		if (config.isDevelopment) {
-			return Promise.all[
-				User.findOrCreate({ where: { email: 'admin@ucla.edu' }, defaults: {
-					email: 'admin@ucla.edu',
-					accessType: 'ADMIN',
-					state: 'ACTIVE',
-					firstName: 'Nikhil',
-					lastName: 'Kansal',
-					hash: '$2a$10$db7eYhWGZ1LZl27gvyX/iOgb33ji1PHY5.pPzRyXaNlbctCFWMF9G', //test1234
-					year: 2,
-					major: 'Computer Science'
-				}}),
-
-				User.findOrCreate({ where: { email: 'user@ucla.edu' }, defaults: {
-					email: 'user@ucla.edu',
-					accessType: 'STANDARD',
-					state: 'ACTIVE',
-					firstName: 'Nikhil',
-					lastName: 'Kansal',
-					hash: '$2a$10$db7eYhWGZ1LZl27gvyX/iOgb33ji1PHY5.pPzRyXaNlbctCFWMF9G', //test1234
-					year: 2,
-					major: 'Computer Science'
-				}})
-			];
-		}
-	});
+let setup = (force) => {
+	return db.sync({ force: !!force });
 };
 
 let errorHandler = (err, req, res, next) => {

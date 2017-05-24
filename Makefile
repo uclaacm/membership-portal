@@ -4,7 +4,7 @@ dev: build run-dev
 
 setup:
 	if [ ! $(docker volume ls | grep "postgres_data") ]; then \
-		docker volume create postgres_data; \
+		docker volume create --name postgres_data; \
 	fi
 	if [ ! -f app/config/SESSION_SECRET ]; then \
 		cat /dev/urandom | od -N 32 -t x4 -An | tr -d '\n ' > app/config/SESSION_SECRET; \
