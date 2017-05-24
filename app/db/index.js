@@ -14,8 +14,8 @@ let User = require('./schema/user')(Sequelize, db);
 let Event = require('./schema/event')(Sequelize, db);
 let Attendance = require('./schema/attendance')(Sequelize, db);
 
-let setup = () => {
-	return db.sync({ force: true }).then(() => devSetup(User, Event, Attendance));
+let setup = (force) => {
+	return force ? db.sync({ force: true }).then(() => devSetup(User, Event, Attendance)) : db.sync();
 };
 
 let errorHandler = (err, req, res, next) => {
