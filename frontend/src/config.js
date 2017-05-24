@@ -18,6 +18,11 @@ export default {
         auth: {
             register: '/api/v1/auth/register',
             login: '/api/v1/auth/login'
+        },
+        events: {
+            event: '/api/v1/event',
+            past: '/api/v1/event/past',
+            future: '/api/v1/event/future'
         }
     }
 };
