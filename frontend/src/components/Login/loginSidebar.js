@@ -15,11 +15,7 @@ class LoginForm extends React.Component {
     };
 
     renderAlert() {
-        if (this.props.error) {
-            return(
-                <span><strong>Error</strong> {this.props.error}</span>
-            );
-        }
+        return this.props.error ? <span><b>Error</b>: {this.props.error}</span> : <span>&nbsp;</span>;
     }
 
     render() {
@@ -28,12 +24,9 @@ class LoginForm extends React.Component {
                 <p>Email</p>
                 <input type="text" placeholder="example@ucla.edu" ref="email"></input>
                 <p>Password</p>
-                <input type="password" placeholder="********" ref="password"></input>
+                <input type="password" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;" ref="password"></input>
                 {this.renderAlert()}
-                <div className="sign-in">
-                    <button className="input-button sign-in-button" type="submit">Sign In</button>
-                    <a className="input-text forgot-password" href="#">I forgot my password</a>
-                </div>
+                <SignIn />
             </form>
         );
     }
@@ -47,8 +40,6 @@ class LoginSidebar extends React.Component {
             <div className="login-sidebar">
                 <div className="login-container">
                     <Logo pic="https://pbs.twimg.com/profile_images/821079138060496896/7yR9rQOY.jpg"/>
-                    {/*<LoginEmail />
-                    <LoginPassword/>*/}
                     <LoginForm onsubmit={this.props.onsubmit} error={this.props.error}/>
                     <SignUp/>
                 </div>
