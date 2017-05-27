@@ -23,7 +23,7 @@ class EventsDashboard extends React.Component {
                     <Button className="checkin-button" style="blue" text="Check In"/>
                     {
                         fullEventsList.map(function(singleDay, i) {
-                            return <EventDay singleDayEventsList={singleDay} key={i}/>
+                            return <EventDay day={singleDay} key={i}/>
                         })
                     }
                 </div>

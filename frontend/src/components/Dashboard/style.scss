@@ -1,11 +1,9 @@
 @import "styles/vars";
 
 .events-dashboard {
-    margin-left: $sidebar-width + 30px;
-    border-left: 2px dashed #DDD;
+    margin-left: $sidebar-width;
     padding: 30px;
     overflow: visible;
-    z-index: 1;
 
     .earlier-events-icon {
         position: relative;
@@ -20,6 +18,7 @@
 
     .checkin-button {
         position: fixed;
+        box-shadow: 0px 0px 30px #FFFFFF;
         top: 20px;
         right: 20px;
     }
@@ -27,36 +26,8 @@
 
 .event-day {
     margin-top: 30px;
-
     h1 {
         color: #333333;
-        position: relative;
-    }
-
-    .event-day-line {
-        background: #AAAAAA;
-        margin-bottom: 10px;
-        width: 100%;
-        height: 1px;
-    }
-
-    .circle {
-        position: absolute;
-        margin-left: -47px;
-        margin-top: 3px;
-        z-index: 2;
-        display: inline-block;
-        height: 30px;
-        width: 30px;
-        border-radius: 30px;
-        background-color: white;
-        border: 2px dashed #DDD;
-
-        line-height: 30px;
-        font-size: 14px;
-        font-weight: 400;
-        text-align: center;
-        color: #666666;
     }
 }
 
@@ -66,16 +37,9 @@
     width: 320px;
     margin: 20px;
     border-radius: 4px;
-    // border: 1px solid #EAEAEA;
     box-shadow: 0px 0px 3px #D2D2D2;
     background-color: white;
     transition: 0.125s ease-in-out;
-
-    &:hover {
-        box-shadow: 0px 0px 20px #C2C2C2;
-        transform: scale(1.01, 1.01);
-        cursor: pointer;
-    }
 
     .cover {
         width: 100%;
@@ -101,20 +65,67 @@
         color: #555555;
         margin: 5px 0px;
     }
+    
+    p {
+        padding-top: 5px;
+    }
+
+    .description {
+        p {
+            color: #666666;
+            font-size: 0.9em;
+            font-weight: 300;
+        }
+    }
 
     .subcontent {
         border-top: 1px solid #F2F2F2;
         margin-top: 10px;
         padding-top: 10px;
         color: #666666;
-        // text-transform: uppercase;
         font-weight: 300;
-        font-size: 0.8em;
 
-        .time {
-            font-weight: 400;
+        .left {
+            float: left;
+            width: 210px;
+            font-size: 0.8em;
+
+            .time {
+                font-weight: 400;
+            }
+        }
+
+        .right {
+            float: right;
+            width: 65px;
+            border-left: 1px solid #F2F2F2;
+
+            .points {
+                text-align: center;
+                width: 100%;
+                font-weight: bold;
+                font-size: 1.8em;
+            }
+
+            .label {
+                text-align: center;
+                font-size: 0.8em;
+            }
         }
     }
+}
+
+
+.event-card:hover {
+    box-shadow: 0px 0px 20px #C2C2C2;
+    transform: scale(1.01, 1.01);
+    cursor: pointer;
+}
+
+.event-card.selected {
+    box-shadow: 0px 0px 30px #B2B2B2;
+    transform: scale(1.02, 1.02);
+    cursor: pointer;
 }
 
 .event-dropdown-checkbox {

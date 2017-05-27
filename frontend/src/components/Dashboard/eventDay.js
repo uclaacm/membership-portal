@@ -5,11 +5,12 @@ import EventDropdown from './eventDropdown'
 
 class EventDay extends React.Component {
     render () {
+        const day = this.props.day;
         return(
             <div className="event-day">
-                <h1><div className="circle">{this.props.singleDayEventsList.dateDigit}</div>{this.props.singleDayEventsList.date}</h1>
+                <h1>{day.dateStr}</h1>
                 {
-                    this.props.singleDayEventsList.events.map(function(ev, i) {
+                    day.events.map(function(ev, i) {
                         return <EventCard event={ev} key={i} />;
                     })
                 }
