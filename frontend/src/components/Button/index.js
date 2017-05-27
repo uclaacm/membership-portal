@@ -2,11 +2,14 @@ import React, { PropTypes } from 'react'
 
 
 class Button extends React.Component {
-    
     render () {
+        let icon = (this.props.icon) ? <i className={"fa " + this.props.icon + " button-icon"} aria-hidden="true"></i> : null;
         return(
             <div className={"button-component " + this.props.className}>
-                <button className={"generic-button " + this.props.style}><i className={"fa " + this.props.icon + " button-icon"} aria-hidden="true"></i>{this.props.text}</button>
+                <button className={"generic-button " + this.props.style}>
+                    { icon }
+                    {this.props.text}
+                </button>
             </div>
         );
     }
