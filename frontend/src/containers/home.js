@@ -46,15 +46,15 @@ const mapStateToProps = (state)=>{
         const event = {
                 "img": k[i].cover,
                 "org": k[i].committee,
-                "time": moment(k[i].startDate).format('h:mm:ss a'),
+                "time": moment(k[i].startDate).format('h:mm a'),
                 "title": k[i].title,
                 "location": k[i].location,
                 "description": k[i].description,
                 "attendancePoints": k[i].attendancePoints
         };
-        if(eventDays.length < 1 || moment(k[i].startDate).format('dddd, MMMM Do YYYY') !== eventDays[eventDays.length - 1].date){
+        if(eventDays.length < 1 || moment(k[i].startDate).format('dddd, MMMM Do') !== eventDays[eventDays.length - 1].date){
             eventDays.push({
-                "date": moment(k[i].startDate).format('dddd, MMMM Do YYYY'),
+                "date": moment(k[i].startDate).format('dddd, MMMM Do'),
                 "events": [event]
             });
         } else {
