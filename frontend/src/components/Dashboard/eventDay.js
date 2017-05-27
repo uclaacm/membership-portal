@@ -1,20 +1,16 @@
 import React, { PropTypes } from 'react'
 import EventTile from './eventTile'
+import EventCard from './eventCard'
 import EventDropdown from './eventDropdown'
 
 class EventDay extends React.Component {
     render () {
-      const numEvents = this.props.singleDayEventsList.events.length;
-      const eventsForTheDay = this.props.singleDayEventsList.events;
         return(
             <div className="event-day">
-                <p className="Display-2Primary">{this.props.singleDayEventsList.date}</p>
+                <h1>{this.props.singleDayEventsList.date}</h1>
                 {
-                    eventsForTheDay.map(function(ev, i) {
-                        return <div>
-                                  <EventTile event={ev} key={i}/>
-                                  <EventDropdown event={ev} key={i + numEvents}/>
-                               </div>
+                    this.props.singleDayEventsList.events.map(function(ev, i) {
+                        return <EventCard event={ev} key={i} />;
                     })
                 }
             </div>

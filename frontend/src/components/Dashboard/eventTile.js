@@ -5,7 +5,7 @@ class EventTile extends React.Component {
         return(
             <div className="event-tile">
                 <div className="img-wrapper">
-                    <img className="event-img" src={this.props.event.img} />
+                    <div className="event-img" style={{ backgroundImage: 'url('+this.props.event.img+')' }} />
                 </div>
                 <div className="event-info-wrapper">
                     <div className="event-info-left">
@@ -23,7 +23,6 @@ class EventTile extends React.Component {
                         </div>
                     </div>
                 </div>
-
             </div>
         );
     }
