@@ -55,6 +55,7 @@ const mapStateToProps = (state)=>{
         if(eventDays.length < 1 || moment(k[i].startDate).format('dddd, MMMM Do') !== eventDays[eventDays.length - 1].date){
             eventDays.push({
                 "date": moment(k[i].startDate).format('dddd, MMMM Do'),
+                "dateDigit": moment(k[i].startDate).format('DD'),
                 "events": [event]
             });
         } else {
