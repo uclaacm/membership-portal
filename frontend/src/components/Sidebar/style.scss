@@ -59,6 +59,7 @@
 
     .navigation {
         text-align: center;
+        
         .navigation-tile {
             background: $secondaryblue;
             width: 120.5px;
@@ -82,9 +83,14 @@
                 .icon, p {
                     color: $secondaryblue;
                 }
-                box-shadow: 0 2px 0 0 #c0c0c0;
-                transform: translateY(2px);
+                box-shadow: 0 3px 0 0 #c0c0c0;
+                transform: translateY(1px);
                 cursor: pointer;
+            }
+
+            &:active {
+                box-shadow: 0 0px 0 0 #c0c0c0;
+                transform: translateY(4px);
             }
         }
     }
