@@ -10,7 +10,6 @@ class LoginComponent extends React.Component {
                 <div className="login-tile">
                     <div className="login-tile-inner"></div>
                 </div>
-
             </div>
         )
     }

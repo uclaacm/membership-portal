@@ -1,12 +1,9 @@
 import React, { PropTypes } from 'react'
 import Logo from './logo'
-import LoginEmail from './loginEmail'
-import LoginPassword from './loginPW'
 import SignIn from './signIn'
 import SignUp from './signUp'
 
 class LoginForm extends React.Component {
-
     handleLogin(e) {
         e.preventDefault();
         const email = this.refs.email.value;
