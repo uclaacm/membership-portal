@@ -1,16 +1,22 @@
 @import "styles/vars";
 
 .sidebar {
-    float: left;
-    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 9;
+    overflow-y: scroll;
     width: $sidebar-width;
+    height: auto;
+    min-height: 100%;
+    transition: left 0.125s ease-in-out;
+
     background: $primaryblue;
     color: $white;
-    min-height: 650px;
 
     .sidebar-container {
-        background: $primaryblue;
-        height: 954px;
+        min-height: 680px;
     }
 
     .side-tag {
@@ -28,7 +34,7 @@
     }
 
     .profile-picture {
-         padding-top: 70px;
+         padding-top: 60px;
         .profile-img {
             display: block;
             margin: auto;
@@ -95,28 +101,6 @@
         }
     }
 
-
-    // .check-in {
-    //     border-radius: 20px;
-    //     border-bottom: 5px solid $white;
-    //     font-size: $checkin-fontsize;
-    //     display: block;
-    //     margin: auto;
-    //     background: $secondary-color;
-    //     color: $white;
-    //     padding: $sidebar-vertical-spacing;
-    //     width: $checkin-width;
-    //     height: $input-button-size;
-    //     border: 1px solid $secondary-color;
-    //     box-shadow: 0 3px 0 $tertiary-color;
-
-    //     .checkin-button {
-    //         height: $checkin-fontsize - 5px;
-    //         margin-right: 5px;
-    //     }
-    // }
-
-
     .points-component {
         position: fixed;
         bottom: 0px;
@@ -176,4 +160,7 @@
         display: block;
     }
 
+    @media (max-width: 700px) {
+        left: -400px;
+    }
 }
