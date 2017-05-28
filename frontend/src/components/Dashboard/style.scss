@@ -66,8 +66,17 @@
     background-color: white;
     transition: 0.125s ease-in-out;
 
-    @media (max-width: 425) {
+    @media (max-width: 425px) {
         margin: 20px 0px;
+    }
+
+    @media (max-width: 340px) {
+        width: 300px;
+        .subcontent {
+            .left {
+                width: 180px !important;
+            }
+        }
     }
 
     &:hover {
@@ -167,13 +176,21 @@
 
 .checkin-popup {
     position: relative;
-    margin: auto;
-    margin-top: 200px;
+    margin: 150px auto;
     background: white;
     width: 400px;
     height: 200px;
     border-radius: 20px;
     box-shadow: 0 4px 0 0 rgba(255, 255, 255, 0.5);
+
+    @media (max-width: 425px) {
+        width: 300px;
+        margin: 100px auto;
+
+        h2 {
+            font-size: 1.2em;
+        }
+    }
 
     h2 {
         text-align: center;
