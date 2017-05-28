@@ -4,8 +4,10 @@
     margin-left: $sidebar-width;
     padding: 30px;
     overflow: visible;
+    transition: margin-left 0.125s ease-in-out;
 
     .earlier-events-icon {
+        padding: 0px 0px;
         position: relative;
         text-align: center;
         cursor: pointer;
@@ -18,9 +20,25 @@
 
     .checkin-button {
         position: fixed;
-        box-shadow: 0px 0px 30px #FFFFFF;
         top: 20px;
         right: 20px;
+        z-index: 10;
+    }
+
+    @media (max-width: 700px) {
+        margin-left: 0px;
+
+        .checkin-button {
+            top: 60px;
+        }
+
+        .earlier-events-icon {
+            margin-top: 50px;
+        }
+    }
+
+    @media (max-width: 425px) {
+        padding: 30px 10px;
     }
 }
 
@@ -29,17 +47,37 @@
     h1 {
         color: #333333;
     }
+
+    @media (max-width: 700px) {
+        text-align: center;
+    }
 }
 
 .event-card {
     display: inline-block;
     vertical-align: top;
+    text-align: left;
     width: 320px;
     margin: 20px;
     border-radius: 4px;
     box-shadow: 0px 0px 3px #D2D2D2;
     background-color: white;
     transition: 0.125s ease-in-out;
+
+    @media (max-width: 425) {
+        margin: 20px 0px;
+    }
+
+    &:hover {
+        box-shadow: 0px 0px 20px #C2C2C2;
+        transform: scale(1.01, 1.01);
+        cursor: pointer;
+    }
+
+    &.selected {
+        box-shadow: 0px 0px 30px #B2B2B2;
+        transform: scale(1.02, 1.02);
+    }
 
     .cover {
         width: 100%;
@@ -113,139 +151,4 @@
             }
         }
     }
-}
-
-
-.event-card:hover {
-    box-shadow: 0px 0px 20px #C2C2C2;
-    transform: scale(1.01, 1.01);
-    cursor: pointer;
-}
-
-.event-card.selected {
-    box-shadow: 0px 0px 30px #B2B2B2;
-    transform: scale(1.02, 1.02);
-    cursor: pointer;
-}
-
-.event-dropdown-checkbox {
-    visibility: hidden
-}
-
-.event-dropdown-checkbox:checked + label {
-    .event-dropdown {
-        display: inherit;
-    }
-}
-
-.event-tile {
-    white-space:nowrap;
-    overflow:hidden;
-
-    &:hover {
-        cursor: pointer;
-    }
-
-    .img-wrapper {
-        display: inline-block;
-        height: $event-img-height;
-        width: $event-img-width;
-        margin-right: 20px;
-
-        .event-img {
-            height: $event-img-height;
-            width: $event-img-width;
-            background-position: center center;
-            background-size: cover;
-            object-fit: cover;            
-        }
-    }
-
-    .event-info-wrapper {
-        display: inline-block;
-        white-space:nowrap;
-        overflow:hidden;
-        vertical-align: top;
-        margin-top: 17px;
-
-        .event-info-right, .event-info-left {
-            display: inline-block;
-        }
-        .event-info-left {
-            width: 400px;
-        }
-
-        .event-info {
-            height: 29px;
-            // word-wrap: normal;
-            white-space: normal;
-
-            .event-icon {
-                text-align: center;
-                width: 20px;
-                margin-right: 7px;
-            }
-        }
-
-        .event-info-right {
-            padding-left: 20px;
-        }
-    }
-}
-
-.event-dropdown {
-    width: 100%;
-    display: none;
-
-    p {
-        font-weight: normal;
-        padding-bottom: 8px;
-        line-height: 135%;
-    }
-
-    &:hover {
-        display: inherit;
-    }
-
-    .event-button {
-        margin-bottom: 7px;
-    }
-
-    .dropdown-left, .dropdown-right {
-        display: inline-block;
-    }
-
-    .dropdown-left {
-        text-align: center;
-        width: $event-img-width;
-        margin-right: 20px;
-        padding-top: 10px;
-        padding-bottom: 10px;
-    }
-
-    .dropdown-right {
-        min-width: 200px;
-        max-width: 455px;
-        vertical-align: top;
-    }
-
-    .event-points-val {
-        margin-bottom: 20px;
-    }
-    span {
-        display: block;
-    }
-
-    .minimize {
-        text-align: center;
-        .minimize-icon {
-            margin: auto;
-            width: 40px;
-            color: $--disabled
-        }
-    }
-}
-
-.popup {
-    
 }

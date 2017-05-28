@@ -4,28 +4,15 @@ import EarlierEventsIcon from './earlierEventsIcon'
 import EventDay from './eventDay'
 
 class EventsDashboard extends React.Component {
-
-    renderError(error) {
-        return(
-            <div className="events-dashboard">
-                <h1>{error}</h1>
-            </div>
-        );
-    }
     render () {
         if (this.props.error) {
-            this.renderError(this.props.error);
+            return <div className="events-dashboard"><h1>{this.props.error}</h1></div>;
         } else {
-            const fullEventsList = this.props.events;
             return(
                 <div className="events-dashboard">
                     <EarlierEventsIcon/>
-                    <Button className="checkin-button" style="blue" text="Check In"/>
-                    {
-                        fullEventsList.map(function(singleDay, i) {
-                            return <EventDay day={singleDay} key={i}/>
-                        })
-                    }
+                    <Button className="checkin-button" style="blue collapsible" text="Check In" icon="fa-calendar-check-o" />
+                    { this.props.events.map((day, i) => <EventDay day={day} key={i}/>) }
                 </div>
             );
         }
