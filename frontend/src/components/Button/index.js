@@ -8,7 +8,7 @@ class Button extends React.Component {
             <div className={"button-component " + this.props.className}>
                 <button className={"generic-button " + this.props.style}>
                     { icon }
-                    {this.props.text}
+                    <span>{this.props.text}</span>
                 </button>
             </div>
         );
