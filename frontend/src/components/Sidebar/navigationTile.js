@@ -1,6 +1,6 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
 
-class NavigationTile extends React.Component {
+export default class NavigationTile extends React.Component {
     render () {
         return(
             <div className="navigation-tile">
@@ -10,5 +10,3 @@ class NavigationTile extends React.Component {
         );
     }
 }
-
-export default NavigationTile;

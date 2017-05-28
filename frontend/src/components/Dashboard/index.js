@@ -1,12 +1,11 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
 import Topbar from '../Topbar'
 import Sidebar from '../Sidebar'
 import EventsDashboard from './eventsDashboard'
 
-
-class Dashboard extends React.Component {
-    render () {
-        return(
+export default class Dashboard extends React.Component {
+    render() {
+        return (
             <div className="dashboard">
                 <Topbar />
                 <Sidebar/>
@@ -15,5 +14,3 @@ class Dashboard extends React.Component {
         );
     }
 }
-
-export default Dashboard;

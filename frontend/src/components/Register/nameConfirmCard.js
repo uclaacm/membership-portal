@@ -1,8 +1,7 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
 import Button from 'components/Button/index'
 
-class NameConfirmCard extends React.Component {
-    
+export default class NameConfirmCard extends React.Component {
     render () {
         return(
                 <div className="card name-confirm-card">
@@ -14,5 +13,3 @@ class NameConfirmCard extends React.Component {
         );
     }
 }
-
-export default NameConfirmCard;

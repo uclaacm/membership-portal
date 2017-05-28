@@ -1,12 +1,11 @@
-import React, { PropTypes } from 'react';
-
+import React from 'react';
 import Config from 'config';
 
-import NameConfirmCard from './nameConfirmCard';
 import DetailsCard from './detailsCard';
+import NameConfirmCard from './nameConfirmCard';
 import UrlConfirmCard from './urlConfirmCard'
 
-class RegisterComponent extends React.Component {
+export default class RegisterComponent extends React.Component {
     render () {
         return(
             <div className="register-component">
@@ -18,5 +17,3 @@ class RegisterComponent extends React.Component {
         )
     }
 }
-
-export default RegisterComponent;

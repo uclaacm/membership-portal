@@ -1,6 +1,6 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
 
-class Organization extends React.Component {
+export default class Organization extends React.Component {
     render () {
         return(
             <div>
@@ -9,5 +9,3 @@ class Organization extends React.Component {
         );
     }
 }
-
-export default Organization;

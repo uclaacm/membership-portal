@@ -1,10 +1,10 @@
+import React from 'react';
 import Config from 'config';
-import React, { PropTypes } from 'react';
 import LoginSidebar from './loginSidebar';
 
-class LoginComponent extends React.Component {
+export default class LoginComponent extends React.Component {
     render () {
-        return(
+        return (
             <div className="login">
                 <LoginSidebar onsubmit={this.props.onsubmit} error={this.props.error}/>
                 <div className="login-tile">
@@ -14,5 +14,3 @@ class LoginComponent extends React.Component {
         )
     }
 }
-
-export default LoginComponent;

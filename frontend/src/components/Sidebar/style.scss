@@ -94,7 +94,7 @@
                 cursor: pointer;
             }
 
-            &:active {
+            &:active, &.selected {
                 box-shadow: 0 0px 0 0 #c0c0c0;
                 transform: translateY(4px);
             }

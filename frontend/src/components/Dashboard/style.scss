@@ -1,5 +1,7 @@
 @import "styles/vars";
 
+.hidden { display: none; }
+
 .events-dashboard {
     margin-left: $sidebar-width;
     padding: 30px;
@@ -149,6 +151,50 @@
                 text-align: center;
                 font-size: 0.8em;
             }
+        }
+    }
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 11;
+    background: $primaryblue-alpha;
+}
+
+.checkin-popup {
+    position: relative;
+    margin: auto;
+    margin-top: 200px;
+    background: white;
+    width: 400px;
+    height: 200px;
+    border-radius: 20px;
+    box-shadow: 0 4px 0 0 rgba(255, 255, 255, 0.5);
+
+    h2 {
+        text-align: center;
+        padding-top: 20px;
+        color: $primaryblack;
+    }
+
+    form {
+        margin: auto;
+        text-align: center;
+        width: 100%;
+
+        input[type=text] {
+            border: 1px solid $gray2;
+            border-radius: 5px;
+            box-sizing: border-box;
+            width: $sidebar-input-width;
+            height: 30px;
+            padding: 5px;
+            margin-top: 5px;
+            margin-bottom: 10px;
         }
     }
 }

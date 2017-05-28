@@ -1,17 +1,15 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
 import NavigationTile from './navigationTile';
 
-class Navigation extends React.Component {
-    render () {
-        return(
+export default class Navigation extends React.Component {
+    render() {
+        return (
             <div className="navigation">
-                <NavigationTile icon="fa-calendar fa-2x" text="Events"/>
-                <NavigationTile icon="fa-user fa-2x" text="Profile"/>
-                <NavigationTile icon="fa-list fa-2x" text="Leaderboard"/>
-                <NavigationTile icon="fa-file fa-2x" text="Resources"/>
+                <a href="/events" className="no-style"><NavigationTile icon="fa-calendar fa-2x" text="Events"/></a>
+                <a href="/profile" className="no-style"><NavigationTile icon="fa-user fa-2x" text="Profile"/></a>
+                <a href="/leaderboard" className="no-style"><NavigationTile icon="fa-list fa-2x" text="Leaderboard"/></a>
+                <a href="/resources" className="no-style"><NavigationTile icon="fa-file fa-2x" text="Resources"/></a>
             </div>
         );
     }
 }
-
-export default Navigation;

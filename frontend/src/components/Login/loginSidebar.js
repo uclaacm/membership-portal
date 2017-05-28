@@ -1,4 +1,4 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
 import Logo from './logo'
 import SignIn from './signIn'
 import SignUp from './signUp'
@@ -31,7 +31,7 @@ class LoginForm extends React.Component {
 
 
 
-class LoginSidebar extends React.Component {
+export default class LoginSidebar extends React.Component {
     render () {
         return(
             <div className="login-sidebar">
@@ -44,5 +44,3 @@ class LoginSidebar extends React.Component {
         );
     }
 }
-
-export default LoginSidebar;

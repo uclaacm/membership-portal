@@ -38,6 +38,7 @@ class App extends React.Component {
              <Route path="/about" component={About}/>
              <Route path="/login" component={Login}/>
              <Route path="/register" component={Register}/>
+             <Route path="/events" component={requireAuth(Home)}/>
              <Route path="/profile" component={Profile}/>
              <Route path="/leaderboard" component={Leaderboard}/>
              <Route path="/resources" component={Resources}/>

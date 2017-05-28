@@ -1,8 +1,7 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
 import Button from 'components/Button/index'
 
-class SignIn extends React.Component {
-
+export default class SignIn extends React.Component {
     render () {
         return(
             <div className="sign-in">
@@ -12,5 +11,3 @@ class SignIn extends React.Component {
         );
     }
 }
-
-export default SignIn;

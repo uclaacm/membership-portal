@@ -1,7 +1,7 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
 
-class Logo extends React.Component {
-    render () {
+export default class Logo extends React.Component {
+    render() {
         return(
             <div className="logo">
                 <img className="login-logo" src={this.props.pic}/>
@@ -9,5 +9,3 @@ class Logo extends React.Component {
         );
     }
 }
-
-export default Logo;

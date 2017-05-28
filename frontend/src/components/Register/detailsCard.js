@@ -1,7 +1,7 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
 import Button from 'components/Button/index'
 
-class DetailsCard extends React.Component {
+export default class DetailsCard extends React.Component {
     render () {
         var buttonStyle = '';
         if(this.props.type === "confirm-details") {
@@ -34,5 +34,3 @@ class DetailsCard extends React.Component {
         );
     }
 }
-
-export default DetailsCard;

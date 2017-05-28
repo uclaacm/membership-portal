@@ -1,7 +1,7 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
 import EventCard from './eventCard'
 
-class EventDay extends React.Component {
+export default class EventDay extends React.Component {
     render () {
         return(
             <div className="event-day">
@@ -11,5 +11,3 @@ class EventDay extends React.Component {
         );
     }
 }
-
-export default EventDay;

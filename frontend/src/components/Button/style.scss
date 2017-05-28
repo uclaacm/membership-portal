@@ -1,6 +1,10 @@
 @import "styles/vars";
 
+.hidden { display: none; }
+
 .button-component {
+    display: inline-block;
+
     button {
         font-family: 'Lato', sans-serif;
         cursor: pointer;

@@ -1,6 +1,6 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import DOMPurify from 'dompurify'
 import Button from 'components/Button/index'
-import DOMPurify from 'dompurify';
 
 export default class EventCard extends React.Component {
     constructor(props) {

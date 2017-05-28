@@ -1,7 +1,7 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
 import PointsBar from './pointsBar'
 
-class Points extends React.Component {
+export default class Points extends React.Component {
     render () {
         return(
             <div className="points-component">
@@ -15,5 +15,3 @@ class Points extends React.Component {
         );
     }
 }
-
-export default Points;
