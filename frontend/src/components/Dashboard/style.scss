@@ -7,11 +7,11 @@
     transition: margin-left 0.125s ease-in-out;
 
     .earlier-events-icon {
-        padding: 0px 0px;
         position: relative;
         text-align: center;
         cursor: pointer;
-        opacity: 0.7;
+        opacity: 0.5;
+        transition: 0.125s ease-in-out;
 
         &:hover {
             opacity: 1.0;
