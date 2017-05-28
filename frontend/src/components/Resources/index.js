@@ -1,8 +1,7 @@
 import React, { PropTypes } from 'react';
 
 import Config from 'config';
-
-import Sidebar from '../Sidebar/sidebar';
+import Sidebar from '../Sidebar';
 
 class ResourcesComponent extends React.Component {
     render () {
