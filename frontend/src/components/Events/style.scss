@@ -85,6 +85,10 @@
     background-color: white;
     transition: 0.125s ease-in-out;
 
+    @media (max-width: 700px) {
+        margin: 20px 0px;
+    }
+
     @media (max-width: 425px) {
         margin: 20px 0px;
     }
