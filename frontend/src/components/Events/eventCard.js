@@ -19,10 +19,15 @@ export default class EventCard extends React.Component {
 
     render() {
         const event = this.props.event;
-        const className = "event-card" + (this.props.admin ? " admin-card" : "") + (this.state.selected ? " selected" : "");
+        const className = "event-card" + (this.props.admin ? " admin-card" : " user-card") + (this.state.selected ? " selected" : "");
         return(
             <div className={className} onClick={this.handleClick}>
-                <div className="cover" style={{ backgroundImage: 'url('+event.cover+')' }}></div>
+                <div className="cover" style={{ backgroundImage: 'url('+event.cover+')' }}>
+                    <div className="points-container">
+                        <div className="points Headline-2Secondary">{event.attendancePoints*10}</div>
+                        <div className="label SubheaderSecondary">pts</div>
+                    </div>
+                </div>
                 <div className="content">
                     <h2>{event.title}</h2>
                     <h3>ACM {event.committee}</h3>

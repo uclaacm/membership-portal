@@ -1,8 +1,9 @@
 import React from 'react'
 
 import Button from 'components/Button/index'
+import OverlayPopup from 'components/OverlayPopup'
+
 import EventDay from './eventDay'
-import CheckInPopup from './checkInPopup'
 import EarlierEventsIcon from './earlierEventsIcon'
 
 export default class UserEvents extends React.Component {
@@ -37,11 +38,18 @@ export default class UserEvents extends React.Component {
         } else {
             return (
                 <div className="events-dashboard">
-                    <CheckInPopup
-                        cancelAction={ this.hideCheckIn }
-                        submitAction={ this.submitCheckIn }
-                        error={ this.state.checkInError }
-                        showing={ this.state.showCheckIn } />
+                    <OverlayPopup
+                        onCancel={ this.hideCheckIn }
+                        onSubmit={ this.submitCheckIn }
+                        showing={ this.state.showCheckIn }
+                        title="Enter the Attendance Code"
+                        submitText="Submit">
+                        <form onSubmit={ this.submitCheckIn }>
+                            <input type="text" placeholder="Attendance code..." /><br />
+                            { this.props.checkInError ? <span className="CaptionSecondary error">{ this.props.checkInError }</span> : <span className="CaptionSecondary error">&nbsp;</span> }
+                        </form>
+                    </OverlayPopup>
+
                     <EarlierEventsIcon />
                     <Button
                         className={ "checkin-button" + (this.state.showCheckIn ? " hidden" : "")}

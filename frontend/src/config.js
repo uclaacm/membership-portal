@@ -7,12 +7,6 @@ export default {
     info: {
         msg: 'Hello World!',
     },
-    nav: [
-        ['Home', '/'],
-        ['About', '/about'],
-        ['Login', '/login'],
-        ['Register', '/register'],
-        ],
     routes: {
         user: '/api/v1/user',
         auth: {
@@ -27,5 +21,12 @@ export default {
         attendance: {
             attend: '/api/v1/attendance/attend',
         }
-    }
+    },
+    levels: [
+        { startsAt: 0, rank: "Newbie" },
+        { startsAt: 20, rank: "Newbie II" },
+        { startsAt: 50, rank: "Newbie III" },
+        { startsAt: 100, rank: "Hacker" },
+        { startsAt: 150, rank: "Hacker II" }
+    ]
 };
