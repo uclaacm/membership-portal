@@ -7,11 +7,17 @@ import Profile from './profile';
 
 export default class ProfileComponent extends React.Component {
     render () {
+        const profile = {
+            name: "Vic Yeh",
+            major: "Computer Science",
+            year: "4"
+        };
+
         return(
             <div className="profile">
                 <Topbar />
                 <Sidebar/>
-                <Profile profile={ this.props.profile } />
+                <Profile profile={ profile } />
             </div>
         )
     }

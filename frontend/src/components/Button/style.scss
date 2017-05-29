@@ -7,7 +7,23 @@
 
     button {
         font-family: 'Lato', sans-serif;
+        box-sizing: border-box;
         cursor: pointer;
+        display: block;
+        border: none;
+        outline: none;
+        
+        color: $white;
+        text-align: center;
+        border-radius: $input-button-size/2;
+        font-size: $checkin-fontsize;
+        min-width: $checkin-width;
+        line-height: $input-button-size;
+        height: $input-button-size;
+        padding: 0px $sidebar-vertical-spacing+10px;
+
+        transition: 0.125s;
+        transition-timing-function: ease-in-out;
     }
 
     .button-icon {
@@ -16,19 +32,11 @@
         margin-right: 10px;
     }
 
-    .generic-button {
-        display: block;
-        text-align: center;
-        border-radius: 100px;
-        font-size: $checkin-fontsize;
-        color: $white;
-        padding: $sidebar-vertical-spacing;
-        width: $checkin-width;
-        height: $input-button-size;
-        border: none;
-        outline: none;
-        transition: 0.125s;
-        transition-timing-function: ease-in-out;
+    .small {
+        height: $input-button-size*(2/3);
+        line-height: $input-button-size*(2/3);
+        min-width: 0px;
+        font-size: 14px;
     }
 
     .blue {
@@ -55,6 +63,15 @@
         background: $white;
         box-shadow: 0 4px 0 $gray1;
         color: $gray1;
+    }
+
+    .disabled {
+        background: #CCCCCC;
+        color: white;
+        cursor: default;
+        -webkit-transform: translateY(4px);
+        transform: translateY(4px);
+        box-shadow: 0 0px 0 $gray1;
     }
 
     .blue:hover {
