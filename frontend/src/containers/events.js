@@ -5,10 +5,9 @@ import moment from 'moment';
 
 import Config from 'config';
 import {Action} from 'reducers';
-//import Sidebar from 'components/Sidebar'
-import Dashboard from 'components/Dashboard'
+import EventsComponent from 'components/Events'
 
-class Home extends React.Component {
+class Events extends React.Component {
 
     handleGetEvents() {
         this.props.fetchEvents();
@@ -30,7 +29,7 @@ class Home extends React.Component {
         {!this.props.loading && this.props.success && <span>Time: {this.props.time}</span>}
         {!this.props.loading && this.props.err && <span>Time: Error({this.props.err})</span>}
       </div>*/}
-        <Dashboard fetchEvents={this.handleGetEvents.bind(this)}
+        <EventsComponent fetchEvents={this.handleGetEvents.bind(this)}
                     events={this.props.events}
                     error={this.props.error} />
     </div>;
@@ -43,7 +42,7 @@ const mapStateToProps = (state)=>{
     const k = e.get('events');
     let eventDays = [];
 
-    for(let i = 0; i < k.length; i++) {
+    for (let i = 0; i < k.length; i++) {
         const event = {
             cover: k[i].cover,
             committee: k[i].committee,
@@ -66,6 +65,7 @@ const mapStateToProps = (state)=>{
             eventDays[eventDays.length - 1].events.push(event);
         }
     }
+
     return {
         events: eventDays,
         authenticated: state.Auth.get('authenticated'),
@@ -86,5 +86,5 @@ const mapDispatchToProps = (dispatch)=>{
 };
 
 
-Home = connect(mapStateToProps, mapDispatchToProps)(Home);
-export default Home
+Events = connect(mapStateToProps, mapDispatchToProps)(Events);
+export default Events

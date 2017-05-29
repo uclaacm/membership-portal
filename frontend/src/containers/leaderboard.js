@@ -7,13 +7,12 @@ import { replace } from 'react-router-redux';
 
 
 class Leaderboard extends React.Component {
-
     render() {
-        return(
+        return (
             <div>
-                <LeaderboardComponent/>
+                <LeaderboardComponent />
             </div>
-        )
+        );
     }
 }
 

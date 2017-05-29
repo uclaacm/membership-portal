@@ -7,7 +7,6 @@ import { replace } from 'react-router-redux';
 
 
 class Login extends React.Component {
-
     handleLogin(email, password) {
         this.props.login(email, password);
     }

@@ -5,7 +5,7 @@ import EventDay from './eventDay'
 import CheckInPopup from './checkInPopup'
 import EarlierEventsIcon from './earlierEventsIcon'
 
-export default class EventsDashboard extends React.Component {
+export default class Events extends React.Component {
     constructor(props) {
         super(props);
         this.state = { showCheckIn: false, checkInError: null };
