@@ -140,6 +140,23 @@
         font-size: 14px;
     }
 
+    .collapsed {
+        width: 30px;
+        height: 40px;
+        padding: 0px;
+        min-width: 50px;
+        text-align: center;
+
+        .button-icon {
+            margin: auto;
+            font-size: 1.3em;
+        }
+
+        span {
+            display: none;
+        }
+    }
+
     @media (max-width: 700px) {
         .collapsible {
             width: 50px;

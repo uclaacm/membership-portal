@@ -28,16 +28,20 @@ export default class EventCard extends React.Component {
                     <h3>ACM {event.committee}</h3>
                     <div className="midcontent">
                         <div className="description" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(event.description) }}></div>
-                        <p><a target="_BLANK" href={event.eventLink}>Go to the event page</a></p>
+                        <p className="event-link"><a target="_BLANK" href={event.eventLink}>Go to the event page</a></p>
                     </div>
                     <div className="subcontent">
                         <div className="left">
+                            <div className="points">{event.attendancePoints}</div>
+                            <div className="label">Points</div>
+                        </div>
+                        <div className="right">
                             <span className="time">{event.startDate.format("h:mm a")} &mdash; {event.endDate.format("h:mm a")}</span>
                             <p className="location">{event.location}</p>
                         </div>
-                        <div className="right">
-                            <div className="points">{event.attendancePoints}</div>
-                            <div className="label">Points</div>
+                        <div className="buttons">
+                            <Button className="edit-event-button" style="blue collapsed" text="" icon="fa-pencil" />
+                            <Button className="delete-event-button" style="red collapsed" text="" icon="fa-times" />
                         </div>
                         <div style={{clear: "both"}}></div>
                     </div>

@@ -17,7 +17,7 @@ export default class UserEvents extends React.Component {
                     <Button
                         className={ "checkin-button" }
                         style="blue collapsible"
-                        icon="fa-calendar-check-o"
+                        icon="fa-plus"
                         text="Add Event"
                         onClick={ this.showAddEvent } />
                     { this.props.events.map((day, i) => <EventDay day={day} key={i} admin={true} />) }

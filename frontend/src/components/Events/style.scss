@@ -96,7 +96,7 @@
     @media (max-width: 340px) {
         width: 300px;
         .subcontent {
-            .left {
+            .right {
                 width: 180px !important;
             }
         }
@@ -156,6 +156,11 @@
 
     .midcontent { 
         display: none;
+
+        .event-link {
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
     }
 
     &.selected .midcontent {
@@ -169,10 +174,11 @@
         color: #666666;
         font-weight: 300;
 
-        .left {
+        .right {
             float: left;
-            width: 210px;
+            width: 122px;
             font-size: 0.8em;
+            padding-top: 2px;
 
             .time {
                 font-weight: 400;
@@ -183,9 +189,10 @@
             }
         }
 
-        .right {
+        .left {
             float: right;
-            width: 65px;
+            padding-right: 5px;
+            width: 45px;
             border-left: 1px solid #F2F2F2;
 
             .points {
@@ -200,22 +207,66 @@
                 font-size: 0.8em;
             }
         }
+
+        .buttons {
+            display: none;
+            .edit-event-button {
+                margin-right: 3px;
+            }
+        }
     }
 
     &.admin-card {
         width: 100%;
         margin: 10px 0px;
 
+
+
+
         .subcontent {
             border-top: 0px;
             margin-top: 0px;
         }
 
-        h3, .cover, .subcontent .right, .subcontent .location {
+        h3, .cover, .subcontent .left, .subcontent .location {
             display: none;
         }
 
-        
+        &.selected .right {
+            display: block;
+            float: left;
+            .location {
+                display: block;
+            }
+
+        }
+
+        &.selected .left {
+            display: block;
+            border-left: none;
+            float: left;
+            border-right: 1px solid $--secondaryblack;
+            margin-right: 10px;
+
+            .points {
+                text-align: center;
+                width: 100%;
+                font-weight: bold;
+                font-size: 1.2em;
+            }
+
+            .label {
+                // padding-top: 5px;
+            }
+        }
+
+        &.selected .buttons {
+            display: block;
+            // position: relative;
+            float: right;
+            height: 50px;
+            // right: 10px;
+        }
 
     }
 }
