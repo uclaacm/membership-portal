@@ -15,15 +15,14 @@
         
         color: $white;
         text-align: center;
-        border-radius: $input-button-size/2;
+        border-radius: $input-button-size;
         font-size: $checkin-fontsize;
         min-width: $checkin-width;
         line-height: $input-button-size;
         height: $input-button-size;
         padding: 0px $sidebar-vertical-spacing+10px;
 
-        transition: 0.125s;
-        transition-timing-function: ease-in-out;
+        transition: 0.125s ease-in-out;
     }
 
     .button-icon {
@@ -147,6 +146,7 @@
         .collapsible {
             width: 50px;
             height: 50px;
+            min-width: 60px;
             text-align: center;
 
             .button-icon {

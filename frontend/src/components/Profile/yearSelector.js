@@ -22,7 +22,7 @@ export default class YearSelector extends React.Component {
 
     render() {
         return (
-            <select className="Display-2Primary" onChange={this.emitChange} value={this.props.value}>
+            <select className="Display-2Primary" onChange={this.emitChange} defaultValue={this.state.value}>
                 <option value="1">Freshman</option>
                 <option value="2">Sophomore</option>
                 <option value="3">Junior</option>
