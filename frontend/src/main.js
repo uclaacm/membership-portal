@@ -26,14 +26,13 @@ class App extends React.Component {
 				<ConnectedRouter history={history}>
 					<div>
 						<Switch>
-							<Route exact path="/" component={requireAuth(Events)}/>
 							<Route path="/login" component={Login}/>
 							<Route path="/register" component={Register}/>
 							<Route path="/events" component={requireAuth(Events)}/>
 							<Route path="/profile" component={requireAuth(Profile)}/>
 							<Route path="/resources" component={requireAuth(Resources)}/>
 							<Route path="/leaderboard" component={requireAuth(Leaderboard)}/>
-							<Redirect to="/"/>
+							<Redirect to="/events"/>
 						</Switch>
 					</div>
 				</ConnectedRouter>

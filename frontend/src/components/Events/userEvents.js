@@ -5,7 +5,7 @@ import EventDay from './eventDay'
 import CheckInPopup from './checkInPopup'
 import EarlierEventsIcon from './earlierEventsIcon'
 
-export default class Events extends React.Component {
+export default class UserEvents extends React.Component {
     constructor(props) {
         super(props);
         this.state = { showCheckIn: false, checkInError: null };
@@ -37,10 +37,19 @@ export default class Events extends React.Component {
         } else {
             return (
                 <div className="events-dashboard">
-                    <CheckInPopup cancelAction={ this.hideCheckIn } submitAction={ this.submitCheckIn } error={ this.state.checkInError } showing={ this.state.showCheckIn } />
+                    <CheckInPopup
+                        cancelAction={ this.hideCheckIn }
+                        submitAction={ this.submitCheckIn }
+                        error={ this.state.checkInError }
+                        showing={ this.state.showCheckIn } />
                     <EarlierEventsIcon />
-                    <Button className={ "checkin-button" + (this.state.showCheckIn ? " hidden" : "")} style="blue collapsible" text="Check In" icon="fa-calendar-check-o" onClick={ this.showCheckIn } />
-                    { this.props.events.map((day, i) => <EventDay day={day} key={i}/>) }
+                    <Button
+                        className={ "checkin-button" + (this.state.showCheckIn ? " hidden" : "")}
+                        style="blue collapsible"
+                        icon="fa-calendar-check-o"
+                        text="Check In"
+                        onClick={ this.showCheckIn } />
+                    { this.props.events.map((day, i) => <EventDay day={day} key={i} admin={false} />) }
                 </div>
             );
         }

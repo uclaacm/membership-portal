@@ -81,6 +81,7 @@ html, body {
 
     .sign-in {
         margin-top: 20px;
+        text-align: center;
 
         .forgot-password {
             margin-top: 10px;
@@ -91,6 +92,7 @@ html, body {
 
     .sign-up {
         margin-top: 100px;
+        text-align: center;
 
         .new-account {
             margin-bottom: 10px;
@@ -98,9 +100,6 @@ html, body {
     }
 
     .input-button {
-        display: block;
-        margin: auto;
-        width: $checkin-width;
         border: none;
         outline: none; 
     }

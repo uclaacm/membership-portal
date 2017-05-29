@@ -17,10 +17,9 @@
         text-align: center;
         border-radius: $input-button-size;
         font-size: $checkin-fontsize;
-        min-width: $checkin-width;
         line-height: $input-button-size;
         height: $input-button-size;
-        padding: 0px $sidebar-vertical-spacing+10px;
+        padding: 0px $sidebar-vertical-spacing+15px;
 
         transition: 0.125s ease-in-out;
     }
@@ -34,7 +33,6 @@
     .small {
         height: $input-button-size*(2/3);
         line-height: $input-button-size*(2/3);
-        min-width: 0px;
         font-size: 14px;
     }
 
@@ -146,6 +144,7 @@
         .collapsible {
             width: 50px;
             height: 50px;
+            padding: 0px;
             min-width: 60px;
             text-align: center;
 

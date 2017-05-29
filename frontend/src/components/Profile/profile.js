@@ -12,7 +12,6 @@ export default class Profile extends React.Component {
     }
 
     handleUpdate(obj) {
-        console.log(obj);
         let newObject = { };
         newObject[obj.target] = obj.value;
         this.setState(prev => Object.assign({}, prev, newObject));
@@ -44,9 +43,11 @@ export default class Profile extends React.Component {
                             <EditableSpan target="major" value={this.props.profile.major} onChange={this.handleUpdate} />
                         </div>
                     </form>
-                    <Button className="profile-action-button" style={ this.profileUpdated() ? "blue" : "disabled" } text="Save" />
-                    <Button className="profile-action-button" style={ this.profileUpdated() ? "red" : "disabled" } text="Discard" />
-                    {/*<Button className="profile-action-button" style="blue small" text="Change Password" />*/}
+                    <div>
+                        <Button className="profile-action-button" style={ this.profileUpdated() ? "blue" : "disabled" } text="Save" />
+                        <Button className="profile-action-button" style={ this.profileUpdated() ? "red" : "disabled" } text="Discard" />
+                        {/*<Button className="profile-action-button" style="blue small" text="Change Password" />*/}
+                    </div>
                 </div>
             );
         }

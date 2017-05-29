@@ -12,6 +12,9 @@
     .profile-action-button {
         margin: 6px 6px;
     }
+    .profile-action-button:first-child {
+        margin-left: 0px;
+    }
 
     form {
         .form-elem {

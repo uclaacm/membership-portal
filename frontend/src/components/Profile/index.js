@@ -13,12 +13,12 @@ export default class ProfileComponent extends React.Component {
             year: "4"
         };
 
-        return(
+        return (
             <div className="profile">
                 <Topbar />
                 <Sidebar/>
                 <Profile profile={ profile } />
             </div>
-        )
+        );
     }
 }
