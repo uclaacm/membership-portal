@@ -1,6 +1,6 @@
 import React from 'react'
-import Topbar from '../Topbar'
-import Sidebar from '../Sidebar'
+import Topbar from 'components/Topbar'
+import Sidebar from 'components/Sidebar'
 import Events from './events'
 
 export default class EventsComponent extends React.Component {

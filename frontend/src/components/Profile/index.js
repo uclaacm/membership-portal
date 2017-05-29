@@ -1,8 +1,8 @@
 import React from 'react';
 
 import Config from 'config';
-import Topbar from '../Topbar';
-import Sidebar from '../Sidebar';
+import Topbar from 'components/Topbar';
+import Sidebar from 'components/Sidebar';
 import Profile from './profile';
 
 export default class ProfileComponent extends React.Component {
