@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from 'react-redux';
+
 import Config from 'config';
 
 import Points from './points';
@@ -7,7 +9,7 @@ import Navigation from './navigation';
 import Organization from './organization';
 import ProfilePicture from './profilePicture';
 
-export default class Sidebar extends React.Component {
+class Sidebar extends React.Component {
     render () {
         return(
             <div className="sidebar">
@@ -22,3 +24,11 @@ export default class Sidebar extends React.Component {
         )
     }
 }
+
+const mapStateToProps = (state) => {
+    return {
+        
+    };
+};
+
+export default connect(mapStateToProps, null)(Sidebar);

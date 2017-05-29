@@ -31,7 +31,9 @@
         margin-left: 0px;
 
         .checkin-button {
-            top: 60px;
+            top: inherit;
+            right: 30px;
+            bottom: 30px;
         }
 
         .earlier-events-icon {

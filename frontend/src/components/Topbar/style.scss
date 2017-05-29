@@ -2,7 +2,7 @@
 
 .topbar {
     position: fixed;
-    height: 54px;
+    height: 40px;
     width: 100%;
     top: -80px;
     left: 0;
@@ -24,38 +24,23 @@
         display: inline-block;
         height: 30px;
         line-height: 30px;
-        margin: 10px 10px;
-        padding: 0px 15px;
+        margin: 5px 4px;
+        padding: 0px 10px;
         font-size: 0.8em;
         font-weight: 400;
         border-radius: 20px;
-        background: $secondaryblue;
-        box-shadow: 0 4px 0 0 #3167ae;
         color: white;
         transition: 0.125s ease-in-out;
-
-        span {
-            margin-left: 5px;
-            transition: 0.125s ease-in-out;
-        }
 
         &:hover {
             color: $secondaryblue;
             background-color: $white;
-            box-shadow: 0 3px 0 0 #c0c0c0;
-            transform: translateY(1px);
             cursor: pointer;
         }
 
-        &:active {
-            box-shadow: 0 0px 0 0 #c0c0c0;
-            transform: translateY(4px);
-        }
-
-        @media (max-width: 525px) {
-            span {
-                display: none;
-            }
+        &.selected {
+            color: $secondaryblue;
+            background-color: $white;
         }
     }
 }

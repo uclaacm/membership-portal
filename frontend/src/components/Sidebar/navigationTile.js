@@ -3,7 +3,7 @@ import React from 'react'
 export default class NavigationTile extends React.Component {
     render () {
         return(
-            <div className="navigation-tile">
+            <div className={"navigation-tile" + (this.props.selected ? " selected" : "") }>
                 <i className={"icon fa " + this.props.icon}></i>
                 <p className="Body-2White">{this.props.text}</p>
             </div>
