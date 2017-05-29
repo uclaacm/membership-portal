@@ -11,7 +11,7 @@ const defaultState = Immutable.fromJS({
     error: ''
 });
 
-const fetchUser = (payload) => {
+const fetchUserAction = (payload) => {
     return ({
         type: FETCH_USER,
         payload
@@ -38,7 +38,7 @@ function fetchUser(token) {
             const status = await response.status;
             if (status >=200 && status<300) {
                 const data = await response.json();
-                dispatch(fetchUser(data));
+                dispatch(fetchUserAction(data));
             } else {
                 throw new Error('Could not get user from api server');
             }

@@ -5,7 +5,7 @@ import thunk from 'redux-thunk';
 
 import {Health, TimeGet} from './health';
 import {Auth, LoginUser, LogoutUser} from './auth';
-import {Events, GetCurrentEvents} from './home';
+import {Events, GetCurrentEvents} from './events';
 
 const history = createHistory();
 const routing = routerMiddleware(history);

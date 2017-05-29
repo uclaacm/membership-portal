@@ -12,38 +12,33 @@ import {render} from 'react-dom';
 import {store, history} from 'reducers';
 
 import Events from 'containers/events';
-import About from 'containers/about';
 import Login from 'containers/login';
 import Profile from 'containers/profile';
 import Leaderboard from 'containers/leaderboard';
 import Resources from 'containers/resources';
-
-import Register from 'components/Register';
-
-//for redirect routes that require Authentication
 import requireAuth from 'containers/requireAuth';
+import Register from 'components/Register';
 
 class App extends React.Component {
 	render(){
-		return (<Provider store={store}>
-			<ConnectedRouter history={history}>
-				<div>
-					 <Switch>
-						 <Route exact path="/" component={requireAuth(Events)}/>
-						 <Route path="/about" component={About}/>
-						 <Route path="/login" component={Login}/>
-						 <Route path="/register" component={Register}/>
-						 <Route path="/events" component={requireAuth(Events)}/>
-						 <Route path="/profile" component={Profile}/>
-						 <Route path="/leaderboard" component={Leaderboard}/>
-						 <Route path="/resources" component={Resources}/>
-						 <Redirect to="/"/>
-					 </Switch>
-
-				</div>
-			</ConnectedRouter>
-		</Provider>);
-
+		return (
+			<Provider store={store}>
+				<ConnectedRouter history={history}>
+					<div>
+						<Switch>
+							<Route exact path="/" component={requireAuth(Events)}/>
+							<Route path="/login" component={Login}/>
+							<Route path="/register" component={Register}/>
+							<Route path="/events" component={requireAuth(Events)}/>
+							<Route path="/profile" component={requireAuth(Profile)}/>
+							<Route path="/resources" component={requireAuth(Resources)}/>
+							<Route path="/leaderboard" component={requireAuth(Leaderboard)}/>
+							<Redirect to="/"/>
+						</Switch>
+					</div>
+				</ConnectedRouter>
+			</Provider>
+		);
 	}
 }
 
