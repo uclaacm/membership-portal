@@ -1,15 +1,30 @@
+@import "components/Topbar/style";
 @import "components/Sidebar/style";
-@import "components/Dashboard/style";
+@import "components/Button/style";
+
 @import "components/Login/style";
 @import "components/Register/style";
-@import "components/Button/style";
+
+@import "components/Events/style";
 @import "components/Profile/style";
+@import "components/Resources/style";
+@import "components/Leaderboard/style";
 
 @import "./styles/vars";
 @import "./styles/fonts";
 
 html, body {
     margin: 0px;
-    height: 100%;
+    height: auto;
     min-height: 100%;
+    font-family: 'Lato', sans-serif;
+}
+
+a, a:visited {
+    color: #2196F3;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #1976D2;
 }

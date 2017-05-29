@@ -5,10 +5,9 @@ import moment from 'moment';
 
 import Config from 'config';
 import {Action} from 'reducers';
-//import Sidebar from 'components/Sidebar'
-import Dashboard from 'components/Dashboard'
+import EventsComponent from 'components/Events'
 
-class Home extends React.Component {
+class Events extends React.Component {
 
     handleGetEvents() {
         this.props.fetchEvents();
@@ -30,7 +29,7 @@ class Home extends React.Component {
         {!this.props.loading && this.props.success && <span>Time: {this.props.time}</span>}
         {!this.props.loading && this.props.err && <span>Time: Error({this.props.err})</span>}
       </div>*/}
-        <Dashboard fetchEvents={this.handleGetEvents.bind(this)}
+        <EventsComponent fetchEvents={this.handleGetEvents.bind(this)}
                     events={this.props.events}
                     error={this.props.error} />
     </div>;
@@ -42,25 +41,31 @@ const mapStateToProps = (state)=>{
     const e = state.Events;
     const k = e.get('events');
     let eventDays = [];
-    for(let i = 0; i < k.length; i++){
+
+    for (let i = 0; i < k.length; i++) {
         const event = {
-                "img": k[i].cover,
-                "org": k[i].committee,
-                "time": moment(k[i].startDate).format('h:mm:ss a'),
-                "title": k[i].title,
-                "location": k[i].location,
-                "description": k[i].description,
-                "attendancePoints": k[i].attendancePoints
+            cover: k[i].cover,
+            committee: k[i].committee,
+            startDate: moment(k[i].startDate),
+            endDate: moment(k[i].endDate),
+            eventLink: k[i].eventLink,
+            title: k[i].title,
+            location: k[i].location,
+            description: k[i].description,
+            attendancePoints: k[i].attendancePoints
         };
-        if(eventDays.length < 1 || moment(k[i].startDate).format('dddd, MMMM Do YYYY') !== eventDays[eventDays.length - 1].date){
+
+        if(eventDays.length < 1 || moment(k[i].startDate).format('dddd, MMMM Do') !== eventDays[eventDays.length - 1].dateStr){
             eventDays.push({
-                "date": moment(k[i].startDate).format('dddd, MMMM Do YYYY'),
-                "events": [event]
+                dateStr: moment(k[i].startDate).format('dddd, MMMM Do'),
+                date: moment(k[i].startDate),
+                events: [event]
             });
         } else {
             eventDays[eventDays.length - 1].events.push(event);
         }
     }
+
     return {
         events: eventDays,
         authenticated: state.Auth.get('authenticated'),
@@ -81,5 +86,5 @@ const mapDispatchToProps = (dispatch)=>{
 };
 
 
-Home = connect(mapStateToProps, mapDispatchToProps)(Home);
-export default Home
+Events = connect(mapStateToProps, mapDispatchToProps)(Events);
+export default Events

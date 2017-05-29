@@ -6,61 +6,77 @@ html, body {
     min-height: 100%;
 }
 
-
 .login-tile {
-    position: relative;
+    position: fixed;
     display: inline-block;
+    height: 100%;
+    width: 100%;
+    background-color: $primaryblue;
+
+    .login-tile-inner {
+        opacity: 0.4;
+        height: 100%;
+        width: 100%;
+        background: url(https://scontent.xx.fbcdn.net/v/t31.0-8/14570580_1314756125231128_7673056146755155018_o.jpg?oh=d3ba6059b61553fae942ff0012568ef2&oe=59A02E9B) center center fixed;
+        background-size: cover;
+
+        @media (max-width: 425px) {
+            display: none;
+        }
+    }
 }
-
-
 
 .login-sidebar {
     position: relative;
     display: inline-block;
-    height: 100vh;
     background: $primaryblue;
     width: $sidebar-width;
-    max-height: 1000px;
-    // background: $primaryblue;
+    height: 100vh;
     color: $white;
     font-size: 12px;
+    box-shadow: 0px 0px 4px #222222;
+
+    @media (max-width: 425px) {
+        width: 100%;
+    }
 
     .login-container {
         background: $primaryblue;
-        padding-top: 50px;
-        padding-bottom: 50px;
+        padding: 50px 10px;
     }
 
     .login-logo {
         display: block;
         margin: auto;
-        border: 5px solid $white;    
         height: 170px;
         margin-bottom: 20px;
     }
 
     .login-input {
-      width: $sidebar-input-width;
-      margin: auto;
-      text-align: left;
-      margin-bottom: $sidebar-vertical-spacing;
-      
-
-      input {
-          border: 1px solid $gray2;
-          border-radius: 5px;
-          box-sizing: border-box;
-          height: 30px;
-          padding: 5px;
-      }
-
-      p {
-        margin: 0px;
-      }
-
-      input {
         width: $sidebar-input-width;
-      }
+        margin: auto;
+        text-align: left;
+        margin-bottom: $sidebar-vertical-spacing;
+
+        input {
+            border: 1px solid $gray2;
+            box-sizing: border-box;
+            border-radius: 5px;
+            height: 30px;
+            padding: 5px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin: 0px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        input {
+            width: $sidebar-input-width;
+        }
     }
 
     .sign-in {

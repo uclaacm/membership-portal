@@ -1,17 +1,18 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
 
 import Config from 'config';
+import Topbar from 'components/Topbar';
+import Sidebar from 'components/Sidebar';
+import Profile from './profile';
 
-import Sidebar from '../Sidebar/sidebar';
-
-class ProfileComponent extends React.Component {
+export default class ProfileComponent extends React.Component {
     render () {
         return(
             <div className="profile">
+                <Topbar />
                 <Sidebar/>
+                <Profile profile={ this.props.profile } />
             </div>
         )
     }
 }
-
-export default ProfileComponent;

@@ -1,6 +1,6 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
 
-class PointsBar extends React.Component {
+export default class PointsBar extends React.Component {
     render() {
         var barWidth1 = 2.5*this.props.points + 'px';
         var barWidth2 = 2.5*(100 - this.props.points) + 'px';
@@ -12,5 +12,3 @@ class PointsBar extends React.Component {
         );
     }
 }
-
-export default PointsBar;

@@ -1,6 +1,6 @@
 $sidebar-width		: 300px;
 $sidebar-vertical-spacing: 10px;
-$checkin-width: 120px;
+$checkin-width: 150px;
 $sidebar-input-width: $sidebar-width - 50px;
 
 $primaryblue: rgb(30, 75, 135);
@@ -10,6 +10,7 @@ $primaryblack: rgba(0, 0, 0, 0.8);
 $--secondaryblack: rgba(0, 0, 0, 0.6);
 $--disabled: rgba(0, 0, 0, 0.2);
 
+$primaryblue-alpha: rgba(30, 75, 135, 0.5);
 
 $primary-color: #214D85;
 $secondary-color: #2F7EE6;
@@ -32,7 +33,7 @@ $pos-fontsize: 14px;
 $username-fontsize: 40px;
 $checkin-fontsize: 18px;
 
-$input-button-size: 50px;
+$input-button-size: 40px;
 
 $event-img-width: 134px;
 $event-img-height: 97px;

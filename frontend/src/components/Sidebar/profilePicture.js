@@ -1,6 +1,6 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
 
-class ProfilePicture extends React.Component {
+export default class ProfilePicture extends React.Component {
     render () {
         return (
             <div className="profile-picture">
@@ -9,5 +9,3 @@ class ProfilePicture extends React.Component {
         );
     }
 };
-
-export default ProfilePicture;

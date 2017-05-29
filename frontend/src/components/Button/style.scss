@@ -1,6 +1,15 @@
 @import "styles/vars";
 
+.hidden { display: none; }
+
 .button-component {
+    display: inline-block;
+
+    button {
+        font-family: 'Lato', sans-serif;
+        cursor: pointer;
+    }
+
     .button-icon {
         display: inline-block;
         text-align: center;
@@ -12,14 +21,14 @@
         text-align: center;
         border-radius: 100px;
         font-size: $checkin-fontsize;
-
-        // background: $secondary-color;
         color: $white;
         padding: $sidebar-vertical-spacing;
         width: $checkin-width;
         height: $input-button-size;
         border: none;
         outline: none;
+        transition: 0.125s;
+        transition-timing-function: ease-in-out;
     }
 
     .blue {
@@ -44,7 +53,69 @@
 
     .gray {
         background: $white;
-        border: solid 3px $gray1;
+        box-shadow: 0 4px 0 $gray1;
+        color: $gray1;
+    }
+
+    .blue:hover {
+        -webkit-transform: translateY(1px);
+        transform: translateY(1px);
+        box-shadow: 0 3px 0 $primaryblue;
+    }
+
+    .blue-signup:hover {
+        -webkit-transform: translateY(1px);
+        transform: translateY(1px);
+        box-shadow: 0 3px 0 #3167ae;
+    }
+
+    .green:hover {
+        -webkit-transform: translateY(1px);
+        transform: translateY(1px);
+        box-shadow: 0 3px 0 $dark-green;
+    }
+
+    .red:hover {
+        -webkit-transform: translateY(1px);
+        transform: translateY(1px);
+        box-shadow: 0 3px 0 $dark-red;
+    }
+
+    .gray:hover {
+        -webkit-transform: translateY(1px);
+        transform: translateY(1px);
+        box-shadow: 0 3px 0 $gray1;
+        color: $gray1;
+    }
+
+    .blue:active {
+        -webkit-transform: translateY(4px);
+        transform: translateY(4px);
+        box-shadow: 0 0px 0 $primaryblue;
+    }
+
+    .blue-signup:active {
+        -webkit-transform: translateY(4px);
+        transform: translateY(4px);
+        box-shadow: 0 0px 0 #3167ae;
+    }
+
+    .green:active {
+        -webkit-transform: translateY(4px);
+        transform: translateY(4px);
+        box-shadow: 0 0px 0 $dark-green;
+    }
+
+    .red:active {
+        -webkit-transform: translateY(4px);
+        transform: translateY(4px);
+        box-shadow: 0 0px 0 $dark-red;
+    }
+
+    .gray:active {
+        -webkit-transform: translateY(4px);
+        transform: translateY(4px);
+        box-shadow: 0 0px 0 $gray1;
         color: $gray1;
     }
 
@@ -53,5 +124,22 @@
         width: $event-img-width;
         height: 34px;
         font-size: 14px;
+    }
+
+    @media (max-width: 700px) {
+        .collapsible {
+            width: 70px;
+            height: 50px;
+            text-align: center;
+
+            .button-icon {
+                margin: auto;
+                font-size: 1.3em;
+            }
+
+            span {
+                display: none;
+            }
+        }
     }
 }

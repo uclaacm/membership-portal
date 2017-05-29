@@ -1,6 +1,6 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
 
-class EarlierEventsIcon extends React.Component {
+export default class EarlierEventsIcon extends React.Component {
     render () {
         return(
             <div className="earlier-events-icon">
@@ -10,7 +10,3 @@ class EarlierEventsIcon extends React.Component {
         );
     }
 }
-
-export default EarlierEventsIcon;
-
-
