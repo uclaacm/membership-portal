@@ -36,6 +36,19 @@ module.exports = (User, Event, Attendance) => {
         }),
 
         Event.create({
+            title: "Project A*: Dynamic Programming II",
+            description: "<p>Our sixth session will be this Friday, May 19th, from 4 - 6 PM in Boelter 4760. We will be covering dynamic programming!</p><p>ACM's Project A* is a quarter-long academy led by ACM-ICPC that teaches algorithmic concepts and implementation. If you are interested in acing your technical interviews or want to learn & practice coding up important algorithms, join us on Fridays from 4 - 6 PM in Boelter 4760!</p>",
+            committee: "ICPC",
+            cover: "https://scontent.xx.fbcdn.net/v/t31.0-8/18527109_1622382914468446_8231612414050119289_o.jpg?oh=8673cf672e1426a4c568ab3cf5724ee3&oe=59A87784",
+            location: "Boelter Hall 4760",
+            eventLink: "https://www.facebook.com/events/124949728072141/",
+            startDate: new Date(2017, 4, 19, 17),
+            endDate: new Date(2017, 4, 19, 19),
+            attendanceCode: "ast4r2",
+            attendancePoints: 10
+        }),
+
+        Event.create({
             title: "Intro to React",
             description: "<p>React is high-demand front-end Javascript library first created by Facebook. React powers the front-end of several major companies ranging from Facebook, AirBnb, Uber, and much more. We'll be hosting an introduction to React led by a Codesmith instructor to give you the tools necessary to work on your very first React project. Bring your laptop!</p><p>This session is designed for beginners to intermediates. React is perfect for beginners with basic HTML/CSS/Javascript knowledge looking to turn their static websites into full-fledged interactive web-apps. If you are already familiar with Javascript libraries like jQuery, learning React is a powerful alternative. Furthermore, React can be used to build mobile apps through Facebook's React Native library.</p>",
             committee: "Hack",
