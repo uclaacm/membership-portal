@@ -59,7 +59,7 @@ const FetchUser = () => {
     }
 }
 //PATCH
-const UpdateProfile = (newprofile) => {
+const UpdateUser = (newprofile) => {
     return async (dispatch) => {
         try {
             const response = await fetch(Config.API_URL + Config.routes.user,  {
@@ -114,4 +114,4 @@ const User = (state=initialState(), action) => {
     }
 }
 
-export { User, FetchUser}
+export { User, FetchUser, UpdateUser }

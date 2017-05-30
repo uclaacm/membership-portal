@@ -54,8 +54,6 @@ export default class Profile extends React.Component {
         newProf.major = this.state.major;
 
         this.props.saveChanges(newProf);
-
-        console.log(`first name: ${firstName}   last name: ${lastName}`);
     }
 
     render() {

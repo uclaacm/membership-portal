@@ -9,7 +9,7 @@ import { replace } from 'react-router-redux';
 class Profile extends React.Component {
 
     saveChanges(newprofile) {
-        this.props.updateProfile(newprofile);
+        this.props.updateUser(newprofile);
     }
 
     componentWillMount() {
@@ -64,8 +64,8 @@ const mapDispatchToProps = (dispatch)=>{
             dispatch(Action.FetchUser());
         },
 
-        updateProfile: (newprofile) => {
-            dispatch(Action.UpdateProfile(newprofile))
+        updateUser: (newprofile) => {
+            dispatch(Action.UpdateUser(newprofile))
         }
     };
 };
