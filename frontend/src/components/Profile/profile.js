@@ -10,7 +10,6 @@ export default class Profile extends React.Component {
     constructor(props) {
         super(props);
 
-        console.log(`profile: ${JSON.stringify(this.props.profile)}`);
         this.state = this.props.profile;
         this.state.showChangePassword = false;
         this.originalProfile = this.props.profile;
@@ -103,7 +102,7 @@ export default class Profile extends React.Component {
                                 onClick={ this.resetProfile } />
                         </a>
                     </div>
-
+                    
                     <div className="divider"></div>
 
                     <div className="form-elem">

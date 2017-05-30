@@ -11,7 +11,7 @@ class Profile extends React.Component {
     render() {
         return(
             <div>
-                <ProfileComponent profile={this.props.profile} />
+                <ProfileComponent/>
             </div>
         )
     }
@@ -19,10 +19,8 @@ class Profile extends React.Component {
 
 const mapStateToProps = (state)=>{
     const A = state.Auth;
-    const U = state.User;
-    console.log(`profile: ${U}`);
     return {
-        profile: U.get("profile"),
+
     };
 };
 
@@ -34,4 +32,4 @@ const mapDispatchToProps = (dispatch)=>{
 
 
 Profile = connect(mapStateToProps, mapDispatchToProps)(Profile);
-export default Profile;
+export default Profile
