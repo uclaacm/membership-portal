@@ -218,7 +218,7 @@
     }
 
     &.admin-card {
-        width: 100%;
+        width: 93%;
         margin: 10px 0px;
         .subcontent {
             border-top: 0px;
@@ -317,8 +317,23 @@
                 margin-bottom: 10px;
             }
         }
+
+
     }
+
+
 }
+
+    .admin-dashboard {
+        .date-day {
+            display: inline-block;
+            width: 6%;
+            margin: 0;
+            margin-right: 4px;
+            vertical-align: middle;
+            line-height: 1em;
+        }
+    }
 
 .overlay {
     position: fixed;
