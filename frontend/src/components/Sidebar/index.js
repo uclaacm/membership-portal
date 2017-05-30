@@ -1,7 +1,6 @@
 import React from 'react';
-import { connect } from 'react-redux';
-
 import Config from 'config';
+import { connect } from 'react-redux';
 
 import Points from './points';
 import Username from './username';
@@ -11,17 +10,17 @@ import ProfilePicture from './profilePicture';
 
 class Sidebar extends React.Component {
     render () {
-        return(
+        return (
             <div className="sidebar">
                 <div className="sidebar-container">
                     <ProfilePicture pic={this.props.pic}/>
-                    <Organization org="UCLA ACM" />
+                    <Organization org={Config.organization.shortName} />
                     <Username username={this.props.username} />
                     <Navigation/>
                     <Points levelClass="Hacker" levelNumber="2" points={this.props.points} />
                 </div>
             </div>
-        )
+        );
     }
 }
 

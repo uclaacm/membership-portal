@@ -10,7 +10,7 @@ export default class ResourcesComponent extends React.Component {
             <div className="resources">
                 <Topbar />
                 <Sidebar/>
-                <Resources resources={ this.props.resources } />
+                <Resources />
             </div>
         );
     }

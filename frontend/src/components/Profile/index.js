@@ -10,7 +10,8 @@ export default class ProfileComponent extends React.Component {
         const profile = {
             name: "Vic Yeh",
             major: "Computer Science",
-            year: "4"
+            year: "4",
+            points: 120
         };
 
         return (

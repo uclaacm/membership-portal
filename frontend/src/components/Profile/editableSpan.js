@@ -21,6 +21,6 @@ export default class EditableSpan extends React.Component {
     }
 
     render() {
-        return <span contentEditable="true" className="Display-2Primary" onInput={ this.emitChange } onBlur={ this.emitChange}>{this.state.value}</span>;
+        return <span contentEditable="true" className="Display-2Primary editable" onInput={ this.emitChange } onBlur={ this.emitChange}>{this.state.value}</span>;
     }
 }
