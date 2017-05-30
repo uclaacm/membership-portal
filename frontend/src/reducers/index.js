@@ -4,6 +4,7 @@ import {routerReducer, routerMiddleware, push} from 'react-router-redux';
 import thunk from 'redux-thunk';
 
 import {Health, TimeGet} from './health';
+import {User, FetchUser} from './user';
 import {Auth, LoginUser, LogoutUser} from './auth';
 import {Events, GetCurrentEvents} from './events';
 
@@ -15,13 +16,14 @@ const store = createStore(
     Health,
     Auth,
     Events,
+    User,
     router: routerReducer,
   }),
   applyMiddleware(routing, thunk)
 );
 
 const Action = {
-  TimeGet, LoginUser, LogoutUser, GetCurrentEvents
+  TimeGet, LoginUser, LogoutUser, GetCurrentEvents, FetchUser
 };
 
 export {

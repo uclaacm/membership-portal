@@ -1,6 +1,7 @@
 import React from 'react'
 import Topbar from 'components/Topbar'
-import Sidebar from 'components/Sidebar'
+
+import Sidebar from 'container/sidebar'
 import UserEvents from './userEvents'
 import AdminEvents from './adminEvents'
 
