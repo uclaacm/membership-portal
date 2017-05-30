@@ -17,6 +17,7 @@ export default class Profile extends React.Component {
         this.handleUpdate = this.handleUpdate.bind(this);
         this.hideChangePassword = this.hideChangePassword.bind(this);
         this.showChangePassword = this.showChangePassword.bind(this);
+        this.saveChanges = this.saveChanges.bind(this);
     }
 
     handleUpdate(obj) {
@@ -37,6 +38,11 @@ export default class Profile extends React.Component {
         return this.state.name !== this.originalProfile.name ||
                this.state.year !== this.originalProfile.year ||
                this.state.major !== this.originalProfile.major;
+    }
+
+    saveChanges(e) {
+        console.log(`new user: :) ${JSON.stringify(this.state)}`);
+        this.props.saveChanges(this.state);
     }
 
     render() {
@@ -94,7 +100,8 @@ export default class Profile extends React.Component {
                         <Button
                             className="profile-action-button"
                             style={ this.profileUpdated() ? "green" : "disabled" }
-                            text="Save" />
+                            text="Save"
+                            onClick = { this.saveChanges } />
                         <a href="/profile" className="no-style">
                             <Button
                                 className="profile-action-button"

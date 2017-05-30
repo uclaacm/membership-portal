@@ -8,6 +8,10 @@ import { replace } from 'react-router-redux';
 
 class Profile extends React.Component {
 
+    saveChanges(newprofile) {
+        this.props.saveProfileChanges(newprofile);
+    }
+
     componentWillMount() {
         if (this.props.authenticated) {
             this.props.fetchUser();
@@ -58,6 +62,10 @@ const mapDispatchToProps = (dispatch)=>{
     return {
         fetchUser: () => {
             dispatch(Action.FetchUser());
+        },
+
+        saveProfileChanges: (newprofile) => {
+            
         }
     };
 };
