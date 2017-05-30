@@ -13,11 +13,11 @@ class Sidebar extends React.Component {
         return (
             <div className="sidebar">
                 <div className="sidebar-container">
-                    <ProfilePicture pic="https://media.licdn.com/mpr/mpr/shrinknp_200_200/AAEAAQAAAAAAAAeeAAAAJDU1OGQ3NGZhLTY1MjgtNGYzNS1iMDc5LTliODhlMzg1NjJmMw.jpg"/>
+                    <ProfilePicture pic={this.props.pic}/>
                     <Organization org={Config.organization.shortName} />
-                    <Username username="Vic Yeh" />
+                    <Username username={this.props.username} />
                     <Navigation/>
-                    <Points levelClass="Hacker" levelNumber="2" points="10" />
+                    <Points levelClass="Hacker" levelNumber="2" points={this.props.points} />
                 </div>
             </div>
         );
@@ -26,7 +26,7 @@ class Sidebar extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        
+
     };
 };
 
