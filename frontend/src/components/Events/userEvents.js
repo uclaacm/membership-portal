@@ -33,33 +33,31 @@ export default class UserEvents extends React.Component {
     }
 
     render () {
-        if (this.props.error) {
+        if (this.props.error)
             return <div className="events-dashboard"><h1>{this.props.error}</h1></div>;
-        } else {
-            return (
-                <div className="events-dashboard">
-                    <OverlayPopup
-                        onCancel={ this.hideCheckIn }
-                        onSubmit={ this.submitCheckIn }
-                        showing={ this.state.showCheckIn }
-                        title="Enter the Attendance Code"
-                        submitText="Submit">
-                        <form onSubmit={ this.submitCheckIn }>
-                            <input type="text" placeholder="Attendance code..." /><br />
-                            { this.props.checkInError ? <span className="CaptionSecondary error">{ this.props.checkInError }</span> : <span className="CaptionSecondary error">&nbsp;</span> }
-                        </form>
-                    </OverlayPopup>
+        return (
+            <div className="events-dashboard">
+                <OverlayPopup
+                    onCancel={ this.hideCheckIn }
+                    onSubmit={ this.submitCheckIn }
+                    showing={ this.state.showCheckIn }
+                    title="Enter the Attendance Code"
+                    submitText="Submit">
+                    <form onSubmit={ this.submitCheckIn }>
+                        <input type="text" placeholder="Attendance code..." /><br />
+                        { this.props.checkInError ? <span className="CaptionSecondary error">{ this.props.checkInError }</span> : <span className="CaptionSecondary error">&nbsp;</span> }
+                    </form>
+                </OverlayPopup>
 
-                    <EarlierEventsIcon />
-                    <Button
-                        className={ "checkin-button" + (this.state.showCheckIn ? " hidden" : "")}
-                        style="blue collapsible"
-                        icon="fa-calendar-check-o"
-                        text="Check In"
-                        onClick={ this.showCheckIn } />
-                    { this.props.events.map((day, i) => <EventDay day={day} key={i} admin={false} />) }
-                </div>
-            );
-        }
+                <EarlierEventsIcon />
+                <Button
+                    className={ "checkin-button" + (this.state.showCheckIn ? " hidden" : "")}
+                    style="blue collapsible"
+                    icon="fa-calendar-check-o"
+                    text="Check In"
+                    onClick={ this.showCheckIn } />
+                { this.props.events.map((day, i) => <EventDay day={day} key={i} admin={false} />) }
+            </div>
+        );
     }
 }

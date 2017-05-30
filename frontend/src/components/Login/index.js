@@ -8,7 +8,7 @@ export default class LoginComponent extends React.Component {
             <div className="login">
                 <LoginSidebar onsubmit={this.props.onsubmit} error={this.props.error}/>
                 <div className="login-tile">
-                    <div className="login-tile-inner"></div>
+                    <div className="login-tile-inner" style={{backgroundImage: 'url('+ Config.organization.loginTileBackground +')'}}></div>
                 </div>
             </div>
         )
