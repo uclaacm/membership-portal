@@ -24,7 +24,7 @@ export default class EventCard extends React.Component {
             <div className={className} onClick={this.handleClick}>
                 <div className="cover" style={{ backgroundImage: 'url('+event.cover+')' }}>
                     <div className="points-container">
-                        <div className="points Headline-2Secondary">{event.attendancePoints*10}</div>
+                        <div className="points Headline-2Secondary">{event.attendancePoints}</div>
                         <div className="label SubheaderSecondary">pts</div>
                     </div>
                 </div>
