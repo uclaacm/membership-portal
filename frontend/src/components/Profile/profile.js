@@ -41,8 +41,21 @@ export default class Profile extends React.Component {
     }
 
     saveChanges(e) {
-        console.log(`new user: :) ${JSON.stringify(this.state)}`);
-        this.props.saveChanges(this.state);
+
+        //TODO: check that new name has at least two words
+        let nameArray = this.state.name.split(' ');
+        let firstName = nameArray[0];
+        let lastName = nameArray[1];
+
+        let newProf = {};
+        newProf.firstName = firstName;
+        newProf.lastName = lastName;
+        newProf.year = this.state.year;
+        newProf.major = this.state.major;
+
+        this.props.saveChanges(newProf);
+
+        console.log(`first name: ${firstName}   last name: ${lastName}`);
     }
 
     render() {
