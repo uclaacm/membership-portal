@@ -176,7 +176,8 @@
 
         .right {
             float: left;
-            width: 122px;
+            width: 35%;
+            min-width: 122px;
             font-size: 0.8em;
             padding-top: 2px;
 
@@ -207,25 +208,21 @@
                 font-size: 0.8em;
             }
         }
-
-        .buttons {
-            display: none;
-            .edit-event-button {
-                margin-right: 3px;
-            }
-        }
     }
 
     &.admin-card {
         width: 100%;
         margin: 10px 0px;
-
-
-
-
         .subcontent {
             border-top: 0px;
             margin-top: 0px;
+        }
+
+        .edit-delete-buttons {
+            display: none;
+            .edit-event-button {
+                margin-right: 3px;
+            }
         }
 
         h3, .cover, .subcontent .left, .subcontent .location {
@@ -237,6 +234,8 @@
             float: left;
             .location {
                 display: block;
+                padding: 0px;
+                margin-top: 5px;
             }
 
         }
@@ -256,18 +255,48 @@
             }
 
             .label {
-                // padding-top: 5px;
             }
         }
 
-        &.selected .buttons {
+        &.selected .edit-delete-buttons {
             display: block;
             // position: relative;
             float: right;
             height: 50px;
             // right: 10px;
+
         }
 
+        .event-title {
+            // min-width: 400px;
+            float: left;
+            width: 64%;
+        }
+
+        .editable-buttons {
+            display: none;
+            float: right;
+            
+            .edit-event-button {
+                margin-right: 3px;
+            }
+        }
+
+        &.editable {
+            .description, .points, .time, .location {
+                border-bottom: 1px solid $--secondaryblack;
+            }
+
+            .editable-buttons {
+                display: inherit;
+            }
+
+            .edit-delete-buttons {
+                display: none;
+            }
+
+
+        }
     }
 }
 
