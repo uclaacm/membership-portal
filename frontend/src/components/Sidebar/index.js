@@ -17,7 +17,7 @@ class Sidebar extends React.Component {
                     <Organization org={Config.organization.shortName} />
                     <Username username={this.props.username} />
                     <Navigation/>
-                    <Points levelClass="Hacker" levelNumber="2" points={this.props.points} />
+                    <Points points={this.props.points} />
                 </div>
             </div>
         );

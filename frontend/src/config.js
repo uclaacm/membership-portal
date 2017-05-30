@@ -89,5 +89,4 @@ export default {
         { startsAt: 100, rank: "Hacker" },
         { startsAt: 150, rank: "Hacker II" }
     ],
-
 };

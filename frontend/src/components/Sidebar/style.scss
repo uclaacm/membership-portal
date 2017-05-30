@@ -121,22 +121,26 @@
             padding-left: 25px;
         }
 
+        .points-bar {
+            width: 250px;
+            height: 8px;
+            margin: 4px 0px;
+            position: relative;
+            border-radius: 4px;
+            background: $tertiary-color;
+        }
+
         .level-font {
             font-size: 20px;
         }
 
-        .pts {
-            margin: 0px;
-            display: inline-block;
-            height: 10px;
-        }
-
         .points-earned {
             background: $white;
-        }
-
-        .points-left {
-            background: $tertiary-color;
+            border-radius: 4px;
+            position: absolute;
+            display: inline-block;
+            height: 100%;
+            left: 0;
         }
 
         .num-points {
