@@ -5,6 +5,8 @@ import Config from 'config';
 const FETCH_USER = Symbol('FETCH_USER');
 const FETCH_USER_ERR = Symbol('FETCH_USER_ERR');
 
+const UPDATE_USER_ERR = Symbol('UPDATE_USER_ERR');
+
 const defaultState = Immutable.fromJS({
     profile: {},
     fetchsuccess: false,
@@ -21,6 +23,13 @@ const fetchUserAction = (user) => {
 const fetchUserError = (error) => {
     return ({
         type: FETCH_USER_ERR,
+        error
+    });
+}
+
+const updateUserError = (error) => {
+    return({
+        type: UPDATE_USER_ERR,
         error
     });
 }
@@ -45,7 +54,35 @@ const FetchUser = () => {
                 throw new Error('Could not get user from api server');
             }
         } catch (err) {
-            dispatch(fetchUserError(err.message));
+            dispatch(updateUserError(err.message));
+        }
+    }
+}
+//PATCH
+const UpdateProfile = (newprofile) => {
+    return async (dispatch) => {
+        try {
+            const response = await fetch(Config.API_URL + Config.routes.user,  {
+                method: 'PATCH',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem("token")}`
+                },
+                body: JSON.stringify({"user": newprofile})
+            });
+            const status = await response.status;
+            const data = await response.data;
+
+            if (status >= 200 && status < 300) {
+                if (!data.error) {
+                    dispatch(fetchUserAction(data.user));
+                } else {
+                    throw new Error(data.error);
+                }
+            }
+        } catch (err) {
+            dispatch(updateUserError(err.message));
         }
     }
 }
@@ -68,6 +105,9 @@ const User = (state=initialState(), action) => {
                 val.set('profile', {});
                 val.set('fetchsuccess', false);
             })
+
+        case UPDATE_USER_ERR:
+            return stat
 
         default:
             return state;

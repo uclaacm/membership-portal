@@ -19,6 +19,7 @@ export default class Profile extends React.Component {
         this.handleUpdate = this.handleUpdate.bind(this);
         this.hideChangePassword = this.hideChangePassword.bind(this);
         this.showChangePassword = this.showChangePassword.bind(this);
+        this.saveChanges = this.saveChanges.bind(this);
     }
 
     handleUpdate(obj) {
@@ -41,13 +42,25 @@ export default class Profile extends React.Component {
                this.state.major !== this.originalProfile.major;
     }
 
-    saveProfile(e) {
-        if (!this.profileUpdated())
-            return;
-        this.refs.banner.showBanner("Profile updated successfully.", true);
+    saveChanges(e) {
+        //TODO: check that new name has at least two words
+        let nameArray = this.state.name.split(' ');
+        let firstName = nameArray[0];
+        let lastName = nameArray[1];
+
+        let newProf = {};
+        newProf.firstName = firstName;
+        newProf.lastName = lastName;
+        newProf.year = this.state.year;
+        newProf.major = this.state.major;
+
+        this.props.saveChanges(newProf);
+
+        console.log(`first name: ${firstName}   last name: ${lastName}`);
     }
 
     render() {
+
         if (this.props.error)
             return <div className="profile-wrapper"><h1>{this.props.error}</h1></div>;
 
@@ -114,7 +127,7 @@ export default class Profile extends React.Component {
                                 text="Discard" />
                         </a>
                     </div>
-                    
+
                     <div className="divider"></div>
 
                     <div className="form-elem">
