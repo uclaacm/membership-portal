@@ -40,6 +40,7 @@ export default class Profile extends React.Component {
     }
 
     render() {
+
         if (this.props.error)
             return <div className="profile-wrapper"><h1>{this.props.error}</h1></div>;
 
@@ -102,7 +103,7 @@ export default class Profile extends React.Component {
                                 onClick={ this.resetProfile } />
                         </a>
                     </div>
-                    
+
                     <div className="divider"></div>
 
                     <div className="form-elem">

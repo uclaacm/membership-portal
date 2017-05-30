@@ -14,6 +14,7 @@ class SidebarContainer extends React.Component {
     }
 
     render () {
+        /*
         if (this.props.fetchsuccess) {
             return (
                 <Sidebar
@@ -25,13 +26,15 @@ class SidebarContainer extends React.Component {
         } else {
             return null;
         }
+        */
+
+        return this.props.fetchsuccess ? <Sidebar pic={this.props.pic} username={this.props.username} points={this.props.points} /> :
+            null;
     }
 }
 
 const mapStateToProps = (state) => {
     const u = state.User;
-    console.log(state);
-
     if (u.get("fetchsuccess")) {
 
         return {
