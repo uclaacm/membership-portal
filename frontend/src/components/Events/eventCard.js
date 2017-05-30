@@ -42,6 +42,8 @@ export default class EventCard extends React.Component {
         this.setState(prev => ({
             editable: !prev.editable
         }))
+        console.log("Save event button pressed!");
+
     }
 
     //
@@ -57,21 +59,30 @@ export default class EventCard extends React.Component {
 
     render() {
         const event = this.props.event;
-        const className = "event-card" + (this.props.admin ? " admin-card" : "") + (this.state.selected ? " selected" : "") + (this.state.editable ? " editable" : "");
+        // console.log(event);
+        if(this.props.addEvent) {
+            this.state.selected = true;
+            this.state.editable = true;
+            
+        }
+
+        const className = "event-card" + (this.props.admin ? " admin-card" : "") + (this.state.selected ? " selected" : "") + (this.state.editable ? " editable" : "") + (this.props.addEvent ? " add-event-card" : "")
         return(
             <div className={className} onClick={this.handleClick}>
                 <div className="cover" style={{ backgroundImage: 'url('+event.cover+')' }}></div>
                 <div className="content">
-                    <h2 className="event-title">{event.title}</h2>
+                    <h2 contentEditable={this.state.editable} className="event-title">{event.title}</h2>
                     <div className="editable-buttons">
                         <Button onClick={(e) => {
                             e.stopPropagation();
-                            this.editEvent();
+                            this.saveEvent();
+                            this.props.saveAddEventParent();
                         }
                         } className="edit-event-button" style={"collapsed" + (this.state.editable ? " green" : " blue")} text="" icon="fa-check" />
                         <Button onClick={(e) => {
                             e.stopPropagation();
                             this.cancelEditEvent();
+                            this.props.cancelAddEventParent();
                         }
                         }
                         className="delete-event-button" style="red collapsed" text="" icon="fa-times" />
@@ -88,7 +99,7 @@ export default class EventCard extends React.Component {
                             <div className="label">Points</div>
                         </div>
                         <div className="right">
-                            <p contentEditable={this.state.editable} className="time">{event.startDate.format("h:mm a")} &mdash; {event.endDate.format("h:mm a")}</p>
+                            <p contentEditable={this.state.editable} className="time">{event.empty ? event.startDate : event.startDate.format("h:mm a")} &mdash; {event.empty ? event.endDate : event.endDate.format("h:mm a")}</p>
                             <p contentEditable={this.state.editable} className="location">{event.location}</p>
                         </div>
                         <div className="edit-delete-buttons">

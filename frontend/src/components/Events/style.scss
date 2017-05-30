@@ -127,7 +127,13 @@
         border-top-right-radius: 4px;
     }
 
-    .content { padding: 20px; }
+    .content { 
+        padding: 20px;
+
+        .edit-delete-buttons, .editable-buttons {
+            display: none;
+        }    
+    }
 
     h2 {
         color: #333333;
@@ -192,11 +198,12 @@
 
         .left {
             float: right;
-            padding-right: 5px;
+            padding-left: 2px;
+            padding-right: 3px;
             width: 45px;
             border-left: 1px solid #F2F2F2;
 
-            .points {
+            .points {   
                 text-align: center;
                 width: 100%;
                 font-weight: bold;
@@ -228,6 +235,8 @@
         h3, .cover, .subcontent .left, .subcontent .location {
             display: none;
         }
+        
+        
 
         &.selected .right {
             display: block;
@@ -282,8 +291,12 @@
             }
         }
 
+        .time {
+            padding-top: 0px;
+        }
+
         &.editable {
-            .description, .points, .time, .location {
+            .description, .points, .time, .location, h2 {
                 border-bottom: 1px solid $--secondaryblack;
             }
 
@@ -296,6 +309,13 @@
             }
 
 
+        }
+
+
+        &.add-event-card {
+            .event-title {
+                margin-bottom: 10px;
+            }
         }
     }
 }
