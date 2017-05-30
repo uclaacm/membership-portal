@@ -2,6 +2,7 @@ import React from 'react';
 import Config from 'config';
 import Button from 'components/Button';
 import OverlayPopup from 'components/OverlayPopup';
+import BannerMessage from 'components/BannerMessage';
 
 import EditableSpan from './editableSpan';
 import YearSelector from './yearSelector';
@@ -14,6 +15,7 @@ export default class Profile extends React.Component {
         this.state.showChangePassword = false;
         this.originalProfile = this.props.profile;
 
+        this.saveProfile = this.saveProfile.bind(this);
         this.handleUpdate = this.handleUpdate.bind(this);
         this.hideChangePassword = this.hideChangePassword.bind(this);
         this.showChangePassword = this.showChangePassword.bind(this);
@@ -39,6 +41,12 @@ export default class Profile extends React.Component {
                this.state.major !== this.originalProfile.major;
     }
 
+    saveProfile(e) {
+        if (!this.profileUpdated())
+            return;
+        this.refs.banner.showBanner("Profile updated successfully.", true);
+    }
+
     render() {
         if (this.props.error)
             return <div className="profile-wrapper"><h1>{this.props.error}</h1></div>;
@@ -53,6 +61,7 @@ export default class Profile extends React.Component {
 
         return (
             <div>
+                <BannerMessage ref="banner" />
                 <OverlayPopup
                     onCancel={ this.hideChangePassword }
                     onSubmit={ this.submitChangePassword }
@@ -67,6 +76,9 @@ export default class Profile extends React.Component {
                         { this.props.checkInError ? <span className="CaptionSecondary error">{ this.props.checkInError }</span> : <span className="CaptionSecondary error">&nbsp;</span> }
                     </form>
                 </OverlayPopup>
+                <div className="mobile-profile-head">
+
+                </div>
                 <div className="profile-wrapper">
                     <div className="form-elem">
                         <p className="SubheaderSecondary">Hello,</p>
@@ -93,13 +105,13 @@ export default class Profile extends React.Component {
                         <Button
                             className="profile-action-button"
                             style={ this.profileUpdated() ? "green" : "disabled" }
+                            onClick= { this.saveProfile }
                             text="Save" />
                         <a href="/profile" className="no-style">
                             <Button
                                 className="profile-action-button"
                                 style={ this.profileUpdated() ? "red" : "disabled" }
-                                text="Discard"
-                                onClick={ this.resetProfile } />
+                                text="Discard" />
                         </a>
                     </div>
                     

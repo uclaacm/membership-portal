@@ -7,6 +7,9 @@ export default {
     info: {
         msg: 'Hello World!',
     },
+    facebook: {
+        appId: '1356860031017067'
+    },
     routes: {
         user: '/api/v1/user',
         auth: {

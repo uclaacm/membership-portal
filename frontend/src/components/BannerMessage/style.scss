@@ -1,0 +1,32 @@
+.banner-message {
+    position: fixed;
+    left: 0px;
+    top: -80px;
+    width: 100%;
+    z-index: 12;
+    transition: 0.5s ease-in-out;
+
+    p {
+        display: inline-block;
+        vertical-align: middle;
+        text-align: center;
+        width: 100%;
+        padding: 10px;
+    }
+
+    &.success {
+        color: white;
+        background: $light-green;
+        // border-bottom: 1px solid $dark-green;
+    }
+
+    &.error {
+        color: white;
+        background: $light-red;
+        // border-bottom: 1px solid $dark-red;
+    }
+
+    &.showing {
+        top: 0px;
+    }
+}

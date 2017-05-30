@@ -9,9 +9,9 @@ export default class RegisterComponent extends React.Component {
     render () {
         return(
             <div className="register-component">
-                {/*<UrlConfirmCard/>*/}
+                <UrlConfirmCard/>
               {/*<NameConfirmCard name="Ram Goli"/>*/}
-              <DetailsCard/>
+              {/*<DetailsCard/>*/}
               {/*<DetailsCard type="confirm-details"/>*/}
             </div>
         )
