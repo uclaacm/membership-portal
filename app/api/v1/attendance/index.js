@@ -5,14 +5,14 @@ const error = require('../../../error');
 const Event = require('../../../db').Event;
 const Attendance = require('../../../db').Attendance;
 
-router.route('/:uuid')
+router.route('/:uuid?')
 .get((req, res, next) => {
-	let getAttendance = req.params.uuid ? Attendance.getAttendanceForEvent : Attendnace.getAttendanceForUser;
-	let uuid = req.params.uuid ? req.params.uuid : req.user.uuid;
-
-	getAttendance(uuid).then(attendance => {
-		res.json({ error: null, attendance: attendance.map(a => a.getPublic()) });
-	}).catch(next);
+	let callback = attendance => { res.json({ error: null, attendance: attendance.map(a => a.getPublic() )}); };
+	if (req.params.uuid) {
+		Attendance.getAttendanceForEvent(req.params.uuid).then(callback).catch(next);
+	} else {
+		Attendance.getAttendanceForUser(req.user.uuid).then(callback).catch(next);
+	}
 });
 
 router.route('/attend')
