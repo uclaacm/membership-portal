@@ -49,8 +49,12 @@ const LoginUser = (email, password) => {
             const status = await response.status;
             if (status >= 200 && status < 300) {
                 const data = await response.json();
-                setStorage("token", data.token);
-                dispatch(AuthUser());
+                if (!data.error) {
+                    setStorage("token", data.token);
+                    dispatch(AuthUser());
+                } else {
+                    throw new Error(data.error.message);
+                }
             } else { //TODO: Better error messages!
                 throw new Error("Could not log in");
             }
