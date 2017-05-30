@@ -66,7 +66,7 @@ export default class EventCard extends React.Component {
         const className = "event-card" + (this.props.admin ? " admin-card" : "") + (this.state.selected ? " selected" : "") + (this.state.editable ? " editable" : "") + (this.props.addEvent ? " add-event-card" : "")
         return(
             <div>
-                <div>
+                <div className="event-day-class">
                     {event.date.format("DD")}
                 </div>
                 <div className={className} onClick={this.handleClick}>
