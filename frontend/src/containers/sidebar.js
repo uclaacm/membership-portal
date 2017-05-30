@@ -37,7 +37,7 @@ const mapStateToProps = (state) => {
         return {
             fetchsuccess: true,
             authenticated: true,
-            pic: u.get("profile").picture ? u.get("profile").picture : "https://cloud.githubusercontent.com/assets/15708594/26568560/41cce4ee-44b9-11e7-994c-1d65f75712ee.png",
+            pic: u.get("profile").picture,
             username: `${u.get("profile").firstName} ${u.get("profile").lastName}`,
             points: u.get("profile").points
         }
