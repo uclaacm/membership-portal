@@ -10,8 +10,8 @@ router.route('/')
 .patch((req, res, next) => {
     if (!req.body.user)
         return next(new error.BadRequest());
-    if (!req.body.user.password)
-        return next(new error.BadRequest('The password field is required'));
+    // if (!req.body.user.password)
+    //     return next(new error.BadRequest('The password field is required'));
 
     req.user.verifyPassword(req.body.user.password).then(verified => {
         if (!verified)
