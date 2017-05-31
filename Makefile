@@ -3,6 +3,7 @@ default: build run
 dev: build run-dev
 
 setup:
+	git submodule update --init --recursive
 	if [ ! $(docker volume ls | grep "postgres_data") ]; then \
 		docker volume create --name postgres_data; \
 	fi
