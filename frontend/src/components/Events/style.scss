@@ -2,6 +2,10 @@
 
 .hidden { display: none; }
 
+.event-day-wrapper {
+    display: inline-block;
+}
+
 .events-dashboard {
     margin-left: $sidebar-width;
     box-sizing: padding-box;
@@ -56,7 +60,7 @@
     margin-top: 30px;
     h1 {
         color: #333333;
-        margin-left: 20px;
+        // margin-left: 20px;
         margin-bottom: 10px;
     }
 
@@ -389,7 +393,11 @@
         padding-top: 5px;
         margin-right: 6px;
         width: 5%;
-        }      
+
+        &.hidden {
+            visibility: hidden;
+        }
+    }      
 
     &.user-card {
         .subcontent .right {

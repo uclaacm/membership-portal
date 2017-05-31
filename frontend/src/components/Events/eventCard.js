@@ -46,7 +46,7 @@ export default class EventCard extends React.Component {
 
     }
 
-    //
+    //Handles button click to cancel an event edit
     cancelEditEvent(e) {
         this.setState(prev => ({
             editable: !prev.editable
@@ -60,13 +60,16 @@ export default class EventCard extends React.Component {
             this.state.editable = true;
             
         }
-        // console.log(this.props.eventNum);
 
         const className = "event-card" + (this.props.admin ? " admin-card" : "") + (this.state.selected ? " selected" : "") + (this.state.editable ? " editable" : "") + (this.props.addEvent ? " add-event-card" : "")
+        
+        const dayClassName = "event-day-class" + (event.firstDay ? "" : " hidden");
+        
+
         return(
 
-            <div className="admin-event-day-wrapper">
-                <div className="event-day-class">
+            <div className={this.props.admin ?  "" : "event-day-wrapper"}>
+                <div className={dayClassName}>
                     {event.date ? event.date.format("DD") : ""}<br/>
                     {event.date ? event.date.format("dd") : ""}
                 </div>

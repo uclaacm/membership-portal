@@ -81,7 +81,6 @@ export default class UserEvents extends React.Component {
             empty: true
         }
 
-        // console.log("Day", this.props.events);
         if (this.props.error) {
             return <div className="events-dashboard"><h1>{this.props.error}</h1></div>;
         } else {
