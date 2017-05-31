@@ -89,27 +89,16 @@
         margin: 20px 0px;
     }
 
-    @media (max-width: 425px) {
-        margin: 20px 0px;
-    }
-
     @media (max-width: 340px) {
         width: 300px;
-        .subcontent {
-            .right {
-                width: 180px !important;
-            }
-        }
     }
 
     &:hover {
         background: rgba(240,240,240,0.35);
-        // opacity: 0.8;
         cursor: pointer;
     }
 
     &.selected {
-        // box-shadow: 0px 0px 30px #B2B2B2;
         transform: scale(1.02, 1.02);
     }
 
@@ -152,11 +141,7 @@
     }
 
     .content { 
-        padding: 20px;
-
-        .edit-delete-buttons, .editable-buttons {
-            display: none;
-        }    
+        padding: 20px;  
     }
 
     h2 {
@@ -203,149 +188,122 @@
         padding-top: 10px;
         color: #666666;
         font-weight: 300;
+        font-size: 0.8em;
 
-        .right {
-            float: left;
-            width: 35%;
-            min-width: 122px;
-            font-size: 0.8em;
-            padding-top: 2px;
-
-            .time {
-                font-weight: 400;
-            }
-
-            .location {
-                padding-bottom: 0px;
-            }
+        .time {
+            font-weight: 400;
         }
 
-        .left {
-            float: right;
-            padding-left: 2px;
-            padding-right: 3px;
-            width: 45px;
-            border-left: 1px solid #F2F2F2;
+        .location {
+            padding-bottom: 0px;
+        }
+    }
+}
 
-            .points {   
-                text-align: center;
-                width: 100%;
-                font-weight: bold;
-                font-size: 1.8em;
-            }
+.admin-card {
+    width: 85%;
+    margin: 10px 0px;
+    margin-left: 25px;
 
-            .label {
-                text-align: center;
-                font-size: 0.8em;
-            }
+    .content {
+        .edit-delete-buttons, .editable-buttons {
+            display: none;
+        }  
+    }
+
+    .subcontent {
+        border-top: 0px;
+        margin-top: 0px;
+    }
+
+    .edit-delete-buttons {
+        display: none;
+        .edit-event-button {
+            margin-right: 3px;
         }
     }
 
-    &.admin-card {
-        width: 85%;
-        margin: 10px 0px;
-        margin-left: 25px;
+    h3, .cover, .subcontent .left, .subcontent .location {
+        display: none;
+    }
+    
 
-        .subcontent {
-            border-top: 0px;
-            margin-top: 0px;
+    &.selected .right {
+        display: block;
+        float: left;
+        .location {
+            display: block;
+            padding: 0px;
+            margin-top: 5px;
+        }
+
+    }
+
+    &.selected .left {
+        display: block;
+        border-left: none;
+        float: left;
+        border-right: 1px solid $--secondaryblack;
+        margin-right: 10px;
+
+        .points {
+            text-align: center;
+            width: 100%;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .label {
+        }
+    }
+
+    &.selected .edit-delete-buttons {
+        display: block;
+        // position: relative;
+        float: right;
+        height: 50px;
+        // right: 10px;
+
+    }
+
+    .event-title {
+        // min-width: 400px;
+        float: left;
+        width: 64%;
+    }
+
+    .editable-buttons {
+        display: none;
+        float: right;
+        
+        .edit-event-button {
+            margin-right: 3px;
+        }
+    }
+
+    .time {
+        padding-top: 0px;
+    }
+
+    &.editable {
+        .description, .points, .time, .location, h2 {
+            border-bottom: 1px solid $--secondaryblack;
+        }
+
+        .editable-buttons {
+            display: inherit;
         }
 
         .edit-delete-buttons {
             display: none;
-            .edit-event-button {
-                margin-right: 3px;
-            }
         }
-
-        h3, .cover, .subcontent .left, .subcontent .location {
-            display: none;
-        }
-        
-
-        &.selected .right {
-            display: block;
-            float: left;
-            .location {
-                display: block;
-                padding: 0px;
-                margin-top: 5px;
-            }
-
-        }
-
-        &.selected .left {
-            display: block;
-            border-left: none;
-            float: left;
-            border-right: 1px solid $--secondaryblack;
-            margin-right: 10px;
-
-            .points {
-                text-align: center;
-                width: 100%;
-                font-weight: bold;
-                font-size: 1.2em;
-            }
-
-            .label {
-            }
-        }
-
-        &.selected .edit-delete-buttons {
-            display: block;
-            // position: relative;
-            float: right;
-            height: 50px;
-            // right: 10px;
-
-        }
-
-        .event-title {
-            // min-width: 400px;
-            float: left;
-            width: 64%;
-        }
-
-        .editable-buttons {
-            display: none;
-            float: right;
-            
-            .edit-event-button {
-                margin-right: 3px;
-            }
-        }
-
-        .time {
-            padding-top: 0px;
-        }
-
-        &.editable {
-            .description, .points, .time, .location, h2 {
-                border-bottom: 1px solid $--secondaryblack;
-            }
-
-            .editable-buttons {
-                display: inherit;
-            }
-
-            .edit-delete-buttons {
-                display: none;
-            }
-
-
-        }
-
-
-        &.add-event-card {
-            .event-title {
-                margin-bottom: 10px;
-            }
-        }
-
-
     }
 
+    &.add-event-card {
+        .event-title {
+            margin-bottom: 10px;
+        }
+    }
 }
 
 .admin-dashboard {
@@ -355,23 +313,22 @@
         margin: 0;
         margin-right: 4px;
         vertical-align: middle;
-        line-height: 1em;
     }
+
     .event-day-class {
         display: inline-block;
         height: 100%;
+        text-align: right;
         font-size: 1.6em;
-        padding-top: 5px;
+        padding-top: 20px;
         margin-right: 6px;
         width: 5%;
-        }      
 
-    &.user-card {
-        .subcontent .right {
-            display: none;
+        .event-day {
+            text-transform: uppercase;
+            font-weight: 300;
+            font-size: 0.6em;
         }
     }
-    
-  
 }
 
