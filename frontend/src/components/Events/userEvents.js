@@ -33,7 +33,7 @@ export default class UserEvents extends React.Component {
 
     render () {
         if (this.props.error)
-            return <div className="events-dashboard"><h1>{this.props.error}</h1></div>;
+            return (<div className="events-dashboard"><h1>{this.props.error}</h1></div>);
         return (
             <div className="events-dashboard">
                 <OverlayPopup
