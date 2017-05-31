@@ -13,8 +13,8 @@ export default class EventsComponent extends React.Component {
                 <Topbar />
                 <Sidebar/>
                 {
-                    isAdmin ? <AdminEvents events={this.props.events} error={this.props.error} admin={true} />
-                            : <UserEvents events={this.props.events} error={this.props.error} admin={false} />
+                    isAdmin ? <AdminEvents events={this.props.events} error={this.props.error} />
+                            : <UserEvents  events={this.props.events} error={this.props.error} />
                 }
             </div>
         );
