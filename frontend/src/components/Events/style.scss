@@ -2,10 +2,15 @@
 
 .hidden { display: none; }
 
+.event-day-wrapper {
+    display: inline-block;
+}
+
 .events-dashboard {
     margin-left: $sidebar-width;
     box-sizing: padding-box;
     padding: 30px;
+    padding-left: 15px;
     overflow: visible;
     transition: margin-left 0.125s ease-in-out;
 
@@ -26,6 +31,10 @@
         top: 20px;
         right: 20px;
         z-index: 10;
+    }
+
+    h1 {
+        margin-left: 20px;
     }
 
     &.admin-dashboard .event-day h1 {
@@ -55,7 +64,7 @@
     margin-top: 30px;
     h1 {
         color: #333333;
-        margin-left: 20px;
+        // margin-left: 20px;
         margin-bottom: 10px;
     }
 
@@ -141,7 +150,7 @@
     }
 
     .content { 
-        padding: 20px;  
+        padding: 20px; 
     }
 
     h2 {
@@ -263,7 +272,6 @@
         float: right;
         height: 50px;
         // right: 10px;
-
     }
 
     .event-title {
@@ -324,11 +332,14 @@
         margin-right: 6px;
         width: 5%;
 
-        .event-day {
-            text-transform: uppercase;
-            font-weight: 300;
-            font-size: 0.6em;
+        &.hidden {
+            visibility: hidden;
         }
+    }      
+
+    .event-day {
+        text-transform: uppercase;
+        font-weight: 300;
+        font-size: 0.6em;
     }
 }
-

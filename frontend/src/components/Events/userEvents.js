@@ -22,12 +22,14 @@ export default class UserEvents extends React.Component {
     }
 
     hideCheckIn(e) {
+        console.log(e);
         this.setState(prev => ({
             showCheckIn: false
         }));
     }
 
     submitCheckIn(e) {
+        console.log(e);
         e.preventDefault();
     }
 
