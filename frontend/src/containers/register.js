@@ -4,27 +4,28 @@ import RegisterComponent from 'components/Register'
 
 
 class Register extends React.Component {
-  render(){
-    return <div>
-      {/*Login<br/>
-      Path: {this.props.urlPath}*/}
-      <RegisterComponent/>
+	constructor(props) {
+		super(props);
 
-    </div>;
-  }
+		this.createUser = this.createUser.bind(this);
+	}
+
+	createUser(profile) {
+
+	}
+
+	render(){
+		return <RegisterComponent createUser={this.createUser} created={this.props.created} createSuccess={this.props.createSuccess} createError={this.props.createError} />
+	}
 }
 
-const mapStateToProps = (state)=>{
-  return {
-    urlPath: state.router.location.pathname,
-  };
+const mapStateToProps = (state) => {
+	
 };
 
-const mapDispatchToProps = (dispatch)=>{
-  return {
-  };
+const mapDispatchToProps = (dispatch) => {
+	
 };
 
 
-Register = connect(mapStateToProps, mapDispatchToProps)(Register);
-export default Register
+export default connect(mapStateToProps, mapDispatchToProps)(Register);
