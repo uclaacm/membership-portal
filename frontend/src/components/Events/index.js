@@ -7,7 +7,7 @@ import AdminEvents from './adminEvents'
 
 export default class EventsComponent extends React.Component {
     render() {
-        const isAdmin = false;
+        const isAdmin = true;
         return (
             <div className="dashboard">
                 <Topbar />
