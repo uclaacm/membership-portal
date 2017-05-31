@@ -16,7 +16,6 @@ export default class UserEvents extends React.Component {
     }
 
     showCheckIn(e) {
-        console.log(e);
         this.setState(prev => ({
             showCheckIn: true
         }));

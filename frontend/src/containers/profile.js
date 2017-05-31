@@ -20,30 +20,26 @@ class Profile extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if(nextProps.updated){
-            setTimeout(()=>{
+            setTimeout(() => {
                 this.props.updateDone();
             }, 1000);
         }
     }
 
     render() {
-
-        return <ProfileComponent profile={this.props.profile} updated={this.props.updated} updateSuccess={this.props.updateSuccess} saveChanges = {this.saveChanges.bind(this)}/>;
+        return <ProfileComponent profile={this.props.profile} updated={this.props.updated} updateSuccess={this.props.updateSuccess} updateError={this.props.updateError} saveChanges={this.saveChanges.bind(this)}/>;
     }
 }
 
 const mapStateToProps = (state)=>{
-
     const A = state.Auth;
     const u = state.User;
 
     let profile = {};
-    profile.name='';
-    profile.major='';
-    profile.year=0;
-    profile.points=0;
-
-    console.log(state);
+    profile.name = "";
+    profile.major = "";
+    profile.year = 0;
+    profile.points = 0;
 
     if (u.get("fetchsuccess")) {
         const U = u.get("profile");
@@ -58,6 +54,7 @@ const mapStateToProps = (state)=>{
         authenticated: state.Auth.get("authenticated"),
         updated: u.get('updated'),
         updateSuccess: u.get('updateSuccess'),
+        updateError: u.get('error'),
     };
 };
 

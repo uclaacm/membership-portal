@@ -9,9 +9,9 @@
     background-color: rgba(0, 0, 0, 0.05);
     transition: margin-top 0.25s ease-in-out;
 
-    .profile-picture {
+    // .profile-picture {
         
-    }
+    // }
 
     @media (max-width: 700px) {
         margin-top: 40px;
@@ -45,16 +45,19 @@
             }
         }
         
-        span.dummy, input[type=text], textarea {
+        textarea {
             display: inline-block;
             outline: none;
             border:none;
             width: 100%;
-            border-bottom: 2px dashed #AAAAAA;
+            max-width: 400px;
+            border-bottom: 2px dashed #DADADA;
+            transition: 0.125s ease-in-out;
+            resize: none;
         }
 
-        span.dummy {
-            visibility: hidden;
+        textarea:focus {
+            border-bottom: 2px solid #AAAAAA;
         }
 
         select {
@@ -64,7 +67,8 @@
             border: none;
             outline: none;
             background: none;
-            border-bottom: 2px dashed #AAAAAA;
+            border-bottom: 2px dashed #DADADA;
+            padding: 5px 0px;
         }
     }
 

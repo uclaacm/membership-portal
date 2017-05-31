@@ -88,17 +88,17 @@ const UpdateUser = (newprofile) => {
                 },
                 body: JSON.stringify({"user": newprofile})
             });
-            const status = await response.status;
-            const data = await response.data;
 
-            if (status >= 200 && status < 300) {
-                if (!data.error) {
-                    dispatch(fetchUserAction(data.user));
-                    dispatch(updateUserSuccess());
-                } else {
-                    throw new Error(data.error);
-                }
-            }
+            const status = await response.status;
+            const data = await response.json();
+
+            if (!data)
+                throw new Error("Empty response from server");
+            if (data.error)
+                throw new Error(data.error);
+
+            dispatch(fetchUserAction(data.user));
+            dispatch(updateUserSuccess());
         } catch (err) {
             dispatch(updateUserError(err.message));
         }

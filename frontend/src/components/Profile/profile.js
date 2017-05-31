@@ -4,8 +4,8 @@ import Button from 'components/Button';
 import OverlayPopup from 'components/OverlayPopup';
 import BannerMessage from 'components/BannerMessage';
 
-import EditableSpan from './editableSpan';
 import YearSelector from './yearSelector';
+import MobileProfile from './mobileProfile';
 
 export default class Profile extends React.Component {
     constructor(props) {
@@ -17,13 +17,28 @@ export default class Profile extends React.Component {
             showChangePassword: false
         };
 
+        this.inputs = {};
         this.saveProfile = this.saveProfile.bind(this);
         this.handleUpdate = this.handleUpdate.bind(this);
+        this.registerInput = this.registerInput.bind(this);
+        this.resizeTextAreas = this.resizeTextAreas.bind(this);
         this.hideChangePassword = this.hideChangePassword.bind(this);
         this.showChangePassword = this.showChangePassword.bind(this);
     }
 
+    registerInput(input) {
+        this.inputs[input.name] = input;
+    }
+
+    resizeTextAreas() {
+        for (let input in this.inputs) {
+            this.inputs[input].style.height = "auto";
+            this.inputs[input].style.height = (this.inputs[input].scrollHeight) + "px";
+        }
+    }
+
     handleUpdate(e) {
+        this.resizeTextAreas();
         let name = e.target.name;
         let value = e.target.value;
         this.setState(prev => {
@@ -42,49 +57,76 @@ export default class Profile extends React.Component {
     }
 
     profileUpdated() {
-        return this.state.profile.name !== this.state.originalProfile.name ||
-               parseInt(this.state.profile.year) !== parseInt(this.state.originalProfile.year) ||
+        return parseInt(this.state.profile.year) !== parseInt(this.state.originalProfile.year) ||
+               this.state.profile.name !== this.state.originalProfile.name ||
                this.state.profile.major !== this.state.originalProfile.major;
     }
 
     saveProfile(e) {
-        let nameArray = this.state.name.trim().replace(/\s{2,}/g, " ").split(' ');
+        let nameArray = this.state.profile.name.trim().replace(/\s{2,}/g, " ").split(' ');
         if (nameArray.length !== 2) {
             this.refs.banner.showBanner("Please enter a valid first and last name", false);
             return;
         }
 
-        let firstName = nameArray[0];
-        let lastName = nameArray[1];
-        let year = this.state.year;
-        let major = this.state.major;
+        if (parseInt(this.state.profile.year) === NaN) {
+            this.refs.banner.showBanner("Please select a valid year", false);
+            return;
+        }
+
+        let firstName = nameArray[0].replace(/\n/g, '');
+        let lastName = nameArray[1].replace(/\n/g, '');
+        let year = this.state.profile.year;
+        let major = this.state.profile.major.replace(/\n/g, '');
 
         this.props.saveChanges({ firstName, lastName, year, major });
     }
 
+    componentWillMount() {
+        this.resizeTextAreas();
+    }
+
+    componentDidMount() {
+        window.addEventListener("resize", this.resizeTextAreas);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener("resize", this.resizeTextAreas);
+    }
+
     componentWillReceiveProps(nextProps) {
         this.setState({
-            profile: Object.assign({}, this.props.profile),
-            originalProfile: Object.assign({}, this.props.profile),
+            profile: Object.assign({}, nextProps.profile),
+            originalProfile: Object.assign({}, nextProps.profile),
             showChangePassword: false
         });
+
+        this.resizeTextAreas();
     }
 
     render() {
         if (this.props.error)
             return <div className="profile-wrapper"><h1>{this.props.error}</h1></div>;
-
-        let nextLevel;
-        for (let level of Config.levels) {
-            if (level.startsAt > this.props.profile.points) {
-                nextLevel = level;
+        
+        let currLevel = Config.levels[0];
+        let nextLevel = Config.levels[1];
+        let currLevelNumber = 0;
+        for (let i = 0; i < Config.levels.length; i++) {
+            if (Config.levels[i].startsAt > this.props.points) {
+                currLevel = Config.levels[i - 1];
+                currLevelNumber = i - 1;
+                nextLevel = Config.levels[i];
                 break;
             }
         }
 
         return (
             <div>
-                {/*<BannerMessage ref="banner" showing={this.props.updated} success={this.props.updateSuccess} message={this.props.updateSuccess ? "Profile successfully updated." : "An error occurred."} />*/}
+                <BannerMessage
+                    ref="banner"
+                    showing={this.props.updated}
+                    success={this.props.updateSuccess}
+                    message={this.props.updateSuccess ? "Profile successfully updated." : this.props.updateError} />
                 <OverlayPopup
                     onCancel={ this.hideChangePassword }
                     onSubmit={ this.submitChangePassword }
@@ -99,14 +141,18 @@ export default class Profile extends React.Component {
                         { this.props.checkInError ? <span className="CaptionSecondary error">{ this.props.checkInError }</span> : <span className="CaptionSecondary error">&nbsp;</span> }
                     </form>
                 </OverlayPopup>
-                <div className="mobile-profile-head">
-
-                </div>
+                {/*<MobileProfile profile={this.props.profile} />*/}
                 <div className="profile-wrapper">
                     <div className="form-elem">
                         <p className="SubheaderSecondary">Hello,</p>
-                        <input type="text" className="Display-2Primary" value={this.state.profile.name} name="name" onChange={this.handleUpdate}/>
-                        <span className="dummy" ref="name">{this.state.profile.name}</span>
+                        <textarea
+                            rows="1"
+                            type="text"
+                            name="name"
+                            className="Display-2Primary"
+                            ref={this.registerInput}
+                            onChange={this.handleUpdate}
+                            value={this.state.profile.name} name="name" />
                     </div>
                     <div className="form-elem">
                         <p className="SubheaderSecondary">You are a</p>
@@ -117,7 +163,14 @@ export default class Profile extends React.Component {
                     </div>
                     <div className="form-elem">
                         <p className="SubheaderSecondary">majoring in</p>
-                        <input type="text" className="Display-2Primary" value={this.state.profile.major} name="major" onChange={this.handleUpdate}/>
+                        <textarea
+                            rows="1"
+                            name="major"
+                            type="text"
+                            className="Display-2Primary"
+                            ref={this.registerInput}
+                            value={this.state.profile.major} name="major"
+                            onChange={this.handleUpdate} />
                     </div>
                     <div className="form-elem">
                         <Button
@@ -137,7 +190,7 @@ export default class Profile extends React.Component {
 
                     <div className="form-elem">
                         <p className="SubheaderSecondary">Your current rank is</p>
-                        <span className="Display-2Primary">Hacker</span>
+                        <span className="Display-2Primary">{currLevel.rank}</span>
                     </div>
                     <div className="form-elem">
                         <p className="SubheaderSecondary">You have <span className="Subheader-2Primary">{nextLevel.startsAt - this.props.profile.points}</span> more point(s) until you become a</p>
