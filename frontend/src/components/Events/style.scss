@@ -6,6 +6,7 @@
     margin-left: $sidebar-width;
     box-sizing: padding-box;
     padding: 30px;
+    padding-left: 15px;
     overflow: visible;
     transition: margin-left 0.125s ease-in-out;
 
@@ -156,6 +157,7 @@
 
         .edit-delete-buttons, .editable-buttons {
             display: none;
+            width: 110px;
         }    
     }
 
@@ -242,17 +244,20 @@
     }
 
     &.admin-card {
-        width: 85%;
+        width: 90%;
         margin: 10px 0px;
-        margin-left: 25px;
+        margin-left: 10px;
 
         .subcontent {
             border-top: 0px;
             margin-top: 0px;
+
+            @media(max-width: 750px) {
+                height: 90px;
+            }
         }
 
         .edit-delete-buttons {
-            display: none;
             .edit-event-button {
                 margin-right: 3px;
             }
@@ -298,13 +303,29 @@
             float: right;
             height: 50px;
             // right: 10px;
+            @media (max-width: 750px) {
+                float: none;
+
+                text-align: center;
+                margin: 0 auto;
+
+                position: relative;
+                top: 15px;
+
+                .edit-event-button {
+                    display: inline-block;
+                }
+                .edit-delete-button {
+                    display: inline-block;
+                }
+            }
 
         }
 
         .event-title {
             // min-width: 400px;
             float: left;
-            width: 64%;
+            width: 80%;
         }
 
         .editable-buttons {
@@ -332,7 +353,9 @@
             .edit-delete-buttons {
                 display: none;
             }
-
+            .event-title {
+                width: 57%;
+            }
 
         }
 
@@ -342,6 +365,8 @@
                 margin-bottom: 10px;
             }
         }
+
+
 
 
     }
@@ -374,4 +399,3 @@
     
   
 }
-

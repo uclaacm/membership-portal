@@ -38,8 +38,11 @@ export default class UserEvents extends React.Component {
     render () {
 
         //Group events by month
-
+        
         var allEvents = [];
+        let tempMonth = [];
+        var curMonth;
+        var monthlyEvents = [];
         for(let i = 0; i < this.props.events.length; i++) {
             for(let j = 0; j < this.props.events[i].events.length; j++) {
                 let event = {event: this.props.events[i].events[j]};//, date : this.props.events[i].date};
@@ -48,14 +51,11 @@ export default class UserEvents extends React.Component {
             }
         }
 
-        let tempMonth = [];
-        var curMonth;
-        if(allEvents.length > 0)    
+        if(allEvents.length > 0) {
             curMonth = allEvents[0].date.month();
-        var monthlyEvents = [];
+        }
         for(let i = 0; i < allEvents.length; i++) {
             if(allEvents[i].date.month() === curMonth) {
-                console.log("true");
                 tempMonth.push(allEvents[i]);
             }
             else {
@@ -99,10 +99,6 @@ export default class UserEvents extends React.Component {
                     {/*{ this.props.events.map((day, i) => <EventDay day={day} key={i} admin={true} />) }*/}
 
                     { monthlyEvents.map((ev, i) => <EventMonth event={ev} key={i} admin={this.props.admin} onClick={this.props.onClick} />) }
-
-
-                    {/*{ allEvents.map((ev, i) => <EventCard event={ev} key={i} admin={this.props.admin} onClick={this.props.onClick} />) }*/}
-
                 </div>
             );
         }

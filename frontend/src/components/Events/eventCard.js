@@ -60,6 +60,7 @@ export default class EventCard extends React.Component {
             this.state.editable = true;
             
         }
+        // console.log(this.props.eventNum);
 
         const className = "event-card" + (this.props.admin ? " admin-card" : "") + (this.state.selected ? " selected" : "") + (this.state.editable ? " editable" : "") + (this.props.addEvent ? " add-event-card" : "")
         return(
@@ -67,7 +68,7 @@ export default class EventCard extends React.Component {
             <div className="admin-event-day-wrapper">
                 <div className="event-day-class">
                     {event.date ? event.date.format("DD") : ""}<br/>
-                    {event.date ? event.date.format("ddd") : ""}
+                    {event.date ? event.date.format("dd") : ""}
                 </div>
                 <div className={className} onClick={this.handleClick}>
                     <div className="cover" style={{ backgroundImage: 'url('+event.cover+')' }}></div>
