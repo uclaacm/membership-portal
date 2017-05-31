@@ -6,7 +6,7 @@ import NavigationItem from './navigationItem';
 
 class Topbar extends React.Component {
 	render () {
-		console.log(this.props.currentView);
+		// console.log(this.props.currentView);
 		return (
 			<div className="topbar">
 				<div className="topbar-container">
