@@ -5,16 +5,34 @@ p {
 }
 
 input {
-  border: 0;
-  padding: 0;
+    border: 0;
+    padding: 0;
 }
 
 .register-component {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background: $primaryblue;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: $primaryblue;
+
+    a.login-link {
+        position: absolute;
+        top: 32px;
+        left: 32px;
+        color: white;
+    }
+
+    img.corner-logo {
+        position: absolute;
+        bottom: 32px;
+        right: 32px;
+        background-position: center center;
+        background-attachment: fixed;
+        background-size: cover;
+        height: 90px;
+        width: 90px;
+    }
 }
 
 .card {
@@ -50,10 +68,11 @@ input {
 
 .details-card {
     .inner {
-        width: 300px;
+        width: 400px;
         margin: auto;
         text-align: center;
     }
+
     input {
         border-radius: 5px;
         border: solid 1px $gray2;
@@ -67,8 +86,28 @@ input {
             border: solid 1px $secondaryblue;
         }
     }
+
+    select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        border: none;
+        outline: none;
+        background: none;
+        border-radius: 5px;
+        border: solid 1px $gray2;
+        margin-bottom: 5px;
+        padding: 9px;
+        font-size: 17px;
+        outline: none;
+
+        &:focus {
+            border: solid 1px $secondaryblue;
+        }
+    }
+
     &.confirm-details {
-        input {
+        input, select {
             border: solid 1px $light-green;
         }
 
@@ -95,16 +134,16 @@ input {
     }
 
     .input-large {
-        width: 283px;
+        width: 383px;
     }
 
     .input-major {
-        width: 185px;
+        width: 242px;
         margin-right: 9px;
     }
 
     .input-year {
-        width: 66px;
+        width: 125px;
     }
 
     .text {
@@ -128,7 +167,7 @@ input {
 }
 
 
-.url-confirm-card {
+.fb-login-card {
     .question {
         font-size: 36px;
         font-weight: bold;
@@ -140,6 +179,12 @@ input {
     .fb-url {
         display: inline-block;
         margin-right: 5px;
+    }
+
+    .fb-login-button {
+        i {
+            padding-right: 10px;
+        }
     }
 
     input {

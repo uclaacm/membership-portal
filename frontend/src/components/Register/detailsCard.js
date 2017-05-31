@@ -2,33 +2,52 @@ import React from 'react'
 import Button from 'components/Button/index'
 
 export default class DetailsCard extends React.Component {
-    render () {
-        var buttonStyle = '';
-        if(this.props.type === "confirm-details") {
-            buttonStyle = "green";
-        }
-        return(
-            <div className={"card details-card " + this.props.type}>
-                <div className="inner">
-                    <p className="header">Account Details</p>
+    constructor(props) {
+        super(props)
+        this.handleChange = this.handleChange.bind(this);
+    }
 
-                    <div className="email">
-                        <p className="text">School Email</p>
-                        <input className="input-large"></input>
-                    </div>
-                    <div className="align">
-                        <p className="text">Major</p>
-                        <input className="input-major"></input>
-                    </div>
-                    <div className="align">
-                        <p className="text">Grad Year</p>
-                        <input className="input-year"></input>
-                    </div>
-                    <div className="password">
-                        <p className="text">Password</p>
-                        <input className="input-large"></input>
-                    </div>
-                    <Button className="btn" style={buttonStyle || "gray"} text="Finish"/>
+    handleChange(e) {
+        if (this.props.onChange)
+            this.props.onChange(e.target.name, e.target.value);
+    }
+
+    render () {
+        // var buttonStyle = '';
+        // if(this.props.type === "confirm-details") {
+        //     buttonStyle = "green";
+        // }
+        return(
+            <div className={"card details-card " + (this.props.profileValid() ? "confirm-details" : "")}>
+                <div className="inner">
+                    <form onSubmit={this.props.onSubmit}>
+                        <p className="header">Account Details</p>
+
+                        <div className="email">
+                            <p className="text">School Email</p>
+                            <input className="input-large" name="email" value={this.props.profile.email} onChange={this.handleChange}></input>
+                        </div>
+                        <div className="password">
+                            <p className="text">Password</p>
+                            <input type="password" className="input-large" name="password" onChange={this.handleChange}></input>
+                        </div>
+                        <div className="align">
+                            <p className="text">Major</p>
+                            <input className="input-major" name="major" onChange={this.handleChange}></input>
+                        </div>
+                        <div className="align">
+                            <p className="text">Grad Year</p>
+                            <select className="input-year" name="year" onChange={this.handleChange}>
+                                <option value={0}>--</option>
+                                <option value={1}>Freshman</option>
+                                <option value={2}>Sophomore</option>
+                                <option value={3}>Junior</option>
+                                <option value={4}>Senior</option>
+                                <option value={5}>Post-senior</option>
+                            </select>
+                        </div>
+                        <Button className="btn" style={this.props.profileValid() ? "green" : "disabled"} text="Finish" onClick={this.props.onSubmit}/>
+                    </form>
                 </div>
             </div>
         );
