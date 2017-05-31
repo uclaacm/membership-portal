@@ -9,8 +9,7 @@ You must have either Docker or Vagrant installed and the repository cloned.  `cd
 
 ```bash
 user@local:~$ cd membership-portal
-user@local:~/membership-portal$ git submodule init --recursive
-user@local:~/membership-portal$ git submodule update --recursive --remote
+user@local:~/membership-portal$ git submodule update --init --recursive
 ```
 
 ### Setup (Vagrant)
