@@ -1,5 +1,5 @@
 import React from 'react'
-import EventCard from './eventCard'
+import AdminEventCard from './adminEventCard'
 
 export default class EventMonth extends React.Component {
 
@@ -11,7 +11,7 @@ export default class EventMonth extends React.Component {
         return(
             <div className={"event-day" + (this.props.admin ? " admin-dashboard" : "")}>
                 <h1 className="Display-2Primary date-month">{month}</h1>
-                { this.props.event.map((ev, i) => <EventCard event={ev} key={i} admin={this.props.admin} onClick={this.props.onClick} />) }
+                { this.props.event.map((ev, i) => <AdminEventCard event={ev} key={i} admin={this.props.admin} onClick={this.props.onClick} />) }
             </div>
         );
     }

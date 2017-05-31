@@ -3,9 +3,9 @@ import React from 'react'
 import Button from 'components/Button/index'
 import EventMonth from './eventMonth'
 import EventDay from './eventDay'
-import EventCard from './eventCard'
+import AdminEventCard from './eventCard'
 
-export default class UserEvents extends React.Component {
+export default class AdminEvents extends React.Component {
     constructor(props) {
         super(props);
         this.state = {showAddEvent: false}
@@ -94,15 +94,8 @@ export default class UserEvents extends React.Component {
                         text="Add Event"
                         onClick={ this.showAddEvent } />}
                         
-                    {this.state.showAddEvent && <EventCard admin={true} event={emptyEvent} addEvent={true} saveAddEventParent={this.saveAddEventParent} cancelAddEventParent={this.cancelAddEventParent}/>}
-
-                    {/*{ this.props.events.map((day, i) => <EventDay day={day} key={i} admin={true} />) }*/}
-
-                    { monthlyEvents.map((ev, i) => <EventMonth event={ev} key={i} admin={this.props.admin} onClick={this.props.onClick} />) }
-
-
-                    {/*{ allEvents.map((ev, i) => <EventCard event={ev} key={i} admin={this.props.admin} onClick={this.props.onClick} />) }*/}
-
+                    {this.state.showAddEvent && <AdminEventCard admin={true} event={emptyEvent} addEvent={true} saveAddEventParent={this.saveAddEventParent} cancelAddEventParent={this.cancelAddEventParent}/>}
+                    { monthlyEvents.map((ev, i) => <EventMonth event={ev} key={i} admin={true} onClick={this.props.onClick} />) }
                 </div>
             );
         }
