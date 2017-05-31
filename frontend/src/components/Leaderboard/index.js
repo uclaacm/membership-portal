@@ -1,7 +1,7 @@
 import React from 'react';
 import Config from 'config';
 import Topbar from 'components/Topbar';
-import Sidebar from 'components/Sidebar';
+import Sidebar from 'containers/sidebar';
 import Leaderboard from './leaderboard';
 
 export default class LeaderboardComponent extends React.Component {

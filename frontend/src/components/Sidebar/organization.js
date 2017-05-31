@@ -1,4 +1,5 @@
 import React from 'react'
+import Config from 'config'
 
 export default class Organization extends React.Component {
     render () {

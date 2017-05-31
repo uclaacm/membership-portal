@@ -4,33 +4,39 @@
 
 .profile-wrapper {
     margin-left: $sidebar-width;
-    padding-top: 60px;
-    padding-left: 60px;
+    padding: 60px;
     overflow: visible;
     transition: margin-left 0.125s ease-in-out;
 
     .profile-action-button {
         margin: 6px 6px;
     }
+
     .profile-action-button:first-child {
         margin-left: 0px;
     }
 
-    form {
-        .form-elem {
-            padding-bottom: 30px;
+    .form-elem {
+        padding-bottom: 30px;
 
-            p {
-                padding: 2px 0px;
-                font-size: 18px;
+        p {
+            padding: 2px 0px;
+            font-size: 1.1em;
+
+            span {
+                font-size: 1.1em;
+                padding: 0px 5px;
             }
         }
-
+        
         span {
             display: inline-block;
             outline: none;
-            border-bottom: 2px dashed #AAAAAA;
+        }
+
+        span.editable {
             min-width: 40px;
+            border-bottom: 2px dashed #AAAAAA;
         }
 
         select {
@@ -42,6 +48,13 @@
             background: none;
             border-bottom: 2px dashed #AAAAAA;
         }
+    }
+
+    .divider {
+        width: 100%;
+        height: 1px;
+        background-color: #CCCCCC;
+        margin-bottom: 30px;
     }
 
 

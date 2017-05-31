@@ -88,6 +88,7 @@ export default class EventCard extends React.Component {
                             }
                             }
                             className="delete-event-button" style="red collapsed" text="" icon="fa-times" />
+
                         </div>
                         <div style={{clear: "both"}}></div>
                         <h3>ACM {event.committee}</h3>

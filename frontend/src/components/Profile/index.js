@@ -2,7 +2,7 @@ import React from 'react';
 
 import Config from 'config';
 import Topbar from 'components/Topbar';
-import Sidebar from 'components/Sidebar';
+import Sidebar from 'containers/sidebar';
 import Profile from './profile';
 
 export default class ProfileComponent extends React.Component {
@@ -10,7 +10,8 @@ export default class ProfileComponent extends React.Component {
         const profile = {
             name: "Vic Yeh",
             major: "Computer Science",
-            year: "4"
+            year: "4",
+            points: 120
         };
 
         return (

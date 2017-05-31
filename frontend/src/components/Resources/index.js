@@ -1,7 +1,7 @@
 import React from 'react';
 import Config from 'config';
 import Topbar from 'components/Topbar';
-import Sidebar from 'components/Sidebar';
+import Sidebar from 'containers/sidebar';
 import Resources from './resources';
 
 export default class ResourcesComponent extends React.Component {
@@ -10,7 +10,7 @@ export default class ResourcesComponent extends React.Component {
             <div className="resources">
                 <Topbar />
                 <Sidebar/>
-                <Resources resources={ this.props.resources } />
+                <Resources />
             </div>
         );
     }
