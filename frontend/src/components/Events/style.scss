@@ -96,7 +96,7 @@
     @media (max-width: 340px) {
         width: 300px;
         .subcontent {
-            .left {
+            .right {
                 width: 180px !important;
             }
         }
@@ -151,7 +151,13 @@
         }
     }
 
-    .content { padding: 20px; }
+    .content { 
+        padding: 20px;
+
+        .edit-delete-buttons, .editable-buttons {
+            display: none;
+        }    
+    }
 
     h2 {
         color: #333333;
@@ -180,6 +186,11 @@
 
     .midcontent { 
         display: none;
+
+        .event-link {
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
     }
 
     &.selected .midcontent {
@@ -193,10 +204,12 @@
         color: #666666;
         font-weight: 300;
 
-        .left {
+        .right {
             float: left;
-            width: 210px;
+            width: 35%;
+            min-width: 122px;
             font-size: 0.8em;
+            padding-top: 2px;
 
             .time {
                 font-weight: 400;
@@ -207,12 +220,14 @@
             }
         }
 
-        .right {
+        .left {
             float: right;
-            width: 65px;
+            padding-left: 2px;
+            padding-right: 3px;
+            width: 45px;
             border-left: 1px solid #F2F2F2;
 
-            .points {
+            .points {   
                 text-align: center;
                 width: 100%;
                 font-weight: bold;
@@ -227,22 +242,136 @@
     }
 
     &.admin-card {
-        width: 100%;
+        width: 85%;
         margin: 10px 0px;
+        margin-left: 25px;
 
         .subcontent {
             border-top: 0px;
             margin-top: 0px;
         }
 
-        h3, .cover, .subcontent .right, .subcontent .location {
+        .edit-delete-buttons {
             display: none;
-        }        
+            .edit-event-button {
+                margin-right: 3px;
+            }
+        }
+
+        h3, .cover, .subcontent .left, .subcontent .location {
+            display: none;
+        }
+        
+
+        &.selected .right {
+            display: block;
+            float: left;
+            .location {
+                display: block;
+                padding: 0px;
+                margin-top: 5px;
+            }
+
+        }
+
+        &.selected .left {
+            display: block;
+            border-left: none;
+            float: left;
+            border-right: 1px solid $--secondaryblack;
+            margin-right: 10px;
+
+            .points {
+                text-align: center;
+                width: 100%;
+                font-weight: bold;
+                font-size: 1.2em;
+            }
+
+            .label {
+            }
+        }
+
+        &.selected .edit-delete-buttons {
+            display: block;
+            // position: relative;
+            float: right;
+            height: 50px;
+            // right: 10px;
+
+        }
+
+        .event-title {
+            // min-width: 400px;
+            float: left;
+            width: 64%;
+        }
+
+        .editable-buttons {
+            display: none;
+            float: right;
+            
+            .edit-event-button {
+                margin-right: 3px;
+            }
+        }
+
+        .time {
+            padding-top: 0px;
+        }
+
+        &.editable {
+            .description, .points, .time, .location, h2 {
+                border-bottom: 1px solid $--secondaryblack;
+            }
+
+            .editable-buttons {
+                display: inherit;
+            }
+
+            .edit-delete-buttons {
+                display: none;
+            }
+
+
+        }
+
+
+        &.add-event-card {
+            .event-title {
+                margin-bottom: 10px;
+            }
+        }
+
+
     }
+
+}
+
+.admin-dashboard {
+    .date-day {
+        display: inline-block;
+        width: 20px;
+        margin: 0;
+        margin-right: 4px;
+        vertical-align: middle;
+        line-height: 1em;
+    }
+    .event-day-class {
+        display: inline-block;
+        height: 100%;
+        font-size: 1.6em;
+        padding-top: 5px;
+        margin-right: 6px;
+        width: 5%;
+        }      
 
     &.user-card {
         .subcontent .right {
             display: none;
         }
     }
+    
+  
 }
+
