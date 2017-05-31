@@ -56,7 +56,6 @@ export default class RegisterComponent extends React.Component {
             profile: {
                 firstName: response.name.split(" ")[0],
                 lastName: response.name.split(" ")[1],
-                email: response.email,
                 profileId: response.id
             }
         })
@@ -70,16 +69,18 @@ export default class RegisterComponent extends React.Component {
         });
     }
 
-    handleProfileSubmit() {
+    handleProfileSubmit(e) {
+        e.preventDefault();
         if (!this.profileValid())
             return;
+        console.log(this.state.profile);
     }
 
     profileValid() {
         return this.state.profile.firstName && this.state.profile.lastName && this.state.profile.major &&
                this.state.profile.email && /^.{2,}\@([^\.\@]{1,}\.)*ucla\.edu$/.test(this.state.profile.email) &&
                parseInt(this.state.profile.year) !== NaN && parseInt(this.state.profile.year) > 0 &&
-               this.state.profile.password && this.state.profile.password.length >= 8;
+               this.state.profile.password && this.state.profile.password.length >= 10;
     }
 
     render() {

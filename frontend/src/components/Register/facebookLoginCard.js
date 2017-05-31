@@ -11,7 +11,7 @@ export default class FacebookLoginCard extends React.Component {
                 <div className="button-component">
                     <FacebookLogin
                         appId={Config.facebook.appId} 
-                        fields="name,email"
+                        fields="name"
                         autoload={true}
                         cssClass="generic-button fb-login-button blue"
                         icon="fa-facebook"

@@ -13,22 +13,18 @@ export default class DetailsCard extends React.Component {
     }
 
     render () {
-        // var buttonStyle = '';
-        // if(this.props.type === "confirm-details") {
-        //     buttonStyle = "green";
-        // }
         return(
-            <div className={"card details-card " + (this.props.profileValid() ? "confirm-details" : "")}>
+            <div className={"card details-card" + (this.props.profileValid() ? " confirm-details" : "")}>
                 <div className="inner">
-                    <form onSubmit={this.props.onSubmit} autocomplete="off">
+                    <form onSubmit={this.props.onSubmit} autoComplete="off">
                         <p className="header">Account Details</p>
 
                         <div className="email">
                             <p className="text">School Email <span className="info">(@ucla.edu)</span></p>
-                            <input className="input-large" name="email" value={this.props.profile.email} onChange={this.handleChange}></input>
+                            <input className="input-large" name="email" onChange={this.handleChange}></input>
                         </div>
                         <div className="password">
-                            <p className="text">Password <span className="info">(at least 8 characters)</span></p>
+                            <p className="text">Password <span className="info">(at least 10 characters)</span></p>
                             <input type="password" className="input-large" name="password" onChange={this.handleChange}></input>
                         </div>
                         <div className="align">
