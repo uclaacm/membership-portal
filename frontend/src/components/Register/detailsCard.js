@@ -20,23 +20,23 @@ export default class DetailsCard extends React.Component {
         return(
             <div className={"card details-card " + (this.props.profileValid() ? "confirm-details" : "")}>
                 <div className="inner">
-                    <form onSubmit={this.props.onSubmit}>
+                    <form onSubmit={this.props.onSubmit} autocomplete="off">
                         <p className="header">Account Details</p>
 
                         <div className="email">
-                            <p className="text">School Email</p>
+                            <p className="text">School Email <span className="info">(@ucla.edu)</span></p>
                             <input className="input-large" name="email" value={this.props.profile.email} onChange={this.handleChange}></input>
                         </div>
                         <div className="password">
-                            <p className="text">Password</p>
+                            <p className="text">Password <span className="info">(at least 8 characters)</span></p>
                             <input type="password" className="input-large" name="password" onChange={this.handleChange}></input>
                         </div>
                         <div className="align">
-                            <p className="text">Major</p>
+                            <p className="text">Major <span className="info">(full name of major)</span></p>
                             <input className="input-major" name="major" onChange={this.handleChange}></input>
                         </div>
                         <div className="align">
-                            <p className="text">Grad Year</p>
+                            <p className="text">Year <span className="info">(choose one)</span></p>
                             <select className="input-year" name="year" onChange={this.handleChange}>
                                 <option value={0}>--</option>
                                 <option value={1}>Freshman</option>

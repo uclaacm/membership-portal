@@ -113,6 +113,10 @@ input {
 
         .text {
             color: $light-green;
+
+            span.info {
+                display: none;
+            }
         }
     }
 
@@ -153,6 +157,12 @@ input {
         color: $--secondaryblack;
         text-align: left;
         margin-bottom: 5px;
+
+        span.info {
+            font-size: 0.9em;
+            font-weight: normal;
+            color: $gray2;
+        }
     }
 
     .align {
