@@ -61,8 +61,6 @@ export default class EventCard extends React.Component {
             
         }
 
-        console.log(event);
-
         const className = "event-card" + (this.props.admin ? " admin-card" : "") + (this.state.selected ? " selected" : "") + (this.state.editable ? " editable" : "") + (this.props.addEvent ? " add-event-card" : "")
         return(
 
