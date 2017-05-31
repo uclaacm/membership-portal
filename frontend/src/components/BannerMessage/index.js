@@ -12,6 +12,10 @@ export default class BannerMessage extends React.Component {
 
         this.showBanner = this.showBanner.bind(this);
         this.hideBanner = this.hideBanner.bind(this);
+        
+        if (props.showing) {
+            this.showBanner(props.message, props.success, props.duration);
+        }
     }
 
     showBanner(message, success, duration=3000) {
@@ -29,6 +33,12 @@ export default class BannerMessage extends React.Component {
 
     hideBanner() {
         this.setState(prev => Object.assign({}, prev, { showing: false }));
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.showing) {
+            this.showBanner(nextProps.message, nextProps.success, nextProps.duration);
+        }
     }
 
     render() {

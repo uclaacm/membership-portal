@@ -8,26 +8,25 @@ export default class YearSelector extends React.Component {
         this.emitChange = this.emitChange.bind(this);
     }
 
-    emitChange() {
-        let html = ReactDOM.findDOMNode(this).value;
-        this.props.onChange({ 
-            target: this.props.target,
-            value: html
-        });
+    emitChange(e) {
+        this.props.onChange(e);
+        this.setState({ value: e.target.value });
     }
 
-    shouldComponentUpdate(nextState) {
-        return nextState.value !== ReactDOM.findDOMNode(this).value;
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            value: nextProps.value
+        });
     }
 
     render() {
         return (
-            <select className="Display-2Primary" onChange={this.emitChange} defaultValue={this.state.value}>
-                <option value="1">Freshman</option>
-                <option value="2">Sophomore</option>
-                <option value="3">Junior</option>
-                <option value="4">Senior</option>
-                <option value="5">Post-Senior</option>
+            <select className="Display-2Primary" onChange={this.emitChange} name={this.props.target} value={this.state.value}>
+                <option value={1}>Freshman</option>
+                <option value={2}>Sophomore</option>
+                <option value={3}>Junior</option>
+                <option value={4}>Senior</option>
+                <option value={5}>Post-Senior</option>
             </select>
         );
     }

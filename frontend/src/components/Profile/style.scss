@@ -45,14 +45,16 @@
             }
         }
         
-        span {
+        span.dummy, input[type=text], textarea {
             display: inline-block;
             outline: none;
+            border:none;
+            width: 100%;
+            border-bottom: 2px dashed #AAAAAA;
         }
 
-        span.editable {
-            min-width: 40px;
-            border-bottom: 2px dashed #AAAAAA;
+        span.dummy {
+            visibility: hidden;
         }
 
         select {

@@ -6,9 +6,13 @@ const FETCH_USER = Symbol('FETCH_USER');
 const FETCH_USER_ERR = Symbol('FETCH_USER_ERR');
 
 const UPDATE_USER_ERR = Symbol('UPDATE_USER_ERR');
+const UPDATE_USER_SUCCESS = Symbol('UPDATE_USER_SUCCESS');
+const UPDATE_DONE = Symbol('UPDATE_DONE');
 
 const defaultState = Immutable.fromJS({
     profile: {},
+    updated: false,
+    updateSuccess: false,
     fetchsuccess: false,
     error: ''
 });
@@ -23,13 +27,6 @@ const fetchUserAction = (user) => {
 const fetchUserError = (error) => {
     return ({
         type: FETCH_USER_ERR,
-        error
-    });
-}
-
-const updateUserError = (error) => {
-    return({
-        type: UPDATE_USER_ERR,
         error
     });
 }
@@ -59,6 +56,26 @@ const FetchUser = () => {
     }
 }
 //PATCH
+
+const updateUserSuccess = ()=>{
+    return {
+        type: UPDATE_USER_SUCCESS,
+    };
+};
+
+const updateUserError = (error) => {
+    return {
+        type: UPDATE_USER_ERR,
+        error
+    };
+};
+
+const UserUpdateDone = ()=>{
+    return {
+        type: UPDATE_DONE,
+    };
+};
+
 const UpdateUser = (newprofile) => {
     return async (dispatch) => {
         try {
@@ -77,6 +94,7 @@ const UpdateUser = (newprofile) => {
             if (status >= 200 && status < 300) {
                 if (!data.error) {
                     dispatch(fetchUserAction(data.user));
+                    dispatch(updateUserSuccess());
                 } else {
                     throw new Error(data.error);
                 }
@@ -107,11 +125,27 @@ const User = (state=initialState(), action) => {
             })
 
         case UPDATE_USER_ERR:
-            return stat
+            return state.withMutations((val)=>{
+                val.set('updated', true);
+                val.set('updateSuccess', false);
+                val.set('error', action.error);
+            });
+
+        case UPDATE_USER_SUCCESS:
+            return state.withMutations((val)=>{
+                val.set('updated', true);
+                val.set('updateSuccess', true);
+                val.set('error', '');
+            });
+        
+        case UPDATE_DONE:
+            return state.withMutations((val)=>{
+                val.set('updated', false);
+            });
 
         default:
             return state;
     }
 }
 
-export { User, FetchUser, UpdateUser }
+export { User, FetchUser, UpdateUser, UserUpdateDone }

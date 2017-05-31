@@ -8,19 +8,24 @@ export default class EditableSpan extends React.Component {
         this.emitChange = this.emitChange.bind(this);
     }
 
-    emitChange() {
-        let html = ReactDOM.findDOMNode(this).innerHTML;
+    emitChange(e) {
         this.props.onChange({ 
             target: this.props.target,
-            value: html
+            value: e.target.innerHTML
         });
     }
 
     shouldComponentUpdate(nextState) {
-        return nextState.value !== ReactDOM.findDOMNode(this).innerHTML;
+        return nextState.value !== ReactDOM.findDOMNode(this).value;
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            value: nextProps.value
+        });
     }
 
     render() {
-        return <span contentEditable="true" className="Display-2Primary editable" onInput={ this.emitChange } onBlur={ this.emitChange}>{this.state.value}</span>;
+        return <span contentEditable="true" className="Display-2Primary editable" onInput={ this.emitChange } onBlur={ this.emitChange} dangerouslySetInnerHTML={{__html: this.state.value}}></span>;
     }
 }

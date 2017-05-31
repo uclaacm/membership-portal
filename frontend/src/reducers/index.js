@@ -4,7 +4,7 @@ import {routerReducer, routerMiddleware, push} from 'react-router-redux';
 import thunk from 'redux-thunk';
 
 import {Health, TimeGet} from './health';
-import {User, FetchUser, UpdateUser} from './user';
+import {User, FetchUser, UpdateUser, UserUpdateDone} from './user';
 import {Auth, LoginUser, LogoutUser} from './auth';
 import {Events, GetCurrentEvents} from './events';
 
@@ -23,7 +23,7 @@ const store = createStore(
 );
 
 const Action = {
-  TimeGet, LoginUser, LogoutUser, GetCurrentEvents, FetchUser, UpdateUser
+  TimeGet, LoginUser, LogoutUser, GetCurrentEvents, FetchUser, UpdateUser, UserUpdateDone
 };
 
 export {

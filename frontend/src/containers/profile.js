@@ -18,9 +18,17 @@ class Profile extends React.Component {
         }
     }
 
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.updated){
+            setTimeout(()=>{
+                this.props.updateDone();
+            }, 1000);
+        }
+    }
+
     render() {
 
-        return this.props.fetchsuccess ? <ProfileComponent profile={this.props.profile} saveChanges = {this.saveChanges.bind(this)}/> : null;
+        return <ProfileComponent profile={this.props.profile} updated={this.props.updated} updateSuccess={this.props.updateSuccess} saveChanges = {this.saveChanges.bind(this)}/>;
     }
 }
 
@@ -43,19 +51,14 @@ const mapStateToProps = (state)=>{
         profile.major = U.major;
         profile.year = U.year;
         profile.points = U.points;
-
-        return {
-            profile,
-            fetchsuccess: true,
-            authenticated: true,
-        }
-    } else {
-        return {
-            fetchsuccess: false,
-            authenticated: state.Auth.get("authenticated")
-        }
     }
 
+    return {
+        profile,
+        authenticated: state.Auth.get("authenticated"),
+        updated: u.get('updated'),
+        updateSuccess: u.get('updateSuccess'),
+    };
 };
 
 const mapDispatchToProps = (dispatch)=>{
@@ -66,7 +69,11 @@ const mapDispatchToProps = (dispatch)=>{
 
         updateUser: (newprofile) => {
             dispatch(Action.UpdateUser(newprofile))
-        }
+        },
+
+        updateDone: ()=>{
+            dispatch(Action.UserUpdateDone());
+        },
     };
 };
 

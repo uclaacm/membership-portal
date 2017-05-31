@@ -11,21 +11,26 @@ export default class Profile extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = this.props.profile;
-        this.state.showChangePassword = false;
-        this.originalProfile = this.props.profile;
+        this.state = {
+            profile: Object.assign({}, this.props.profile),
+            originalProfile: Object.assign({}, this.props.profile),
+            showChangePassword: false
+        };
 
         this.saveProfile = this.saveProfile.bind(this);
         this.handleUpdate = this.handleUpdate.bind(this);
         this.hideChangePassword = this.hideChangePassword.bind(this);
         this.showChangePassword = this.showChangePassword.bind(this);
-        this.saveChanges = this.saveChanges.bind(this);
     }
 
-    handleUpdate(obj) {
-        let newObject = { };
-        newObject[obj.target] = obj.value;
-        this.setState(prev => Object.assign({}, prev, newObject));
+    handleUpdate(e) {
+        let name = e.target.name;
+        let value = e.target.value;
+        this.setState(prev => {
+            let newState = Object.assign({}, prev);
+            newState.profile[name] = value;
+            return newState;
+        });
     }
 
     hideChangePassword(e) {
@@ -37,28 +42,35 @@ export default class Profile extends React.Component {
     }
 
     profileUpdated() {
-        return this.state.name !== this.originalProfile.name ||
-               this.state.year !== this.originalProfile.year ||
-               this.state.major !== this.originalProfile.major;
+        return this.state.profile.name !== this.state.originalProfile.name ||
+               parseInt(this.state.profile.year) !== parseInt(this.state.originalProfile.year) ||
+               this.state.profile.major !== this.state.originalProfile.major;
     }
 
-    saveChanges(e) {
-        //TODO: check that new name has at least two words
-        let nameArray = this.state.name.split(' ');
+    saveProfile(e) {
+        let nameArray = this.state.name.trim().replace(/\s{2,}/g, " ").split(' ');
+        if (nameArray.length !== 2) {
+            this.refs.banner.showBanner("Please enter a valid first and last name", false);
+            return;
+        }
+
         let firstName = nameArray[0];
         let lastName = nameArray[1];
+        let year = this.state.year;
+        let major = this.state.major;
 
-        let newProf = {};
-        newProf.firstName = firstName;
-        newProf.lastName = lastName;
-        newProf.year = this.state.year;
-        newProf.major = this.state.major;
+        this.props.saveChanges({ firstName, lastName, year, major });
+    }
 
-        this.props.saveChanges(newProf);
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            profile: Object.assign({}, this.props.profile),
+            originalProfile: Object.assign({}, this.props.profile),
+            showChangePassword: false
+        });
     }
 
     render() {
-
         if (this.props.error)
             return <div className="profile-wrapper"><h1>{this.props.error}</h1></div>;
 
@@ -72,7 +84,7 @@ export default class Profile extends React.Component {
 
         return (
             <div>
-                <BannerMessage ref="banner" />
+                {/*<BannerMessage ref="banner" showing={this.props.updated} success={this.props.updateSuccess} message={this.props.updateSuccess ? "Profile successfully updated." : "An error occurred."} />*/}
                 <OverlayPopup
                     onCancel={ this.hideChangePassword }
                     onSubmit={ this.submitChangePassword }
@@ -93,24 +105,19 @@ export default class Profile extends React.Component {
                 <div className="profile-wrapper">
                     <div className="form-elem">
                         <p className="SubheaderSecondary">Hello,</p>
-                        <EditableSpan
-                            target="name"
-                            value={this.props.profile.name}
-                            onChange={this.handleUpdate} />
+                        <input type="text" className="Display-2Primary" value={this.state.profile.name} name="name" onChange={this.handleUpdate}/>
+                        <span className="dummy" ref="name">{this.state.profile.name}</span>
                     </div>
                     <div className="form-elem">
                         <p className="SubheaderSecondary">You are a</p>
                         <YearSelector
                             target="year"
-                            value={this.props.profile.year}
+                            value={this.state.profile.year}
                             onChange={this.handleUpdate} />
                     </div>
                     <div className="form-elem">
                         <p className="SubheaderSecondary">majoring in</p>
-                        <EditableSpan
-                            target="major"
-                            value={this.props.profile.major}
-                            onChange={this.handleUpdate} />
+                        <input type="text" className="Display-2Primary" value={this.state.profile.major} name="major" onChange={this.handleUpdate}/>
                     </div>
                     <div className="form-elem">
                         <Button
