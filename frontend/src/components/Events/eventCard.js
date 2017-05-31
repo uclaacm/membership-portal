@@ -65,10 +65,11 @@ export default class EventCard extends React.Component {
 
         const className = "event-card" + (this.props.admin ? " admin-card" : "") + (this.state.selected ? " selected" : "") + (this.state.editable ? " editable" : "") + (this.props.addEvent ? " add-event-card" : "")
         return(
+
             <div className="admin-event-day-wrapper">
                 <div className="event-day-class">
-                    {event.date.format("DD")}<br/>
-                    {event.date.format("ddd")}
+                    {event.date ? event.date.format("DD") : ""}<br/>
+                    {event.date ? event.date.format("ddd") : ""}
                 </div>
                 <div className={className} onClick={this.handleClick}>
                     <div className="cover" style={{ backgroundImage: 'url('+event.cover+')' }}></div>
@@ -78,13 +79,13 @@ export default class EventCard extends React.Component {
                             <Button onClick={(e) => {
                                 e.stopPropagation();
                                 this.saveEvent();
-                                this.props.saveAddEventParent();
+                                this.props.addEvent && this.props.saveAddEventParent();
                             }
                             } className="edit-event-button" style={"collapsed" + (this.state.editable ? " green" : " blue")} text="" icon="fa-check" />
                             <Button onClick={(e) => {
                                 e.stopPropagation();
                                 this.cancelEditEvent();
-                                this.props.cancelAddEventParent();
+                                this.props.addEvent && this.props.cancelAddEventParent();
                             }
                             }
                             className="delete-event-button" style="red collapsed" text="" icon="fa-times" />
