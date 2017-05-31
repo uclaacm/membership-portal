@@ -25,12 +25,13 @@
         padding: 0px;
     }
 
-    .settings-img {
-        width: 30px;
-        height: 30px;
+    .logout-btn {
         position: absolute;
         top: 15px;
         left: 15px;
+        button i {
+            color: #666666 !important;
+        }
     }
 
     .profile-picture {
