@@ -3,7 +3,7 @@ import React from 'react'
 import Button from 'components/Button/index'
 import EventMonth from './eventMonth'
 import EventDay from './eventDay'
-import AdminEventCard from './eventCard'
+import AdminEventCard from './adminEventCard'
 
 export default class AdminEvents extends React.Component {
     constructor(props) {
