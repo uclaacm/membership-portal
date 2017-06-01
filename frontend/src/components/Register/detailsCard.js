@@ -1,5 +1,5 @@
 import React from 'react'
-import Button from 'components/Button/index'
+import Button from 'components/Button'
 
 export default class DetailsCard extends React.Component {
     constructor(props) {
@@ -12,8 +12,8 @@ export default class DetailsCard extends React.Component {
             this.props.onChange(e.target.name, e.target.value);
     }
 
-    render () {
-        return(
+    render() {
+        return (
             <div className={"card details-card" + (this.props.profileValid() ? " confirm-details" : "")}>
                 <div className="inner">
                     <form onSubmit={this.props.onSubmit} autoComplete="off">

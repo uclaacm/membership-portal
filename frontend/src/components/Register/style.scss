@@ -40,9 +40,7 @@ input {
     height: 307px;
     background: $white;
     text-align: center;
-}
 
-.name-confirm-card {
     .question {
         font-size: 36px;
         font-weight: bold;
@@ -50,7 +48,9 @@ input {
         margin-top: 65px;
         margin-bottom: 27px;
     }
+}
 
+.name-confirm-card {
     .name {
         font-size: 24px;
         font-weight: bold;

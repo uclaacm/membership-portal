@@ -1,12 +1,14 @@
 import React from 'react';
 import Config from 'config';
+import BannerMessage from 'components/BannerMessage';
 
 import DetailsCard from './detailsCard';
-import NameConfirmCard from './nameConfirmCard';
-import FacebookLoginCard from './facebookLoginCard'
+import SuccessCard from './successCard';
+import FacebookLoginCard from './facebookLoginCard';
 
 const PAGE_FB_LOGIN = Symbol('PAGE_FB_LOGIN');
 const PAGE_DETAILS_CARD = Symbol('PAGE_DETAILS_CARD');
+const PAGE_SUCCESS_CARD = Symbol('PAGE_SUCCESS_CARD');
 
 export default class RegisterComponent extends React.Component {
     constructor(props) {
@@ -20,7 +22,6 @@ export default class RegisterComponent extends React.Component {
                 year: 0,
                 major: "",
                 password: "",
-                confPassword: "",
                 profileId: ""
             }
         }
@@ -42,6 +43,8 @@ export default class RegisterComponent extends React.Component {
                             onChange={this.handleProfileChange}
                             onSubmit={this.handleProfileSubmit}
                             profileValid={this.profileValid} />
+            case PAGE_SUCCESS_CARD:
+                return <SuccessCard />
             default:
                 return null
         }
@@ -73,22 +76,28 @@ export default class RegisterComponent extends React.Component {
         e.preventDefault();
         if (!this.profileValid())
             return;
-        console.log(this.state.profile);
     }
 
     profileValid() {
-        return this.state.profile.firstName && this.state.profile.lastName && this.state.profile.major &&
-               this.state.profile.email && /^.{2,}\@([^\.\@]{1,}\.)*ucla\.edu$/.test(this.state.profile.email) &&
-               parseInt(this.state.profile.year) !== NaN && parseInt(this.state.profile.year) > 0 &&
-               this.state.profile.password && this.state.profile.password.length >= 10;
+        const p = this.state.profile;
+        return p.firstName
+            && p.lastName
+            && p.major
+            && p.email
+            && /^.{2,}\@([^\.\@]{1,}\.)*ucla\.edu$/.test(p.email)
+            && parseInt(p.year) !== NaN && parseInt(p.year) > 0
+            && p.password && p.password.length >= 10;
     }
 
     render() {
         return (
-            <div className="register-component">
-                <a href="/login" className="no-style Title-2White login-link">&lt; Back to Login</a>
-                { this.renderComponentForPage(this.state.currentPage) }
-                <img src={Config.organization.logoLight} className="corner-logo" />
+            <div>
+                <BannerMessage showing={this.props.created && !this.props.createSuccess} success={false} message={this.props.createError} />
+                <div className="register-component">
+                    <a href="/login" className="no-style Title-2White login-link">&lt; Back to Login</a>
+                    { this.renderComponentForPage(this.state.currentPage) }
+                    <img src={Config.organization.logoLight} className="corner-logo" />
+                </div>
             </div>
         );
     }
