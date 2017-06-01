@@ -8,11 +8,6 @@ import {Action} from 'reducers';
 import EventsComponent from 'components/Events'
 
 class Events extends React.Component {
-
-    handleGetEvents() {
-        this.props.fetchEvents();
-    }
-
     componentWillMount() {
         if (this.props.authenticated) {
             this.props.fetchEvents();
@@ -21,19 +16,8 @@ class Events extends React.Component {
 
   render(){
     return <div>
-      {/*<div>{Config.info.msg}</div>
-      <div>Path: {this.props.urlPath}</div>
-      <div>
-        <button onClick={()=>{this.props.getTime(Config.info.msg);}}>Get Time</button>
-        {this.props.loading && <span>Loading</span>}
-        {!this.props.loading && this.props.success && <span>Time: {this.props.time}</span>}
-        {!this.props.loading && this.props.err && <span>Time: Error({this.props.err})</span>}
-      </div>*/}
-        <EventsComponent fetchEvents={this.handleGetEvents.bind(this)}
-                    events={this.props.events}
-                    error={this.props.error} />
+        <EventsComponent events={this.props.events} error={this.props.error} />
     </div>;
-
   }
 }
 
