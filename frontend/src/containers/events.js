@@ -6,7 +6,7 @@ import moment from 'moment';
 import Config from 'config';
 import {Action} from 'reducers';
 import Topbar from 'components/Topbar';
-import Sidebar from 'containers/Sidebar';
+import Sidebar from 'containers/sidebar';
 import EventsComponent from 'components/Events/UserEvents'
 
 class Events extends React.Component {
