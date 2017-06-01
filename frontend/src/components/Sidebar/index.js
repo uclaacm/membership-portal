@@ -22,7 +22,8 @@ export default class Sidebar extends React.Component {
     render () {
         return (
             <div className="sidebar">
-                <Button className="logout-btn" style="gray collapsed" icon="fa fa-sign-out" onClick={this.signOut} />
+                <a className="no-style logout-btn" onClick={this.signOut} title="Sign Out"><i className="fa fa-arrow-left"></i></a>
+                {/*<Button className="logout-btn" style="gray collapsed" icon="fa fa-arrow-left" onClick={this.signOut} />*/}
                 <div className="sidebar-container">
                     <ProfilePicture pic={this.props.pic}/>
                     <Organization org={Config.organization.shortName} />
