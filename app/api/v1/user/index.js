@@ -23,8 +23,8 @@ router.route('/')
     if (req.body.user.newPassword && req.body.user.confPassword) {
         if (req.body.user.newPassword !== req.body.user.confPassword)
             return next(new error.UserError('Passwords do not match'));
-        if (req.body.user.newPassword.length < 8)
-            return next(new error.UserError('New password must be at least 8 characters'));
+        if (req.body.user.newPassword.length < 10)
+            return next(new error.UserError('New password must be at least 10 characters'));
         return req.user.updatePassword(req.body.user.newPassword).then(req.user.save).then(user => {
             res.json({ error: null, user: user.getPublic() });
         }).catch(next);
