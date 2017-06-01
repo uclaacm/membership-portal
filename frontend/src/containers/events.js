@@ -5,7 +5,9 @@ import moment from 'moment';
 
 import Config from 'config';
 import {Action} from 'reducers';
-import EventsComponent from 'components/Events'
+import Topbar from 'components/Topbar';
+import Sidebar from 'containers/Sidebar';
+import EventsComponent from 'components/Events/UserEvents'
 
 class Events extends React.Component {
     componentWillMount() {
@@ -16,6 +18,8 @@ class Events extends React.Component {
 
   render(){
     return <div>
+        <Topbar />
+        <Sidebar />
         <EventsComponent events={this.props.events} error={this.props.error} />
     </div>;
   }

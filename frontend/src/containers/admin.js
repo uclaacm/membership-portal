@@ -6,7 +6,7 @@ import moment from 'moment';
 
 import Config from 'config';
 import {Action} from 'reducers';
-import AdminEvents from 'components/Events/adminEvents';
+import AdminEvents from 'components/Events/AdminEvents';
 import Topbar from 'components/Topbar';
 import Sidebar from 'containers/sidebar';
 

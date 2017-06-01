@@ -5,9 +5,7 @@ import Button from 'components/Button/index'
 export default class AdminEventCard extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { selected: false,
-                       editable: false    
-                     };
+        this.state = { selected: false, editable: false };
         this.handleClick = this.handleClick.bind(this);
         this.editEvent = this.editEvent.bind(this);
     }
@@ -15,14 +13,6 @@ export default class AdminEventCard extends React.Component {
     handleClick(e) {
         if (this.props.onClick)
             return this.props.onClick(e);
-        
-        if(this.state.editable) {
-            return;
-        }
-
-        this.setState(prev => ({
-            selected: !prev.selected
-        }));
     }
 
     //Handles button click to edit event
@@ -55,13 +45,20 @@ export default class AdminEventCard extends React.Component {
 
     render() {
         const event = this.props.event;
-        if(this.props.addEvent) {
+        
+        return (
+            <div className="event-tile">
+
+            </div>
+        );
+
+        /*if(this.props.addEvent) {
             this.state.selected = true;
             this.state.editable = true;
             
         }
 
-        const className = "event-card" + (this.props.admin ? " admin-card" : "") + (this.state.selected ? " selected" : "") + (this.state.editable ? " editable" : "") + (this.props.addEvent ? " add-event-card" : "")
+        const className = "event-card admin-card" + (this.state.selected ? " selected" : "") + (this.state.editable ? " editable" : "") + (this.props.addEvent ? " add-event-card" : "")
         return(
 
             <div className="admin-event-day-wrapper">
@@ -121,6 +118,6 @@ export default class AdminEventCard extends React.Component {
                     </div>
                 </div>
             </div>
-        );
+        );*/
     }
 }
