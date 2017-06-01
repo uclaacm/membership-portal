@@ -2,6 +2,7 @@ import React from 'react'
 
 import Button from 'components/Button/index'
 import EventMonth from './eventMonth'
+import AdminInput from './adminInput'
 
 export default class AdminEvents extends React.Component {
     constructor(props) {
@@ -63,7 +64,37 @@ export default class AdminEvents extends React.Component {
                         onClick={ this.showAddEvent } />}
                         
                     { months.map((month, i) => <EventMonth month={month} key={i} onClick={this.props.onClick} />) }
+
+                    <div className="add-event-popup">
+                        <div className="overlay">
+                            <AdminInput text="Image URL" field="half" />
+                            <AdminInput text="Event Link" field="half"/>
+                            <AdminInput text="Event Name" field="full"/>
+                            <AdminInput text="Committee" field="committee"/>
+                            <AdminInput text="Points" field="points"/>
+
+
+                            <AdminInput text="Start" field="half" />
+                            <AdminInput text="End" field="half"/>
+                            <AdminInput text="Location" field="full"/>
+                            <AdminInput text="Description" field="full"/>
+
+                            {/*<input type="text" className="event-link"/>
+                            <input type="text" className="event-name"/>
+                            <input type="text" className="committee"/>
+                            <input type="text" className="points"/>
+
+                            <input type="text" className="start-time"/>
+                            <input type="text" className="start-date"/>
+                            <input type="text" className="end-time"/>
+                            <input type="text" className="end-date"/>
+            
+                            <input type="text" className="location"/>
+                            <input type="text" className="description"/>*/}
+                        </div>
+                    </div>
                 </div>
+
             );
         }
     }

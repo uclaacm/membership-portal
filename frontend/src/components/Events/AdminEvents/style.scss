@@ -1,7 +1,134 @@
+.admin-dashboard {
+    .date-month {
+        margin-left: 20px;
+        margin-bottom: 15px;
+    }
+
+    .add-event-popup {
+        width: 400px;
+        height: 100%;
+        position: fixed;
+        right: 0px;
+        top: 0px;
+        background: #D3D3D3;
+        z-index: 9000;
+
+        .overlay {
+            position: relative;
+            background: white;
+            height: 100%;
+            margin-top: 180px;
+            width: 400px;
+            padding: 25px;
+        }
+
+        @mixin admin-input-mixin ($width) {
+            width: $width;
+            margin-right: 10px;
+            input {
+                width: $width - 10px - 2px;
+                padding: 5px;
+                margin: 2px;
+                border-radius: 5px;
+                border: 1px solid $--disabled;
+            }
+        }
+
+        .admin-input {
+            display: inline-block;
+        }
+
+        .full {
+            @include admin-input-mixin(350px)
+        }
+
+        .half {
+            @include admin-input-mixin(170px);
+        }
+
+        .committee {
+            @include admin-input-mixin(300px);
+        }
+
+        .points {
+            @include admin-input-mixin(40px);
+        }
+
+
+
+        
+        // position: fixed; 
+        // margin: 150px auto;
+        // background: gray;
+        // width: 400px;
+        // height: auto;
+        // border-radius: 20px;
+        // box-shadow: 0 4px 0 0 rgba(255, 255, 255, 0.5);
+
+
+
+        // @mixin input-field($input-field-width) {
+        //     width: $input-field-width;
+        //     padding: 5px;
+        //     height: 24px;
+        //     margin: 2px;
+        //     border-radius: 5px;
+        //     border: 1px solid $--disabled;
+        // }
+
+        // .image-url { 
+        //     @include input-field(150px); 
+        // }
+        
+        // .event-link { 
+        //     @include input-field(150px); 
+        // }
+        
+        // .event-name { 
+        //     @include input-field(150px); 
+        // }
+        
+        // .committee { 
+        //     @include input-field(150px); 
+        // }
+        
+        // .points { 
+        //     @include input-field(150px); 
+        // }
+        
+        // .start-time { 
+        //     @include input-field(150px); 
+        // }
+        // .start-date { 
+        
+        //     @include input-field(150px); 
+        // }
+        // .end-time { 
+        
+        //     @include input-field(150px); 
+        // }
+        // .end-date { 
+        
+        //     @include input-field(150px); 
+        // }
+        
+        // .location { 
+        //     @include input-field(150px); 
+        // }
+        
+        // .description { 
+        //     @include input-field(150px); 
+        // }
+   
+    }
+}
+
 .admin-dashboard .event-day {
     padding: 0px 20px;
 
     h2 {
+        margin-top: 15px;
+        margin-bottom: 10px;
         color: rgba(0, 0, 0, 0.6);
         font-size: 24px;
         font-weight: bold;
@@ -14,6 +141,7 @@
 
     margin-bottom: 10px;
     border: 1px solid #CCC;
+    border-radius: 4px;
 
     .top {
         display: table;
@@ -40,7 +168,11 @@
     }
 
     .bottom {
+        display: none;
         padding: 15px;
+        .event-link {
+            margin: 5px 0;
+        }
         .right {
             display: block;
             float: left;
@@ -89,6 +221,18 @@
             }
         }
     }
+
+    &.selected {
+        .bottom {
+            display: inherit;
+            border-top: 1px solid $--disabled;
+        }
+
+        .cover {
+            border-bottom-left-radius: 0px;
+        }
+    }
+
 
     
 }
