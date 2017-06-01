@@ -115,6 +115,10 @@
         background: white;
     }
 
+    &.admin-card {
+        margin-left: 10px;
+    }
+
     .cover {
         width: 100%;
         height: 180px;
@@ -327,11 +331,11 @@
     .event-day-class {
         display: inline-block;
         height: 100%;
-        text-align: right;
+        // text-align: right;
         font-size: 1.6em;
         padding-top: 20px;
-        margin-right: 6px;
-        width: 5%;
+        width: 40px;
+        text-align: center;
 
         &.hidden {
             visibility: hidden;

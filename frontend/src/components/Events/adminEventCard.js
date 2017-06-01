@@ -65,7 +65,7 @@ export default class AdminEventCard extends React.Component {
         return(
 
             <div className="admin-event-day-wrapper">
-                <div className="event-day-class">
+                <div className={"event-day-class" + (event.firstDay ? "" : " hidden")}>
                     <span className="event-date">{event.date ? event.date.format("DD") : ""}</span><br/>
                     <span className="event-day">{event.date ? event.date.format("ddd") : ""}</span>
                 </div>
