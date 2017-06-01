@@ -20,6 +20,7 @@ module.exports = (Sequelize, db) => {
 		email: {
 			type: Sequelize.STRING,
 			allowNull: false,
+			unique: true,
 			validate: {
 				isEmail: {
 					msg: "The email you entered is not valid"
@@ -182,11 +183,11 @@ module.exports = (Sequelize, db) => {
 	};
 
 	User.Instance.prototype.getUserProfile = function() {
+		const profileId = this.getDataValue('profileId');
 		return {
 			firstName  : this.getDataValue('firstName'),
 			lastName   : this.getDataValue('lastName'),
-			// TODO: change this to generate profile image
-			picture    : this.getDataValue('profileId'),
+			picture    : profileId ? 'https://graph.facebook.com/' + profileId + '/picture?width=300' : null,
 			email      : this.getDataValue('email'),
 			year       : this.getDataValue('year'),
 			major      : this.getDataValue('major'),
