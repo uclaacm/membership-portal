@@ -10,41 +10,43 @@ import Sidebar from 'containers/sidebar';
 import EventsComponent from 'components/Events/UserEvents'
 
 class Events extends React.Component {
-  componentWillMount() {
-    if (this.props.authenticated) {
-      this.props.fetchEvents();
-    }
-  }
+	componentWillMount() {
+		if (this.props.authenticated) {
+			this.props.fetchEvents();
+		}
+	}
 
-  render(){
-    return <div>
-        <Topbar />
-        <Sidebar />
-        <EventsComponent events={this.props.events} error={this.props.error} />
-    </div>;
-  }
+	render(){
+		return (
+			<div>
+				<Topbar />
+				<Sidebar />
+				<EventsComponent events={this.props.events} error={this.props.error} />
+			</div>
+		);
+	}
 }
 
 const mapStateToProps = (state)=>{
-    const e = state.Events;
+	const e = state.Events;
 
-    return {
-        events: e.get('events'),
-        error: e.get('error'),
-        authenticated: state.Auth.get('authenticated'),
-    };
+	return {
+		events: e.get('events'),
+		error: e.get('error'),
+		authenticated: state.Auth.get('authenticated'),
+	};
 };
 
 const mapDispatchToProps = (dispatch)=>{
-    return {
-        fetchEvents: () => {
-            dispatch(Action.GetCurrentEvents());
-        },
+	return {
+		fetchEvents: () => {
+			dispatch(Action.GetCurrentEvents());
+		},
 
-        getTime: (input)=>{
-            dispatch(Action.TimeGet());
-        },
-    };
+		getTime: (input)=>{
+			dispatch(Action.TimeGet());
+		},
+	};
 };
 
 
