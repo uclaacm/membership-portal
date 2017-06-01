@@ -16,8 +16,10 @@ import Login from 'containers/login';
 import Profile from 'containers/profile';
 import Leaderboard from 'containers/leaderboard';
 import Resources from 'containers/resources';
+import Register from 'containers/register';
+import ResetPassword from 'containers/resetPassword';
+import ConfirmAccount from 'containers/confirmAccount';
 import requireAuth from 'containers/requireAuth';
-import Register from 'components/Register';
 
 class App extends React.Component {
 	render(){
@@ -28,6 +30,8 @@ class App extends React.Component {
 						<Switch>
 							<Route path="/login" component={Login}/>
 							<Route path="/register" component={Register}/>
+							<Route path="/resetpass" component={ResetPassword}/>
+							<Route path="/confirm" component={ConfirmAccount}/>
 							<Route path="/events" component={requireAuth(Events)}/>
 							<Route path="/profile" component={requireAuth(Profile)}/>
 							<Route path="/resources" component={requireAuth(Resources)}/>
