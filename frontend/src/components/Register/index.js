@@ -76,6 +76,12 @@ export default class RegisterComponent extends React.Component {
         e.preventDefault();
         if (!this.profileValid())
             return;
+
+        this.setState(prev => {
+            let newState = Object.assign({}, prev);
+            newState.currentPage = PAGE_SUCCESS_CARD;
+            return newState;
+        });
     }
 
     profileValid() {

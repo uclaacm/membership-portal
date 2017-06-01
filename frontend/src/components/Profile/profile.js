@@ -14,6 +14,9 @@ export default class Profile extends React.Component {
         this.state = {
             profile: Object.assign({}, this.props.profile),
             originalProfile: Object.assign({}, this.props.profile),
+            password: '',
+            passwordNew: '',
+            passwordConf: '',
             showChangePassword: false
         };
 
@@ -107,7 +110,7 @@ export default class Profile extends React.Component {
     render() {
         if (this.props.error)
             return <div className="profile-wrapper"><h1>{this.props.error}</h1></div>;
-        
+
         let currLevel = Config.levels[0];
         let nextLevel = Config.levels[1];
         let currLevelNumber = 0;
@@ -134,10 +137,23 @@ export default class Profile extends React.Component {
                     title="Change Password"
                     submitText="Update"
                     cancelText="Cancel">
-                    <form onSubmit={ this.submitChangePassword }>
-                        <input type="password" placeholder="Old password..." /><br />
-                        <input type="password" placeholder="New password..." /><br />
-                        <input type="password" placeholder="Confirm password..." /><br />
+                    <form onSubmit={(e)=>{
+                        e.preventDefault();
+                        this.props.saveChanges({
+                          password: this.state.password,
+                          newPassword: this.state.passwordNew,
+                          confPassword: this.state.passwordConf,
+                        });
+                      }}>
+                        <input type="password" placeholder="Old password..." onChange={(e)=>{this.setState((prev)=>{
+                            return Object.assign({}, prev, {password: e.target.value});
+                          });}}/><br />
+                        <input type="password" placeholder="New password..." onChange={(e)=>{this.setState((prev)=>{
+                            return Object.assign({}, prev, {passwordNew: e.target.value});
+                          });}}/><br />
+                        <input type="password" placeholder="Confirm password..." onChange={(e)=>{this.setState((prev)=>{
+                            return Object.assign({}, prev, {passwordConf: e.target.value});
+                          });}}/><br />
                         { this.props.checkInError ? <span className="CaptionSecondary error">{ this.props.checkInError }</span> : <span className="CaptionSecondary error">&nbsp;</span> }
                     </form>
                 </OverlayPopup>

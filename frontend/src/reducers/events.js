@@ -1,5 +1,6 @@
 import Immutable from 'immutable';
 import Config from 'config';
+import moment from 'moment';
 
 /////////////////
 /// UTILITY /////
@@ -17,9 +18,6 @@ const removeFromStorage = (key) => localStorage.removeItem(key);
 //// ACTIONS /////
 //////////////////
 
-
-const FETCH_EVENTS = Symbol('FETCH_EVENTS');
-const FETCH_SINGLE_EVENT = Symbol('FETCH_SINGLE_EVENT');
 const FETCH_PAST_EVENTS = Symbol('FETCH_PAST_EVENTS');
 const FETCH_PAST_EVENT = Symbol('FETCH_PAST_EVENT');
 const FETCH_FUTURE_EVENTS = Symbol('FETCH_FUTURE_EVENTS');
@@ -28,19 +26,6 @@ const UPDATE_EVENTS = Symbol('UPDATE_EVENTS');
 const UPDATE_EVENTS_ERROR = Symbol('UPDATE_EVENTS_ERROR');
 const POST_EVENT_SUCCESS = Symbol('POST_EVENT_SUCCESS');
 const POST_EVENT_ERR = Symbol('POST_EVENT_ERR');
-
-const FetchEvents = ()=>{
-    return({
-        type: FETCH_EVENTS
-    });
-};
-
-const FetchEvent = (id)=>{
-    return({
-        type: FETCH_SINGLE_EVENT,
-        id
-    });
-};
 
 const UpdateEvents = (events)=>{
     return({
@@ -71,7 +56,17 @@ const GetCurrentEvents = ()=>{
             const data = await response.json();
 
             if (status >= 200 && status < 300) {
-                const events = data.events;
+                const events = data.events.map(event => ({
+                  cover: event.cover,
+                  committee: event.committee,
+                  startDate: moment(event.startDate),
+                  endDate: moment(event.endDate),
+                  eventLink: event.eventLink,
+                  title: event.title,
+                  location: event.location,
+                  description: event.description,
+                  attendancePoints: event.attendancePoints
+                }));
                 dispatch(UpdateEvents(events));
             } else {
                 throw new Error('Error fetching events');
@@ -105,13 +100,14 @@ const PostNewEvent = (newevent)=>{
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${getFromStorage("token")}`
           },
-          body: JSON.stringify({'events': newevent}),
+          body: JSON.stringify({'event': newevent}),
       });
       const status = await response.status;
       const data = await response.json();
 
       if(!data.error){
         dispatch(PostNewEventSuccess());
+        dispatch(GetCurrentEvents());
       } else {
         throw new Error('Error creating a new event: ' + data.error);
       }
@@ -129,8 +125,7 @@ const defaultState = Immutable.fromJS({
     events: [],
     error: '',
     posted: false,
-    postSuccess: false,
-    postErr: '',
+    postSuccess: false
 });
 
 const initState = () => {
@@ -158,14 +153,14 @@ const Events = (state=initState(), action) => {
       return state.withMutations((val)=>{
         val.set('posted', true);
         val.set('postSuccess', true);
-        val.set('postErr', '');
+        val.set('error', '');
       });
 
     case POST_EVENT_ERR:
       return state.withMutations((val)=>{
         val.set('posted', true);
         val.set('postSuccess', false);
-        val.set('postErr', action.error);
+        val.set('error', action.error);
       });
 
     default:

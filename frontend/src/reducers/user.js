@@ -32,7 +32,6 @@ const fetchUserError = (error) => {
 }
 
 const FetchUser = () => {
-
     return async (dispatch) => {
         try {
             const response = await fetch(Config.API_URL + Config.routes.user, {
@@ -137,7 +136,7 @@ const User = (state=initialState(), action) => {
                 val.set('updateSuccess', true);
                 val.set('error', '');
             });
-        
+
         case UPDATE_DONE:
             return state.withMutations((val)=>{
                 val.set('updated', false);

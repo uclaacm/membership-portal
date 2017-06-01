@@ -1,0 +1,17 @@
+.admin-dashboard .event-day {
+    padding: 0px 20px;
+
+    h2 {
+        color: rgba(0, 0, 0, 0.6);
+        font-size: 24px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+}
+
+.admin-dashboard .event-tile {
+    width: 100%;
+    height: 100px;
+    margin-bottom: 10px;
+    border: 1px solid #CCC;
+}

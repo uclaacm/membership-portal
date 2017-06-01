@@ -4,7 +4,7 @@ import Button from 'components/Button/index'
 import OverlayPopup from 'components/OverlayPopup'
 
 import EventDay from './eventDay'
-import EarlierEventsIcon from './earlierEventsIcon'
+import EarlierEventsIcon from 'components/Events/earlierEventsIcon'
 
 export default class UserEvents extends React.Component {
     constructor(props) {
@@ -33,11 +33,20 @@ export default class UserEvents extends React.Component {
         e.preventDefault();
     }
 
-    render () {
+    render() {
         if (this.props.error)
-            return (<div className="events-dashboard"><h1>{this.props.error}</h1></div>);
+            return (<div className="events-dashboard user-dashboard"><h1>{this.props.error}</h1></div>);
+
+        let days = [];
+        for (let event of this.props.events) {
+            if (days.length === 0 || event.startDate.date() !== days[days.length - 1].date.date())
+                days.push({ date: event.startDate, events: [event] });
+            else
+                days[days.length - 1].events.push(event);
+        }
+
         return (
-            <div className="events-dashboard">
+            <div className="events-dashboard user-dashboard">
                 <OverlayPopup
                     onCancel={ this.hideCheckIn }
                     onSubmit={ this.submitCheckIn }
@@ -57,7 +66,7 @@ export default class UserEvents extends React.Component {
                     icon="fa-calendar-check-o"
                     text="Check In"
                     onClick={ this.showCheckIn } />
-                { this.props.events.map((day, i) => <EventDay day={day} key={i} admin={false} />) }
+                { days.map((day, i) => <EventDay day={day} key={i} admin={false} />) }
             </div>
         );
     }
