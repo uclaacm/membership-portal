@@ -36,6 +36,7 @@ class App extends React.Component {
 							<Route path="/profile" component={requireAuth(Profile)}/>
 							<Route path="/resources" component={requireAuth(Resources)}/>
 							<Route path="/leaderboard" component={requireAuth(Leaderboard)}/>
+							<Route path="/admin" component={Login}/>
 							<Redirect to="/events"/>
 						</Switch>
 					</div>
