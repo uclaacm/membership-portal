@@ -7,6 +7,8 @@ import moment from 'moment';
 import Config from 'config';
 import {Action} from 'reducers';
 import AdminEvents from 'components/Events/adminEvents';
+import Topbar from 'components/Topbar';
+import Sidebar from 'containers/sidebar';
 
 class AdminDash extends React.Component {
   componentWillMount() {
@@ -24,8 +26,10 @@ class AdminDash extends React.Component {
   }
 
   render(){
-    return <div>
-      <AdminEvents events={this.props.events} error={this.props.error} />
+    return <div className="dashboard">
+      <Topbar/>
+      <Sidebar/>
+      <AdminEvents events={this.props.events} error={this.props.error}/>
     </div>;
   }
 }
