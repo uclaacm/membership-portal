@@ -10,6 +10,22 @@ const getFromStorage = (key) => localStorage.getItem(key);
 
 const removeFromStorage = (key) => localStorage.removeItem(key);
 
+const tokenGetClaims = (token)=>{
+  const tokenArray = token.split('.');
+  if(tokenArray.length !== 3){
+    return false;
+  }
+  return JSON.parse(window.atob(tokenArray[1].replace('-', '+').replace('_', '/')));
+};
+
+const tokenIsAdmin = (token)=>{
+  const t = tokenGetClaims(token);
+  if(t.admin){
+    return true;
+  }
+  return false;
+};
+
 ///////////////
 /// ACTIONS ///
 ///////////////
@@ -19,9 +35,10 @@ const AUTH_USER = Symbol('AUTH_USER');
 const UNAUTH_USER = Symbol('UNAUTH_USER');
 const AUTH_ERROR = Symbol('AUTH_ERROR');
 
-const AuthUser = () => {
+const AuthUser = (isAdmin) => {
     return ({
-        type: AUTH_USER
+        type: AUTH_USER,
+        isAdmin,
     });
 }
 
@@ -51,7 +68,7 @@ const LoginUser = (email, password) => {
                 const data = await response.json();
                 if (!data.error) {
                     setStorage("token", data.token);
-                    dispatch(AuthUser());
+                    dispatch(AuthUser(tokenIsAdmin(data.token)));
                 } else {
                     throw new Error(data.error.message);
                 }
@@ -108,22 +125,21 @@ const defaultState = Immutable.fromJS({
     error: '',
     message: '',
     content: '',
-    authenticated: false
+    authenticated: false,
+    isAdmin: false,
 });
 
 const initState = () => {
-    //TODO: check if there is a token
-    const usertoken = localStorage.getItem("token");
-    if (!localStorage.getItem("token")) {
-        return defaultState;
-    } else {
-        return Immutable.fromJS({
-            error: '',
-            message: '',
-            content: '',
-            authenticated: true
-        });
+    if(localStorage.getItem("token")) {
+      return Immutable.fromJS({
+        error: '',
+        message: '',
+        content: '',
+        authenticated: true,
+        isAdmin: tokenIsAdmin(localStorage.getItem("token")),
+      });
     }
+    return defaultState;
 }
 
 const Auth = (state=initState(), action) => {
@@ -133,13 +149,11 @@ const Auth = (state=initState(), action) => {
                 val.set('authenticated', true);
                 val.set('error', '');
                 val.set('message', '');
+                val.set('isAdmin', action.isAdmin);
             });
 
         case UNAUTH_USER:
-            return state.withMutations(val => {
-                val.set('authenticated', false);
-                val.set('error': '');
-            });
+            return defaultState;
 
         case AUTH_ERROR:
             return state.withMutations(val => {
