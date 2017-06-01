@@ -29,12 +29,12 @@
     .checkin-button {
         position: fixed;
         top: 20px;
-        right: 20px;
+        left: calc(100vw - 190px);
         z-index: 10;
     }
 
     h1 {
-        margin-left: 20px;
+        margin-left: 50px;
     }
 
     &.admin-dashboard .event-day h1 {
