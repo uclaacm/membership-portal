@@ -8,11 +8,11 @@ import {Action} from 'reducers';
 import EventsComponent from 'components/Events'
 
 class Events extends React.Component {
-    componentWillMount() {
-        if (this.props.authenticated) {
-            this.props.fetchEvents();
-        }
+  componentWillMount() {
+    if (this.props.authenticated) {
+      this.props.fetchEvents();
     }
+  }
 
   render(){
     return <div>

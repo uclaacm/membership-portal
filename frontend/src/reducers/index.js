@@ -7,6 +7,7 @@ import {Health, TimeGet} from './health';
 import {User, FetchUser, UpdateUser, UserUpdateDone} from './user';
 import {Auth, LoginUser, LogoutUser} from './auth';
 import {Events, GetCurrentEvents, PostNewEvent} from './events';
+import {Leaderboard, FetchLeaderboard, InvalidateLeaderboard} from './leaderboard';
 
 const history = createHistory();
 const routing = routerMiddleware(history);
@@ -17,13 +18,17 @@ const store = createStore(
     Auth,
     Events,
     User,
+    Leaderboard,
     router: routerReducer,
   }),
   applyMiddleware(routing, thunk)
 );
 
 const Action = {
-  TimeGet, LoginUser, LogoutUser, GetCurrentEvents, FetchUser, UpdateUser, UserUpdateDone, PostNewEvent,
+  TimeGet,
+  LoginUser, LogoutUser, FetchUser, UpdateUser, UserUpdateDone, 
+  GetCurrentEvents, PostNewEvent,
+  FetchLeaderboard, InvalidateLeaderboard,
 };
 
 export {
