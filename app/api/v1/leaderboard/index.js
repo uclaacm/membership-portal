@@ -9,7 +9,7 @@ router.route('/')
 	let limit = parseInt(req.query.limit);
 	
 	User.getLeaderboard(offset, limit).then(users => {
-		req.json({ error: null, scoreboard: users.map(u => u.getUserProfile()) });
+		res.json({ error: null, scoreboard: users.map(u => u.getUserProfile()) });
 	}).catch(next);
 });
 
