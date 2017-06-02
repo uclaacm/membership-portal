@@ -31,6 +31,7 @@ export default class UserEvents extends React.Component {
     submitCheckIn(e) {
         console.log(e);
         e.preventDefault();
+        this.props.checkIn(this.refs.attendanceCode.value);
     }
 
     render() {
@@ -54,7 +55,7 @@ export default class UserEvents extends React.Component {
                     title="Enter the Attendance Code"
                     submitText="Submit">
                     <form onSubmit={ this.submitCheckIn }>
-                        <input type="text" placeholder="Attendance code..." /><br />
+                        <input type="text" placeholder="Attendance code..." ref="attendanceCode" /><br />
                         { this.props.checkInError ? <span className="CaptionSecondary error">{ this.props.checkInError }</span> : <span className="CaptionSecondary error">&nbsp;</span> }
                     </form>
                 </OverlayPopup>

@@ -22,7 +22,7 @@ class Events extends React.Component {
 			<div>
 				<Topbar />
 				<Sidebar />
-				{ !this.props.isAdmin ? <UserEvents events={this.props.events} error={this.props.error} /> : 
+				{ !this.props.isAdmin ? <UserEvents events={this.props.events} checkIn={this.props.checkIn} error={this.props.error} /> :
 				                        <AdminEvents events={this.props.events} error={this.props.error} createEvent={this.props.createEvent} created={this.props.eventCreated} createSuccess={this.props.eventCreateSuccess} /> }
 			</div>
 		);
@@ -44,6 +44,10 @@ const mapDispatchToProps = (dispatch)=>{
 	return {
 		fetchEvents: () => {
 			dispatch(Action.GetCurrentEvents());
+		},
+
+		checkIn: (id) => {
+			dispatch(Action.CheckInto(id));
 		},
 
 		getTime: (input) => {

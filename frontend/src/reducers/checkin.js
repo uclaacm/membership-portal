@@ -23,14 +23,35 @@ const CheckInto = (id) => {
         try {
             //TODO: implement this?
             // Dummy behavior
-            dispatch(checkInSuccess(10));
+            console.log(`got id: ${id}`);
+            const response = await fetch(Config.API_URL + Config.routes.attendance.attend, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem("token")}`
+                },
+                body: JSON.stringify({"event": {"attendanceCode": id}})
+            });
+
+            const status = await response.status;
+            const data = await response.json();
+
+            if (!data)
+				throw new Error("Empty response from server");
+			if (data.error)
+				throw new Error(data.error.message);
+
+            const pointsEarned = data.event.attendancePoints;
+            console.log(`points!: ${pointsEarned}`);
+            dispatch(checkInSuccess(attendancePoints));
         } catch (err) {
             dispatch(checkInFailure());
         }
     }
 }
 
-const defaultState = Immutable.fromJs({
+const defaultState = Immutable.fromJS({
     loading: false,
     success: false,
     numPoints: 0,
