@@ -4,7 +4,7 @@ build:
 	npm run build
 
 dev:
-	npm run build-dev
+	WEBPACK=true npm run build-dev
 
 gen: build
 	mkdir -p public
