@@ -79,7 +79,7 @@ export default class AdminEvents extends React.Component {
                     { months.map((month, i) => <EventMonth month={month} key={i} handleEditClick={this.editEventParent} />) }
 
                     {this.state.showAddEvent && <AdminAddEvent onClickAdd={this.saveAddEventParent} onClickCancel={this.cancelAddEventParent} isEdit={this.state.isEditEvent}/>}
-                    {this.state.showAddEvent && <div className="faded-background"></div>}
+                    {this.state.showAddEvent && <div onClick={this.cancelAddEventParent} className="faded-background"></div>}
 
                 </div>
 
