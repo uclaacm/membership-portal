@@ -1,4 +1,5 @@
 import React from 'react'
+import Config from 'config'
 import Button from 'components/Button'
 
 export default class DetailsCard extends React.Component {
@@ -15,19 +16,20 @@ export default class DetailsCard extends React.Component {
     render() {
         return (
             <div className={"card details-card" + (this.props.profileValid() ? " confirm-details" : "")}>
+                <img src={Config.organization.logo} />
                 <div className="inner">
                     <form onSubmit={this.props.onSubmit} autoComplete="off">
                         <p className="header">Account Details</p>
 
                         <div className="email">
                             <p className="text">School Email <span className="info">(@ucla.edu)</span></p>
-                            <input className="input-large" name="email" onChange={this.handleChange}></input>
+                            <input type="text" className="input-large" name="email" onChange={this.handleChange}></input>
                         </div>
                         <div className="password">
                             <p className="text">Password <span className="info">(at least 10 characters)</span></p>
                             <input type="password" className="input-large" name="password" onChange={this.handleChange}></input>
                         </div>
-                        <div className="align">
+                        <div className="align align-input-major">
                             <p className="text">Major <span className="info">(full name of major)</span></p>
                             <input className="input-major" name="major" onChange={this.handleChange}></input>
                         </div>
@@ -41,7 +43,7 @@ export default class DetailsCard extends React.Component {
                                 <option value={4}>Senior</option>
                                 <option value={5}>Post-senior</option>
                             </select>
-                        </div>
+                        </div><br />
                         <Button className="btn" style={this.props.profileValid() ? "green" : "disabled"} text="Finish" onClick={this.props.onSubmit}/>
                     </form>
                 </div>

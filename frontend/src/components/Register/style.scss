@@ -1,5 +1,3 @@
-@import "styles/vars";
-
 p {
     margin: 0;
 }
@@ -33,6 +31,11 @@ input {
         height: 90px;
         width: 90px;
     }
+
+    @media (max-width: 575px) {
+        .login-link { display: none; }
+        .corner-logo { display: none; }
+    }
 }
 
 .card {
@@ -41,12 +44,45 @@ input {
     background: $white;
     text-align: center;
 
-    .question {
+    img {
+        display: none;
+        text-align: center;
+        height: 150px;
+        width: 150px;
+        margin-top: 60px;
+    }
+
+    p.question {
         font-size: 36px;
         font-weight: bold;
         color: $black;
-        margin-top: 65px;
-        margin-bottom: 27px;
+        margin-top: 60px;
+        margin-bottom: 30px;
+        padding: 0px 10px;
+    }
+
+    p.info {
+        font-size: 0.8em;
+        font-weight: normal;
+        text-align: center;
+        margin-top: 30px;
+        color: #666666;
+        padding-left: 10%;
+        padding-right: 10%;
+    }
+
+    @media (max-width: 575px) {
+        width: 100% !important;
+        height: 100% !important;
+        overflow-y: scroll;
+
+        img {
+            display: inline-block;
+        }
+
+        .info {
+            margin-bottom: 30px;
+        }
     }
 }
 
@@ -68,9 +104,11 @@ input {
 
 .details-card {
     .inner {
-        width: 400px;
+        max-width: 400px;
+        width: 100%;
         margin: auto;
         text-align: center;
+        box-sizing: border-box;
     }
 
     input {
@@ -120,9 +158,6 @@ input {
         }
     }
 
-    .email {
-        display: inline-block;
-    }
     input:focus ~ p {
         color: $secondaryblue;
     }
@@ -166,7 +201,7 @@ input {
     }
 
     .align {
-      display: inline-block;
+        display: inline-block;
     }
 
     .btn {
@@ -174,54 +209,23 @@ input {
         margin: 0 auto;
         margin-top: 5px;
     }
+
+    @media (max-width: 450px) {
+        .inner { padding: 0px 20px; }
+        .input-large, .input-major {
+            max-width: 383px;
+            width: calc(100% - 17px);
+            margin-right: 0px;
+        }
+        .align.align-input-major { display: block; }
+    }
 }
 
 
 .fb-login-card {
-    .question {
-        font-size: 36px;
-        font-weight: bold;
-        color: $black;
-        margin-top: 65px;
-        margin-bottom: 27px;
-    }
-
-    .fb-url {
-        display: inline-block;
-        margin-right: 5px;
-    }
-
     .fb-login-button {
         i {
             padding-right: 10px;
         }
-    }
-
-    input {
-        display: inline-block;
-        border-radius: 5px;
-        border: solid 1px $gray2;
-        height: 20px;
-        margin-bottom: 5px;
-        padding: 9px;
-        font-size: 17px;
-        outline: none;
-    }
-
-    .btn {
-        margin-top: 10px;
-        margin-bottom: 20px;
-        display: inline-block;
-        margin: 0 auto;
-        margin-left: 8px;
-        margin-right: 8px;
-    }
-
-    a {
-        color: inherit;
-        text-decoration: inherit;
-        font-weight: inherit;
-        font-size: 14px;
-        color: $secondaryblue;
     }
 }

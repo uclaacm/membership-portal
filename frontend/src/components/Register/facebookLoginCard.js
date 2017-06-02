@@ -7,7 +7,8 @@ export default class FacebookLoginCard extends React.Component {
     render () {
         return(
             <div className="card fb-login-card">
-                <p className="question">Register</p>
+                <img src={Config.organization.logo} />
+                <p className="question">Create an Account</p>
                 <div className="button-component">
                     <FacebookLogin
                         appId={Config.facebook.appId} 
@@ -17,6 +18,7 @@ export default class FacebookLoginCard extends React.Component {
                         icon="fa-facebook"
                         callback={this.props.facebookCallback} />
                 </div>
+                <p className="info">We only use your Facebook to fetch your first name, last name, and profile picture. We will never post on your Facebook or read any other information from your Facebook in the future.</p>
             </div>
         );
     }
