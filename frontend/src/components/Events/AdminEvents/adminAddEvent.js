@@ -4,19 +4,23 @@ import Button from 'components/Button/index'
 
 export default class AdminAddEvent extends React.Component {
     render() {
+        console.log("here", this.props.event);
+        const event = this.props.event;
+        const header = (this.props.isEdit? "Update" : "Add") + " Event";
         return (
             <div className="add-event-popup">
                 <div className="overlay">
-                    <AdminInput text="Image URL" field="half" />
-                    <AdminInput text="Event Link" field="half"/>
-                    <AdminInput text="Event Name" field="full"/>
-                    <AdminInput text="Committee" field="committee"/>
-                    <AdminInput text="Points" field="points"/>
+                    <span className="header Large-2Primary">{header}</span>
+                    <AdminInput placeholder={event.cover} text="Image URL" field="half" />
+                    <AdminInput placeholder={event.eventLink}text="Event Link" field="half"/>
+                    <AdminInput placeholder={event.title}text="Event Name" field="full"/>
+                    <AdminInput placeholder={event.committee}text="Committee" field="committee"/>
+                    <AdminInput placeholder={event.attendancePoints}text="Points" field="points"/>
                     <div className="split"></div>
                     <AdminInput text="Start" field="half" />
                     <AdminInput text="End" field="half"/>
-                    <AdminInput text="Location" field="full"/>
-                    <AdminInput text="Description" field="full"/>
+                    <AdminInput placeholder={event.location}text="Location" field="full"/>
+                    <AdminInput placeholder={event.description}text="Description" field="full"/>
                     <div className="buttons">
                         <Button onClick={this.props.onClickAdd} className="add-event-button" style="green" text={this.props.isEdit ? "Update" : "Add"} icon="" />
                         

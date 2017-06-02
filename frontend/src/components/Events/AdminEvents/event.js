@@ -15,7 +15,7 @@ export default class AdminEventCard extends React.Component {
         this.setState(prev => ({
             editable: !prev.editable
         }))
-        this.props.handleEditClick()
+        this.props.handleEditClick(this.props.event);
     }
 
     //Handles button click to delete event
@@ -77,7 +77,6 @@ export default class AdminEventCard extends React.Component {
                         </div>
                         <div className="edit-delete-buttons">
                             <Button onClick={(e) => {
-                                {/*this.props.handleEditClick;*/}
                                 e.stopPropagation();
                                 this.editEvent();
                             }

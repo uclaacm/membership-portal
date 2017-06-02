@@ -8,28 +8,55 @@ import AdminAddEvent from './adminAddEvent'
 export default class AdminEvents extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {showAddEvent: false, isEditEvent: false} 
+        this.state = {showAddEvent: false, isEditEvent: false, 
+            eventPlaceholder: {
+                attendancePoints: 0,
+                committee: "",
+                cover: "",
+                description: "",
+                endDate: null,
+                eventLink: "",
+                location: "",
+                startDate: null,
+                title: ""
+            }
+        } 
         this.showAddEvent = this.showAddEvent.bind(this);
         this.saveAddEventParent = this.saveAddEventParent.bind(this);
         this.cancelAddEventParent = this.cancelAddEventParent.bind(this);
-        this.editEventParent = this.editEventParent.bind(this);
+        this.handleEditClick = this.handleEditClick.bind(this);
     }
 
+    //Shows the add event sidebar
     showAddEvent(e) {
         console.log(e);
         this.setState(prev => ({
-            showAddEvent: true
+            showAddEvent: true,
+            eventPlaceholder: {
+                attendancePoints: 0,
+                committee: "",
+                cover: "",
+                description: "",
+                endDate: null,
+                eventLink: "",
+                location: "",
+                startDate: null,
+                title: ""
+            }
         }));
     }
 
+    //Handles when update/add event
     saveAddEventParent(e) {
         console.log("saved in parent");
+        console.log(this.props.events);
         this.setState(prev => ({
             showAddEvent: false,
             isEditEvent: false
         }));
     }
 
+    //Handles cancel add event
     cancelAddEventParent(e) {
         console.log("cancel in parent");
         this.setState(prev => ({
@@ -38,11 +65,13 @@ export default class AdminEvents extends React.Component {
         }));
     }
 
-    editEventParent() {
+    //This function is passed down to child so when edit button is clicked, can bring up the add/edit sidebar
+    handleEditClick(param) {
         console.log("edit in parent");
         this.setState(prev => ({
             showAddEvent: true,
-            isEditEvent: true
+            isEditEvent: true,
+            eventPlaceholder: param
         }));  
     }
 
@@ -76,9 +105,9 @@ export default class AdminEvents extends React.Component {
                         text="Add Event"
                         onClick={ this.showAddEvent } />}
                         
-                    { months.map((month, i) => <EventMonth month={month} key={i} handleEditClick={this.editEventParent} />) }
+                    { months.map((month, i) => <EventMonth month={month} key={i} handleEditClick={this.handleEditClick} />) }
 
-                    {this.state.showAddEvent && <AdminAddEvent onClickAdd={this.saveAddEventParent} onClickCancel={this.cancelAddEventParent} isEdit={this.state.isEditEvent}/>}
+                    {this.state.showAddEvent && <AdminAddEvent event={this.state.eventPlaceholder} onClickAdd={this.saveAddEventParent} onClickCancel={this.cancelAddEventParent} isEdit={this.state.isEditEvent}/>}
                     {this.state.showAddEvent && <div onClick={this.cancelAddEventParent} className="faded-background"></div>}
 
                 </div>

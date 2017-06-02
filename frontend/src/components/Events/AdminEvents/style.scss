@@ -16,7 +16,7 @@
     .add-event-popup {
         // display: none;
         width: 400px;
-        height: 100%;
+        height: 100vh;
         position: fixed;
         right: 0px;
         top: 0px;
@@ -27,15 +27,26 @@
             position: relative;
             background: white;
             height: 100%;
-            margin-top: 180px;
             width: 400px;
-            padding: 25px;
+            padding: 0 25px;
+            padding-bottom: 20px;
+            overflow-y: scroll;
+
+            .header {
+                display: block;
+                width: 300px;
+                margin: 0 auto;
+                margin-top: 50px;
+                text-align: center;
+                margin-bottom: 40px;
+            }
 
             .split {
                 border-bottom: 1px solid $--disabled;
                 width: 350px;
                 margin: 25px 0;
             }
+            
         }
 
         .buttons {
@@ -54,7 +65,9 @@
             margin-right: 10px;
             input {
                 width: $width - 10px - 2px;
+                height: 28px;
                 padding: 5px;
+                padding-left: 7px;
                 margin: 2px;
                 border-radius: 5px;
                 border: 1px solid $--disabled;
@@ -77,11 +90,11 @@
         }
 
         .committee {
-            @include admin-input-mixin(300px);
+            @include admin-input-mixin(290px);
         }
 
         .points {
-            @include admin-input-mixin(40px);
+            @include admin-input-mixin(50px);
         }
     }
 }

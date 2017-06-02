@@ -7,7 +7,7 @@ export default class AdminInput extends React.Component {
             <div className={className}>
                 <span className="BodySecondary">{this.props.text}</span>
                 <br/>
-                <input type="text" className="BodySecondary" />
+                <input type="text" className="TitleSecondary" defaultValue={this.props.placeholder}/>
             </div>
         );
     }
