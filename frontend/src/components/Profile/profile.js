@@ -27,10 +27,12 @@ export default class Profile extends React.Component {
         this.resizeTextAreas = this.resizeTextAreas.bind(this);
         this.hideChangePassword = this.hideChangePassword.bind(this);
         this.showChangePassword = this.showChangePassword.bind(this);
+        this.submitChangePassword = this.submitChangePassword.bind(this);
     }
 
     registerInput(input) {
-        this.inputs[input.name] = input;
+        if (input && input.name)
+            this.inputs[input.name] = input;
     }
 
     resizeTextAreas() {
@@ -57,6 +59,15 @@ export default class Profile extends React.Component {
 
     showChangePassword(e) {
         this.setState(prev => Object.assign({}, prev, { showChangePassword: true }));
+    }
+
+    submitChangePassword(e) {
+        e.preventDefault();
+        this.props.saveChanges({
+            password: this.state.password,
+            newPassword: this.state.passwordNew,
+            confPassword: this.state.passwordConf,
+        });
     }
 
     profileUpdated() {
@@ -137,22 +148,15 @@ export default class Profile extends React.Component {
                     title="Change Password"
                     submitText="Update"
                     cancelText="Cancel">
-                    <form onSubmit={(e)=>{
-                        e.preventDefault();
-                        this.props.saveChanges({
-                          password: this.state.password,
-                          newPassword: this.state.passwordNew,
-                          confPassword: this.state.passwordConf,
-                        });
-                      }}>
-                        <input type="password" placeholder="Old password..." onChange={(e)=>{this.setState((prev)=>{
-                            return Object.assign({}, prev, {password: e.target.value});
+                    <form onSubmit={this.submitChangePassword}>
+                        <input type="password" placeholder="Old password..." onChange={(e)=>{let v = e.target.value;this.setState((prev)=>{
+                            return Object.assign({}, prev, {password: v});
                           });}}/><br />
-                        <input type="password" placeholder="New password..." onChange={(e)=>{this.setState((prev)=>{
-                            return Object.assign({}, prev, {passwordNew: e.target.value});
+                        <input type="password" placeholder="New password..." onChange={(e)=>{let v = e.target.value; this.setState((prev)=>{
+                            return Object.assign({}, prev, {passwordNew: v});
                           });}}/><br />
-                        <input type="password" placeholder="Confirm password..." onChange={(e)=>{this.setState((prev)=>{
-                            return Object.assign({}, prev, {passwordConf: e.target.value});
+                        <input type="password" placeholder="Confirm password..." onChange={(e)=>{let v = e.target.value;this.setState((prev)=>{
+                            return Object.assign({}, prev, {passwordConf: v});
                           });}}/><br />
                         { this.props.checkInError ? <span className="CaptionSecondary error">{ this.props.checkInError }</span> : <span className="CaptionSecondary error">&nbsp;</span> }
                     </form>

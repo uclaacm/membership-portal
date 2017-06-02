@@ -6,7 +6,6 @@ import { connect } from 'react-redux';
 import Sidebar from 'components/Sidebar';
 
 class SidebarContainer extends React.Component {
-
     componentWillMount() {
         if (this.props.authenticated) {
             this.props.fetchUser();

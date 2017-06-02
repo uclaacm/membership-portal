@@ -5,12 +5,9 @@ import ProfileComponent from 'components/Profile';
 
 import { replace } from 'react-router-redux';
 
-
 class Profile extends React.Component {
     constructor(props) {
         super(props);
-        if (this.props.isAdmin)
-            this.props.redirectHome();
     }
 
     saveChanges(newprofile) {
@@ -21,6 +18,10 @@ class Profile extends React.Component {
         if (this.props.authenticated && !this.props.fetchsuccess) {
             this.props.fetchUser();
         }
+
+        if (this.props.isAdmin) {
+            this.props.redirectHome();
+        }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -28,6 +29,10 @@ class Profile extends React.Component {
             setTimeout(() => {
                 this.props.updateDone();
             }, 1000);
+        }
+
+        if (nextProps.isAdmin) {
+            nextProps.redirectHome();
         }
     }
 
@@ -69,7 +74,6 @@ const mapDispatchToProps = (dispatch)=>{
         fetchUser: () => {
             dispatch(Action.FetchUser());
         },
-
         updateUser: (newprofile) => {
             dispatch(Action.UpdateUser(newprofile))
         },

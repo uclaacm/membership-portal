@@ -55,7 +55,7 @@ const GetCurrentEvents = ()=>{
             const status = await response.status;
             const data = await response.json();
 
-            if (status >= 200 && status < 300) {
+            if (data && !data.error) {
                 const events = data.events.map(event => ({
                   cover: event.cover,
                   committee: event.committee,

@@ -80,6 +80,15 @@
 
     .navigation {
         text-align: center;
+
+        a.selected .navigation-tile {
+            background: $white;
+            box-shadow: 0 0px 0 0 #c0c0c0;
+            transform: translateY(4px);
+            .icon, p {
+                color: $secondaryblue;
+            }
+        }
         
         .navigation-tile {
             background: $secondaryblue;
@@ -101,13 +110,6 @@
 
             &:hover {
                 background: $secondaryblue-dark;
-                // background: $white;
-                // .icon, p {
-                //     color: $secondaryblue;
-                // }
-                // box-shadow: 0 3px 0 0 #c0c0c0;
-                // transform: translateY(1px);
-                // cursor: pointer;
             }
 
             &:active, &.selected {

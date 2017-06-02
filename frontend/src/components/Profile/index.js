@@ -6,8 +6,7 @@ import Sidebar from 'containers/sidebar';
 import Profile from './profile';
 
 export default class ProfileComponent extends React.Component {
-    render () {
-
+    render() {
         return (
             <div className="profile">
                 <Topbar />

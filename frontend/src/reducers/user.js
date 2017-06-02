@@ -42,9 +42,11 @@ const FetchUser = () => {
                     'Authorization': `Bearer ${localStorage.getItem("token")}`
                 }
             });
+            
             const status = await response.status;
-            if (status >=200 && status<300) {
-                const data = await response.json();
+            const data = await response.json();
+
+            if (data && !data.error) {
                 dispatch(fetchUserAction(data.user));
             } else {
                 throw new Error('Could not get user from api server');
@@ -94,7 +96,7 @@ const UpdateUser = (newprofile) => {
             if (!data)
                 throw new Error("Empty response from server");
             if (data.error)
-                throw new Error(data.error);
+                throw new Error(data.error.message);
 
             dispatch(fetchUserAction(data.user));
             dispatch(updateUserSuccess());
