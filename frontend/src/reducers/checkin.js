@@ -1,21 +1,21 @@
-import Immutable from 'immutable';
 import Config from 'config';
+import Immutable from 'immutable';
 
 const CHECK_IN_SUCCESS = Symbol('CHECK_IN');
 const CHECK_IN_ERROR = Symbol('CHECK_IN_ERROR');
 
 const checkInSuccess = (points) => {
-    return({
+    return {
         type: CHECK_IN_SUCCESS,
         points
-    });
+    };
 }
 
 const checkInFailure = (error) => {
-    return({
+    return {
         type: CHECK_IN_ERROR,
         error
-    });
+    };
 }
 
 const CheckInto = (id) => {
@@ -30,19 +30,14 @@ const CheckInto = (id) => {
     }
 }
 
-defaultState = Immutable.fromJs({
+const defaultState = Immutable.fromJs({
     loading: false,
     success: false,
     numPoints: 0,
     error: ''
 });
 
-const initState = () => {
-
-    return defaultState;
-}
-
-const CheckIn = (state=initState(), action) => {
+const CheckIn = (state=defaultState, action) => {
     switch(action.type) {
         case CHECK_IN_SUCCESS:
             return state.withMutations(val => {
@@ -53,7 +48,7 @@ const CheckIn = (state=initState(), action) => {
 
         case CHECK_IN_ERROR:
             return defaultState.withMutations(val => {
-                val.set('error': action.error);
+                val.set('error', action.error);
             });
 
         default:

@@ -8,9 +8,7 @@ class ResetPassword extends React.Component {
     }
 
     render() {
-        return (
-            <ResetPasswordComponent />
-        );
+        return <ResetPasswordComponent />;
     }
 }
 

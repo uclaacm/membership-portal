@@ -1,29 +1,20 @@
+import Config from 'config';
 import Immutable from 'immutable';
 
-import Config from 'config';
-
-const setStorage = (key,item) => {
-    localStorage.setItem(key, item);
-}
-
+const setStorage = (key,item) => localStorage.setItem(key, item);
 const getFromStorage = (key) => localStorage.getItem(key);
-
 const removeFromStorage = (key) => localStorage.removeItem(key);
 
 const tokenGetClaims = (token)=>{
-  const tokenArray = token.split('.');
-  if(tokenArray.length !== 3){
-    return false;
-  }
-  return JSON.parse(window.atob(tokenArray[1].replace('-', '+').replace('_', '/')));
+    const tokenArray = token.split('.');
+    if(tokenArray.length !== 3){
+        return false;
+    }
+    return JSON.parse(window.atob(tokenArray[1].replace('-', '+').replace('_', '/')));
 };
 
 const tokenIsAdmin = (token)=>{
-  const t = tokenGetClaims(token);
-  if(t.admin){
-    return true;
-  }
-  return false;
+    return tokenGetClaims(token).admin;
 };
 
 ///////////////
@@ -51,9 +42,7 @@ const AuthUserError = err => {
 
 const LoginUser = (email, password) => {
     return async (dispatch) => {
-        dispatch({
-            type: USER_GET
-        });
+        dispatch({ type: USER_GET });
         try {
             const response = await fetch(Config.API_URL + Config.routes.auth.login, {
                 method: 'POST',
@@ -63,18 +52,17 @@ const LoginUser = (email, password) => {
                 },
                 body: JSON.stringify({"password": password, "email": email}),
             });
+
             const status = await response.status;
-            if (status >= 200 && status < 300) {
-                const data = await response.json();
-                if (!data.error) {
-                    setStorage("token", data.token);
-                    dispatch(AuthUser(tokenIsAdmin(data.token)));
-                } else {
-                    throw new Error(data.error.message);
-                }
-            } else { //TODO: Better error messages!
-                throw new Error("Could not log in");
-            }
+            const data = await response.json();
+
+            if (!data)
+                throw new Error("Empty response from server");
+            if (data.error)
+                throw new Error(data.error.message);
+            
+            setStorage("token", data.token);
+            dispatch(AuthUser(tokenIsAdmin(data.token)));
         } catch (err) {
             dispatch(AuthUserError(err.message));
         }
@@ -88,34 +76,9 @@ const LogoutUser = (error) => {
             payload: error || ''
         });
         removeFromStorage("token");
-        window.location.href = `${Config.CLIENT_ROOT_URL}/login`;
+        window.location.href = "/login";
     }
 }
-
-function registerUser(user) {
-    return async (dispatch) => {
-        try {
-            const response = await fetch(config.routes.auth.register, {
-                method: 'POST',
-                body: user
-            });
-            const status = await response.status;
-            const data = await response.json();
-            if (status >=200 && status<300) {
-
-            } else {
-                if (data.error) {
-                    throw new Error(data.error);
-                } else {
-                    throw new Error('Error registering user');
-                }
-            }
-        } catch(err) {
-            dispatch(registerUserError(err.message));
-        }
-    }
-}
-
 
 ///////////////
 /// STATE ///
@@ -130,14 +93,14 @@ const defaultState = Immutable.fromJS({
 });
 
 const initState = () => {
-    if(localStorage.getItem("token")) {
-      return Immutable.fromJS({
-        error: '',
-        message: '',
-        content: '',
-        authenticated: true,
-        isAdmin: tokenIsAdmin(localStorage.getItem("token")),
-      });
+    if (localStorage.getItem("token")) {
+        return Immutable.fromJS({
+            error: '',
+            message: '',
+            content: '',
+            authenticated: true,
+            isAdmin: tokenIsAdmin(localStorage.getItem("token")),
+        });
     }
     return defaultState;
 }

@@ -1,9 +1,10 @@
 import React from 'react';
 import {connect} from 'react-redux';
+import {replace} from 'react-router-redux';
+
 import {Action} from 'reducers';
 import LoginComponent from 'components/Login'
 
-import { replace } from 'react-router-redux';
 
 
 class Login extends React.Component {
@@ -23,11 +24,7 @@ class Login extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if(nextProps.authenticated) {
-      if(nextProps.isAdmin){
-        this.props.redirectAdmin();
-      } else {
-        this.props.redirectHome();
-      }
+      this.props.redirectHome();
     }
   }
 
@@ -39,13 +36,10 @@ class Login extends React.Component {
 }
 
 const mapStateToProps = (state)=>{
-  const A = state.Auth;
   return {
-    error: A.get('error'),
-    message: A.get('message'),
-    content: A.get('content'),
-    authenticated: A.get('authenticated'),
-    isAdmin: A.get('isAdmin'),
+    error: state.Auth.get('error'),
+    authenticated: state.Auth.get('authenticated'),
+    isAdmin: state.Auth.get('isAdmin'),
   };
 };
 
@@ -57,12 +51,8 @@ const mapDispatchToProps = (dispatch)=>{
     redirectHome: ()=>{
       dispatch(replace('/'));
     },
-    redirectAdmin: ()=>{
-      dispatch(replace('/admin'));
-    },
   };
 };
 
 
-Login = connect(mapStateToProps, mapDispatchToProps)(Login);
-export default Login
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

@@ -1,6 +1,5 @@
 import React from 'react';
-import { connect } from 'react-redux';
-
+import {connect} from 'react-redux';
 import {replace} from 'react-router-redux';
 
 export default function (ComposedComponent) {
@@ -23,9 +22,8 @@ export default function (ComposedComponent) {
     }
 
     const mapStateToProps = (state) => {
-        const A = state.Auth;
         return {
-            authenticated: A.get("authenticated"),
+            authenticated: state.Auth.get("authenticated"),
         }
     }
 

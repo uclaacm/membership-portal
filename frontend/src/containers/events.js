@@ -29,14 +29,12 @@ class Events extends React.Component {
 	}
 }
 
-const mapStateToProps = (state)=>{
-	const e = state.Events;
-
+const mapStateToProps = (state) => {
 	return {
-		events: e.get('events'),
-		error: e.get('error'),
-		eventCreated: e.get('posted'),
-		eventCreateSuccess: e.get('postSuccess'),
+		events: state.Events.get('events'),
+		error: state.Events.get('error'),
+		eventCreated: state.Events.get('posted'),
+		eventCreateSuccess: state.Events.get('postSuccess'),
 		authenticated: state.Auth.get('authenticated'),
 		isAdmin: state.Auth.get('isAdmin'),
 	};
@@ -48,12 +46,11 @@ const mapDispatchToProps = (dispatch)=>{
 			dispatch(Action.GetCurrentEvents());
 		},
 
-		getTime: (input)=>{
+		getTime: (input) => {
 			dispatch(Action.TimeGet());
 		},
 	};
 };
 
 
-Events = connect(mapStateToProps, mapDispatchToProps)(Events);
-export default Events
+export default connect(mapStateToProps, mapDispatchToProps)(Events);

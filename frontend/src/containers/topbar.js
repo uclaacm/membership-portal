@@ -1,8 +1,7 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import {connect} from 'react-redux';
 
 import {Action} from 'reducers';
-import { connect } from 'react-redux';
-
 import Topbar from 'components/Topbar';
 
 class TopbarContainer extends React.Component {
@@ -12,14 +11,13 @@ class TopbarContainer extends React.Component {
         }
     }
 
-    render () {
+    render() {
         return this.props.fetchsuccess ? <Topbar isAdmin={this.props.isAdmin} /> : null;
     }
 }
 
 const mapStateToProps = (state) => {
-    const u = state.User;
-    if (u.get("fetchsuccess")) {
+    if (state.User.get("fetchsuccess")) {
         return {
             fetchsuccess: true,
             authenticated: true,

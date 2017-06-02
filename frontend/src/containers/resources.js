@@ -1,35 +1,14 @@
 import React from 'react';
 import {connect} from 'react-redux';
+import {replace} from 'react-router-redux';
+
 import {Action} from 'reducers';
 import ResourcesComponent from 'components/Resources';
 
-import { replace } from 'react-router-redux';
-
-
 class Resources extends React.Component {
-
     render() {
-        return(
-            <div>
-                <ResourcesComponent/>
-            </div>
-        )
+        return <ResourcesComponent/>;
     }
 }
 
-const mapStateToProps = (state)=>{
-    const A = state.Auth;
-    return {
-
-    };
-};
-
-const mapDispatchToProps = (dispatch)=>{
-  return {
-
-  };
-};
-
-
-Resources = connect(mapStateToProps, mapDispatchToProps)(Resources);
-export default Resources
+export default connect(null, null)(Resources);

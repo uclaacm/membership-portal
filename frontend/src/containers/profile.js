@@ -1,9 +1,10 @@
 import React from 'react';
 import {connect} from 'react-redux';
+import {replace} from 'react-router-redux';
+
 import {Action} from 'reducers';
 import ProfileComponent from 'components/Profile';
 
-import { replace } from 'react-router-redux';
 
 class Profile extends React.Component {
     constructor(props) {
@@ -37,35 +38,33 @@ class Profile extends React.Component {
     }
 
     render() {
-        return <ProfileComponent profile={this.props.profile} updated={this.props.updated} updateSuccess={this.props.updateSuccess} updateError={this.props.updateError} saveChanges={this.saveChanges.bind(this)}/>;
+        return <ProfileComponent
+                    profile={this.props.profile}
+                    updated={this.props.updated}
+                    updateSuccess={this.props.updateSuccess}
+                    updateError={this.props.updateError}
+                    saveChanges={this.saveChanges.bind(this)} />;
     }
 }
 
 const mapStateToProps = (state)=>{
-    const A = state.Auth;
-    const u = state.User;
+    let profile = { name: "", major: "", year: 0, points: 0};
 
-    let profile = {};
-    profile.name = "";
-    profile.major = "";
-    profile.year = 0;
-    profile.points = 0;
-
-    if (u.get("fetchsuccess")) {
-        const U = u.get("profile");
-        profile.name = `${U.firstName} ${U.lastName}`;
-        profile.major = U.major;
-        profile.year = U.year;
-        profile.points = U.points;
+    if (state.User.get("fetchsuccess")) {
+        const User = state.User.get("profile");
+        profile.name = `${User.firstName} ${User.lastName}`;
+        profile.major = User.major;
+        profile.year = User.year;
+        profile.points = User.points;
     }
 
     return {
         profile,
+        updated: state.User.get('updated'),
+        updateSuccess: state.User.get('updateSuccess'),
+        updateError: state.User.get('error'),
         authenticated: state.Auth.get("authenticated"),
         isAdmin: state.Auth.get('isAdmin'),
-        updated: u.get('updated'),
-        updateSuccess: u.get('updateSuccess'),
-        updateError: u.get('error'),
     };
 };
 
@@ -87,5 +86,4 @@ const mapDispatchToProps = (dispatch)=>{
 };
 
 
-Profile = connect(mapStateToProps, mapDispatchToProps)(Profile);
-export default Profile
+export default connect(mapStateToProps, mapDispatchToProps)(Profile);

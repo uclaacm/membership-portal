@@ -23,16 +23,20 @@ class Register extends React.Component {
     }
 
 	render(){
-		return <RegisterComponent createUser={this.createUser} created={this.props.registered} createSuccess={this.props.registerSuccess} createError={this.props.error} />
+		return <RegisterComponent
+		        	createUser={this.createUser}
+					created={this.props.registered}
+					createSuccess={this.props.registerSuccess}
+					createError={this.props.error} />
 	}
 }
 
 const mapStateToProps = (state)=>{
 	return {
+		newuser: state.Registration.get('newuser'),
 		registered: state.Registration.get('registered'),
 		registerSuccess: state.Registration.get('registerSuccess'),
 		error: state.Registration.get('error'),
-		newuser: state.Registration.get('newuser'),
 	};
 };
 
@@ -43,7 +47,7 @@ const mapDispatchToProps = (dispatch) => {
 		},
 		registerDone: () => {
 			dispatch(Action.registerDone());
-		}
+		},
 	};
 };
 

@@ -1,5 +1,4 @@
 import 'main.scss';
-
 import 'babel-polyfill';
 import 'whatwg-fetch';
 

@@ -1,8 +1,7 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import {connect} from 'react-redux';
 
 import {Action} from 'reducers';
-import { connect } from 'react-redux';
-
 import Sidebar from 'components/Sidebar';
 
 class SidebarContainer extends React.Component {
@@ -13,24 +12,26 @@ class SidebarContainer extends React.Component {
     }
 
     render () {
-        return this.props.fetchsuccess ? <Sidebar isAdmin={this.props.isAdmin} pic={this.props.pic} username={this.props.username} points={this.props.points} /> :
-            null;
+        return this.props.fetchsuccess ? 
+                    <Sidebar
+                        isAdmin={this.props.isAdmin}
+                        picture={this.props.picture}
+                        username={this.props.username}
+                        points={this.props.points} /> : null;
     }
 }
 
 const mapStateToProps = (state) => {
-    const u = state.User;
-    if (u.get("fetchsuccess")) {
-
+    if (state.User.get("fetchsuccess")) {
+        const User = state.User;
         return {
             fetchsuccess: true,
             authenticated: true,
-            pic: u.get("profile").picture,
-            username: `${u.get("profile").firstName} ${u.get("profile").lastName}`,
-            points: u.get("profile").points,
+            picture: User.get("profile").picture,
+            username: `${User.get("profile").firstName} ${User.get("profile").lastName}`,
+            points: User.get("profile").points,
             isAdmin: state.Auth.get('isAdmin')
-        }
-
+        };
     } else {
         return {
             fetchsuccess: false,
@@ -45,7 +46,6 @@ const mapDispatchToProps = (dispatch) => {
             dispatch(Action.FetchUser());
         }
     };
-
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SidebarContainer);
