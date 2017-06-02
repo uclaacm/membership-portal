@@ -25,13 +25,8 @@ export default class AdminAddEvent extends React.Component {
 
         console.log(endTime);
   
-        console.log("Hr", hr);
-        console.log("am?", am);
-
-// // H HH	0..23	Hours (24 hour time)
-// h hh	1..12	Hours (12 hour time used with a A.)
-// k kk	1..24	Hours (24 hour time from 1 to 24)
-// a A	am pm	Post or ante meridiem (Note the one character a p are also considered valid)
+        // console.log("Hr", hr);
+        // console.log("am?", am);
 
 
         return (
@@ -44,11 +39,11 @@ export default class AdminAddEvent extends React.Component {
                     <AdminInput val={event.committee}text="Committee" field="committee"/>
                     <AdminInput val={event.attendancePoints}text="Points" field="small"/>
                     <div className="split"></div>
-                    <AdminInput val={""} placeholder={"hh:mm"} text="Start Time" mask={timeMask} field="medium" />
-                    <AdminInput val={""} placeholder={"am"} text="" mask={"aa"} field="small time-of-day" />
-                    <AdminInput val={startDate} placeholder={"mm-dd-yy"} text="Start Date" mask={dateMask} field="medium" />
-                    <AdminInput val={""} placeholder={"hh:mm"} text="End Time" mask={timeMask} field="medium" />
-                    <AdminInput val={""} placeholder={"am"} text="" mask={"aa"} field="small time-of-day" />
+                    <AdminInput val={event.startDate && event.startDate.format("hh:mm")} placeholder={"hh:mm"} text="Start Time" mask={timeMask} field="medium" />
+                    <AdminInput val={event.startDate && event.startDate.format("a")} placeholder={"am"} text="" mask={"aa"} field="small time-of-day" />
+                    <AdminInput val={event.startDate && startDate} placeholder={"mm-dd-yy"} text="Start Date" mask={dateMask} field="medium" />
+                    <AdminInput val={event.startDate && event.endDate.format("hh:mm")} placeholder={"hh:mm"} text="End Time" mask={timeMask} field="medium" />
+                    <AdminInput val={event.startDate && event.endDate.format("a")} placeholder={"am"} text="" mask={"aa"} field="small time-of-day" />
                     <AdminInput val={endDate} placeholder={"mm-dd-yy"} text="End Date" mask={dateMask} field="medium"/>
                     <AdminInput val={event.location}text="Location" field="full"/>
                     <AdminInput val={event.description}text="Description" field="full"/>
