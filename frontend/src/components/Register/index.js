@@ -76,12 +76,7 @@ export default class RegisterComponent extends React.Component {
         e.preventDefault();
         if (!this.profileValid())
             return;
-
-        this.setState(prev => {
-            let newState = Object.assign({}, prev);
-            newState.currentPage = PAGE_SUCCESS_CARD;
-            return newState;
-        });
+        this.props.createUser(this.state.profile);
     }
 
     profileValid() {
@@ -93,6 +88,16 @@ export default class RegisterComponent extends React.Component {
             && /^.{2,}\@([^\.\@]{1,}\.)*ucla\.edu$/.test(p.email)
             && parseInt(p.year) !== NaN && parseInt(p.year) > 0
             && p.password && p.password.length >= 10;
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.created && nextProps.createSuccess) {
+            this.setState(prev => {
+                let newState = Object.assign({}, prev);
+                newState.currentPage = PAGE_SUCCESS_CARD;
+                return newState;
+            });
+        }
     }
 
     render() {

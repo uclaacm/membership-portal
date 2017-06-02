@@ -7,16 +7,15 @@ import {Action} from 'reducers';
 class Register extends React.Component {
 	constructor(props){
 		super(props);
-
 		this.createUser = this.createUser.bind(this);
 	}
 
 	createUser(profile) {
-
+		this.props.registerUser(profile);
 	}
 
 	render(){
-		return <RegisterComponent createUser={this.createUser} created={this.props.created} createSuccess={this.props.createSuccess} createError={this.props.createError} />
+		return <RegisterComponent createUser={this.createUser} created={this.props.registered} createSuccess={this.props.registerSuccess} createError={this.props.error} />
 	}
 }
 
