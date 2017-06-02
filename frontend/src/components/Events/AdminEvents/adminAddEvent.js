@@ -10,7 +10,7 @@ export default class AdminAddEvent extends React.Component {
         return (
             <div className="add-event-popup">
                 <div className="overlay">
-                    <span className="header Large-2Primary">{header}</span>
+                    <span className="header LargeSecondary">{header}</span>
                     <AdminInput placeholder={event.cover} text="Image URL" field="half" />
                     <AdminInput placeholder={event.eventLink}text="Event Link" field="half"/>
                     <AdminInput placeholder={event.title}text="Event Name" field="full"/>
