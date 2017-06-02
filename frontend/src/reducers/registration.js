@@ -4,6 +4,7 @@ import {Action} from 'reducers';
 
 const REGISTER_SUCCESS = Symbol('REGISTER_SUCCESS');
 const REGISTER_ERR = Symbol('REGISTER_ERR');
+const REGISTER_DONE = Symbol('REGISTER_DONE');
 
 const registerSuccess = (user)=>{
   return {
@@ -19,6 +20,12 @@ const registerErr = (error)=>{
   };
 }
 
+const registerDone = () => {
+  return {
+    type: REGISTER_DONE
+  };
+}
+
 const RegisterUser = (newuser)=>{
   return async (dispatch)=>{
     try {
@@ -30,18 +37,17 @@ const RegisterUser = (newuser)=>{
         },
         body: JSON.stringify({'user': newuser}),
       });
+
       const status = await response.status;
-      if(status >= 200 && status < 300){
-        const data = await response.json();
-        if(!data.error){
-          dispatch(registerSuccess(data.user));
-          dispatch(Action.LoginUser(newuser.email, newuser.password));
-        } else {
-          throw new Error('Could not register user: ' + data.error);
-        }
-      } else {
-        throw new Error('Could not register user');
-      }
+      const data = await response.json();
+
+      if (!data)
+        throw new Error("Empty response from server");
+      if (data.error)
+        throw new Error(data.error.message);
+      
+      dispatch(registerSuccess(data.user));
+      dispatch(Action.LoginUser(newuser.email, newuser.password));
     } catch(err) {
       dispatch(registerErr(err.message));
     }
@@ -75,10 +81,15 @@ const Registration = (state=initialState(), action) => {
         val.set('registerSuccess', false);
         val.set('error', action.error);
       });
+    
+    case REGISTER_DONE:
+      return state.withMutations(val => {
+        val.set('registered', false);
+      });
 
     default:
       return state;
   }
 }
 
-export {Registration, RegisterUser}
+export {Registration, RegisterUser, registerDone}

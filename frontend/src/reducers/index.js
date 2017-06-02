@@ -8,7 +8,7 @@ import {User, FetchUser, UpdateUser, UserUpdateDone} from './user';
 import {Auth, LoginUser, LogoutUser} from './auth';
 import {Events, GetCurrentEvents, PostNewEvent} from './events';
 import {Leaderboard, FetchLeaderboard, InvalidateLeaderboard} from './leaderboard';
-import {Registration, RegisterUser} from './registration';
+import {Registration, RegisterUser, registerDone} from './registration';
 
 const history = createHistory();
 const routing = routerMiddleware(history);
@@ -31,7 +31,7 @@ const Action = {
   LoginUser, LogoutUser, FetchUser, UpdateUser, UserUpdateDone,
   GetCurrentEvents, PostNewEvent,
   FetchLeaderboard, InvalidateLeaderboard,
-  RegisterUser,
+  RegisterUser, registerDone
 };
 
 export {
