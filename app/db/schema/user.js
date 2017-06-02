@@ -201,7 +201,7 @@ module.exports = (Sequelize, db) => {
 
 	User.Instance.prototype.updatePassword = function(password) {
 		let self = this;
-		return this.generateHash(password).then(hash => {
+		return User.generateHash(password).then(hash => {
 			self.hash = hash;
 		});
 	};

@@ -52,12 +52,17 @@ module.exports = (Sequelize, db) => {
 			{
 				unique: false,
 				fields: ['event']
+			},
+			{
+				name: 'date_btree_index',
+				method: 'BTREE',
+				fields: ['date', { attribute: 'date', order: 'ASC' }]
 			}
 		]
 	});
 
 	Attendance.getAttendanceForUser = function(user) {
-		return this.findAll({ where: { user } });
+		return this.findAll({ where: { user }, order: [['date', 'ASC']] });
 	};
 
 	Attendance.getAttendanceForEvent = function(event) {

@@ -68,8 +68,8 @@ module.exports = (User, Event, Attendance) => {
             cover: "https://scontent.xx.fbcdn.net/v/t31.0-8/18192678_1597747830265288_5596200055975220430_o.jpg?oh=19f2da7a58b78502c24c73f538c0b418&oe=59B2C8EE",
             location: "Boelter Hall 4760",
             eventLink: "https://www.facebook.com/events/417554198601623/",
-            startDate: new Date(2017, 5, 1, 16),
-            endDate: new Date(2017, 5, 1, 18),
+            startDate: new Date(2017, 5, 1, 10),
+            endDate: new Date(2017, 5, 7, 18),
             attendanceCode: "tens0r",
             attendancePoints: 10
         })
