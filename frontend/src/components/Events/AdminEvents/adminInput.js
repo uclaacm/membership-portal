@@ -1,4 +1,5 @@
 import React from 'react'
+import InputElement from 'react-input-mask';
 
 export default class AdminInput extends React.Component {
     render() {
@@ -7,7 +8,8 @@ export default class AdminInput extends React.Component {
             <div className={className}>
                 <span className="BodySecondary">{this.props.text}</span>
                 <br/>
-                <input type="text" className="TitleSecondary" defaultValue={this.props.placeholder}/>
+                <InputElement className="TitleSecondary" placeholder={this.props.placeholder} mask={this.props.mask} defaultValue={this.props.val}/>
+                
             </div>
         );
     }
