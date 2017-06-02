@@ -13,16 +13,17 @@ export default {
     routes: {
         user: '/api/v1/user',
         auth: {
-            register: '/api/v1/auth/register',
-            login: '/api/v1/auth/login'
+          register: '/api/v1/auth/register',
+          login: '/api/v1/auth/login'
         },
         events: {
-            event: '/api/v1/event',
-            past: '/api/v1/event/past',
-            future: '/api/v1/event/future'
+          event: '/api/v1/event',
+          past: '/api/v1/event/past',
+          future: '/api/v1/event/future'
         },
         attendance: {
-            attend: '/api/v1/attendance/attend',
+          fetch: '/api/v1/attendance',
+          attend: '/api/v1/attendance/attend',
         },
         leaderboard: '/api/v1/leaderboard',
     },

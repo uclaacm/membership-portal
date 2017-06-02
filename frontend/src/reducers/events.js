@@ -48,22 +48,53 @@ const GetCurrentEvents = () => {
 			const status = await response.status;
 			const data = await response.json();
 
-			if (!data)
+			if(!data){
 				throw new Error("Empty response from server");
-			if (data.error)
+			} else if(data.error){
 				throw new Error(data.error.message);
+			}
 
-			dispatch(UpdateEvents(data.events.map(event => ({
-				cover: event.cover,
-				committee: event.committee,
-				startDate: moment(event.startDate),
-				endDate: moment(event.endDate),
-				eventLink: event.eventLink,
-				title: event.title,
-				location: event.location,
-				description: event.description,
-				attendancePoints: event.attendancePoints
-			}))));
+			const response2 = await fetch(Config.API_URL + Config.routes.attendance.fetch, {
+				method: 'GET',
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${getFromStorage("token")}`
+				}
+			});
+
+			const status2 = await response2.status;
+			const data2 = await response2.json();
+
+			if(!data2){
+				throw new Error("Empty response from server");
+			} else if(data2.error){
+				throw new Error(data2.error.message);
+			}
+
+			let j = 0;
+			const events = [];
+			for(let i = 0; i < data.events.length; i++){
+				let checkedIn = false;
+				if(j < data2.attendance.length && data2.attendance[j].uuid === data.events[i].uuid){
+					j++;
+					checkedIn = true;
+				}
+				events.push({
+					cover: data.events[i].cover,
+					committee: data.events[i].committee,
+					startDate: moment(data.events[i].startDate),
+					endDate: moment(data.events[i].endDate),
+					eventLink: data.events[i].eventLink,
+					title: data.events[i].title,
+					location: data.events[i].location,
+					description: data.events[i].description,
+					attendancePoints: data.events[i].attendancePoints,
+					checkedIn,
+				});
+			}
+
+			dispatch(UpdateEvents(events));
 		} catch (err) {
 			dispatch(UpdateEventsError(err.message));
 		}
