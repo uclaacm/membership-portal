@@ -6,7 +6,7 @@ export default class EventMonth extends React.Component {
         return (
             <div className="event-month">
                 <h1 className="Display-2Primary date-month">{this.props.month.date.format("MMMM")}</h1>
-                { this.props.month.days.map((day, i) => <EventDay day={day} key={i} onClick={this.props.onClick} />) }
+                { this.props.month.days.map((day, i) => <EventDay day={day} key={i} handleEditClick={this.props.handleEditClick} />) }
             </div>
         );
     }

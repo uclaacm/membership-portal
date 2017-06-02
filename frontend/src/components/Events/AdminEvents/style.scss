@@ -1,10 +1,20 @@
 .admin-dashboard {
+    .faded-background {
+        position: fixed;
+        width: calc( 100% - 685px);
+        height: 100%;
+        background: rgba($primaryblue, 0.5);
+        right: 400px;
+        top: 0px;
+        z-index: 10000;
+    }
     .date-month {
         margin-left: 20px;
         margin-bottom: 15px;
     }
 
     .add-event-popup {
+        // display: none;
         width: 400px;
         height: 100%;
         position: fixed;
@@ -20,7 +30,24 @@
             margin-top: 180px;
             width: 400px;
             padding: 25px;
+
+            .split {
+                border-bottom: 1px solid $--disabled;
+                width: 350px;
+                margin: 25px 0;
+            }
         }
+
+        .buttons {
+            
+            text-align: center;
+            width: 400px;
+            margin: 15px auto;
+            .add-event-button {
+                margin-right: 20px;
+            }
+        }
+
 
         @mixin admin-input-mixin ($width) {
             width: $width;
@@ -36,6 +63,9 @@
 
         .admin-input {
             display: inline-block;
+            span {
+                margin-left: 3px;
+            }
         }
 
         .full {
@@ -53,73 +83,6 @@
         .points {
             @include admin-input-mixin(40px);
         }
-
-
-
-        
-        // position: fixed; 
-        // margin: 150px auto;
-        // background: gray;
-        // width: 400px;
-        // height: auto;
-        // border-radius: 20px;
-        // box-shadow: 0 4px 0 0 rgba(255, 255, 255, 0.5);
-
-
-
-        // @mixin input-field($input-field-width) {
-        //     width: $input-field-width;
-        //     padding: 5px;
-        //     height: 24px;
-        //     margin: 2px;
-        //     border-radius: 5px;
-        //     border: 1px solid $--disabled;
-        // }
-
-        // .image-url { 
-        //     @include input-field(150px); 
-        // }
-        
-        // .event-link { 
-        //     @include input-field(150px); 
-        // }
-        
-        // .event-name { 
-        //     @include input-field(150px); 
-        // }
-        
-        // .committee { 
-        //     @include input-field(150px); 
-        // }
-        
-        // .points { 
-        //     @include input-field(150px); 
-        // }
-        
-        // .start-time { 
-        //     @include input-field(150px); 
-        // }
-        // .start-date { 
-        
-        //     @include input-field(150px); 
-        // }
-        // .end-time { 
-        
-        //     @include input-field(150px); 
-        // }
-        // .end-date { 
-        
-        //     @include input-field(150px); 
-        // }
-        
-        // .location { 
-        //     @include input-field(150px); 
-        // }
-        
-        // .description { 
-        //     @include input-field(150px); 
-        // }
-   
     }
 }
 

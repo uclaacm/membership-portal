@@ -3,14 +3,16 @@ import React from 'react'
 import Button from 'components/Button/index'
 import EventMonth from './eventMonth'
 import AdminInput from './adminInput'
+import AdminAddEvent from './adminAddEvent'
 
 export default class AdminEvents extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {showAddEvent: false}
+        this.state = {showAddEvent: false, isEditEvent: false} 
         this.showAddEvent = this.showAddEvent.bind(this);
         this.saveAddEventParent = this.saveAddEventParent.bind(this);
         this.cancelAddEventParent = this.cancelAddEventParent.bind(this);
+        this.editEventParent = this.editEventParent.bind(this);
     }
 
     showAddEvent(e) {
@@ -23,15 +25,25 @@ export default class AdminEvents extends React.Component {
     saveAddEventParent(e) {
         console.log("saved in parent");
         this.setState(prev => ({
-            showAddEvent: false
+            showAddEvent: false,
+            isEditEvent: false
         }));
     }
 
     cancelAddEventParent(e) {
         console.log("cancel in parent");
         this.setState(prev => ({
-            showAddEvent: false
+            showAddEvent: false,
+            isEditEvent: false
         }));
+    }
+
+    editEventParent() {
+        console.log("edit in parent");
+        this.setState(prev => ({
+            showAddEvent: true,
+            isEditEvent: true
+        }));  
     }
 
     render() {
@@ -56,6 +68,7 @@ export default class AdminEvents extends React.Component {
         } else {
             return (
                 <div className="events-dashboard admin-dashboard">
+
                     {!this.state.showAddEvent && <Button
                         className={ "checkin-button" }
                         style="blue collapsible"
@@ -63,36 +76,11 @@ export default class AdminEvents extends React.Component {
                         text="Add Event"
                         onClick={ this.showAddEvent } />}
                         
-                    { months.map((month, i) => <EventMonth month={month} key={i} onClick={this.props.onClick} />) }
+                    { months.map((month, i) => <EventMonth month={month} key={i} handleEditClick={this.editEventParent} />) }
 
-                    <div className="add-event-popup">
-                        <div className="overlay">
-                            <AdminInput text="Image URL" field="half" />
-                            <AdminInput text="Event Link" field="half"/>
-                            <AdminInput text="Event Name" field="full"/>
-                            <AdminInput text="Committee" field="committee"/>
-                            <AdminInput text="Points" field="points"/>
+                    {this.state.showAddEvent && <AdminAddEvent onClickAdd={this.saveAddEventParent} onClickCancel={this.cancelAddEventParent} isEdit={this.state.isEditEvent}/>}
+                    {this.state.showAddEvent && <div className="faded-background"></div>}
 
-
-                            <AdminInput text="Start" field="half" />
-                            <AdminInput text="End" field="half"/>
-                            <AdminInput text="Location" field="full"/>
-                            <AdminInput text="Description" field="full"/>
-
-                            {/*<input type="text" className="event-link"/>
-                            <input type="text" className="event-name"/>
-                            <input type="text" className="committee"/>
-                            <input type="text" className="points"/>
-
-                            <input type="text" className="start-time"/>
-                            <input type="text" className="start-date"/>
-                            <input type="text" className="end-time"/>
-                            <input type="text" className="end-date"/>
-            
-                            <input type="text" className="location"/>
-                            <input type="text" className="description"/>*/}
-                        </div>
-                    </div>
                 </div>
 
             );
