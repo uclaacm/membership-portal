@@ -5,8 +5,6 @@ import {replace} from 'react-router-redux';
 import {Action} from 'reducers';
 import LoginComponent from 'components/Login'
 
-
-
 class Login extends React.Component {
   handleLogin(email, password) {
     this.props.login(email, password);
@@ -14,11 +12,7 @@ class Login extends React.Component {
 
   componentWillMount() {
     if(this.props.authenticated) {
-      if(this.props.isAdmin){
-        this.props.redirectAdmin();
-      } else {
-        this.props.redirectHome();
-      }
+      this.props.redirectHome();
     }
   }
 
@@ -29,9 +23,7 @@ class Login extends React.Component {
   }
 
   render() {
-    return <div>
-      <LoginComponent onsubmit={this.handleLogin.bind(this)} error={this.props.error}/>
-    </div>;
+    return <LoginComponent onsubmit={this.handleLogin.bind(this)} error={this.props.error}/>;
   }
 }
 
@@ -53,6 +45,5 @@ const mapDispatchToProps = (dispatch)=>{
     },
   };
 };
-
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);
