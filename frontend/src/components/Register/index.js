@@ -1,5 +1,6 @@
 import React from 'react';
 import Config from 'config';
+import { NavLink } from 'react-router-dom';
 import BannerMessage from 'components/BannerMessage';
 
 import DetailsCard from './detailsCard';
@@ -105,7 +106,7 @@ export default class RegisterComponent extends React.Component {
             <div>
                 <BannerMessage showing={this.props.created && !this.props.createSuccess} success={false} message={this.props.createError} />
                 <div className="register-component">
-                    <a href="/login" className="no-style Title-2White login-link">&lt; Back to Login</a>
+                    <NavLink to="/login" className="no-style Title-2White login-link">&lt; Back to Login</NavLink>
                     { this.renderComponentForPage(this.state.currentPage) }
                     <img src={Config.organization.logoLight} className="corner-logo" />
                 </div>
