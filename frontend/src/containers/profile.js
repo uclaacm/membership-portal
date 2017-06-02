@@ -7,6 +7,11 @@ import { replace } from 'react-router-redux';
 
 
 class Profile extends React.Component {
+    constructor(props) {
+        super(props);
+        if (this.props.isAdmin)
+            this.props.redirectHome();
+    }
 
     saveChanges(newprofile) {
         this.props.updateUser(newprofile);
@@ -52,6 +57,7 @@ const mapStateToProps = (state)=>{
     return {
         profile,
         authenticated: state.Auth.get("authenticated"),
+        isAdmin: state.Auth.get('isAdmin'),
         updated: u.get('updated'),
         updateSuccess: u.get('updateSuccess'),
         updateError: u.get('error'),
@@ -67,7 +73,9 @@ const mapDispatchToProps = (dispatch)=>{
         updateUser: (newprofile) => {
             dispatch(Action.UpdateUser(newprofile))
         },
-
+        redirectHome: ()=>{
+            dispatch(replace('/'));
+        },
         updateDone: ()=>{
             dispatch(Action.UserUpdateDone());
         },

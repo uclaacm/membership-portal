@@ -42,9 +42,10 @@ export default class Leaderboard extends React.Component {
                             <td className="rank">Rank</td>
                             <td className="points">Points</td>
                         </tr></thead>
+                        <tbody>
                         {
-                            [20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1].map(p => 
-                                <tr className={p === 15 ? "current-user" : ""}>
+                            [20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1].map((p,i) => 
+                                <tr className={p === 15 ? "current-user" : ""} key={i}>
                                     <td>{20-p+1}</td>
                                     <td className="name">
                                         <div>
@@ -57,6 +58,7 @@ export default class Leaderboard extends React.Component {
                                 </tr>
                             )
                         }
+                        </tbody>
                     </table>
                 </div>
             );

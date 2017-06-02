@@ -14,21 +14,7 @@ class SidebarContainer extends React.Component {
     }
 
     render () {
-        /*
-        if (this.props.fetchsuccess) {
-            return (
-                <Sidebar
-                    pic={this.props.pic}
-                    username={this.props.username}
-                    points={this.props.points}
-                />
-            );
-        } else {
-            return null;
-        }
-        */
-
-        return this.props.fetchsuccess ? <Sidebar pic={this.props.pic} username={this.props.username} points={this.props.points} /> :
+        return this.props.fetchsuccess ? <Sidebar isAdmin={this.props.isAdmin} pic={this.props.pic} username={this.props.username} points={this.props.points} /> :
             null;
     }
 }
@@ -42,7 +28,8 @@ const mapStateToProps = (state) => {
             authenticated: true,
             pic: u.get("profile").picture,
             username: `${u.get("profile").firstName} ${u.get("profile").lastName}`,
-            points: u.get("profile").points
+            points: u.get("profile").points,
+            isAdmin: state.Auth.get('isAdmin')
         }
 
     } else {

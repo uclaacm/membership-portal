@@ -5,9 +5,10 @@ import moment from 'moment';
 
 import Config from 'config';
 import {Action} from 'reducers';
-import Topbar from 'components/Topbar';
+import Topbar from 'containers/topbar';
 import Sidebar from 'containers/sidebar';
-import EventsComponent from 'components/Events/UserEvents'
+import UserEvents from 'components/Events/UserEvents'
+import AdminEvents from 'components/Events/AdminEvents'
 
 class Events extends React.Component {
 	componentWillMount() {
@@ -21,7 +22,8 @@ class Events extends React.Component {
 			<div>
 				<Topbar />
 				<Sidebar />
-				<EventsComponent events={this.props.events} error={this.props.error} />
+				{ !this.props.isAdmin ? <UserEvents events={this.props.events} error={this.props.error} /> : 
+				                        <AdminEvents events={this.props.events} error={this.props.error} createEvent={this.props.createEvent} created={this.props.eventCreated} createSuccess={this.props.eventCreateSuccess} /> }
 			</div>
 		);
 	}
@@ -33,7 +35,10 @@ const mapStateToProps = (state)=>{
 	return {
 		events: e.get('events'),
 		error: e.get('error'),
+		eventCreated: e.get('posted'),
+		eventCreateSuccess: e.get('postSuccess'),
 		authenticated: state.Auth.get('authenticated'),
+		isAdmin: state.Auth.get('isAdmin'),
 	};
 };
 

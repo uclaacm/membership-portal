@@ -19,7 +19,6 @@ import Resources from 'containers/resources';
 import Register from 'containers/register';
 import ResetPassword from 'containers/resetPassword';
 import ConfirmAccount from 'containers/confirmAccount';
-import Admin from 'containers/admin';
 import requireAuth from 'containers/requireAuth';
 
 class App extends React.Component {
@@ -37,7 +36,6 @@ class App extends React.Component {
 							<Route path="/profile" component={requireAuth(Profile)}/>
 							<Route path="/resources" component={requireAuth(Resources)}/>
 							<Route path="/leaderboard" component={requireAuth(Leaderboard)}/>
-							<Route path="/admin" component={Admin}/>
 							<Redirect to="/events"/>
 						</Switch>
 					</div>

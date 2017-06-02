@@ -25,11 +25,11 @@ export default class Sidebar extends React.Component {
                 <a className="no-style logout-btn" onClick={this.signOut} title="Sign Out"><i className="fa fa-arrow-left"></i></a>
                 {/*<Button className="logout-btn" style="gray collapsed" icon="fa fa-arrow-left" onClick={this.signOut} />*/}
                 <div className="sidebar-container">
-                    <ProfilePicture pic={this.props.pic}/>
+                    <ProfilePicture isAdmin={this.props.isAdmin} pic={this.props.isAdmin ? Config.organization.logo : this.props.pic}/>
                     <Organization org={Config.organization.shortName} />
-                    <Username username={this.props.username} />
-                    <Navigation/>
-                    <Points points={this.props.points} />
+                    <Username username={this.props.isAdmin ? "Admin" : this.props.username} />
+                    <Navigation isAdmin={this.props.isAdmin} />
+                    { !this.props.isAdmin && <Points points={this.props.points} /> }
                 </div>
             </div>
         );
