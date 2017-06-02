@@ -79,6 +79,10 @@
             span {
                 margin-left: 3px;
             }
+
+            &.time-of-day {
+                margin-right: 20px;
+            }
         }
 
         .full {
@@ -87,6 +91,10 @@
 
         .half {
             @include admin-input-mixin(170px);
+        }
+
+        .medium {
+            @include admin-input-mixin(135px)            
         }
 
         .committee {
