@@ -17,8 +17,10 @@ export default class AdminAddEvent extends React.Component {
                     <AdminInput placeholder={event.committee}text="Committee" field="committee"/>
                     <AdminInput placeholder={event.attendancePoints}text="Points" field="points"/>
                     <div className="split"></div>
-                    <AdminInput text="Start" field="half" />
-                    <AdminInput text="End" field="half"/>
+                    <AdminInput text="Start Time" field="half" />
+                    <AdminInput text="Start Date" field="half" />
+                    <AdminInput text="End Time" field="half" />
+                    <AdminInput text="End Date" field="half"/>
                     <AdminInput placeholder={event.location}text="Location" field="full"/>
                     <AdminInput placeholder={event.description}text="Description" field="full"/>
                     <div className="buttons">

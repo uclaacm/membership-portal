@@ -10,7 +10,7 @@ export default class AdminEvents extends React.Component {
         super(props);
         this.state = {showAddEvent: false, isEditEvent: false, 
             eventPlaceholder: {
-                attendancePoints: 0,
+                attendancePoints: "",
                 committee: "",
                 cover: "",
                 description: "",
@@ -33,7 +33,7 @@ export default class AdminEvents extends React.Component {
         this.setState(prev => ({
             showAddEvent: true,
             eventPlaceholder: {
-                attendancePoints: 0,
+                attendancePoints: "",
                 committee: "",
                 cover: "",
                 description: "",
