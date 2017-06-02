@@ -51,6 +51,36 @@ export default {
                 position: "Vice President",
                 email: "jdliaw@ucla.edu",
                 picture: "/assets/images/officers/jennifer.jpg"
+            },
+            {
+                name: "Rohan Varma",
+                position: "President of AI",
+                email: "rohan@ucla.edu",
+                picture: "/assets/images/officers/rohan.jpg"
+            },
+            {
+                name: "Yvonne Chen",
+                position: "President of Hack",
+                email: "yvonne@ucla.edu",
+                picture: "/assets/images/officers/yvonne.jpg"
+            },
+            {
+                name: "Jerry Li",
+                position: "President of ICPC",
+                email: "jerry@ucla.edu",
+                picture: "/assets/images/officers/jerry.jpg"
+            },
+            {
+                name: "Tyler Lindberg",
+                position: "President of VRCG",
+                email: "yvonne@ucla.edu",
+                picture: "/assets/images/unknown.png"
+            },
+            {
+                name: "Garima Lunawat",
+                position: "President of ACM-W",
+                email: "garima@ucla.edu",
+                picture: "/assets/images/unknown.png"
             }
         ],
         resources: [
