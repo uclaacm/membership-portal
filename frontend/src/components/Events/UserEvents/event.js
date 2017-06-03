@@ -27,6 +27,11 @@ export default class EventCard extends React.Component {
                         <div className="points Headline-2Secondary">{event.attendancePoints}</div>
                         <div className="label SubheaderSecondary">pts</div>
                     </div>
+                    {this.props.event.checkedIn &&
+                        <div className="attended-container">
+                            <i className="fa fa-check-circle-o"></i><span>Attended</span>
+                        </div>
+                    }
                 </div>
                 <div className="content">
                     <h2>{event.title}</h2>
