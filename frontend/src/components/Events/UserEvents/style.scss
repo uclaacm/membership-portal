@@ -30,8 +30,9 @@
     box-shadow: 0px 0px 3px #D2D2D2;
     background-color: white;
     transition: 0.125s ease-in-out;
+    // border: 3px solid $light-green;
 
-    @media (max-width: 700px) {
+    @media (max-width: 690px) {
         margin: 20px 0px;
     }
 
@@ -86,6 +87,29 @@
 
             .points {
                 font-size: 1.1em;
+            }
+        }
+
+        .attended-container {
+            position: absolute;
+            bottom: -10px;
+            left: -10px;
+            height: 20px;
+            width: auto;
+            padding: 3px;
+            line-height: 20px;
+            border-radius: 100px;
+            color: white;
+            text-transform: uppercase;
+            background-color: $light-green;
+
+            i {
+                padding: 0px 5px;
+            }
+
+            span {
+                padding: 0px 5px;
+                padding-left: 2px;
             }
         }
     }

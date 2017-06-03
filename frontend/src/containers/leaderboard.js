@@ -21,7 +21,7 @@ class Leaderboard extends React.Component {
   }
 
   render() {
-    return <LeaderboardComponent/>;
+    return <LeaderboardComponent leaderboard={this.props.leaderboard} />;
   }
 }
 

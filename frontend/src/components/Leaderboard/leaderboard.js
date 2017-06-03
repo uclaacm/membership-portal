@@ -1,34 +1,19 @@
 import React from 'react';
+import TopUser from './topUser';
 
 export default class Leaderboard extends React.Component {
     render() {
+        if (!this.props.leaderboard || !this.props.leaderboard.length)
+            return null;
         if (this.props.error) {
             return <div className="leaderboard-wrapper"><h1>{this.props.error}</h1></div>;
         } else {
             return (
                 <div className="leaderboard-wrapper">
                     <div className="top-users">
-                        <div className="top-user">
-                            <div className="rank">2nd</div><br />
-                            <img src="/assets/images/unknown.png "/><br />
-                            <div className="name">Ram Goli</div><br />
-                            <div className="level">Hacker</div><br />
-                            <div className="points">1337 points</div>
-                        </div>
-                        <div className="top-user top-user-first">
-                            <div className="rank">1st</div><br />
-                            <img src="/assets/images/unknown.png "/><br />
-                            <div className="name">Ram Goli a verylongname</div><br />
-                            <div className="level">Hacker</div><br />
-                            <div className="points">1337 points</div>
-                        </div>
-                        <div className="top-user">
-                            <div className="rank">3rd</div><br />
-                            <img src="/assets/images/unknown.png "/><br />
-                            <div className="name">Ram Goli</div><br />
-                            <div className="level">Hacker</div><br />
-                            <div className="points">1337 points</div>
-                        </div>
+                        <TopUser user={ this.props.leaderboard[1] } place={ 2 } />
+                        <TopUser user={ this.props.leaderboard[0] } place={ 1 } />
+                        <TopUser user={ this.props.leaderboard[2] } place={ 3 } />
                     </div>
                     <table className="leaderboard-table">
                         <thead><tr>
@@ -44,7 +29,7 @@ export default class Leaderboard extends React.Component {
                         </tr></thead>
                         <tbody>
                         {
-                            [20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1].map((p,i) => 
+                            this.props.leaderboard.map((p,i) => { i > 2 && 
                                 <tr className={p === 15 ? "current-user" : ""} key={i}>
                                     <td>{20-p+1}</td>
                                     <td className="name">
@@ -56,7 +41,7 @@ export default class Leaderboard extends React.Component {
                                     <td className="rank">Hacker</td>
                                     <td className="points">{p} points</td>
                                 </tr>
-                            )
+                            })
                         }
                         </tbody>
                     </table>
