@@ -30,9 +30,6 @@ const ResetCheckIn = () => {
 const CheckInto = (id) => {
     return async (dispatch) => {
         try {
-            //TODO: implement this?
-            // Dummy behavior
-            console.log(`got id: ${id}`);
             const response = await fetch(Config.API_URL + Config.routes.attendance.attend, {
                 method: 'POST',
                 headers: {
@@ -85,7 +82,6 @@ const CheckIn = (state=defaultState, action) => {
         case RESET_CHECKIN: {
             return defaultState;
         }
-
 
         case CHECK_IN_ERROR:
             return defaultState.withMutations(val => {
