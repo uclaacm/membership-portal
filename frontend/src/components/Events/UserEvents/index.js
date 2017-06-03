@@ -83,10 +83,10 @@ export default class UserEvents extends React.Component {
     renderCheckInSuccess() {
         return (
             <OverlayPopup
-                title="Awesome"
                 showing={this.props.checkInSubmitted && this.props.checkInSuccess}>
+                <h2>Awesome! You got <br /><span className="points">{this.props.checkInPoints} points</span><br />for checking in.</h2>
                 <div className="popup-buttons">
-                    <Button className="popup-button popup-submit-button" style="green" text="Ok!" onClick={this.resetCheckIn} />
+                    <Button className="large-button popup-button popup-submit-button" style="green" text="OK!" onClick={this.resetCheckIn} />
                 </div>
             </OverlayPopup>
         );

@@ -28,6 +28,7 @@ class Events extends React.Component {
 													checkInSubmitted={this.props.checkInSubmitted}
 													checkInSuccess={this.props.checkInSuccess}
 													checkInError={this.props.checkInError}
+													checkInPoints={this.props.checkInPoints}
 													resetCheckIn={this.props.resetCheckIn} /> :
 				                        <AdminEvents events={this.props.events} error={this.props.error} createEvent={this.props.createEvent} created={this.props.eventCreated} createSuccess={this.props.eventCreateSuccess} /> }
 			</div>
@@ -44,6 +45,7 @@ const mapStateToProps = (state) => {
 		authenticated: state.Auth.get('authenticated'),
 		isAdmin: state.Auth.get('isAdmin'),
 		checkInSubmitted: state.CheckIn.get('submitted'),
+		checkInPoints: state.CheckIn.get('numPoints'),
 		checkInSuccess: state.CheckIn.get('success'),
 		checkInError: state.CheckIn.get('error')
 	};
