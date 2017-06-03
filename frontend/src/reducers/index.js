@@ -8,7 +8,7 @@ import {User, FetchUser, UpdateUser, UserUpdateDone} from './user';
 import {Auth, LoginUser, LogoutUser} from './auth';
 import {Events, GetCurrentEvents, PostNewEvent} from './events';
 import {Leaderboard, FetchLeaderboard, InvalidateLeaderboard} from './leaderboard';
-import {CheckIn, CheckInto} from './checkin';
+import {CheckIn, CheckInto, ResetCheckIn} from './checkin';
 import {Registration, RegisterUser, registerDone} from './registration';
 
 const history = createHistory();
@@ -34,7 +34,7 @@ const Action = {
   GetCurrentEvents, PostNewEvent,
   FetchLeaderboard, InvalidateLeaderboard,
   RegisterUser, registerDone,
-  CheckInto
+  CheckInto, ResetCheckIn
 };
 
 export {

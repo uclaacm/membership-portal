@@ -22,7 +22,13 @@ class Events extends React.Component {
 			<div>
 				<Topbar />
 				<Sidebar />
-				{ !this.props.isAdmin ? <UserEvents events={this.props.events} checkIn={this.props.checkIn} error={this.props.error} /> :
+				{ !this.props.isAdmin ? <UserEvents events={this.props.events}
+													checkIn={this.props.checkIn}
+													error={this.props.error}
+													checkInSubmitted={this.props.checkInSubmitted}
+													checkInSuccess={this.props.checkInSuccess}
+													checkInError={this.props.checkInError}
+													resetCheckIn={this.props.resetCheckIn} /> :
 				                        <AdminEvents events={this.props.events} error={this.props.error} createEvent={this.props.createEvent} created={this.props.eventCreated} createSuccess={this.props.eventCreateSuccess} /> }
 			</div>
 		);
@@ -37,6 +43,9 @@ const mapStateToProps = (state) => {
 		eventCreateSuccess: state.Events.get('postSuccess'),
 		authenticated: state.Auth.get('authenticated'),
 		isAdmin: state.Auth.get('isAdmin'),
+		checkInSubmitted: state.CheckIn.get('submitted'),
+		checkInSuccess: state.CheckIn.get('success'),
+		checkInError: state.CheckIn.get('error')
 	};
 };
 
@@ -48,6 +57,10 @@ const mapDispatchToProps = (dispatch)=>{
 
 		checkIn: (id) => {
 			dispatch(Action.CheckInto(id));
+		},
+
+		resetCheckIn: () => {
+			dispatch(Action.ResetCheckIn());
 		},
 
 		getTime: (input) => {

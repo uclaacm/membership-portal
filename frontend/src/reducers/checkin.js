@@ -1,8 +1,11 @@
 import Config from 'config';
 import Immutable from 'immutable';
 
-const CHECK_IN_SUCCESS = Symbol('CHECK_IN');
+const CHECK_IN_SUCCESS = Symbol('CHECK_IN_SUCCESS');
+const CHECK_IN_FAILURE = Symbol('CHECK_IN_FAILURE');
+
 const CHECK_IN_ERROR = Symbol('CHECK_IN_ERROR');
+const RESET_CHECKIN = Symbol('RESET_CHECKIN');
 
 const checkInSuccess = (points) => {
     return {
@@ -13,8 +16,14 @@ const checkInSuccess = (points) => {
 
 const checkInFailure = (error) => {
     return {
-        type: CHECK_IN_ERROR,
+        type: CHECK_IN_FAILURE,
         error
+    };
+}
+
+const ResetCheckIn = () => {
+    return {
+        type: RESET_CHECKIN
     };
 }
 
@@ -43,16 +52,15 @@ const CheckInto = (id) => {
 				throw new Error(data.error.message);
 
             const pointsEarned = data.event.attendancePoints;
-            console.log(`points!: ${pointsEarned}`);
             dispatch(checkInSuccess(attendancePoints));
         } catch (err) {
-            dispatch(checkInFailure());
+            dispatch(checkInFailure(err.message));
         }
     }
 }
 
 const defaultState = Immutable.fromJS({
-    loading: false,
+    submitted: false,
     success: false,
     numPoints: 0,
     error: ''
@@ -62,10 +70,22 @@ const CheckIn = (state=defaultState, action) => {
     switch(action.type) {
         case CHECK_IN_SUCCESS:
             return state.withMutations(val => {
-                val.set('loading', false);
+                val.set('submitted', true);
                 val.set('success', true);
                 val.set('numPoints', action.points);
             });
+
+        case CHECK_IN_FAILURE:
+            return state.withMutations(val => {
+                val.set('submitted', true);
+                val.set('success', false);
+                val.set('error', action.error);
+            });
+
+        case RESET_CHECKIN: {
+            return defaultState;
+        }
+
 
         case CHECK_IN_ERROR:
             return defaultState.withMutations(val => {
@@ -78,5 +98,5 @@ const CheckIn = (state=defaultState, action) => {
 }
 
 export {
-    CheckIn, CheckInto
+    CheckIn, CheckInto, ResetCheckIn
 }
