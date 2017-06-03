@@ -17,15 +17,15 @@ export default class OverlayPopup extends React.Component {
         if (this.props.onSubmit)
             this.props.onSubmit(e);
     }
-    
+
     render () {
         if (!this.props.showing)
             return null;
-        
+
         return (
             <div className="overlay" onClick={this.handleCancel}>
                 <div className={"overlay-popup " + this.props.className} onClick={ e => e.stopPropagation() }>
-                    <h2>{this.props.title}</h2>
+                    {this.props.title && <h2>{this.props.title}</h2> }
                     {this.props.children}
                     <div className="popup-buttons">
                         {this.props.submitText && <Button className="popup-button popup-submit-button" style="green" text={this.props.submitText} onClick={this.handleSubmit} /> }

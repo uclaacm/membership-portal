@@ -9,35 +9,100 @@ import EarlierEventsIcon from 'components/Events/earlierEventsIcon'
 export default class UserEvents extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { showCheckIn: false, checkInError: null };
+        this.state = { showCheckIn: false };
         this.showCheckIn = this.showCheckIn.bind(this);
         this.hideCheckIn = this.hideCheckIn.bind(this);
         this.submitCheckIn = this.submitCheckIn.bind(this);
+        this.renderAttendanceForm = this.renderAttendanceForm.bind(this);
+        this.renderCheckInSuccess = this.renderCheckInSuccess.bind(this);
+        this.renderCheckInFailure = this.renderCheckInFailure.bind(this);
+        this.resetCheckIn = this.resetCheckIn.bind(this);
+        this.tryAgain = this.tryAgain.bind(this);
     }
 
     showCheckIn(e) {
         this.setState(prev => ({
-            showCheckIn: true
+            showCheckIn: true,
         }));
     }
 
     hideCheckIn(e) {
         console.log(e);
         this.setState(prev => ({
-            showCheckIn: false
+            showCheckIn: false,
+
         }));
+    }
+
+    resetCheckIn(e) {
+        this.props.resetCheckIn();
+    }
+
+    tryAgain(e) {
+        this.resetCheckIn();
+        this.showCheckIn();
     }
 
     submitCheckIn(e) {
         console.log(e);
         e.preventDefault();
+        this.props.checkIn(this.refs.attendanceCode.value);
+    }
+
+    renderAttendanceForm() {
+        return (
+            <OverlayPopup
+                onCancel={ this.hideCheckIn }
+                onSubmit={ this.submitCheckIn }
+                showing={ this.state.showCheckIn && !this.props.checkInSubmitted }
+                title={"Enter the Attendance Code"}
+                submitText="Submit">
+                <form onSubmit={ this.submitCheckIn } >
+                    <input type="text" placeholder="Attendance code..." ref="attendanceCode" /><br />
+                    { this.props.checkInError ? <span className="CaptionSecondary error">{ this.props.checkInError }</span> : <span className="CaptionSecondary error">&nbsp;</span> }
+                </form>
+            </OverlayPopup>
+        );
+    }
+
+    renderCheckInFailure() {
+        return (
+            <OverlayPopup
+                title={this.props.checkInError}
+                showing={this.props.checkInSubmitted && !this.props.checkInSuccess}>
+                <div className="popup-buttons">
+                    <Button className="popup-button popup-submit-button" style="blue" text="Try Again" onClick={this.tryAgain} />
+                    <Button className="popup-button popup-cancel-button" style="red" text="Cancel" onClick={this.resetCheckIn} />
+
+                </div>
+
+            </OverlayPopup>
+        );
+    }
+
+    renderCheckInSuccess() {
+        return (
+            <OverlayPopup
+                showing={this.props.checkInSubmitted && this.props.checkInSuccess}>
+                <h2>Awesome! You got <br /><span className="points">{this.props.checkInPoints} points</span><br />for checking in.</h2>
+                <div className="popup-buttons">
+                    <Button className="large-button popup-button popup-submit-button" style="green" text="OK!" onClick={this.resetCheckIn} />
+                </div>
+            </OverlayPopup>
+        );
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.checkInSubmitted) {
+            this.hideCheckIn();
+        }
     }
 
     render() {
         if (this.props.error)
             return (<div className="events-dashboard user-dashboard"><h1>{this.props.error}</h1></div>);
 
-        let days = [];
+        let days =[];
         for (let event of this.props.events) {
             if (days.length === 0 || event.startDate.date() !== days[days.length - 1].date.date())
                 days.push({ date: event.startDate, events: [event] });
@@ -47,18 +112,9 @@ export default class UserEvents extends React.Component {
 
         return (
             <div className="events-dashboard user-dashboard">
-                <OverlayPopup
-                    onCancel={ this.hideCheckIn }
-                    onSubmit={ this.submitCheckIn }
-                    showing={ this.state.showCheckIn }
-                    title="Enter the Attendance Code"
-                    submitText="Submit">
-                    <form onSubmit={ this.submitCheckIn }>
-                        <input type="text" placeholder="Attendance code..." /><br />
-                        { this.props.checkInError ? <span className="CaptionSecondary error">{ this.props.checkInError }</span> : <span className="CaptionSecondary error">&nbsp;</span> }
-                    </form>
-                </OverlayPopup>
-
+                {this.renderAttendanceForm()}
+                {this.renderCheckInSuccess()}
+                {this.renderCheckInFailure()}
                 <EarlierEventsIcon />
                 <Button
                     className={ "checkin-button" + (this.state.showCheckIn ? " hidden" : "")}
