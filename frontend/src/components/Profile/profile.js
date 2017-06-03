@@ -126,14 +126,14 @@ export default class Profile extends React.Component {
         let nextLevel = Config.levels[1];
         let currLevelNumber = 0;
         for (let i = 0; i < Config.levels.length; i++) {
-            if (Config.levels[i].startsAt > this.props.points) {
+            if (Config.levels[i].startsAt > this.props.profile.points) {
                 currLevel = Config.levels[i - 1];
                 currLevelNumber = i - 1;
                 nextLevel = Config.levels[i];
                 break;
             }
         }
-
+        
         return (
             <div>
                 <BannerMessage
