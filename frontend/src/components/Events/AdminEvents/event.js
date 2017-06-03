@@ -53,7 +53,7 @@ export default class AdminEventCard extends React.Component {
         const event = this.props.event;
         const className = "admin-event-tile" + (this.state.selected ? " selected" : "");  
         return (
-            <div className={className} onClick={this.handleClick}>
+            <div className={className} onClick={this.editEvent}>
                 <div className="top">
                     <div className="cover" style={{ backgroundImage: 'url('+event.cover+')' }}></div>
                     <div className="event-header">

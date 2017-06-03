@@ -74,6 +74,18 @@
             }
         }
 
+        .admin-date-picker {
+            border: 1px solid $--disabled;
+            width: 100px;
+            height: 28px;
+            padding: 5px;
+            padding-left: 7px;
+            margin: 2px;
+            border-radius: 5px;
+
+
+        }
+
         .admin-input {
             display: inline-block;
             span {
