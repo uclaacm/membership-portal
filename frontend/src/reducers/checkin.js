@@ -1,5 +1,6 @@
 import Config from 'config';
 import Immutable from 'immutable';
+import {Action} from 'reducers';
 
 const CHECK_IN_SUCCESS = Symbol('CHECK_IN_SUCCESS');
 const CHECK_IN_FAILURE = Symbol('CHECK_IN_FAILURE');
@@ -48,8 +49,8 @@ const CheckInto = (id) => {
 			if (data.error)
 				throw new Error(data.error.message);
 
-            const pointsEarned = data.event.attendancePoints;
-            dispatch(checkInSuccess(attendancePoints));
+            dispatch(checkInSuccess(data.event.attendancePoints));
+            dispatch(Action.FetchUser());
         } catch (err) {
             dispatch(checkInFailure(err.message));
         }
