@@ -76,7 +76,7 @@ const GetCurrentEvents = () => {
 			const events = [];
 			for(let i = 0; i < data.events.length; i++){
 				let checkedIn = false;
-				if(j < data2.attendance.length && data2.attendance[j].uuid === data.events[i].uuid){
+				if(j < data2.attendance.length && data2.attendance[j].event === data.events[i].uuid){
 					j++;
 					checkedIn = true;
 				}
