@@ -17,6 +17,7 @@ export default class UserEvents extends React.Component {
         this.renderCheckInSuccess = this.renderCheckInSuccess.bind(this);
         this.renderCheckInFailure = this.renderCheckInFailure.bind(this);
         this.resetCheckIn = this.resetCheckIn.bind(this);
+        this.tryAgain = this.tryAgain.bind(this);
     }
 
     showCheckIn(e) {
@@ -37,6 +38,11 @@ export default class UserEvents extends React.Component {
         this.props.resetCheckIn();
     }
 
+    tryAgain(e) {
+        this.resetCheckIn();
+        this.showCheckIn();
+    }
+
     submitCheckIn(e) {
         console.log(e);
         e.preventDefault();
@@ -51,7 +57,7 @@ export default class UserEvents extends React.Component {
                 showing={ this.state.showCheckIn && !this.props.checkInSubmitted }
                 title={"Enter the Attendance Code"}
                 submitText="Submit">
-                <form onSubmit={ this.submitCheckIn }>
+                <form onSubmit={ this.submitCheckIn } >
                     <input type="text" placeholder="Attendance code..." ref="attendanceCode" /><br />
                     { this.props.checkInError ? <span className="CaptionSecondary error">{ this.props.checkInError }</span> : <span className="CaptionSecondary error">&nbsp;</span> }
                 </form>
@@ -65,7 +71,7 @@ export default class UserEvents extends React.Component {
                 title={this.props.checkInError}
                 showing={this.props.checkInSubmitted && !this.props.checkInSuccess}>
                 <div className="popup-buttons">
-                    <Button className="popup-button popup-submit-button" style="blue" text="Try Again" onClick={this.showCheckIn} />
+                    <Button className="popup-button popup-submit-button" style="blue" text="Try Again" onClick={this.tryAgain} />
                     <Button className="popup-button popup-cancel-button" style="red" text="Cancel" onClick={this.resetCheckIn} />
 
                 </div>
