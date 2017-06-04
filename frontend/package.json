@@ -42,12 +42,9 @@
   },
   "dependencies": {
     "babel-polyfill": "^6.23.0",
-    "bootstrap-datetimepicker": "0.0.7",
     "dompurify": "^0.9.0",
-    "fb": "^2.0.0",
     "immutable": "^3.8.1",
     "moment": "^2.18.1",
-    "rc-time-picker": "^2.4.1",
     "react": "^15.5.3",
     "react-cookie": "^2.0.6",
     "react-datepicker": "^0.46.0",
