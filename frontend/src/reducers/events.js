@@ -4,8 +4,6 @@ import Immutable from 'immutable';
 
 import { LogoutUser } from './auth';
 
-import {push} from 'react-router-redux';
-
 /////////////////
 /// UTILITY /////
 /////////////////
@@ -53,7 +51,6 @@ const GetCurrentEvents = () => {
 
 			if (status > 400) {
 				dispatch(LogoutUser());
-				//throw new Error("User not logged in");
 			}
 
 			const data = await response.json();
@@ -138,6 +135,11 @@ const PostNewEvent = (newevent)=>{
 			});
 
 			const status = await response.status;
+
+			if (status > 400) {
+				dispatch(LogoutUser());
+			}
+			
 			const data = await response.json();
 
 			if (!data)

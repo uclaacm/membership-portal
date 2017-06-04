@@ -98,6 +98,11 @@ const UpdateUser = newprofile => {
 			});
 
 			const status = await response.status;
+
+			if (status > 400) {
+				dispatch(LogoutUser());
+			}
+			
 			const data = await response.json();
 
 			if (!data)
