@@ -1,4 +1,4 @@
-import 'rc-time-picker/assets/index.css';
+// import 'rc-time-picker/assets/index.css';
 import React from 'react'
 import moment from 'moment';
 
