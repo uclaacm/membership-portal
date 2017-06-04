@@ -1,6 +1,8 @@
 import Config from 'config';
 import Immutable from 'immutable';
 
+import { replace } from 'react-router-redux';
+
 const setStorage = (key,item) => localStorage.setItem(key, item);
 const getFromStorage = (key) => localStorage.getItem(key);
 const removeFromStorage = (key) => localStorage.removeItem(key);
@@ -76,7 +78,7 @@ const LogoutUser = (error) => {
             payload: error || ''
         });
         removeFromStorage("token");
-        window.location.href = "/login";
+        dispatch(replace('/login'));
     }
 }
 

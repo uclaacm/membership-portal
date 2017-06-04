@@ -28,6 +28,9 @@ const store = createStore(
   applyMiddleware(routing, thunk)
 );
 
+//DEBUG
+window.store=store;
+
 const Action = {
   TimeGet,
   LoginUser, LogoutUser, FetchUser, UpdateUser, UserUpdateDone,
