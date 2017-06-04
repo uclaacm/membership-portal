@@ -99,11 +99,17 @@ export default class AdminAddEvent extends React.Component {
         const endDate = event.endDate ? (event.endDate.format("MM-D-YY")) : "";
 
         const startTime = event.startDate ? (event.startDate.format("HH:mm")) : "";
+        console.log(startTime);
 
-        const endTime = event.endDate ? (event.endDate.format("h:mm a")) : "";
+
+        const endTime = event.endDate ? (event.endDate.format("hh:mm")) : "";
+        console.log(endTime);
+
 
         const format = 'h:mm a';
         const now = moment().hour(0).minute(0);
+
+        console.log("ASfsdfsdafsadf", this.state.event.startDate && this.state.event.startDate.format("hh:mm"))
 
         return (
             <div className={"add-event-overlay" + (this.props.showing ? " showing" : "")} onClick={this.props.onClickCancel}>
@@ -160,7 +166,8 @@ export default class AdminAddEvent extends React.Component {
                                     onChange={this.timeErrorCheckStart}
                                     placeholder="hh:mm"
                                     mask={timeMask}
-                                    defaultValue={this.state.event.startDate && this.state.event.startDate.format("a")} />
+                                    defaultValue={this.state.event.startDate && this.state.event.startDate.format("hh:mm")}
+                                    />
                             </div>
                             <div className="input-field one-fourth-width">
                                 <select defaultValue="">
@@ -185,7 +192,8 @@ export default class AdminAddEvent extends React.Component {
                                     onChange={this.timeErrorCheckEnd}
                                     placeholder="hh:mm"
                                     mask={timeMask}
-                                    defaultValue={this.state.event.endDate && this.state.event.endDate.format("a")} />
+                                    defaultValue={this.state.event.startDate && this.state.event.startDate.format("a")}
+                                />
                             </div>
                             <div className="input-field one-fourth-width">
                                 <select defaultValue="">

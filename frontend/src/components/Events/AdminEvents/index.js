@@ -8,19 +8,22 @@ import AdminAddEvent from './adminAddEvent'
 export default class AdminEvents extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {showAddEvent: false, isEditEvent: false, 
+        this.state = {
+            showAddEvent: false, isEditEvent: false,
             eventPlaceholder: {
                 attendancePoints: "",
+                attendanceCode: "",
                 committee: "",
                 cover: "",
                 description: "",
-                endDate: null,
+                endDate: "",
                 eventLink: "",
                 location: "",
-                startDate: null,
-                title: ""
+                startDate: "",
+                title: "",
+                startTime: ""
             }
-        } 
+        }
         this.showAddEvent = this.showAddEvent.bind(this);
         this.hideAddEvent = this.hideAddEvent.bind(this);
         this.saveAddEventParent = this.saveAddEventParent.bind(this);
@@ -35,6 +38,7 @@ export default class AdminEvents extends React.Component {
             showAddEvent: true,
             eventPlaceholder: {
                 attendancePoints: "",
+                attendanceCode: "",
                 committee: "",
                 cover: "",
                 description: "",
@@ -42,7 +46,8 @@ export default class AdminEvents extends React.Component {
                 eventLink: "",
                 location: "",
                 startDate: null,
-                title: ""
+                title: "",
+                startTime: ""
             }
         }));
     }
@@ -82,7 +87,7 @@ export default class AdminEvents extends React.Component {
             showAddEvent: true,
             isEditEvent: true,
             eventPlaceholder: param
-        }));  
+        }));
     }
 
     render() {
@@ -114,9 +119,9 @@ export default class AdminEvents extends React.Component {
                         style="blue collapsible"
                         icon="fa-plus"
                         text="Add Event"
-                        onClick={ this.showAddEvent } />}
-                        
-                    { months.map((month, i) => <EventMonth month={month} key={i} handleEditClick={this.handleEditClick} />) }
+                        onClick={this.showAddEvent} />}
+
+                    {months.map((month, i) => <EventMonth month={month} key={i} handleEditClick={this.handleEditClick} />)}
 
                     {this.state.showAddEvent && <div onClick={this.cancelAddEventParent} className="faded-background"></div>}
 
