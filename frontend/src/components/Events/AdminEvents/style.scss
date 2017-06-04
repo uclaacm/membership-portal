@@ -139,6 +139,7 @@ $admin-add-event-width: 400px;
                     margin: 15px 0px 20px 0px;
                 }
 
+
                 .input-field {
                     display: inline-block;
                     width: 100%;
@@ -170,6 +171,10 @@ $admin-add-event-width: 400px;
 
                         &:focus {
                             border: solid 1px $secondaryblue;
+                        }
+
+                        &.error {
+                            border: solid 1px red;
                         }
                     }
 

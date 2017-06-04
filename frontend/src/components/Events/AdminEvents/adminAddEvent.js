@@ -11,11 +11,13 @@ import 'react-datepicker/dist/react-datepicker.css';
 export default class AdminAddEvent extends React.Component {
     constructor(props) {
         super(props)
-        this.state = { event: this.props.event };
+        this.state = { event: this.props.event, startError: false, endError: false };
         this.handleChangeStartDate = this.handleChangeStartDate.bind(this);
         this.handleChangeEndDate = this.handleChangeEndDate.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.resizeTextArea = this.resizeTextArea.bind(this);
+        this.timeErrorCheckStart = this.timeErrorCheckStart.bind(this);
+        this.timeErrorCheckEnd = this.timeErrorCheckEnd.bind(this);
     }
 
     handleChangeStartDate(date) {
@@ -57,6 +59,62 @@ export default class AdminAddEvent extends React.Component {
         });
     }
 
+    timeErrorCheckStart(e) {
+        const hh = parseInt(e.target.value[0] * 10) + parseInt(e.target.value[1]);
+        const mm = parseInt(e.target.value[3] * 10) + parseInt(e.target.value[4]);
+        if (isNaN(hh) || hh > 12) {
+            this.setState(prev => ({
+                startError: true
+            }));
+            console.log("hh: bad")
+        }
+        else {
+            this.setState(prev => ({
+                startError: false
+            }));
+        }
+
+        if (isNaN(mm) || mm > 60) {
+            console.log("mm: bad")
+            this.setState(prev => ({
+                startError: true
+            }));
+        }
+        else {
+            this.setState(prev => ({
+                startError: false
+            }));
+        }
+    }
+
+    timeErrorCheckEnd(e) {
+        const hh = parseInt(e.target.value[0] * 10) + parseInt(e.target.value[1]);
+        const mm = parseInt(e.target.value[3] * 10) + parseInt(e.target.value[4]);
+        if (isNaN(hh) || hh > 12) {
+            this.setState(prev => ({
+                endError: true
+            }));
+            console.log("hh: bad")
+        }
+        else {
+            this.setState(prev => ({
+                endError: false
+            }));
+        }
+
+        if (isNaN(mm) || mm > 60) {
+            console.log("mm: bad")
+            this.setState(prev => ({
+                endError: true
+            }));
+        }
+        else {
+            this.setState(prev => ({
+                endError: false
+            }));
+        }
+    }
+
     render() {
         const event = this.props.event;
 
@@ -75,7 +133,7 @@ export default class AdminAddEvent extends React.Component {
 
         return (
             <div className={"add-event-overlay" + (this.props.showing ? " showing" : "")} onClick={this.props.onClickCancel}>
-                <div className="event-sidebar" onClick={e => e.stopPropagation() }>
+                <div className="event-sidebar" onClick={e => e.stopPropagation()}>
                     <div className="cover-img">
                         <img src={this.state.event.cover} />
                     </div>
@@ -87,19 +145,19 @@ export default class AdminAddEvent extends React.Component {
                             </div>
                             <div className="input-field half-width">
                                 <p>Event URL</p>
-                                <input type="text" value={this.state.event.eventLink} name="eventLink" onChange={this.handleChange}  />
+                                <input type="text" value={this.state.event.eventLink} name="eventLink" onChange={this.handleChange} />
                             </div>
                         </div>
                         <div className="input-row">
                             <div className="input-field">
                                 <p>Event Title</p>
-                                <input type="text" value={this.state.event.title} name="title" onChange={this.handleChange} />                        
+                                <input type="text" value={this.state.event.title} name="title" onChange={this.handleChange} />
                             </div>
                         </div>
                         <div className="input-row">
                             <div className="input-field">
                                 <p>Committee</p>
-                                <input type="text" value={this.state.event.committee} name="committee" onChange={this.handleChange} />                        
+                                <input type="text" value={this.state.event.committee} name="committee" onChange={this.handleChange} />
                             </div>
                         </div>
                         <div className="input-row">
@@ -124,6 +182,8 @@ export default class AdminAddEvent extends React.Component {
                             <div className="input-field one-fourth-width">
                                 <p>Start Time</p>
                                 <InputElement
+                                    className={this.state.startError ? "error" : ""}
+                                    onChange={this.timeErrorCheckStart}
                                     placeholder="hh:mm"
                                     mask={timeMask}
                                     defaultValue={this.state.event.startDate && this.state.event.startDate.format("a")} />
@@ -147,6 +207,8 @@ export default class AdminAddEvent extends React.Component {
                             <div className="input-field one-fourth-width">
                                 <p>End Time</p>
                                 <InputElement
+                                    className={this.state.endError ? "error" : ""}
+                                    onChange={this.timeErrorCheckEnd}
                                     placeholder="hh:mm"
                                     mask={timeMask}
                                     defaultValue={this.state.event.endDate && this.state.event.endDate.format("a")} />
