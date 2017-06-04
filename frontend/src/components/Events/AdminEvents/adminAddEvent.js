@@ -1,3 +1,4 @@
+import 'rc-time-picker/assets/index.css';
 import React from 'react'
 import AdminInput from './adminInput'
 import Button from 'components/Button/index'
@@ -5,7 +6,6 @@ import Button from 'components/Button/index'
 import moment from 'moment';
 
 import TimePicker from 'rc-time-picker';
-import 'rc-time-picker/assets/index.css';
 
 export default class AdminAddEvent extends React.Component {
     constructor(props) {
@@ -77,13 +77,12 @@ export default class AdminAddEvent extends React.Component {
                     <AdminInput val={event.startDate && event.endDate.format("hh:mm")} placeholder={"hh:mm"} text="End Time" mask={timeMask} field="medium" />
                     <AdminInput val={event.startDate && event.endDate.format("a")} placeholder={"am"} text="" mask={"aa"} field="small time-of-day" />
 
-                    {/*<TimePicker
+                    <TimePicker
                         showSecond={false}
           
-                        className="xxx"
-                        format={format}
-                        use12Hours
-                    />*/}
+                        format={"HH:mm"}
+                        
+                    />
 
                     <AdminInput val={event.location} text="Location" field="full" />
                     <AdminInput val={event.description} text="Description" field="full" />

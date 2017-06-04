@@ -14,7 +14,7 @@ export default class AdminInput extends React.Component {
 
                 {this.props.isDatePicker && <DatePicker
                     selected={this.props.val}
-                    onChange={this.handleChange}
+                    onChange={this.props.onChange}
                     className="admin-date-picker TitleSecondary"
                 />}
 
