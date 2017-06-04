@@ -22,6 +22,7 @@ export default class AdminEvents extends React.Component {
             }
         } 
         this.showAddEvent = this.showAddEvent.bind(this);
+        this.hideAddEvent = this.hideAddEvent.bind(this);
         this.saveAddEventParent = this.saveAddEventParent.bind(this);
         this.cancelAddEventParent = this.cancelAddEventParent.bind(this);
         this.handleEditClick = this.handleEditClick.bind(this);
@@ -44,6 +45,14 @@ export default class AdminEvents extends React.Component {
                 title: ""
             }
         }));
+    }
+
+    hideAddEvent(e) {
+        this.setState(prev => {
+            let newState = Object.assign({}, prev);
+            newState.showAddEvent = false;
+            return newState;
+        });
     }
 
     //Handles when update/add event
@@ -97,9 +106,10 @@ export default class AdminEvents extends React.Component {
         } else {
             return (
                 <div className="events-dashboard admin-dashboard">
+                    <AdminAddEvent event={this.state.eventPlaceholder} onClickAdd={this.saveAddEventParent} onClickCancel={this.cancelAddEventParent} isEdit={this.state.isEditEvent} showing={this.state.showAddEvent} />
 
                     {!this.state.showAddEvent && <Button
-                        className={ "checkin-button" }
+                        className="checkin-button"
                         style="blue collapsible"
                         icon="fa-plus"
                         text="Add Event"
@@ -107,7 +117,6 @@ export default class AdminEvents extends React.Component {
                         
                     { months.map((month, i) => <EventMonth month={month} key={i} handleEditClick={this.handleEditClick} />) }
 
-                    {this.state.showAddEvent && <AdminAddEvent event={this.state.eventPlaceholder} onClickAdd={this.saveAddEventParent} onClickCancel={this.cancelAddEventParent} isEdit={this.state.isEditEvent}/>}
                     {this.state.showAddEvent && <div onClick={this.cancelAddEventParent} className="faded-background"></div>}
 
                 </div>

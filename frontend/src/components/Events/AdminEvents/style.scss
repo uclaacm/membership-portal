@@ -1,122 +1,329 @@
 .admin-dashboard {
-    .faded-background {
+    .add-event-overlay {
+        background: rgba($primaryblue, 0.7);
         position: fixed;
-        width: calc( 100% - 685px);
+        z-index: 12;
+        top: 0px;
+        left: 125%;
+        width: 100%;
         height: 100%;
-        background: rgba($primaryblue, 0.5);
-        right: 400px;
-        top: 0px;
-        z-index: 10000;
-    }
-    .date-month {
-        margin-left: 20px;
-        margin-bottom: 15px;
-    }
+        opacity: 0;
+        transition: 0.25s ease-in-out;
 
-    .add-event-popup {
-        // display: none;
-        width: 400px;
-        height: 100vh;
-        position: fixed;
-        right: 0px;
-        top: 0px;
-        background: #D3D3D3;
-        z-index: 9000;
+        &.showing {
+            left: 0%;
+            opacity: 1;
+        }
+        
+        @media (max-width: 700px) {
+            &.showing .event-sidebar {
+                width: 100%;
+            }
+        }
 
-        .overlay {
-            position: relative;
-            background: white;
+        .event-sidebar {
+            position: fixed;
+            top: 0px;
+            right: -400px;
             height: 100%;
             width: 400px;
-            padding: 0 25px;
-            padding-bottom: 20px;
             overflow-y: scroll;
+            background-color: white;
+            transition: 0.25s ease-in-out;
+            box-shadow: 0px 0px 3px rgba($primaryblue, 0.7);
 
-            .header {
-                display: block;
-                width: 300px;
-                margin: 0 auto;
-                margin-top: 50px;
-                text-align: center;
-                margin-bottom: 40px;
+            .cover-img {
+                width: 100%;
+                height: 240px;
+                background: $gray1;
+
+                img {
+                    height: 100%;
+                    width: 100%;
+                    background: no-repeat center center fixed;
+                    background-size: cover;
+                    object-fit: cover;
+                }
             }
 
-            .split {
-                border-bottom: 1px solid $--disabled;
-                width: 350px;
-                margin: 25px 0;
-            }
-            
-        }
-
-        .buttons {
-            
-            text-align: center;
-            width: 400px;
-            margin: 15px auto;
-            .add-event-button {
-                margin-right: 20px;
-            }
-        }
-
-
-        @mixin admin-input-mixin ($width) {
-            width: $width;
-            margin-right: 10px;
-            input {
-                width: $width - 10px - 2px;
-                height: 28px;
-                padding: 5px;
-                padding-left: 7px;
-                margin: 2px;
-                border-radius: 5px;
-                border: 1px solid $--disabled;
-            }
-        }
-
-        .admin-date-picker {
-            border: 1px solid $--disabled;
-            width: 100px;
-            height: 28px;
-            padding: 5px;
-            padding-left: 7px;
-            margin: 2px;
-            border-radius: 5px;
-
-
-        }
-
-        .admin-input {
-            display: inline-block;
-            span {
-                margin-left: 3px;
+            @media (max-width: 700px) {
+                .cover-img {
+                    height: 55vw;
+                }
             }
 
-            &.time-of-day {
-                margin-right: 20px;
+            .editor {
+                padding: 20px;
+
+                .input-row {
+                    margin-bottom: 5px;
+                }
+
+                .divider {
+                    width: 100%;
+                    height: 1px;
+                    background-color: #DADADA;
+                    margin: 15px 0px 20px 0px;
+                }
+
+                .input-field {
+                    display: inline-block;
+                    width: 100%;
+
+                    p {
+                        font-size: 11px;
+                        font-family: 'Lato', sans-serif;
+                        font-weight: bold;
+                        color: $--secondaryblack;
+                        text-align: left;
+                        margin-bottom: 5px;
+
+                        span.info {
+                            font-size: 0.9em;
+                            font-weight: normal;
+                            color: $gray2;
+                        }
+                    }
+
+                    input {
+                        border-radius: 5px;
+                        border: solid 1px $gray2;
+                        height: 16px;
+                        margin-bottom: 5px;
+                        padding: 7px;
+                        font-size: 14px;
+                        outline: none;
+                        width: calc(100% - 14px);
+
+                        &:focus {
+                            border: solid 1px $secondaryblue;
+                        }
+                    }
+
+                    select {
+                        -webkit-appearance: none;
+                        -moz-appearance: none;
+                        appearance: none;
+                        border: none;
+                        outline: none;
+                        background: none;
+                        border-radius: 5px;
+                        border: solid 1px $gray2;
+                        margin-bottom: 5px;
+                        padding: 7px;
+                        font-size: 14px;
+                        width: 100%;
+
+                        &:focus {
+                            border: solid 1px $secondaryblue;
+                        }
+                    }
+
+                    textarea {
+                        -webkit-appearance: none;
+                        -moz-appearance: none;
+                        appearance: none;
+                        border: none;
+                        outline: none;
+                        background: none;
+                        border-radius: 5px;
+                        border: solid 1px $gray2;
+                        margin-bottom: 5px;
+                        padding: 7px;
+                        font-size: 14px;
+                        width: calc(100% - 14px);
+                        min-height: 120px;
+                        resize: none;
+
+                        &:focus {
+                            border: solid 1px $secondaryblue;
+                        }
+                    }
+
+                    .react-datepicker__input-container {
+                        width: 100%;
+                    }
+
+                    &.one-fourth-width {
+                        width: calc(25% - 8px);
+                        margin-right: 10px;
+                    }
+
+                    &.one-fourth-width:last-child {
+                        margin-right: 0px;
+                    }
+
+                    &.half-width {
+                        width: calc(50% - 5px);
+                        margin-right: 10px;
+                    }
+
+                    &.half-width:last-child {
+                        margin-right: 0px;
+                    }
+
+                    &.three-fourth-width {
+                        width: calc(75% - 5px);
+                        margin-right: 10px;
+                    }
+
+                    &.three-fourth-width:last-child {
+                        width: calc(25% - 5px);
+                        margin-right: 0px;
+                    }
+                }
+
+                .button-area {
+                    text-align: center;
+                    width: 100%;
+
+                    button {
+                        margin: 0px 5px;
+                    }
+                }
             }
         }
 
-        .full {
-            @include admin-input-mixin(350px)
-        }
-
-        .half {
-            @include admin-input-mixin(170px);
-        }
-
-        .medium {
-            @include admin-input-mixin(135px)            
-        }
-
-        .committee {
-            @include admin-input-mixin(290px);
-        }
-
-        .small {
-            @include admin-input-mixin(50px);
+        &.showing .event-sidebar {
+            right: 0px;
         }
     }
+    // .faded-background {
+    //     position: fixed;
+    //     width: calc( 100% - 685px);
+    //     height: 100%;
+    //     background: rgba($primaryblue, 0.5);
+    //     right: 400px;
+    //     top: 0px;
+    //     z-index: 10000;
+    // }
+    // .date-month {
+    //     margin-left: 20px;
+    //     margin-bottom: 15px;
+    // }
+
+    // .add-event-popup {
+    //     // display: none;
+    //     width: 400px;
+    //     height: 100vh;
+    //     position: fixed;
+    //     right: 0px;
+    //     top: 0px;
+    //     background: #D3D3D3;
+    //     z-index: 9000;
+
+    //     .overlay {
+    //         position: relative;
+    //         background: white;
+    //         height: 100%;
+    //         width: 400px;
+    //         padding: 0 25px;
+    //         padding-bottom: 20px;
+    //         overflow-y: scroll;
+
+    //         .cover-img {
+    //             width: 100%;
+    //             height: 180px;
+    //             background-color: $gray1;
+    //         }
+
+    //         .header {
+    //             display: block;
+    //             width: 300px;
+    //             margin: 0 auto;
+    //             margin-top: 50px;
+    //             text-align: center;
+    //             margin-bottom: 40px;
+    //         }
+
+    //         .split {
+    //             border-bottom: 1px solid $--disabled;
+    //             width: 350px;
+    //             margin: 25px 0;
+    //         }
+            
+    //     }
+
+    //     .buttons {
+            
+    //         text-align: center;
+    //         width: 400px;
+    //         margin: 15px auto;
+    //         .add-event-button {
+    //             margin-right: 20px;
+    //         }
+    //     }
+
+
+    //     @mixin admin-input-mixin ($width) {
+    //         width: $width;
+    //         margin-right: 10px;
+    //         input {
+    //             border-radius: 5px;
+    //             border: solid 1px $gray2;
+    //             height: 20px;
+    //             margin-bottom: 5px;
+    //             padding: 9px;
+    //             font-size: 17px;
+    //             outline: none;
+    //             width: $width - 10px - 2px;
+
+    //             &:focus {
+    //                 border: solid 1px $secondaryblue;
+    //             }
+    //         }
+    //         //     height: 28px;
+    //         //     padding: 5px;
+    //         //     padding-left: 7px;
+    //         //     margin: 2px;
+    //         //     border-radius: 5px;
+    //         //     border: 1px solid $--disabled;
+    //         // }
+    //     }
+
+    //     .admin-date-picker {
+    //         border: 1px solid $--disabled;
+    //         width: 100px;
+    //         height: 28px;
+    //         padding: 5px;
+    //         padding-left: 7px;
+    //         margin: 2px;
+    //         border-radius: 5px;
+
+
+    //     }
+
+    //     .admin-input {
+    //         display: inline-block;
+    //         span {
+    //             margin-left: 3px;
+    //         }
+
+    //         &.time-of-day {
+    //             margin-right: 20px;
+    //         }
+    //     }
+
+    //     .full {
+    //         @include admin-input-mixin(350px)
+    //     }
+
+    //     .half {
+    //         @include admin-input-mixin(170px);
+    //     }
+
+    //     .medium {
+    //         @include admin-input-mixin(135px)            
+    //     }
+
+    //     .committee {
+    //         @include admin-input-mixin(290px);
+    //     }
+
+    //     .small {
+    //         @include admin-input-mixin(50px);
+    //     }
+    // }
 }
 
 .admin-dashboard .event-day {
@@ -134,10 +341,14 @@
 
 .admin-dashboard .admin-event-tile {
     width: 100%;
-
     margin-bottom: 10px;
-    border: 1px solid #CCC;
+    box-shadow: 0px 0px 3px #D2D2D2;
     border-radius: 4px;
+
+    &:hover {
+        background: rgba(240,240,240,0.35);
+        cursor: pointer;
+    }
 
     .top {
         display: table;
@@ -155,7 +366,7 @@
         .event-header {
             display: table-cell;
             vertical-align: middle;
-            padding-left: 10px;
+            padding-left: 20px;
 
             .event-title, .event-committee {
                 margin: 0px;
