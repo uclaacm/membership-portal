@@ -5,13 +5,7 @@ import TextareaAutosize from 'react-autosize-textarea';
 import 'react-datepicker/dist/react-datepicker.css';
 
 export default class AdminInput extends React.Component {
-
-
-
     render() {
-
-
-
         const className = "admin-input " + (this.props.field);
         return (
             <div className={className}>

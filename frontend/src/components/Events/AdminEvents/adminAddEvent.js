@@ -62,20 +62,7 @@ export default class AdminAddEvent extends React.Component {
     timeErrorCheckStart(e) {
         const hh = parseInt(e.target.value[0] * 10) + parseInt(e.target.value[1]);
         const mm = parseInt(e.target.value[3] * 10) + parseInt(e.target.value[4]);
-        if (isNaN(hh) || hh > 12) {
-            this.setState(prev => ({
-                startError: true
-            }));
-            console.log("hh: bad")
-        }
-        else {
-            this.setState(prev => ({
-                startError: false
-            }));
-        }
-
-        if (isNaN(mm) || mm > 60) {
-            console.log("mm: bad")
+        if (isNaN(hh) || hh > 12 || isNaN(mm) || mm > 60) {
             this.setState(prev => ({
                 startError: true
             }));
@@ -90,20 +77,7 @@ export default class AdminAddEvent extends React.Component {
     timeErrorCheckEnd(e) {
         const hh = parseInt(e.target.value[0] * 10) + parseInt(e.target.value[1]);
         const mm = parseInt(e.target.value[3] * 10) + parseInt(e.target.value[4]);
-        if (isNaN(hh) || hh > 12) {
-            this.setState(prev => ({
-                endError: true
-            }));
-            console.log("hh: bad")
-        }
-        else {
-            this.setState(prev => ({
-                endError: false
-            }));
-        }
-
-        if (isNaN(mm) || mm > 60) {
-            console.log("mm: bad")
+        if (isNaN(hh) || hh > 12 || isNaN(mm) || mm > 60) {
             this.setState(prev => ({
                 endError: true
             }));
@@ -234,7 +208,7 @@ export default class AdminAddEvent extends React.Component {
                             </div>
                         </div>
                         <div className="button-area">
-                            <Button onClick={this.props.onClickAdd} style="green" text={this.props.isEdit ? "Update" : "Add"} icon="" />
+                            <Button onClick={() => this.props.onClickAdd(this.state.endError || this.state.startError)} style="green" text={this.props.isEdit ? "Update" : "Add"} icon="" />
 
                             <Button onClick={this.props.onClickCancel} style="red" text="Cancel" icon="" />
                         </div>

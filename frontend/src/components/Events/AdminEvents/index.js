@@ -56,7 +56,8 @@ export default class AdminEvents extends React.Component {
     }
 
     //Handles when update/add event
-    saveAddEventParent(e) {
+    saveAddEventParent(param) {
+        console.log(param);
         console.log("saved in parent");
         console.log(this.props.events);
         this.setState(prev => ({
