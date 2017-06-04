@@ -1,10 +1,12 @@
+$admin-add-event-width: 400px;
+
 .admin-dashboard {
     .faded-background {
         position: fixed;
         width: calc( 100% - 685px);
         height: 100%;
         background: rgba($primaryblue, 0.5);
-        right: 400px;
+        right: $admin-add-event-width;
         top: 0px;
         z-index: 10000;
     }
@@ -15,7 +17,7 @@
 
     .add-event-popup {
         // display: none;
-        width: 400px;
+        width: $admin-add-event-width;
         height: 100vh;
         position: fixed;
         right: 0px;
@@ -27,7 +29,7 @@
             position: relative;
             background: white;
             height: 100%;
-            width: 400px;
+            width: $admin-add-event-width;
             padding: 0 25px;
             padding-bottom: 20px;
             overflow-y: scroll;
@@ -44,7 +46,7 @@
             .split {
                 border-bottom: 1px solid $--disabled;
                 width: 350px;
-                margin: 25px 0;
+                margin: 15px 0;
             }
             
         }
@@ -52,7 +54,7 @@
         .buttons {
             
             text-align: center;
-            width: 400px;
+            width: $admin-add-event-width;
             margin: 15px auto;
             .add-event-button {
                 margin-right: 20px;
@@ -65,7 +67,7 @@
             margin-right: 10px;
             input {
                 width: $width - 10px - 2px;
-                height: 28px;
+                height: 24px;
                 padding: 5px;
                 padding-left: 7px;
                 margin: 2px;
@@ -116,6 +118,32 @@
         .small {
             @include admin-input-mixin(50px);
         }
+    }
+
+    .event-cover-thumbnail {
+        position: relative;
+        right: 25px;
+        width: $admin-add-event-width;
+        height: 150px;
+        background: $--secondaryblack;
+        margin-right: 25px;
+    }
+
+    .description {
+        width: 350px;
+        padding: 5px;
+        padding-left: 7px;
+        margin: 2px;
+        border-radius: 5px;
+        border: 1px solid $--disabled;
+        resize: none;
+    }
+
+    .InputSecondary {
+        font-family: Lato;
+        font-size: 16px;
+        color: rgba(0, 0, 0, 0.6);
+        color: $--secondaryblack;
     }
 }
 

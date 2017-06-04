@@ -59,7 +59,8 @@ export default class AdminAddEvent extends React.Component {
         return (
             <div className="add-event-popup">
                 <div className="overlay">
-                    <span className="header LargeSecondary">{header}</span>
+                    {/*<span className="header LargeSecondary">{header}</span>*/}
+                    <div className="event-cover-thumbnail"></div>
                     <AdminInput val={event.cover} text="Image URL" field="half" />
                     <AdminInput val={event.eventLink} text="Event Link" field="half" />
                     <AdminInput val={event.title} text="Event Name" field="full" />
@@ -77,15 +78,8 @@ export default class AdminAddEvent extends React.Component {
                     <AdminInput val={event.startDate && event.endDate.format("hh:mm")} placeholder={"hh:mm"} text="End Time" mask={timeMask} field="medium" />
                     <AdminInput val={event.startDate && event.endDate.format("a")} placeholder={"am"} text="" mask={"aa"} field="small time-of-day" />
 
-                    <TimePicker
-                        showSecond={false}
-          
-                        format={"HH:mm"}
-                        
-                    />
-
                     <AdminInput val={event.location} text="Location" field="full" />
-                    <AdminInput val={event.description} text="Description" field="full" />
+                    <AdminInput val={event.description} text="Description" field="full" isDescription={true} />
                     <div className="buttons">
                         <Button onClick={this.props.onClickAdd} className="add-event-button" style="green" text={this.props.isEdit ? "Update" : "Add"} icon="" />
 

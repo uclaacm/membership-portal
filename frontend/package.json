@@ -49,6 +49,7 @@
     "moment": "^2.18.1",
     "rc-time-picker": "^2.4.1",
     "react": "^15.5.3",
+    "react-autosize-textarea": "^0.4.3",
     "react-cookie": "^2.0.6",
     "react-datepicker": "^0.46.0",
     "react-dom": "^15.5.3",
