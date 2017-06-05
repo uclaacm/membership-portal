@@ -1,67 +1,8 @@
-$admin-add-event-width: 400px;
-
 .admin-dashboard {
     .add-event-overlay {
         background: rgba($primaryblue, 0.7);
         position: fixed;
         overflow: hidden;
-// <<<<<<< HEAD
-//         width: calc( 100% - 685px);
-//         height: 100%;
-//         background: rgba($primaryblue, 0.5);
-//         right: $admin-add-event-width;
-//         top: 0px;
-//         z-index: 10000;
-//     }
-//     .date-month {
-//         margin-left: 20px;
-//         margin-bottom: 15px;
-//     }
-
-//     .add-event-popup {
-//         // display: none;
-//         width: $admin-add-event-width;
-//         height: 100vh;
-//         position: fixed;
-//         right: 0px;
-//         top: 0px;
-//         background: #D3D3D3;
-//         z-index: 9000;
-
-//         .overlay {
-//             position: relative;
-//             background: white;
-//             height: 100%;
-//             width: $admin-add-event-width;
-//             padding: 0 25px;
-//             padding-bottom: 20px;
-//             overflow-y: scroll;
-
-//             .header {
-//                 display: block;
-//                 width: 300px;
-//                 margin: 0 auto;
-//                 margin-top: 50px;
-//                 text-align: center;
-//                 margin-bottom: 40px;
-//             }
-
-//             .split {
-//                 border-bottom: 1px solid $--disabled;
-//                 width: 350px;
-//                 margin: 15px 0;
-//             }
-            
-//         }
-
-//         .buttons {
-            
-//             text-align: center;
-//             width: $admin-add-event-width;
-//             margin: 15px auto;
-//             .add-event-button {
-//                 margin-right: 20px;
-// =======
         z-index: 12;
         top: 0px;
         left: 125%;
@@ -92,19 +33,6 @@ $admin-add-event-width: 400px;
             transition: 0.25s ease-in-out;
             box-shadow: 0px 0px 3px rgba($primaryblue, 0.7);
 
-// <<<<<<< HEAD
-//         @mixin admin-input-mixin ($width) {
-//             width: $width;
-//             margin-right: 10px;
-//             input {
-//                 width: $width - 10px - 2px;
-//                 height: 24px;
-//                 padding: 5px;
-//                 padding-left: 7px;
-//                 margin: 2px;
-//                 border-radius: 5px;
-//                 border: 1px solid $--disabled;
-// =======
             .cover-img {
                 width: 100%;
                 height: 240px;
@@ -266,170 +194,6 @@ $admin-add-event-width: 400px;
             right: 0px;
         }
     }
-// <<<<<<< HEAD
-
-//     .event-cover-thumbnail {
-//         position: relative;
-//         right: 25px;
-//         width: $admin-add-event-width;
-//         height: 150px;
-//         background: $--secondaryblack;
-//         margin-right: 25px;
-//     }
-
-//     .description {
-//         width: 350px;
-//         padding: 5px;
-//         padding-left: 7px;
-//         margin: 2px;
-//         border-radius: 5px;
-//         border: 1px solid $--disabled;
-//         resize: none;
-//     }
-
-//     .InputSecondary {
-//         font-family: Lato;
-//         font-size: 16px;
-//         color: rgba(0, 0, 0, 0.6);
-//         color: $--secondaryblack;
-//     }
-// =======
-    // .faded-background {
-    //     position: fixed;
-    //     width: calc( 100% - 685px);
-    //     height: 100%;
-    //     background: rgba($primaryblue, 0.5);
-    //     right: 400px;
-    //     top: 0px;
-    //     z-index: 10000;
-    // }
-    // .date-month {
-    //     margin-left: 20px;
-    //     margin-bottom: 15px;
-    // }
-
-    // .add-event-popup {
-    //     // display: none;
-    //     width: 400px;
-    //     height: 100vh;
-    //     position: fixed;
-    //     right: 0px;
-    //     top: 0px;
-    //     background: #D3D3D3;
-    //     z-index: 9000;
-
-    //     .overlay {
-    //         position: relative;
-    //         background: white;
-    //         height: 100%;
-    //         width: 400px;
-    //         padding: 0 25px;
-    //         padding-bottom: 20px;
-    //         overflow-y: scroll;
-
-    //         .cover-img {
-    //             width: 100%;
-    //             height: 180px;
-    //             background-color: $gray1;
-    //         }
-
-    //         .header {
-    //             display: block;
-    //             width: 300px;
-    //             margin: 0 auto;
-    //             margin-top: 50px;
-    //             text-align: center;
-    //             margin-bottom: 40px;
-    //         }
-
-    //         .split {
-    //             border-bottom: 1px solid $--disabled;
-    //             width: 350px;
-    //             margin: 25px 0;
-    //         }
-            
-    //     }
-
-    //     .buttons {
-            
-    //         text-align: center;
-    //         width: 400px;
-    //         margin: 15px auto;
-    //         .add-event-button {
-    //             margin-right: 20px;
-    //         }
-    //     }
-
-
-    //     @mixin admin-input-mixin ($width) {
-    //         width: $width;
-    //         margin-right: 10px;
-    //         input {
-    //             border-radius: 5px;
-    //             border: solid 1px $gray2;
-    //             height: 20px;
-    //             margin-bottom: 5px;
-    //             padding: 9px;
-    //             font-size: 17px;
-    //             outline: none;
-    //             width: $width - 10px - 2px;
-
-    //             &:focus {
-    //                 border: solid 1px $secondaryblue;
-    //             }
-    //         }
-    //         //     height: 28px;
-    //         //     padding: 5px;
-    //         //     padding-left: 7px;
-    //         //     margin: 2px;
-    //         //     border-radius: 5px;
-    //         //     border: 1px solid $--disabled;
-    //         // }
-    //     }
-
-    //     .admin-date-picker {
-    //         border: 1px solid $--disabled;
-    //         width: 100px;
-    //         height: 28px;
-    //         padding: 5px;
-    //         padding-left: 7px;
-    //         margin: 2px;
-    //         border-radius: 5px;
-
-
-    //     }
-
-    //     .admin-input {
-    //         display: inline-block;
-    //         span {
-    //             margin-left: 3px;
-    //         }
-
-    //         &.time-of-day {
-    //             margin-right: 20px;
-    //         }
-    //     }
-
-    //     .full {
-    //         @include admin-input-mixin(350px)
-    //     }
-
-    //     .half {
-    //         @include admin-input-mixin(170px);
-    //     }
-
-    //     .medium {
-    //         @include admin-input-mixin(135px)            
-    //     }
-
-    //     .committee {
-    //         @include admin-input-mixin(290px);
-    //     }
-
-    //     .small {
-    //         @include admin-input-mixin(50px);
-    //     }
-    // }
 }
 
 .admin-dashboard .event-day {
@@ -545,7 +309,4 @@ $admin-add-event-width: 400px;
             border-bottom-left-radius: 0px;
         }
     }
-
-
-    
 }

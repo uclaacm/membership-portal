@@ -1,4 +1,3 @@
-// import 'rc-time-picker/assets/index.css';
 import React from 'react'
 import moment from 'moment';
 
@@ -11,13 +10,18 @@ import 'react-datepicker/dist/react-datepicker.css';
 export default class AdminAddEvent extends React.Component {
     constructor(props) {
         super(props)
-        this.state = { event: this.props.event, startError: false, endError: false };
+        this.state = { event: this.props.event, startTimeError: false, endTimeError: false };
+        this.resizeTextArea = this.resizeTextArea.bind(this);
         this.handleChangeStartDate = this.handleChangeStartDate.bind(this);
         this.handleChangeEndDate = this.handleChangeEndDate.bind(this);
+        this.handleChangeTime = this.handleChangeTime.bind(this);
         this.handleChange = this.handleChange.bind(this);
-        this.resizeTextArea = this.resizeTextArea.bind(this);
-        this.timeErrorCheckStart = this.timeErrorCheckStart.bind(this);
-        this.timeErrorCheckEnd = this.timeErrorCheckEnd.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    resizeTextArea(e) {
+        e.target.style.height = "5px";
+        e.target.style.height = (e.target.scrollHeight) + "px";
     }
 
     handleChangeStartDate(date) {
@@ -46,9 +50,24 @@ export default class AdminAddEvent extends React.Component {
         });
     }
 
-    resizeTextArea(e) {
-        e.target.style.height = "5px";
-        e.target.style.height = (e.target.scrollHeight) + "px";
+    handleSubmit() {
+        if (this.state.endTimeError || this.state.startTimeError)
+            return;
+        if (this.props.onClickAdd)
+            this.props.onClickAdd(this.state.event);
+    }
+
+    handleChangeTime(e) {
+        const name = e.target.name.split("Time")[0];
+        const hh = (parseInt(e.target.value[0]) || 0) * 10 + (parseInt(e.target.value[1]) || 0);
+        const mm = (parseInt(e.target.value[3]) || 0) * 10 + (parseInt(e.target.value[4]) || 0);
+        this.setState(prev => {
+            let newState = Object.assign({}, prev);
+            newState[name + 'TimeError'] = (isNaN(hh) || hh > 23 || isNaN(mm) || mm > 60);
+            if (!newState[name + 'TimeError'])
+                newState.event[name + 'Date'].set({ hour: hh, minute: mm });
+            return newState;
+        });
     }
 
     componentWillReceiveProps(nextProps) {
@@ -59,58 +78,7 @@ export default class AdminAddEvent extends React.Component {
         });
     }
 
-    timeErrorCheckStart(e) {
-        const hh = parseInt(e.target.value[0] * 10) + parseInt(e.target.value[1]);
-        const mm = parseInt(e.target.value[3] * 10) + parseInt(e.target.value[4]);
-        if (isNaN(hh) || hh > 12 || isNaN(mm) || mm > 60) {
-            this.setState(prev => ({
-                startError: true
-            }));
-        }
-        else {
-            this.setState(prev => ({
-                startError: false
-            }));
-        }
-    }
-
-    timeErrorCheckEnd(e) {
-        const hh = parseInt(e.target.value[0] * 10) + parseInt(e.target.value[1]);
-        const mm = parseInt(e.target.value[3] * 10) + parseInt(e.target.value[4]);
-        if (isNaN(hh) || hh > 12 || isNaN(mm) || mm > 60) {
-            this.setState(prev => ({
-                endError: true
-            }));
-        }
-        else {
-            this.setState(prev => ({
-                endError: false
-            }));
-        }
-    }
-
     render() {
-        const event = this.props.event;
-
-        const timeMask = "99:99";
-        const dateMask = "99-99-99";
-
-        const startDate = event.startDate ? (event.startDate.format("MM-D-YY")) : "";
-        const endDate = event.endDate ? (event.endDate.format("MM-D-YY")) : "";
-
-        const startTime = event.startDate ? (event.startDate.format("HH:mm")) : "";
-        console.log(startTime);
-
-
-        const endTime = event.endDate ? (event.endDate.format("hh:mm")) : "";
-        console.log(endTime);
-
-
-        const format = 'h:mm a';
-        const now = moment().hour(0).minute(0);
-
-        console.log("ASfsdfsdafsadf", this.state.event.startDate && this.state.event.startDate.format("hh:mm"))
-
         return (
             <div className={"add-event-overlay" + (this.props.showing ? " showing" : "")} onClick={this.props.onClickCancel}>
                 <div className="event-sidebar" onClick={e => e.stopPropagation()}>
@@ -152,55 +120,40 @@ export default class AdminAddEvent extends React.Component {
                         </div>
                         <div className="divider"></div>
                         <div className="input-row">
-                            <div className="input-field half-width">
+                            <div className="input-field three-fourth-width">
                                 <p>Start Date</p>
                                 <DatePicker
                                     selected={this.state.event.startDate}
                                     onChange={this.handleChangeStartDate}
                                     className="date-picker" />
                             </div>
-                            <div className="input-field one-fourth-width">
+                            <div className="input-field three-fourth-width">
                                 <p>Start Time</p>
                                 <InputElement
-                                    className={this.state.startError ? "error" : ""}
-                                    onChange={this.timeErrorCheckStart}
-                                    placeholder="hh:mm"
-                                    mask={timeMask}
-                                    defaultValue={this.state.event.startDate && this.state.event.startDate.format("hh:mm")}
-                                    />
-                            </div>
-                            <div className="input-field one-fourth-width">
-                                <select defaultValue="">
-                                    <option value="" disabled>--</option>
-                                    <option value="am">AM</option>
-                                    <option value="pm">PM</option>
-                                </select>
+                                    className={this.state.startTimeError ? "error" : ""}
+                                    onChange={this.handleChangeTime}
+                                    mask="99:99"
+                                    name="startTime"
+                                    value={this.state.event.startDate ? this.state.event.startDate.format("HH:mm") : ""} />
                             </div>
                         </div>
                         <div className="input-row">
-                            <div className="input-field half-width">
+                            <div className="input-field three-fourth-width">
                                 <p>End Date</p>
                                 <DatePicker
                                     selected={this.state.event.endDate}
                                     onChange={this.handleChangeEndDate}
                                     className="date-picker" />
                             </div>
-                            <div className="input-field one-fourth-width">
+                            <div className="input-field three-fourth-width">
                                 <p>End Time</p>
                                 <InputElement
-                                    className={this.state.endError ? "error" : ""}
-                                    onChange={this.timeErrorCheckEnd}
-                                    placeholder="hh:mm"
-                                    mask={timeMask}
-                                    defaultValue={this.state.event.startDate && this.state.event.startDate.format("a")}
+                                    className={this.state.endTimeError ? "error" : ""}
+                                    onChange={this.handleChangeTime}
+                                    mask="99:99"
+                                    name="endTime"
+                                    value={this.state.event.endDate ? this.state.event.endDate.format("HH:mm") : ""}
                                 />
-                            </div>
-                            <div className="input-field one-fourth-width">
-                                <select defaultValue="">
-                                    <option value="" disabled>--</option>
-                                    <option value="am">AM</option>
-                                    <option value="pm">PM</option>
-                                </select>
                             </div>
                         </div>
                         <div className="input-row">
@@ -216,8 +169,7 @@ export default class AdminAddEvent extends React.Component {
                             </div>
                         </div>
                         <div className="button-area">
-                            <Button onClick={() => this.props.onClickAdd(this.state.endError || this.state.startError)} style="green" text={this.props.isEdit ? "Update" : "Add"} icon="" />
-
+                            <Button onClick={this.handleSubmit} style="green" text={this.props.isEdit ? "Update" : "Add"} icon="" />
                             <Button onClick={this.props.onClickCancel} style="red" text="Cancel" icon="" />
                         </div>
                     </div>
@@ -226,44 +178,3 @@ export default class AdminAddEvent extends React.Component {
         );
     }
 }
-
-/**
- * 
-            <div className="add-event-popup">
-                <div className="overlay">
-// <<<<<<< HEAD
-//                     <div className="event-cover-thumbnail"></div>
-// =======
-                    <div className="cover-img">
-                        <img src={event.cover} />
-                    </div>
-                    <AdminInput val={event.cover} text="Image URL" field="half" />
-                    <AdminInput val={event.eventLink} text="Event Link" field="half" />
-                    <AdminInput val={event.title} text="Event Name" field="full" />
-                    <AdminInput val={event.committee} text="Committee" field="committee" />
-                    <AdminInput val={event.attendancePoints} text="Points" field="small" />
-                    <div className="split"></div>
-                    <AdminInput val={this.state.startDate} onChange={this.handleChangeStartDate} isDatePicker={true} text="Start Date" field="medium"/>
-
-                    <AdminInput val={event.startDate && event.startDate.format("hh:mm")} placeholder={"hh:mm"} text="Start Time" mask={timeMask} field="medium" />
-                    <AdminInput val={event.startDate && event.startDate.format("a")} placeholder={"am"} text="" mask={"aa"} field="small time-of-day" />
-
-
-                    <AdminInput val={this.state.endDate} onChange={this.handleChangeEndDate} isDatePicker={true} text="End Date" field="medium"/>
-
-                    <AdminInput val={event.startDate && event.endDate.format("hh:mm")} placeholder={"hh:mm"} text="End Time" mask={timeMask} field="medium" />
-                    <AdminInput val={event.startDate && event.endDate.format("a")} placeholder={"am"} text="" mask={"aa"} field="small time-of-day" />
-
-
-                    <AdminInput val={event.location} text="Location" field="full" />
-                    <AdminInput val={event.description} text="Description" field="full" isDescription={true} />
-                    <div className="buttons">
-                        <Button onClick={this.props.onClickAdd} className="add-event-button" style="green" text={this.props.isEdit ? "Update" : "Add"} icon="" />
-
-                        <Button onClick={this.props.onClickCancel} className="" style="red" text="Cancel" icon="" />
-                    </div>
-                </div>
-
-            </div>
-        );
- */
