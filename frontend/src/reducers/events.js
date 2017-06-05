@@ -2,6 +2,8 @@ import moment from 'moment';
 import Config from 'config';
 import Immutable from 'immutable';
 
+import { LogoutUser } from './auth';
+
 /////////////////
 /// UTILITY /////
 /////////////////
@@ -46,6 +48,11 @@ const GetCurrentEvents = () => {
 			});
 
 			const status = await response.status;
+
+			if (status > 400) {
+				dispatch(LogoutUser());
+			}
+
 			const data = await response.json();
 
 			if(!data){
@@ -128,6 +135,11 @@ const PostNewEvent = (newevent)=>{
 			});
 
 			const status = await response.status;
+
+			if (status > 400) {
+				dispatch(LogoutUser());
+			}
+			
 			const data = await response.json();
 
 			if (!data)

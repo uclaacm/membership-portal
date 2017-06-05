@@ -2,6 +2,8 @@ import moment from 'moment';
 import Config from 'config';
 import Immutable from 'immutable';
 
+import { LogoutUser } from './auth';
+
 /////////////////
 /// UTILITY /////
 /////////////////
@@ -46,6 +48,11 @@ const FetchLeaderboard = () => {
 			});
 
 			const status = await response.status;
+
+			if (status > 400) {
+				dispatch(LogoutUser());
+			}
+
 			const data = await response.json();
 
 			if (!data)

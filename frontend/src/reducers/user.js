@@ -2,6 +2,8 @@ import Immutable from 'immutable';
 
 import Config from 'config';
 
+import { LogoutUser } from './auth';
+
 const FETCH_USER = Symbol('FETCH_USER');
 const FETCH_USER_ERR = Symbol('FETCH_USER_ERR');
 
@@ -42,15 +44,20 @@ const FetchUser = () => {
 					'Authorization': `Bearer ${localStorage.getItem("token")}`
 				}
 			});
-			
+
 			const status = await response.status;
+
+			if (status > 400) {
+				dispatch(LogoutUser());
+			}
+
 			const data = await response.json();
 
 			if (!data)
 				throw new Error("Empty response from server");
 			if (data.error)
 				throw new Error(data.error.message);
-			
+
 			dispatch(fetchUserAction(data.user));
 		} catch (err) {
 			dispatch(updateUserError(err.message));
@@ -91,6 +98,11 @@ const UpdateUser = newprofile => {
 			});
 
 			const status = await response.status;
+
+			if (status > 400) {
+				dispatch(LogoutUser());
+			}
+			
 			const data = await response.json();
 
 			if (!data)
