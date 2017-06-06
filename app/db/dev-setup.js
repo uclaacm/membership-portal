@@ -12,12 +12,14 @@ module.exports = (User, Event, Attendance) => {
         }),
 
         User.create({
-            email: 'user@ucla.edu',
+            email: 'joebruin@ucla.edu',
             accessType: 'STANDARD',
             state: 'ACTIVE',
-            firstName: 'Nikhil',
-            lastName: 'Kansal',
+            firstName: 'Joe',
+            lastName: 'Bruin',
+            profileId: '282285695209047',
             hash: '$2a$10$db7eYhWGZ1LZl27gvyX/iOgb33ji1PHY5.pPzRyXaNlbctCFWMF9G', //test1234
+            points: 35,
             year: 2,
             major: 'Computer Science'
         }),
@@ -29,22 +31,9 @@ module.exports = (User, Event, Attendance) => {
             cover: "https://scontent.xx.fbcdn.net/v/t31.0-8/18527109_1622382914468446_8231612414050119289_o.jpg?oh=8673cf672e1426a4c568ab3cf5724ee3&oe=59A87784",
             location: "Boelter Hall 4760",
             eventLink: "https://www.facebook.com/events/124949728072141/",
-            startDate: new Date(2017, 4, 19, 16),
-            endDate: new Date(2017, 4, 19, 18),
+            startDate: new Date(2017, 5, 5, 16),
+            endDate: new Date(2017, 5, 5, 18),
             attendanceCode: "ast4r",
-            attendancePoints: 10
-        }),
-
-        Event.create({
-            title: "Project A*: Dynamic Programming II",
-            description: "<p>Our sixth session will be this Friday, May 19th, from 4 - 6 PM in Boelter 4760. We will be covering dynamic programming!</p><p>ACM's Project A* is a quarter-long academy led by ACM-ICPC that teaches algorithmic concepts and implementation. If you are interested in acing your technical interviews or want to learn & practice coding up important algorithms, join us on Fridays from 4 - 6 PM in Boelter 4760!</p>",
-            committee: "ICPC",
-            cover: "https://scontent.xx.fbcdn.net/v/t31.0-8/18527109_1622382914468446_8231612414050119289_o.jpg?oh=8673cf672e1426a4c568ab3cf5724ee3&oe=59A87784",
-            location: "Boelter Hall 4760",
-            eventLink: "https://www.facebook.com/events/124949728072141/",
-            startDate: new Date(2017, 4, 19, 17),
-            endDate: new Date(2017, 4, 19, 19),
-            attendanceCode: "ast4r2",
             attendancePoints: 10
         }),
 
@@ -55,10 +44,10 @@ module.exports = (User, Event, Attendance) => {
             cover: "https://scontent.xx.fbcdn.net/v/t31.0-8/18489548_1625912390782165_5564771335549555657_o.jpg?oh=2864206379323bba2b4647e5ccd22907&oe=59A57C6A",
             location: "Blackstone LaunchPad at UCLA",
             eventLink: "https://www.facebook.com/events/174847826374758/",
-            startDate: new Date(2017, 4, 25, 19),
-            endDate: new Date(2017, 4, 25, 21),
+            startDate: new Date(2017, 5, 5, 19),
+            endDate: new Date(2017, 5, 5, 21),
             attendanceCode: "re4ct",
-            attendancePoints: 10
+            attendancePoints: 20
         }),
 
         Event.create({
@@ -68,10 +57,23 @@ module.exports = (User, Event, Attendance) => {
             cover: "https://scontent.xx.fbcdn.net/v/t31.0-8/18192678_1597747830265288_5596200055975220430_o.jpg?oh=19f2da7a58b78502c24c73f538c0b418&oe=59B2C8EE",
             location: "Boelter Hall 4760",
             eventLink: "https://www.facebook.com/events/417554198601623/",
-            startDate: new Date(2017, 5, 1, 10),
-            endDate: new Date(2017, 5, 7, 18),
+            startDate: new Date(2017, 5, 6, 14),
+            endDate: new Date(2017, 5, 6, 18),
             attendanceCode: "tens0r",
-            attendancePoints: 10
-        })
+            attendancePoints: 30
+        }),
+
+        Event.create({
+            title: "Pet a Doggo",
+            description: "<p>Interested in petting a doggo? Come out to pet some doggos!</p>",
+            committee: "Hack",
+            cover: "https://media.giphy.com/media/Z3aQVJ78mmLyo/giphy.gif",
+            location: "De Neve Auditorium",
+            eventLink: "https://www.facebook.com/events/417554198601623/",
+            startDate: new Date(2017, 5, 6, 14),
+            endDate: new Date(2017, 5, 6, 18),
+            attendanceCode: "d0ggo",
+            attendancePoints: 50
+        }),
     ]);
 };

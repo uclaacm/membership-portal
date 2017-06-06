@@ -197,6 +197,7 @@ module.exports = (Sequelize, db) => {
 			delete event.committee;
 		if (event.attendanceCode !== undefined && event.attendanceCode.length === 0)
 			delete event.attendanceCode;
+
 		if (event.attendancePoints !== undefined) {
 			let points = parseInt(event.attendancePoints);
 			if (points === NaN || points < 0)

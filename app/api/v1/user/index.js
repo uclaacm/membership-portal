@@ -25,8 +25,16 @@ router.route('/')
             return next(new error.UserError('Passwords do not match'));
         if (req.body.user.newPassword.length < 10)
             return next(new error.UserError('New password must be at least 10 characters'));
-        return req.user.updatePassword(req.body.user.newPassword).then(req.user.save).then(user => {
-            res.json({ error: null, user: user.getPublic() });
+
+        req.user.verifyPassword(req.body.user.password).then(verified => {
+            if (!verified)
+                throw new error.UserError('Incorrect current password');
+            return User.generateHash(req.body.user.newPassword);
+        }).then(hash => {
+            req.user.hash = hash;
+            return req.user.save();
+        }).then(user => {
+            res.json({ error: null, user: user.getPublicProfile() });
         }).catch(next);
     } else if (!!req.body.user.newPassword ^ !!req.body.user.confPassword) {
         return next(new error.UserError('Passwords do not match'));

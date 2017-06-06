@@ -52,13 +52,18 @@ router.route('/:uuid?')
 .patch((req, res, next) => {
 	if (!req.params.uuid || !req.params.uuid.trim() || !req.body.event)
 		return next(new error.BadRequest());
+
+	if (req.body.event.startDate && req.body.event.endDate && new Date(req.body.event.startDate) > new Date(req.body.event.endDate))
+		return next(new error.BadRequest("Start date must be before end date"));
+
+
 	Event.findByUUID(req.params.uuid).then(event => {
 		if (!event)
 			throw new error.BadRequest('No such event found');
 		return event.update(Event.sanitize(req.body.event));
 	}).then(event => {
 		res.json({ error: null, event: event.getPublic() });
-	}).next();
+	}).catch(next);
 })
 .delete((req, res, next) => {
 	if (!req.params.uuid)
