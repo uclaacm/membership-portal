@@ -5,15 +5,16 @@
         overflow: hidden;
         z-index: 12;
         top: 0px;
-        left: 125%;
+        left: 0px;
         width: 100%;
         height: 100%;
         opacity: 0;
         transition: 0.25s ease-in-out;
+        pointer-events: none;
 
         &.showing {
-            left: 0%;
             opacity: 1;
+            pointer-events: all;
         }
         
         @media (max-width: 700px) {

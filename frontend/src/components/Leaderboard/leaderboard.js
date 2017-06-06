@@ -3,7 +3,7 @@ import TopUser from './topUser';
 
 export default class Leaderboard extends React.Component {
     render() {
-        if (!this.props.leaderboard || !this.props.leaderboard.length)
+        if (!this.props.leaderboard || !this.props.leaderboard.length || this.props.leaderboard.length < 3)
             return null;
         if (this.props.error) {
             return <div className="leaderboard-wrapper"><h1>{this.props.error}</h1></div>;

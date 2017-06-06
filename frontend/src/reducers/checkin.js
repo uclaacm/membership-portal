@@ -43,8 +43,8 @@ const CheckInto = (id) => {
 
             const status = await response.status;
 
-            if (status > 400) {
-				dispatch(LogoutUser());
+            if (status === 401 || status === 403) {
+				return dispatch(LogoutUser());
 			}
             
             const data = await response.json();
@@ -56,6 +56,7 @@ const CheckInto = (id) => {
 
             dispatch(checkInSuccess(data.event.attendancePoints));
             dispatch(Action.FetchUser());
+            dispatch(Action.GetCurrentEvents());
         } catch (err) {
             dispatch(checkInFailure(err.message));
         }

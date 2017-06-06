@@ -63,11 +63,19 @@ export default class Profile extends React.Component {
 
     submitChangePassword(e) {
         e.preventDefault();
-        this.props.saveChanges({
+        let newProfile = {
             password: this.state.password,
             newPassword: this.state.passwordNew,
             confPassword: this.state.passwordConf,
-        });
+        };
+        // console.log(newProfile);
+        // this.setState(prev => {
+        //     let newState = Object.assign({}, prev);
+        //     newState.password = '';
+        //     newState.passwordNew = '';
+        //     newState.passwordConf = '';
+        // });
+        this.props.saveChanges(newProfile);
     }
 
     profileUpdated() {
@@ -112,7 +120,10 @@ export default class Profile extends React.Component {
         this.setState({
             profile: Object.assign({}, nextProps.profile),
             originalProfile: Object.assign({}, nextProps.profile),
-            showChangePassword: false
+            password: '',
+            passwordNew: '',
+            passwordConf: '',
+            showChangePassword: this.state.showChangePassword && !nextProps.updateSuccess
         });
 
         this.resizeTextAreas();
@@ -155,7 +166,7 @@ export default class Profile extends React.Component {
                         <input type="password" placeholder="New password..." onChange={(e)=>{let v = e.target.value; this.setState((prev)=>{
                             return Object.assign({}, prev, {passwordNew: v});
                           });}}/><br />
-                        <input type="password" placeholder="Confirm password..." onChange={(e)=>{let v = e.target.value;this.setState((prev)=>{
+                        <input type="password" placeholder="Confirm new password..." onChange={(e)=>{let v = e.target.value;this.setState((prev)=>{
                             return Object.assign({}, prev, {passwordConf: v});
                           });}}/><br />
                         { this.props.checkInError ? <span className="CaptionSecondary error">{ this.props.checkInError }</span> : <span className="CaptionSecondary error">&nbsp;</span> }
@@ -218,12 +229,19 @@ export default class Profile extends React.Component {
                     </div>
 
                     <div className="divider"></div>
-                    <div className="form-elem">
+                    <div className="form-elem" style={{paddingBottom: '10px'}}>
                         <Button
                             className="profile-action-button"
                             style="blue"
                             text="Change Password"
                             onClick={this.showChangePassword} />
+                    </div>
+                    <div className="form-elem">
+                        <Button
+                            className="profile-action-button"
+                            style="red"
+                            text="Sign Out"
+                            onClick={this.props.logout} />
                     </div>
                 </div>
             </div>

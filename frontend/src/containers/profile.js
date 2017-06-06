@@ -26,7 +26,7 @@ class Profile extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if(nextProps.updated){
+        if (nextProps.updated){
             setTimeout(() => {
                 this.props.updateDone();
             }, 1000);
@@ -43,7 +43,8 @@ class Profile extends React.Component {
                     updated={this.props.updated}
                     updateSuccess={this.props.updateSuccess}
                     updateError={this.props.updateError}
-                    saveChanges={this.saveChanges.bind(this)} />;
+                    saveChanges={this.saveChanges.bind(this)}
+                    logout={this.props.logout} />;
     }
 }
 
@@ -81,6 +82,9 @@ const mapDispatchToProps = (dispatch)=>{
         },
         updateDone: ()=>{
             dispatch(Action.UserUpdateDone());
+        },
+        logout: () => {
+            dispatch(Action.LogoutUser());
         },
     };
 };

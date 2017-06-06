@@ -6,7 +6,7 @@ import thunk from 'redux-thunk';
 import {Health, TimeGet} from './health';
 import {User, FetchUser, UpdateUser, UserUpdateDone} from './user';
 import {Auth, LoginUser, LogoutUser} from './auth';
-import {Events, GetCurrentEvents, PostNewEvent} from './events';
+import {Events, GetCurrentEvents, PostNewEvent, UpdateEvent, UpdateEventDone, CreateEventDone} from './events';
 import {Leaderboard, FetchLeaderboard, InvalidateLeaderboard} from './leaderboard';
 import {CheckIn, CheckInto, ResetCheckIn} from './checkin';
 import {Registration, RegisterUser, registerDone} from './registration';
@@ -31,7 +31,7 @@ const store = createStore(
 const Action = {
   TimeGet,
   LoginUser, LogoutUser, FetchUser, UpdateUser, UserUpdateDone,
-  GetCurrentEvents, PostNewEvent,
+  GetCurrentEvents, PostNewEvent, UpdateEvent, CreateEventDone, UpdateEventDone,
   FetchLeaderboard, InvalidateLeaderboard,
   RegisterUser, registerDone,
   CheckInto, ResetCheckIn

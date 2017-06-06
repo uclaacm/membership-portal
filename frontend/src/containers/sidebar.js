@@ -17,7 +17,8 @@ class SidebarContainer extends React.Component {
                         isAdmin={this.props.isAdmin}
                         picture={this.props.picture}
                         username={this.props.username}
-                        points={this.props.points} /> : null;
+                        points={this.props.points}
+                        logout={this.props.logout} /> : null;
     }
 }
 
@@ -44,7 +45,11 @@ const mapDispatchToProps = (dispatch) => {
     return {
         fetchUser: () => {
             dispatch(Action.FetchUser());
-        }
+        },
+
+        logout: () => {
+            dispatch(Action.LogoutUser());
+        },
     };
 }
 

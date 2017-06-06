@@ -17,6 +17,16 @@ class Events extends React.Component {
 		}
 	}
 
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.eventUpdated || nextProps.eventCreated){
+            setTimeout(() => {
+				console.log("reset");
+                this.props.updateDone();
+				this.props.createDone();
+            }, 250);
+        }
+	}
+
 	render(){
 		return (
 			<div>
@@ -30,7 +40,16 @@ class Events extends React.Component {
 													checkInError={this.props.checkInError}
 													checkInPoints={this.props.checkInPoints}
 													resetCheckIn={this.props.resetCheckIn} /> :
-				                        <AdminEvents events={this.props.events} error={this.props.error} createEvent={this.props.createEvent} created={this.props.eventCreated} createSuccess={this.props.eventCreateSuccess} /> }
+				                        <AdminEvents
+										            events={this.props.events}
+													error={this.props.error}
+													createEvent={this.props.createEvent}
+													created={this.props.eventCreated}
+													createSuccess={this.props.eventCreateSuccess}
+													updated={this.props.eventUpdated}
+													updateSuccess={this.props.eventUpdateSuccess}
+													addEvent={this.props.addEvent}
+													updateEvent={this.props.updateEvent} /> }
 			</div>
 		);
 	}
@@ -42,6 +61,8 @@ const mapStateToProps = (state) => {
 		error: state.Events.get('error'),
 		eventCreated: state.Events.get('posted'),
 		eventCreateSuccess: state.Events.get('postSuccess'),
+		eventUpdated: state.Events.get('updated'),
+		eventUpdateSuccess: state.Events.get('updateSuccess'),
 		authenticated: state.Auth.get('authenticated'),
 		isAdmin: state.Auth.get('isAdmin'),
 		checkInSubmitted: state.CheckIn.get('submitted'),
@@ -67,6 +88,22 @@ const mapDispatchToProps = (dispatch)=>{
 
 		getTime: (input) => {
 			dispatch(Action.TimeGet());
+		},
+
+		addEvent: (event)=>{
+			dispatch(Action.PostNewEvent(event));
+		},
+
+		updateEvent: (event)=>{
+			dispatch(Action.UpdateEvent(event));
+		},
+
+		updateDone: () => {
+			dispatch(Action.UpdateEventDone());
+		},
+
+		createDone: () => {
+			dispatch(Action.CreateEventDone());
 		},
 	};
 };

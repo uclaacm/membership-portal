@@ -1,28 +1,32 @@
 import React from 'react'
 
-import Button from 'components/Button/index'
+import Button from 'components/Button'
+import BannerMessage from 'components/BannerMessage'
 import EventMonth from './eventMonth'
 import AdminAddEvent from './adminAddEvent'
 
 export default class AdminEvents extends React.Component {
     constructor(props) {
         super(props);
+        this.emptyEvent = {
+            attendancePoints: "",
+            attendanceCode: "",
+            committee: "",
+            cover: "",
+            description: "",
+            endDate: "",
+            eventLink: "",
+            location: "",
+            startDate: "",
+            title: "",
+            startTime: ""
+        };
+
         this.state = {
             showAddEvent: false, isEditEvent: false,
-            eventPlaceholder: {
-                attendancePoints: "",
-                attendanceCode: "",
-                committee: "",
-                cover: "",
-                description: "",
-                endDate: "",
-                eventLink: "",
-                location: "",
-                startDate: "",
-                title: "",
-                startTime: ""
-            }
-        }
+            eventPlaceholder: this.emptyEvent
+        };
+
         this.showAddEvent = this.showAddEvent.bind(this);
         this.hideAddEvent = this.hideAddEvent.bind(this);
         this.addEvent = this.addEvent.bind(this);
@@ -35,18 +39,7 @@ export default class AdminEvents extends React.Component {
         console.log(e);
         this.setState(prev => ({
             showAddEvent: true,
-            eventPlaceholder: {
-                attendancePoints: "",
-                attendanceCode: "",
-                committee: "",
-                cover: "",
-                description: "",
-                endDate: null,
-                eventLink: "",
-                location: "",
-                startDate: null,
-                title: ""
-            }
+            eventPlaceholder: this.emptyEvent
         }));
     }
 
@@ -60,19 +53,21 @@ export default class AdminEvents extends React.Component {
 
     //Handles when update/add event
     addEvent(event) {
+        // based on !!event.uuid
+        // call either this.props.addEvent(event) or this.props.updateEvent(event)
         console.log(event);
         console.log(event.startDate.toDate());
-        this.setState(prev => ({
-            showAddEvent: false,
-            isEditEvent: false
-        }));
+        if(event.uuid){
+            this.props.updateEvent(event);
+        } else {
+            this.props.addEvent(event);
+        }
     }
 
     //Handles cancel add event
     cancelAddEventParent(e) {
         this.setState(prev => ({
-            showAddEvent: false,
-            isEditEvent: false
+            showAddEvent: false
         }));
     }
 
@@ -83,6 +78,15 @@ export default class AdminEvents extends React.Component {
             isEditEvent: true,
             eventPlaceholder: param
         }));
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if ((nextProps.updated && nextProps.updateSuccess) || (nextProps.created && nextProps.createSuccess)) {
+            this.setState(prev => ({
+                showAddEvent: false,
+                isEditEvent: false
+            }));
+        }
     }
 
     render() {
@@ -102,23 +106,27 @@ export default class AdminEvents extends React.Component {
             months.push(month);
         }
 
-        if (this.props.error) {
-            return <div className="events-dashboard admin-dashboard"><h1>{this.props.error}</h1></div>;
-        } else {
-            return (
-                <div className="events-dashboard admin-dashboard">
-                    <AdminAddEvent event={this.state.eventPlaceholder} onClickAdd={this.addEvent} onClickCancel={this.cancelAddEventParent} isEdit={this.state.isEditEvent} showing={this.state.showAddEvent} />
+        const bannerMessage = (this.props.updateSuccess) ? "Event updated successfully" :
+                              (this.props.createSuccess) ? "Event created successfully" :
+                                                           this.props.error;
 
-                    {!this.state.showAddEvent && <Button
-                        className="checkin-button"
-                        style="blue collapsible"
-                        icon="fa-plus"
-                        text="Add Event"
-                        onClick={this.showAddEvent} />}
+        return (
+            <div className="events-dashboard admin-dashboard">
+                <BannerMessage
+                    showing={this.props.updated || this.props.created}
+                    success={this.props.updateSuccess || this.props.createSuccess}
+                    message={bannerMessage} />
+                <AdminAddEvent event={this.state.eventPlaceholder} onClickAdd={this.addEvent} onClickCancel={this.cancelAddEventParent} isEdit={this.state.isEditEvent} showing={this.state.showAddEvent} />
 
-                    {months.map((month, i) => <EventMonth month={month} key={i} handleEditClick={this.handleEditClick} />)}
-                </div>
-            );
-        }
+                {!this.state.showAddEvent && <Button
+                    className="checkin-button"
+                    style="blue collapsible"
+                    icon="fa-plus"
+                    text="Add Event"
+                    onClick={this.showAddEvent} />}
+
+                {months.map((month, i) => <EventMonth month={month} key={i} handleEditClick={this.handleEditClick} />)}
+            </div>
+        );
     }
 }
