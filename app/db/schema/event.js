@@ -22,13 +22,14 @@ module.exports = (Sequelize, db) => {
 			}
 		},
 		committee: {
-			type: Sequelize.ENUM("ICPC","Hack","VRCG","AI","ACM-W"),
-			validate: {
-				isIn: {
-					args: [["ICPC","Hack","VRCG","AI","ACM-W"]],
-					msg: "If specified, the committee must be one of ['ICPC','Hack','VRCG','AI','ACM-W']"
-				}
-			}
+			type: Sequelize.STRING,
+			defaultValue: "ACM"
+			// validate: {
+			// 	isIn: {
+			// 		args: [["ICPC","Hack","VRCG","AI","ACM-W"]],
+			// 		msg: "If specified, the committee must be one of ['ICPC','Hack','VRCG','AI','ACM-W']"
+			// 	}
+			// }
 		},
 		thumb: {
 			type: Sequelize.STRING,
