@@ -65,7 +65,11 @@ export default class AdminAddEvent extends React.Component {
             let newState = Object.assign({}, prev);
             newState[name + 'TimeError'] = (isNaN(hh) || hh > 23 || isNaN(mm) || mm > 60);
             if (!newState[name + 'TimeError'])
-                newState.event[name + 'Date'].set({ hour: hh, minute: mm });
+                if(newState.event[name+ 'Date']) 
+                    newState.event[name + 'Date'].set({ hour: hh, minute: mm });
+                else {
+                    newState.event[name + 'Date'] = moment({hour:hh, minute:mm});
+                }
             return newState;
         });
     }
