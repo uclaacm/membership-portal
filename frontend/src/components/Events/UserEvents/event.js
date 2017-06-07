@@ -35,7 +35,7 @@ export default class EventCard extends React.Component {
                 </div>
                 <div className="content">
                     <h2>{event.title}</h2>
-                    <h3>ACM {event.committee}</h3>
+                    <h3>{event.committee}</h3>
                     <div className="midcontent">
                         <div className="description" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(event.description) }}></div>
                         <p><a target="_BLANK" href={event.eventLink}>Go to the event page</a></p>
