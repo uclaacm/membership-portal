@@ -161,7 +161,7 @@ module.exports = (Sequelize, db) => {
 	User.getLeaderboard = function(offset, limit) {
 		if (!offset || offset < 0) offset = 0;
 		if (!limit || limit < 0)  limit = undefined;
-		return this.findAll({ offset, limit, order: [['points', 'DESC']] });
+		return this.findAll({ where: { accessType: 'STANDARD' }, offset, limit, order: [['points', 'DESC']] });
 	};
 
 	User.sanitize = function(user) {
@@ -185,6 +185,7 @@ module.exports = (Sequelize, db) => {
 	User.Instance.prototype.getUserProfile = function() {
 		const profileId = this.getDataValue('profileId');
 		return {
+			uuid       : this.getDataValue('uuid'),
 			firstName  : this.getDataValue('firstName'),
 			lastName   : this.getDataValue('lastName'),
 			picture    : profileId ? 'https://graph.facebook.com/' + profileId + '/picture?width=300' : null,
