@@ -23,7 +23,7 @@ router.route('/attend')
 	let now = new Date();
 	Event.findByAttendanceCode(req.body.event.attendanceCode).then(event => {
 		if (!event)
-			throw new error.BadRequest("Oh no! That code didn't work.");
+			throw new error.UserError("Oh no! That code didn't work.");
 
 		if (now < event.startDate || now > event.endDate)
 			throw new error.UserError("You can only enter the attendance code during the event!");
