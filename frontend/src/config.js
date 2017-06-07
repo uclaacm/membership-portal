@@ -75,53 +75,60 @@ export default {
                 name: "Tyler Lindberg",
                 position: "President of VRCG",
                 email: "yvonne@ucla.edu",
-                picture: "/assets/images/unknown.png"
+                picture: "/assets/images/officers/tyler.jpg"
             },
             {
                 name: "Garima Lunawat",
                 position: "President of ACM-W",
                 email: "garima@ucla.edu",
-                picture: "/assets/images/unknown.png"
+                picture: "/assets/images/officers/garima.jpg"
             }
         ],
         resources: [
             {
                 type: "facebook",
                 title: "Facebook",
-                subtitle: "facebook.com/uclaacm"
+                subtitle: "facebook.com/uclaacm",
+                link: "http://facebook.com/uclaacm"
             },
             {
                 type: "twitter",
                 title: "Twitter",
-                subtitle: "twitter.com/uclaacm"
+                subtitle: "twitter.com/uclaacm",
+                link: "http://twitter.com/uclaacm"
             },
             {
                 type: "github",
                 title: "Github",
-                subtitle: "github.com/uclaacm"
+                subtitle: "github.com/uclaacm",
+                link: "http://github.com/uclaacm"
             },
             {
                 type: "website",
                 title: "Website",
-                subtitle: "acm.cs.ucla.edu"
+                subtitle: "acm.cs.ucla.edu",
+                link: "http://acm.cs.ucla.edu"
             },
             {
                 type: "medium",
                 title: "Medium",
-                subtitle: "tech@ucla"
+                subtitle: "tech@ucla",
+                link: "https://medium.com/techatucla"
             },
             {
                 type: "slack",
                 title: "Slack",
-                subtitle: "uclaacm.slack.com"
+                subtitle: "uclaacm.slack.com",
+                link: "http://uclaacm.slack.com"
             },
         ]
     },
     levels: [
-        { startsAt: 0, rank: "Newbie" },
+        { startsAt: 0, rank: "Newbie" },       // 
         { startsAt: 20, rank: "Newbie II" },
         { startsAt: 50, rank: "Newbie III" },
         { startsAt: 100, rank: "Hacker" },
-        { startsAt: 150, rank: "Hacker II" }
+        { startsAt: 150, rank: "Hacker II" },
+        { startsAt: 200, rank: "Hacker III" }
     ],
 };

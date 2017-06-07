@@ -5,7 +5,7 @@ import { replace } from 'react-router-redux';
 import {Action} from 'reducers';
 import LeaderboardComponent from 'components/Leaderboard';
 
-const REFRESH_INTERVAL = 300000; // ms to wait before allow refetching of leaderboard
+const REFRESH_INTERVAL = 30000; // ms to wait before allow refetching of leaderboard
 
 class Leaderboard extends React.Component {
   componentWillMount() {
@@ -21,7 +21,7 @@ class Leaderboard extends React.Component {
   }
 
   render() {
-    return <LeaderboardComponent leaderboard={this.props.leaderboard} />;
+    return <LeaderboardComponent leaderboard={this.props.leaderboard} user={this.props.user} />;
   }
 }
 
@@ -33,6 +33,7 @@ const mapStateToProps = (state)=>{
     fetchSuccess: state.Leaderboard.get('fetchSuccess'),
     fetchTime: state.Leaderboard.get('fetchTime'),
     authenticated: state.Auth.get('authenticated'),
+    user: state.User.get('profile')
   };
 };
 

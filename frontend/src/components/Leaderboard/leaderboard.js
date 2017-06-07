@@ -1,8 +1,26 @@
 import React from 'react';
+import Config from 'config';
 import TopUser from './topUser';
 
 export default class Leaderboard extends React.Component {
+    constructor(props) {
+        super(props)
+        this.rankForUser = this.rankForUser.bind(this);
+    }
+
+    rankForUser(user) {
+        let currentLevel = Config.levels[0];
+        for (let level of Config.levels) {
+            if (level.startsAt > user.points)
+                break;
+            currentLevel = level;
+        }
+
+        return currentLevel.rank;
+    }
+
     render() {
+        console.log(this.props.leaderboard, this.props.user);
         if (!this.props.leaderboard || !this.props.leaderboard.length || this.props.leaderboard.length < 3)
             return null;
         if (this.props.error) {
@@ -29,19 +47,19 @@ export default class Leaderboard extends React.Component {
                         </tr></thead>
                         <tbody>
                         {
-                            this.props.leaderboard.map((p,i) => { i > 2 && 
-                                <tr className={p === 15 ? "current-user" : ""} key={i}>
-                                    <td>{20-p+1}</td>
+                            this.props.leaderboard.slice(3).map((user,i) =>  
+                                <tr className={user.uuid === this.props.user.uuid ? "current-user" : ""} key={i}>
+                                    <td>{i + 4}</td>
                                     <td className="name">
                                         <div>
-                                            <img src="/assets/images/unknown.png" />
-                                            <span>Ram Goli{Math.random() < 0.5 ? " a verylongname" : ""}</span>
+                                            <img src={user.picture} />
+                                            <span>{user.firstName} {user.lastName}</span>
                                         </div>
                                     </td>
-                                    <td className="rank">Hacker</td>
-                                    <td className="points">{p} points</td>
+                                    <td className="rank">{this.rankForUser(user)}</td>
+                                    <td className="points">{user.points} points</td>
                                 </tr>
-                            })
+                            )
                         }
                         </tbody>
                     </table>
