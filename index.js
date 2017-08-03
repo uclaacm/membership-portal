@@ -55,12 +55,11 @@ if (cluster.isMaster) {
 		log.info("Worker PID %s died (%s). Restarting...", worker.process.pid, signal);
 		cluster.fork();
 	});
-} else {
-	// Start the server on each worker
-	server.listen(app.config.port, () => {
-		log.info("Started server %s on port %d, PID: %d", app.config.host, app.config.port, process.pid);
-	});
 }
+// Start the server on each worker
+server.listen(app.config.port, () => {
+	log.info("Started server %s on port %d, PID: %d", app.config.host, app.config.port, process.pid);
+});
 
 // For testing purposes
 module.exports = server;
