@@ -5,7 +5,7 @@ FROM alpine:3.5
 # Download and install nginx
 # RUN echo "deb http://archive.ubuntu.com/ubuntu/ raring main universe" >> /etc/apt/sources.list
 RUN apk update
-RUN apk add curl nginx bash
+RUN apk add curl nginx bash python make g++
 
 # Download and add nodejs
 RUN apk add --update nodejs
