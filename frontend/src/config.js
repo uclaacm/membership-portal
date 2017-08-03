@@ -38,7 +38,7 @@ export default {
             {
                 name: "Mihir Mathur",
                 position: "President",
-                email: "mihir.mathur@ucla.edu",
+                email: "mihirmathur@ucla.edu",
                 picture: "/assets/images/officers/mihir.jpg"
             },
             {
@@ -56,31 +56,31 @@ export default {
             {
                 name: "Rohan Varma",
                 position: "President of AI",
-                email: "rohan@ucla.edu",
+                email: "rvarm1@gmail.com",
                 picture: "/assets/images/officers/rohan.jpg"
             },
             {
                 name: "Yvonne Chen",
                 position: "President of Hack",
-                email: "yvonne@ucla.edu",
+                email: "ycyvonne@ucla.edu",
                 picture: "/assets/images/officers/yvonne.jpg"
             },
             {
                 name: "Jerry Li",
                 position: "President of ICPC",
-                email: "jerry@ucla.edu",
+                email: "jerrylinew@gmail.com",
                 picture: "/assets/images/officers/jerry.jpg"
             },
             {
                 name: "Tyler Lindberg",
                 position: "President of VRCG",
-                email: "yvonne@ucla.edu",
+                email: "tlindberg@ucla.edu",
                 picture: "/assets/images/officers/tyler.jpg"
             },
             {
                 name: "Garima Lunawat",
                 position: "President of ACM-W",
-                email: "garima@ucla.edu",
+                email: "glunawat@ucla.edu",
                 picture: "/assets/images/officers/garima.jpg"
             }
         ],
@@ -124,7 +124,7 @@ export default {
         ]
     },
     levels: [
-        { startsAt: 0, rank: "Newbie" },       // 
+        { startsAt: 0, rank: "Newbie" },
         { startsAt: 20, rank: "Newbie II" },
         { startsAt: 50, rank: "Newbie III" },
         { startsAt: 100, rank: "Hacker" },
