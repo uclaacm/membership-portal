@@ -11,7 +11,7 @@ RUN mkdir -p /var/www/membership
 # copy the node_modules to app location 
 COPY package.json /var/www/membership
 COPY npm-shrinkwrap.json /var/www/membership
-RUN cd /var/www/membership && npm install
+RUN cd /var/www/membership && npm install --production
 
 # set the working direction and copy the source
 WORKDIR /var/www/membership
