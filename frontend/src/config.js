@@ -1,7 +1,4 @@
 export default {
-    health: {
-        url: '/app/api/health/check',
-    },
     API_URL: process.env.WEBPACK ? 'http://localhost:8080/app' : '/app',
     CLIENT_ROOT_URL: '',
     info: {

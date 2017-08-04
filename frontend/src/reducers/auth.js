@@ -4,10 +4,6 @@ import Immutable from 'immutable';
 
 import { replace } from 'react-router-redux';
 
-const setStorage = (key,item) => localStorage.setItem(key, item);
-const getFromStorage = (key) => localStorage.getItem(key);
-const removeFromStorage = (key) => localStorage.removeItem(key);
-
 const tokenGetClaims = (token)=>{
     const tokenArray = token.split('.');
     if(tokenArray.length !== 3){
@@ -47,27 +43,27 @@ const LoginUser = (email, password) => {
   return async (dispatch) => {
     dispatch({ type: USER_GET });
     try {
-      const response = await fetch(Config.API_URL + Config.routes.auth.login, {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({"password": password, "email": email}),
-      });
+        const response = await fetch(Config.API_URL + Config.routes.auth.login, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({"password": password, "email": email}),
+        });
 
-      const status = await response.status;
-      const data = await response.json();
+        const status = await response.status;
+        const data = await response.json();
 
-      if(!data) {
-        throw new Error("Empty response from server");
-      } else if(data.error){
-        throw new Error(data.error.message);
-      }
-      Storage.set("token", data.token);
-      dispatch(AuthUser(tokenIsAdmin(data.token)));
+        if(!data) {
+            throw new Error("Empty response from server");
+        } else if(data.error){
+            throw new Error(data.error.message);
+        }
+        Storage.set("token", data.token);
+        dispatch(AuthUser(tokenIsAdmin(data.token)));
     } catch (err) {
-      dispatch(AuthUserError(err.message));
+        dispatch(AuthUserError(err.message));
     }
   };
 }

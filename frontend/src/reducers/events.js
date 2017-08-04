@@ -5,14 +5,6 @@ import Immutable from 'immutable';
 
 import { LogoutUser } from './auth';
 
-/////////////////
-/// UTILITY /////
-/////////////////
-
-const setStorage = (key,item) => localStorage.setItem(key, item);
-const getFromStorage = (key) => localStorage.getItem(key);
-const removeFromStorage = (key) => localStorage.removeItem(key);
-
 //////////////////
 //// ACTIONS /////
 //////////////////
