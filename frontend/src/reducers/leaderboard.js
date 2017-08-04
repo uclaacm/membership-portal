@@ -1,5 +1,6 @@
 import moment from 'moment';
 import Config from 'config';
+import Storage from 'storage';
 import Immutable from 'immutable';
 
 import { LogoutUser } from './auth';
@@ -43,7 +44,7 @@ const FetchLeaderboard = () => {
 				headers: {
 					'Accept': 'application/json',
 					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${getFromStorage("token")}`
+					'Authorization': `Bearer ${Storage.get("token")}`
 				}
 			});
 

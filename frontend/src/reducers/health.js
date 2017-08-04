@@ -3,20 +3,6 @@ import Immutable from 'immutable';
 import Config from 'config';
 import C from 'constants';
 
-const storageAvailable = (type)=>{
-	try {
-		var storage = window[type],
-			x = '__storage_test__';
-		storage.setItem(x, x);
-		storage.removeItem(x);
-		return true;
-	}
-	catch(e) {
-		return false;
-	}
-};
-
-
 /////////////
 // Actions //
 /////////////
@@ -75,13 +61,6 @@ const defaultState = Immutable.fromJS({
 });
 
 const initState = ()=>{
-  // if(storageAvailable('localStorage')) {
-  //   if(condition){
-  //     return defaultState.withMutations((val)=>{
-  //     });
-  //   }
-  //   localStorage.clear();
-  // }
   return defaultState;
 };
 

@@ -1,5 +1,6 @@
 import moment from 'moment';
 import Config from 'config';
+import Storage from 'storage';
 import Immutable from 'immutable';
 
 import { LogoutUser } from './auth';
@@ -47,7 +48,7 @@ const GetCurrentEvents = () => {
 				headers: {
 					'Accept': 'application/json',
 					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${getFromStorage("token")}`
+					'Authorization': `Bearer ${Storage.get("token")}`
 				}
 			});
 
@@ -70,7 +71,7 @@ const GetCurrentEvents = () => {
 				headers: {
 					'Accept': 'application/json',
 					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${getFromStorage("token")}`
+					'Authorization': `Bearer ${Storage.get("token")}`
 				}
 			});
 
@@ -135,7 +136,7 @@ const PostNewEvent = (newevent)=>{
 				headers: {
 					'Accept': 'application/json',
 					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${getFromStorage("token")}`
+					'Authorization': `Bearer ${Storage.get("token")}`
 				},
 				body: JSON.stringify({'event': newevent}),
 			});
@@ -188,7 +189,7 @@ const UpdateEvent = (event)=>{
 				headers: {
 					'Accept': 'application/json',
 					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${getFromStorage("token")}`
+					'Authorization': `Bearer ${Storage.get("token")}`
 				},
 				body: JSON.stringify({'event': event}),
 			});

@@ -1,4 +1,5 @@
 import Config from 'config';
+import Storage from 'storage';
 import Immutable from 'immutable';
 
 import { replace } from 'react-router-redux';
@@ -63,7 +64,7 @@ const LoginUser = (email, password) => {
       } else if(data.error){
         throw new Error(data.error.message);
       }
-      setStorage("token", data.token);
+      Storage.set("token", data.token);
       dispatch(AuthUser(tokenIsAdmin(data.token)));
     } catch (err) {
       dispatch(AuthUserError(err.message));
@@ -77,7 +78,7 @@ const LogoutUser = (error) => {
             type: UNAUTH_USER,
             payload: error || ''
         });
-        removeFromStorage("token");
+        Storage.remove("token");
         dispatch(replace('/login'));
     }
 }
