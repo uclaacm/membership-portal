@@ -9,6 +9,9 @@ setup:
 	if [ ! -f app/config/SESSION_SECRET ]; then \
 		cat /dev/urandom | od -N 32 -t x4 -An | tr -d '\n ' > app/config/SESSION_SECRET; \
 	fi
+	gpg certs.tar.gz.gpg
+	tar -xvzf certs.tar.gz
+	rm -rf certs.tar.gz
 
 update-static:
 	git submodule update --init --recursive
@@ -25,7 +28,7 @@ run:
 logs:
 	sudo docker logs --follow $$(sudo docker ps | grep "nkansal/backend" | cut -d' ' -f1)
 
-certs:
+gen-certs:
 	rm -rf certs-data
 	mkdir -p certs-data
 	sudo docker run -it --rm -v $(pwd)/certs:/etc/letsencrypt -v $(pwd)/certs-data:/data/letsencrypt deliverous/certbot certonly --webroot --webroot-path=/data/letsencrypt -d members.uclaacm.com
