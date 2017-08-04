@@ -62,7 +62,7 @@ export default {
             {
                 name: "Yvonne Chen",
                 position: "President of Hack",
-                email: "ycyvonnechen@yahoo.edu",
+                email: "ycyvonne@ucla.edu",
                 picture: "/assets/images/officers/yvonne.jpg"
             },
             {
