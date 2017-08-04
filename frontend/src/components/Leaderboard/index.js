@@ -1,12 +1,12 @@
 import React from 'react';
 import Config from 'config';
-import Topbar from 'components/Topbar';
+import Topbar from 'containers/topbar';
 import Sidebar from 'containers/sidebar';
 import Leaderboard from './leaderboard';
 
 export default class LeaderboardComponent extends React.Component {
-    render () {
-        return(
+    render() {
+        return (
             <div className="leaderboard">
                 <Topbar />
                 <Sidebar/>
