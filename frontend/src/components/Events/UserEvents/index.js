@@ -9,10 +9,11 @@ import EarlierEventsIcon from 'components/Events/earlierEventsIcon'
 export default class UserEvents extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { showCheckIn: false };
+        this.state = { showCheckIn: false, showEarlierEvents: false };
         this.showCheckIn = this.showCheckIn.bind(this);
         this.hideCheckIn = this.hideCheckIn.bind(this);
         this.submitCheckIn = this.submitCheckIn.bind(this);
+        this.showEarlierEvents = this.showEarlierEvents.bind(this);
         this.renderAttendanceForm = this.renderAttendanceForm.bind(this);
         this.renderCheckInSuccess = this.renderCheckInSuccess.bind(this);
         this.renderCheckInFailure = this.renderCheckInFailure.bind(this);
@@ -23,14 +24,22 @@ export default class UserEvents extends React.Component {
     showCheckIn(e) {
         this.setState(prev => ({
             showCheckIn: true,
+            showEarlierEvents: prev.showEarlierEvents
         }));
     }
 
     hideCheckIn(e) {
-        console.log(e);
         this.setState(prev => ({
             showCheckIn: false,
+            showEarlierEvents: prev.showEarlierEvents
+        }));
+    }
 
+    showEarlierEvents(e) {
+        console.log(e);
+        this.setState(prev => ({
+            showCheckIn: prev.showCheckIn,
+            showEarlierEvents: true
         }));
     }
 
@@ -44,7 +53,6 @@ export default class UserEvents extends React.Component {
     }
 
     submitCheckIn(e) {
-        console.log(e);
         e.preventDefault();
         this.props.checkIn(this.refs.attendanceCode.value);
     }
@@ -73,9 +81,7 @@ export default class UserEvents extends React.Component {
                 <div className="popup-buttons">
                     <Button className="popup-button popup-submit-button" style="blue" text="Try Again" onClick={this.tryAgain} />
                     <Button className="popup-button popup-cancel-button" style="red" text="Cancel" onClick={this.resetCheckIn} />
-
                 </div>
-
             </OverlayPopup>
         );
     }
@@ -102,27 +108,32 @@ export default class UserEvents extends React.Component {
         if (this.props.error)
             return (<div className="events-dashboard user-dashboard"><h1>{this.props.error}</h1></div>);
 
-        let days =[];
+        const days = [];
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
         for (let event of this.props.events) {
             if (days.length === 0 || event.startDate.date() !== days[days.length - 1].date.date())
                 days.push({ date: event.startDate, events: [event] });
             else
                 days[days.length - 1].events.push(event);
         }
-
+        const futureDays = days.filter(day => day.date > today);
+        const pastDays = days.filter(day => day.date <= today);
+        console.log(this.state);
         return (
             <div className="events-dashboard user-dashboard">
                 {this.renderAttendanceForm()}
                 {this.renderCheckInSuccess()}
                 {this.renderCheckInFailure()}
-                <EarlierEventsIcon />
+                { !this.state.showEarlierEvents && <EarlierEventsIcon onClick={ this.showEarlierEvents } /> }
+                {  this.state.showEarlierEvents && pastDays.map((day, i) => <EventDay day={day} key={i} admin={false} />) }
                 <Button
                     className={ "checkin-button" + (this.state.showCheckIn ? " hidden" : "")}
                     style="blue collapsible"
                     icon="fa-calendar-check-o"
                     text="Check In"
                     onClick={ this.showCheckIn } />
-                { days.map((day, i) => <EventDay day={day} key={i} admin={false} />) }
+                { futureDays.map((day, i) => <EventDay day={day} key={i + pastDays.length} admin={false} />) }
             </div>
         );
     }
