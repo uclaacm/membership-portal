@@ -13,7 +13,8 @@ setup:
 	tar -xvzf certs.tar.gz
 	rm -rf certs.tar.gz
 
-update-static:
+update:
+	git pull origin master
 	git submodule update --init --recursive
 
 build:
