@@ -8,11 +8,6 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  redis:
-    image: redis:3.2-alpine
-    ports:
-      - "6379"
-
   backend:
     build: .
     image: nkansal/backend
@@ -20,16 +15,15 @@ services:
       - "8080:8080"
     links:
       - postgres
-      - redis
     environment:
       - PG_HOST=postgres
       - PG_PORT=5432
       - PG_DATABASE=postgres
       - PG_USER=postgres
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
       - PORT=8080
       - HOST=localhost
+      - NODE_ENV=production
+      - NUM_WORKERS=2
 
   nginx:
     build: ./static
@@ -39,6 +33,9 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    volumes:
+      - "./certs:/etc/nginx/certs:ro"
+      - "./certs-data:/data/letsencrypt"
 
 volumes:
   postgres_data:

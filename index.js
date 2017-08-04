@@ -30,10 +30,6 @@ server.use(morgan('dev'));
 server.use(bodyParser.urlencoded({ extended: true }));
 server.use(bodyParser.json());
 
-// Use sessions
-// No need for sessions yet!
-// server.use(app.session);
-
 // Route the API
 server.use('/app/api', app.api.router);
 

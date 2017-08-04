@@ -9,9 +9,8 @@ RUN mkdir -p /var/www/membership
 
 # copy the package.json and shinkwrap file to app location
 # copy the node_modules to app location 
-COPY package.json /var/www/membership
-COPY npm-shrinkwrap.json /var/www/membership
-RUN cd /var/www/membership && npm install --production
+COPY *.json /var/www/membership/
+RUN cd /var/www/membership && npm install --production && npm rebuild bcrypt --build-from-source
 
 # set the working direction and copy the source
 WORKDIR /var/www/membership
@@ -19,4 +18,4 @@ COPY . /var/www/membership
 
 # open a port and start the server
 EXPOSE 8080
-CMD ["npm", "start"]
+CMD ["node", "index"]

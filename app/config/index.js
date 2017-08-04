@@ -18,11 +18,6 @@ module.exports = {
 		db: process.env.PG_DATABASE,
 		user: process.env.PG_USER
 	},
-	redis: {
-		host: process.env.REDIS_HOST,
-		port: process.env.REDIS_PORT,
-		uri: "redis://" + (process.env.REDIS_HOST) + ":" + (process.env.REDIS_PORT) + "/0"
-	},
 	session: {
 		secret: fs.readFileSync('app/config/SESSION_SECRET').toString().trim()
 	},
