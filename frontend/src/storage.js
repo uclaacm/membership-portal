@@ -37,8 +37,8 @@ class LocalStore {
         window.localStorage.setItem(key, value);
     }
     static get(key, value) {
-        console.log("GET LOCAL", key, value);
-        window.localStorage.getItem(key);
+        console.log("GET LOCAL", key, window.localStorage.getItem(key));
+        return window.localStorage.getItem(key);
     }
     static remove(key) {
         window.localStorage.removeItem(key);
