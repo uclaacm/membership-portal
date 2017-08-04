@@ -1,4 +1,5 @@
 import Config from 'config';
+import Storage from 'storage';
 import Immutable from 'immutable';
 import {Action} from 'reducers';
 
@@ -36,7 +37,7 @@ const CheckInto = (id) => {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem("token")}`
+                    'Authorization': `Bearer ${Storage.get("token")}`
                 },
                 body: JSON.stringify({"event": {"attendanceCode": id}})
             });

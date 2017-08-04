@@ -1,5 +1,5 @@
 import Immutable from 'immutable';
-
+import Storage from 'storage';
 import Config from 'config';
 
 import { LogoutUser } from './auth';
@@ -41,7 +41,7 @@ const FetchUser = () => {
 				headers: {
 					'Accept': 'application/json',
 					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${localStorage.getItem("token")}`
+					'Authorization': `Bearer ${Storage.get("token")}`
 				}
 			});
 
@@ -92,7 +92,7 @@ const UpdateUser = newprofile => {
 				headers: {
 					'Accept': 'application/json',
 					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${localStorage.getItem("token")}`
+					'Authorization': `Bearer ${Storage.get("token")}`
 				},
 				body: JSON.stringify({"user": newprofile})
 			});

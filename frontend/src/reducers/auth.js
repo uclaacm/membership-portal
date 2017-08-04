@@ -96,13 +96,13 @@ const defaultState = Immutable.fromJS({
 });
 
 const initState = () => {
-    if (localStorage.getItem("token")) {
+    if (Storage.get("token")) {
         return Immutable.fromJS({
             error: '',
             message: '',
             content: '',
             authenticated: true,
-            isAdmin: tokenIsAdmin(localStorage.getItem("token")),
+            isAdmin: tokenIsAdmin(Storage.get("token")),
         });
     }
     return defaultState;
