@@ -20,7 +20,10 @@ RUN mkdir -p /var/www/membership/static/build
 # Install the required packages to build the frontend
 WORKDIR /var/www/membership/working
 COPY package.json /var/www/membership/working
-RUN npm install
+RUN /usr/bin/node --max_semi_space_size=8 \
+                  --max_old_space_size=298 \
+                  --max_executable_size=248 \
+                  /usr/bin/npm install
 
 # Copy the source files and build
 COPY . /var/www/membership/working
