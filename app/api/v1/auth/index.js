@@ -38,7 +38,7 @@ router.post("/login", (req, res, next) => {
 	if(!req.body.password || req.body.password.length < 1)
 		return next(new error.BadRequest('Password must be provided'));
 
-	User.findByEmail(req.body.email).then((user)=>{
+	User.findByEmail(req.body.email.toLowerCase()).then((user)=>{
 		if (!user)
 			throw new error.UserError('Invalid email or password');
 		if (user.isPending())
