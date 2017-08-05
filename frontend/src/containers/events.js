@@ -19,12 +19,11 @@ class Events extends React.Component {
 
 	componentWillReceiveProps(nextProps) {
 		if (nextProps.eventUpdated || nextProps.eventCreated){
-            setTimeout(() => {
-				console.log("reset");
-                this.props.updateDone();
+			setTimeout(() => {
+				this.props.updateDone();
 				this.props.createDone();
-            }, 250);
-        }
+			}, 250);
+		}
 	}
 
 	render(){
@@ -33,23 +32,23 @@ class Events extends React.Component {
 				<Topbar />
 				<Sidebar />
 				{ !this.props.isAdmin ? <UserEvents events={this.props.events}
-													checkIn={this.props.checkIn}
-													error={this.props.error}
-													checkInSubmitted={this.props.checkInSubmitted}
-													checkInSuccess={this.props.checkInSuccess}
-													checkInError={this.props.checkInError}
-													checkInPoints={this.props.checkInPoints}
-													resetCheckIn={this.props.resetCheckIn} /> :
-				                        <AdminEvents
-										            events={this.props.events}
-													error={this.props.error}
-													createEvent={this.props.createEvent}
-													created={this.props.eventCreated}
-													createSuccess={this.props.eventCreateSuccess}
-													updated={this.props.eventUpdated}
-													updateSuccess={this.props.eventUpdateSuccess}
-													addEvent={this.props.addEvent}
-													updateEvent={this.props.updateEvent} /> }
+				                                    checkIn={this.props.checkIn}
+				                                    error={this.props.error}
+				                                    checkInSubmitted={this.props.checkInSubmitted}
+				                                    checkInSuccess={this.props.checkInSuccess}
+				                                    checkInError={this.props.checkInError}
+				                                    checkInPoints={this.props.checkInPoints}
+				                                    resetCheckIn={this.props.resetCheckIn} /> :
+
+				                        <AdminEvents events={this.props.events}
+				                                     error={this.props.error}
+				                                     createEvent={this.props.createEvent}
+				                                     created={this.props.eventCreated}
+				                                     createSuccess={this.props.eventCreateSuccess}
+				                                     updated={this.props.eventUpdated}
+				                                     updateSuccess={this.props.eventUpdateSuccess}
+				                                     addEvent={this.props.addEvent}
+				                                     updateEvent={this.props.updateEvent} /> }
 			</div>
 		);
 	}
