@@ -32,7 +32,7 @@ server.use((req, res, next) => {
 server.use(compression());
 
 // Enable logging for debugging and tracing purposes
-server.use(morgan(':date[web] :remote-addr [Flow :res[X-Flow-Id]] ":method :url HTTP/:http-version" :status :res[content-length]'));
+server.use(morgan(':date[web] :[req[X-Forwarded-For]] [Flow :res[X-Flow-Id]] ":method :url" :status :res[content-length]'));
 
 // Parse urlencoded and json POST data
 server.use(bodyParser.urlencoded({ extended: true }));
