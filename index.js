@@ -1,6 +1,7 @@
 const cluster = require('cluster');
 const express = require('express');
 const morgan = require('morgan');
+const uuid = require('uuid');
 const compression = require('compression');
 const bodyParser = require('body-parser');
 const app = require('./app');
@@ -20,11 +21,18 @@ if (app.config.isDevelopment) {
 	});
 }
 
+// Assign a unique ID to each request
+server.use((req, res, next) => {
+	req.id = uuid.v4();
+	res.set('X-Flow-Id', req.id);
+	next();
+});
+
 // Use gzip compression to reduce bandwidth usage
 server.use(compression());
 
 // Enable logging for debugging and tracing purposes
-server.use(morgan('dev'));
+server.use(morgan(':date[web] :remote-addr [Flow :res[X-Flow-Id]] ":method :url HTTP/:http-version" :status :res[content-length]'));
 
 // Parse urlencoded and json POST data
 server.use(bodyParser.urlencoded({ extended: true }));

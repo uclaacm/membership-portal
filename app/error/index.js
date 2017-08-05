@@ -76,10 +76,11 @@ let errorHandler = (err, req, res, next) => {
 	if (!err.status)
 		err = new InternalServerError(err.message);
 
-	if (err.status < 500)
-		logger.warn("%s [%d]: %s", err.name, err.status, err.message);
-	else
-		logger.error(err);
+	if (err.status < 500) {
+		logger.warn("%s [Flow %s]: %s [%d]: %s", new Date(), req.id, err.name, err.status, err.message);
+	} else {
+		logger.error("%s [Flow %s]: \n%s", new Date(), req.id, err.stack);
+	}
 
 	res.status(err.status).json({
 		error : {
@@ -91,7 +92,7 @@ let errorHandler = (err, req, res, next) => {
 
 let notFoundHandler = (req, res, next) => {
 	let err = new NotFound("The resource " + req.url + " was not found");
-	logger.warn("%s [%d]: %s", err.name, err.status, err.message);
+	logger.warn("%s [Flow %s]: %s [%d]: %s", new Date(), req.id, err.name, err.status, err.message);
 	res.status(err.status).json({
 		error : {
 			status: err.status,
