@@ -166,6 +166,8 @@ module.exports = (Sequelize, db) => {
 
 	User.sanitize = function(user) {
 		user = _.pick(user, ['profileId', 'email', 'firstName', 'lastName', 'year', 'major']);
+		if (user.email)
+			user.email = user.email.toLowerCase();
 		return user;
 	};
 
