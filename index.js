@@ -23,7 +23,7 @@ if (app.config.isDevelopment) {
 
 // Assign a unique ID to each request
 server.use((req, res, next) => {
-	req.id = uuid.v4();
+	req.id = uuid.v4().split("-").pop();
 	res.set('X-Flow-Id', req.id);
 	next();
 });
@@ -32,7 +32,7 @@ server.use((req, res, next) => {
 server.use(compression());
 
 // Enable logging for debugging and tracing purposes
-server.use(morgan(':date[web] [IP :req[X-Forwarded-For]] [Flow :res[X-Flow-Id]] ":method :url" :status :response-time[3]ms'));
+server.use(morgan(':date[web] [IP :req[X-Forwarded-For]] [Flow :res[X-Flow-Id]] :method :url :status :response-time[3]ms'));
 
 // Parse urlencoded and json POST data
 server.use(bodyParser.urlencoded({ extended: true }));
