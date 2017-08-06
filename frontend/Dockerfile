@@ -5,33 +5,32 @@ FROM alpine:3.5
 # Download and install nginx
 # RUN echo "deb http://archive.ubuntu.com/ubuntu/ raring main universe" >> /etc/apt/sources.list
 RUN apk update
-RUN apk add curl nginx bash python make g++
-
-# Download and add nodejs
-RUN apk add --update nodejs
+RUN apk add -U curl nginx bash python make g++ nodejs
 
 # Create directories
 #   /working is the build directory
 #   /static is the directory linked to nginx (serves static content)
-RUN mkdir -p /var/www/membership/working
-RUN mkdir -p /var/www/membership/static
-RUN mkdir -p /var/www/membership/static/build
+RUN mkdir -p /var/www/membership/working && \
+    mkdir -p /var/www/membership/static && \
+    mkdir -p /var/www/membership/static/build
 
 # Install the required packages to build the frontend
 WORKDIR /var/www/membership/working
-COPY package.json /var/www/membership/working
+COPY *.json /var/www/membership/working/
 RUN /usr/bin/node --max_semi_space_size=8 \
                   --max_old_space_size=298 \
                   --max_executable_size=248 \
                   /usr/bin/npm install
 
-# Copy the source files and build
-COPY . /var/www/membership/working
-RUN npm run build
+# Copy the source files
+COPY pages/ /var/www/membership/working/pages/
+COPY src/ /var/www/membership/working/src/
+COPY .babelrc *.js /var/www/membership/working/
 
-# Copy the built files to the nginx static file server root
-RUN cp -rv pages/* ../static/
-RUN cp -rv lib/build/* ../static/build/
+# build and copy files to server root
+RUN npm run build && \
+    cp -rv pages/* ../static/ && \
+    cp -rv lib/build/* ../static/build/
 
 # Copy the configuration file
 RUN mkdir -p /run/nginx
