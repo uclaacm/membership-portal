@@ -34,7 +34,7 @@ RUN npm run build && \
 
 # Copy the configuration file
 RUN mkdir -p /run/nginx
-COPY nginx.conf /etc/nginx/
+COPY conf/ /etc/nginx/
 WORKDIR /var/www/membership/static
 
 # Run the server
