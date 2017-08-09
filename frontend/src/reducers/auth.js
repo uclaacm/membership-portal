@@ -34,16 +34,11 @@ const tokenIsAdmin = token => tokenGetClaims(token).admin;
  *********************************************/
 
 class State {
-	static AuthSuccess(token) {
+	static AuthSuccess(error, token) {
 		return {
-			type: AUTH_USER,
-			isAdmin: tokenIsAdmin(token),
-		};
-	}
-	static AuthError(error) {
-		return {
-			type: AUTH_ERROR,
-			error,
+			type    : error ? AUTH_ERROR : AUTH_USER,
+			isAdmin : error ? undefined : tokenIsAdmin(token),
+			error   : error || undefined,
 		};
 	}
 	static UnAuth(error) {
@@ -66,7 +61,7 @@ const LoginUser = (email, password) => {
 					'Accept': 'application/json',
 					'Content-Type': 'application/json'
 				},
-				body: { email, password },
+				body: JSON.stringify({ email, password }),
 			});
 
 			const status = await response.status;
@@ -79,9 +74,9 @@ const LoginUser = (email, password) => {
 			}
 
 			Storage.set('token', data.token);
-			dispatch(State.AuthSuccess(data.token));
+			dispatch(State.Auth(null, data.token));
 		} catch (err) {
-			dispatch(State.AuthError(err.message));
+			dispatch(State.Auth(err.message));
 		}
   };
 }
