@@ -53,10 +53,8 @@ export default class AdminEvents extends React.Component {
 
     //Handles when update/add event
     addEvent(event) {
-        // based on !!event.uuid
         // call either this.props.addEvent(event) or this.props.updateEvent(event)
         console.log(event);
-        console.log(event.startDate.toDate());
         if(event.uuid){
             this.props.updateEvent(event);
         } else {
