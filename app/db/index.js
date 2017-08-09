@@ -35,8 +35,10 @@ let setup = (force) => {
 let errorHandler = (err, req, res, next) => {
 	if (!err || !(err instanceof Sequelize.Error))
 		return next(err);
-	if (err instanceof Sequelize.ValidationError)
-		return next(new error.HTTPError(err.name, 422, err.message))
+	if (err instanceof Sequelize.ValidationError) {
+		const message = `Validation Error: ${err.errors.map(e => e.message).join('; ')}`;
+		return next(new error.HTTPError(err.name, 422, message))
+	}
 	return next(new error.HTTPError(err.name, 500, err.message));
 };
 
