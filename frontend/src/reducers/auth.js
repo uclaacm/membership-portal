@@ -4,129 +4,138 @@ import Immutable from 'immutable';
 
 import { replace } from 'react-router-redux';
 
-const tokenGetClaims = (token)=>{
-    const tokenArray = token.split('.');
-    if(tokenArray.length !== 3){
-        return false;
-    }
-    return JSON.parse(window.atob(tokenArray[1].replace('-', '+').replace('_', '/')));
-};
-
-const tokenIsAdmin = (token)=>{
-    return tokenGetClaims(token).admin;
-};
-
-///////////////
-/// ACTIONS ///
-///////////////
+/**********************************************
+ ** Contants                                 **
+ *********************************************/
 
 const USER_GET = Symbol('USER_GET');
 const AUTH_USER = Symbol('AUTH_USER');
 const UNAUTH_USER = Symbol('UNAUTH_USER');
 const AUTH_ERROR = Symbol('AUTH_ERROR');
 
-const AuthUser = (isAdmin) => {
-    return ({
-        type: AUTH_USER,
-        isAdmin,
-    });
+/**********************************************
+ ** Helper Functions                         **
+ *********************************************/
+
+const tokenGetClaims = token => {
+	const tokenArray = token.split('.');
+	if(tokenArray.length !== 3){
+		return {};
+	}
+	return JSON.parse(window.atob(tokenArray[1].replace('-', '+').replace('_', '/')));
+};
+
+const tokenIsAdmin = token => tokenGetClaims(token).admin;
+
+/**********************************************
+ ** Auth States                              **
+ *********************************************/
+
+class State {
+	static AuthSuccess(token) {
+		return {
+			type: AUTH_USER,
+			isAdmin: tokenIsAdmin(token),
+		};
+	}
+	static AuthError(error) {
+		return {
+			type: AUTH_ERROR,
+			error,
+		};
+	}
+	static AuthInit() {
+		return {
+			type: AUTH_GET,
+		};
+	}
+	static UnAuth(error) {
+		return {
+			type: UNAUTH_USER,
+		};
+	}
 }
 
-const AuthUserError = err => {
-    return {
-        type: AUTH_ERROR,
-        err
-    }
-}
+/**********************************************
+ ** Actions                                  **
+ *********************************************/
 
 const LoginUser = (email, password) => {
   return async (dispatch) => {
-    dispatch({ type: USER_GET });
-    try {
-        const response = await fetch(Config.API_URL + Config.routes.auth.login, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({"password": password, "email": email}),
-        });
+		dispatch(State.AuthInit());
+		try {
+			const response = await fetch(Config.API_URL + Config.routes.auth.login, {
+				method: 'POST',
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				},
+				body: { email, password },
+			});
 
-        const status = await response.status;
-        const data = await response.json();
+			const status = await response.status;
+			const data = await response.json();
 
-        if(!data) {
-            throw new Error("Empty response from server");
-        } else if(data.error){
-            throw new Error(data.error.message);
-        }
-        Storage.set("token", data.token);
-        dispatch(AuthUser(tokenIsAdmin(data.token)));
-    } catch (err) {
-        dispatch(AuthUserError(err.message));
-    }
+			if (!data) {
+				throw new Error('Empty response from server');
+			} else if (data.error) {
+				throw new Error(data.error.message);
+			}
+
+			Storage.set('token', data.token);
+			dispatch(State.AuthSuccess(data.token));
+		} catch (err) {
+			dispatch(State.AuthError(err.message));
+		}
   };
 }
 
 const LogoutUser = (error) => {
-    return async (dispatch) => {
-        dispatch({
-            type: UNAUTH_USER,
-            payload: error || ''
-        });
-        Storage.remove("token");
-        dispatch(replace('/login'));
-    }
+	return async (dispatch) => {
+		dispatch(State.UnAuth());
+		Storage.remove('token');
+		dispatch(replace('/login'));
+	}
 }
 
-///////////////
-/// STATE ///
-///////////////
-
-const defaultState = Immutable.fromJS({
-    error: '',
-    message: '',
-    content: '',
-    authenticated: false,
-    isAdmin: false,
-});
+/**********************************************
+ ** Auth Reducer                             **
+ *********************************************/
 
 const initState = () => {
-    if (Storage.get("token")) {
-        return Immutable.fromJS({
-            error: '',
-            message: '',
-            content: '',
-            authenticated: true,
-            isAdmin: tokenIsAdmin(Storage.get("token")),
-        });
-    }
-    return defaultState;
+	const token = Storage.get('token');
+	return Immutable.fromJS({
+		error: null,
+		authenticated: !!token,
+		isAdmin: !!token && tokenIsAdmin(token),
+	});
 }
 
 const Auth = (state=initState(), action) => {
-    switch (action.type) {
-        case AUTH_USER:
-            return state.withMutations(val => {
-                val.set('authenticated', true);
-                val.set('error', '');
-                val.set('message', '');
-                val.set('isAdmin', action.isAdmin);
-            });
+	switch (action.type) {
+		case AUTH_USER:
+			return state.withMutations(val => {
+				val.set('authenticated', true);
+				val.set('error', null);
+				val.set('isAdmin', action.isAdmin);
+			});
 
-        case UNAUTH_USER:
-            return defaultState;
+		case UNAUTH_USER:
+			return state.withMutations(val => {
+				val.set('authenticated', false);
+				val.set('isAdmin', false);
+			});
 
-        case AUTH_ERROR:
-            return state.withMutations(val => {
-                val.set('error', action.err);
-            });
+		case AUTH_ERROR:
+			return state.withMutations(val => {
+				val.set('error', action.error);
+			});
 
-        default:
-            return state;
-    }
+		default:
+			return state;
+	}
 }
 
 export {
-    Auth, LoginUser, LogoutUser
+	Auth, LoginUser, LogoutUser
 }

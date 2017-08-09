@@ -23,24 +23,26 @@ class Login extends React.Component {
   }
 
   render() {
-    return <LoginComponent onsubmit={this.handleLogin.bind(this)} error={this.props.error}/>;
+    return <LoginComponent
+              onsubmit={this.handleLogin.bind(this)}
+              error={this.props.error} />;
   }
 }
 
-const mapStateToProps = (state)=>{
+const mapStateToProps = state => {
   return {
     error: state.Auth.get('error'),
-    authenticated: state.Auth.get('authenticated'),
     isAdmin: state.Auth.get('isAdmin'),
+    authenticated: state.Auth.get('authenticated'),
   };
 };
 
-const mapDispatchToProps = (dispatch)=>{
+const mapDispatchToProps = dispatch => {
   return {
     login: (email, password) => {
       dispatch(Action.LoginUser(email, password));
     },
-    redirectHome: ()=>{
+    redirectHome: () => {
       dispatch(replace('/'));
     },
   };
