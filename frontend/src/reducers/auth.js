@@ -8,7 +8,6 @@ import { replace } from 'react-router-redux';
  ** Contants                                 **
  *********************************************/
 
-const USER_GET = Symbol('USER_GET');
 const AUTH_USER = Symbol('AUTH_USER');
 const UNAUTH_USER = Symbol('UNAUTH_USER');
 const AUTH_ERROR = Symbol('AUTH_ERROR');
@@ -18,6 +17,9 @@ const AUTH_ERROR = Symbol('AUTH_ERROR');
  *********************************************/
 
 const tokenGetClaims = token => {
+	if (!token) {
+		return {};
+	}
 	const tokenArray = token.split('.');
 	if(tokenArray.length !== 3){
 		return {};
@@ -44,11 +46,6 @@ class State {
 			error,
 		};
 	}
-	static AuthInit() {
-		return {
-			type: AUTH_GET,
-		};
-	}
 	static UnAuth(error) {
 		return {
 			type: UNAUTH_USER,
@@ -62,7 +59,6 @@ class State {
 
 const LoginUser = (email, password) => {
   return async (dispatch) => {
-		dispatch(State.AuthInit());
 		try {
 			const response = await fetch(Config.API_URL + Config.routes.auth.login, {
 				method: 'POST',
