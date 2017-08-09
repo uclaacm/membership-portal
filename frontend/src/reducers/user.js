@@ -4,34 +4,53 @@ import Config from 'config';
 
 import { LogoutUser } from './auth';
 
+/**********************************************
+ ** Contants                                 **
+ *********************************************/
+
 const FETCH_USER = Symbol('FETCH_USER');
 const FETCH_USER_ERR = Symbol('FETCH_USER_ERR');
 
 const UPDATE_USER_ERR = Symbol('UPDATE_USER_ERR');
 const UPDATE_USER_SUCCESS = Symbol('UPDATE_USER_SUCCESS');
-const UPDATE_DONE = Symbol('UPDATE_DONE');
+const UPDATE_COMPLETED = Symbol('UPDATE_COMPLETED');
 
 const defaultState = Immutable.fromJS({
 	profile: {},
 	updated: false,
 	updateSuccess: false,
 	fetchsuccess: false,
-	error: ''
+	error: null,
 });
 
-const fetchUserAction = user => {
-	return ({
-		type: FETCH_USER,
-		user
-	});
+/**********************************************
+ ** Auth States                              **
+ *********************************************/
+
+class State {
+	static FetchUser(error, user) {
+		return {
+			type  : error ? FETCH_USER_ERR : FETCH_USER,
+			user  : error ? undefined : user,
+			error : error || undefined,
+		}
+	}
+	static UpdateUser(error) {
+		return {
+			type  : error ? UPDATE_USER_ERR : UPDATE_USER_SUCCESS,
+			error : error || undefined,
+		}
+	}
+	static UpdateUserCompleted() {
+		return {
+			type: UPDATE_COMPLETED,
+		}
+	}
 }
 
-const fetchUserError = error => {
-	return ({
-		type: FETCH_USER_ERR,
-		error
-	});
-}
+/**********************************************
+ ** Actions                                  **
+ *********************************************/
 
 const FetchUser = () => {
 	return async dispatch => {
@@ -41,50 +60,29 @@ const FetchUser = () => {
 				headers: {
 					'Accept': 'application/json',
 					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${Storage.get("token")}`
+					'Authorization': `Bearer ${Storage.get('token')}`
 				}
 			});
 
 			const status = await response.status;
-
-            if (status === 401 || status === 403) {
+      if (status === 401 || status === 403) {
 				dispatch(LogoutUser());
 			}
 
 			const data = await response.json();
-
 			if (!data)
-				throw new Error("Empty response from server");
+				throw new Error('Empty response from server');
 			if (data.error)
 				throw new Error(data.error.message);
 
-			dispatch(fetchUserAction(data.user));
+			dispatch(State.FetchUser(null, data.user));
 		} catch (err) {
-			dispatch(updateUserError(err.message));
+			dispatch(State.FetchUser(err.message));
 		}
 	}
 }
 
-const updateUserSuccess = () => {
-	return {
-		type: UPDATE_USER_SUCCESS,
-	};
-};
-
-const updateUserError = error => {
-	return {
-		type: UPDATE_USER_ERR,
-		error
-	};
-};
-
-const UserUpdateDone = () => {
-	return {
-		type: UPDATE_DONE,
-	};
-};
-
-const UpdateUser = newprofile => {
+const UpdateUser = user => {
 	return async dispatch => {
 		try {
 			const response = await fetch(Config.API_URL + Config.routes.user,  {
@@ -92,63 +90,65 @@ const UpdateUser = newprofile => {
 				headers: {
 					'Accept': 'application/json',
 					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${Storage.get("token")}`
+					'Authorization': `Bearer ${Storage.get('token')}`
 				},
-				body: JSON.stringify({"user": newprofile})
+				body: JSON.stringify({ user })
 			});
 
 			const status = await response.status;
-
-            if (status === 401 || status === 403) {
+      if (status === 401 || status === 403) {
 				return dispatch(LogoutUser());
 			}
 			
 			const data = await response.json();
-
 			if (!data)
-				throw new Error("Empty response from server");
+				throw new Error('Empty response from server');
 			if (data.error)
 				throw new Error(data.error.message);
 
-			dispatch(fetchUserAction(data.user));
-			dispatch(updateUserSuccess());
+			dispatch(State.FetchUser(null, data.user));
+			dispatch(State.UpdateUser());
 		} catch (err) {
-			dispatch(updateUserError(err.message));
+			dispatch(State.UpdateUser(err.message));
 		}
 	}
 }
+
+/**********************************************
+ ** User Reducer                             **
+ *********************************************/
 
 const User = (state=defaultState, action) => {
 	switch(action.type) {
 		case FETCH_USER:
 			return state.withMutations(val => {
+				val.set('error', null);
 				val.set('profile', action.user);
-				val.set('fetchsuccess', true);
-				val.set('error', '');
+				val.set('fetchSuccess', true);
 			});
 
 		case FETCH_USER_ERR:
 			return state.withMutations(val => {
 				val.set('error', action.error);
 				val.set('profile', {});
-				val.set('fetchsuccess', false);
+				val.set('fetchSuccess', false);
 			})
 
 		case UPDATE_USER_ERR:
 			return state.withMutations(val => {
+				val.set('error', action.error);
 				val.set('updated', true);
 				val.set('updateSuccess', false);
-				val.set('error', action.error);
 			});
 
 		case UPDATE_USER_SUCCESS:
 			return state.withMutations(val => {
+				val.set('error', null);
 				val.set('updated', true);
 				val.set('updateSuccess', true);
-				val.set('error', '');
 			});
 
-		case UPDATE_DONE:
+		case UPDATE_COMPLETED:
 			return state.withMutations(val => {
 				val.set('updated', false);
 			});
