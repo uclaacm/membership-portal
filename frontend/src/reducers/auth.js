@@ -34,7 +34,7 @@ const tokenIsAdmin = token => tokenGetClaims(token).admin;
  *********************************************/
 
 class State {
-	static AuthSuccess(error, token) {
+	static Auth(error, token) {
 		return {
 			type    : error ? AUTH_ERROR : AUTH_USER,
 			isAdmin : error ? undefined : tokenIsAdmin(token),

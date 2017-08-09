@@ -158,6 +158,7 @@ const User = (state=defaultState, action) => {
 	}
 }
 
+const UserUpdateDone = () => State.UpdateUserCompleted();
 export {
 	User, FetchUser, UpdateUser, UserUpdateDone
 }
