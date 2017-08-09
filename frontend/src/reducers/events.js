@@ -134,8 +134,7 @@ const PostNewEvent = (newevent)=>{
 			});
 
 			const status = await response.status;
-
-            if (status === 401 || status === 403) {
+      if (status === 401 || status === 403) {
 				dispatch(LogoutUser());
 			}
 			
@@ -188,7 +187,7 @@ const UpdateEvent = (event)=>{
 
 			const status = await response.status;
 
-            if (status === 401 || status === 403) {
+      if (status === 401 || status === 403) {
 				dispatch(LogoutUser());
 			}
 			
