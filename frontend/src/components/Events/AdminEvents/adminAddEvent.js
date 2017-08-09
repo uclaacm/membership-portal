@@ -78,6 +78,8 @@ export default class AdminAddEvent extends React.Component {
         this.setState(prev => {
             let newState = Object.assign({}, prev);
             newState.event = nextProps.event;
+            if (newState.event)
+                newState.event.attendanceCode = nextProps.event.attendanceCode || "";
             return newState;
         });
     }
