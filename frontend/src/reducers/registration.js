@@ -1,32 +1,41 @@
-import Immutable from 'immutable';
 import Config from 'config';
+import Immutable from 'immutable';
 import {Action} from 'reducers';
+
+/**********************************************
+ ** Contants                                 **
+ *********************************************/
 
 const REGISTER_SUCCESS = Symbol('REGISTER_SUCCESS');
 const REGISTER_ERR = Symbol('REGISTER_ERR');
 const REGISTER_DONE = Symbol('REGISTER_DONE');
 
-const registerSuccess = (user)=>{
-	return {
-		type: REGISTER_SUCCESS,
-		user
-	};
-};
+const defaultState = Immutable.fromJS({
+	user: {},
+	registered: false,
+	registerSuccess: false,
+	error: null,
+});
 
-const registerErr = (error)=>{
-	return {
-		type: REGISTER_ERR,
-		error
-	};
+/**********************************************
+ ** Registrations States                     **
+ *********************************************/
+
+class State {
+	static Register(error, user) {
+		return {
+			type  : error ? REGISTER_ERR : REGISTER_SUCCESS,
+			user  : error ? undefined : user,
+			error : error || undefined,
+		};
+	}
 }
 
-const registerDone = () => {
-	return {
-		type: REGISTER_DONE
-	};
-}
+/**********************************************
+ ** Actions                                  **
+ *********************************************/
 
-const RegisterUser = newuser => {
+const RegisterUser = user => {
 	return async dispatch => {
 		try {
 			const response = await fetch(Config.API_URL + Config.routes.auth.register, {
@@ -35,7 +44,7 @@ const RegisterUser = newuser => {
 					'Accept': 'application/json',
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({'user': newuser}),
+				body: JSON.stringify({ user }),
 			});
 
 			const status = await response.status;
@@ -46,36 +55,29 @@ const RegisterUser = newuser => {
 			if (data.error)
 				throw new Error(data.error.message);
 			
-			dispatch(registerSuccess(data.user));
-			dispatch(Action.LoginUser(newuser.email, newuser.password));
+			dispatch(State.Register(null, data.user));
+			dispatch(Action.LoginUser(user.email, user.password));
 		} catch(err) {
-			dispatch(registerErr(err.message));
+			dispatch(State.Register(err.message));
 		}
 	};
 };
-
-const defaultState = Immutable.fromJS({
-	newuser: {},
-	registered: false,
-	registerSuccess: false,
-	error: '',
-});
 
 const Registration = (state=defaultState, action) => {
 	switch (action.type) {
 		case REGISTER_SUCCESS:
 			return state.withMutations(val => {
+				val.set('user', action.user);
+				val.set('error', null);
 				val.set('registered', true);
 				val.set('registerSuccess', true);
-				val.set('error', '');
-				val.set('newuser', action.user);
 			});
 
 		case REGISTER_ERR:
 			return state.withMutations(val => {
+				val.set('error', action.error);
 				val.set('registered', true);
 				val.set('registerSuccess', false);
-				val.set('error', action.error);
 			});
 		
 		case REGISTER_DONE:
@@ -88,6 +90,7 @@ const Registration = (state=defaultState, action) => {
 	}
 }
 
+const registerDone = () => ({ type: REGISTER_DONE });
 export {
 	Registration, RegisterUser, registerDone
 }

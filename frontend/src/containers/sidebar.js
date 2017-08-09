@@ -21,7 +21,7 @@ class SidebarContainer extends React.Component {
 	}
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
 	if (state.User.get('fetchSuccess')) {
 		const profile = state.User.get('profile');
 		return {

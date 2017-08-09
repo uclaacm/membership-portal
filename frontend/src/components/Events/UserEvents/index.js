@@ -36,7 +36,6 @@ export default class UserEvents extends React.Component {
     }
 
     showEarlierEvents(e) {
-        console.log(e);
         this.setState(prev => ({
             showCheckIn: prev.showCheckIn,
             showEarlierEvents: true
@@ -119,7 +118,6 @@ export default class UserEvents extends React.Component {
         }
         const futureDays = days.filter(day => day.date > today);
         const pastDays = days.filter(day => day.date <= today);
-        console.log(this.state);
         return (
             <div className="events-dashboard user-dashboard">
                 {this.renderAttendanceForm()}

@@ -15,34 +15,33 @@ class Register extends React.Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-        if(nextProps.registered){
-            setTimeout(() => {
-                this.props.registerDone();
-            }, 1000);
-        }
-    }
+		if(nextProps.registered){
+			setTimeout(() => {
+				this.props.registerDone();
+			}, 1000);
+		}
+	}
 
 	render(){
-		return <RegisterComponent
-		        	createUser={this.createUser}
-					created={this.props.registered}
-					createSuccess={this.props.registerSuccess}
-					createError={this.props.error} />
+		return <RegisterComponent createUser={this.createUser}
+		                          created={this.props.registered}
+															createSuccess={this.props.registerSuccess}
+															createError={this.props.error} />
 	}
 }
 
 const mapStateToProps = (state)=>{
 	return {
-		newuser: state.Registration.get('newuser'),
+		user: state.Registration.get('user'),
+		error: state.Registration.get('error'),
 		registered: state.Registration.get('registered'),
 		registerSuccess: state.Registration.get('registerSuccess'),
-		error: state.Registration.get('error'),
 	};
 };
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		registerUser: (newuser)=>{
+		registerUser: newuser => {
 			dispatch(Action.RegisterUser(newuser));
 		},
 		registerDone: () => {
@@ -50,6 +49,5 @@ const mapDispatchToProps = (dispatch) => {
 		},
 	};
 };
-
 
 export default connect(mapStateToProps, mapDispatchToProps)(Register);

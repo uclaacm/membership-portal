@@ -41,11 +41,6 @@ class State {
 			error : error || undefined,
 		}
 	}
-	static UpdateUserCompleted() {
-		return {
-			type: UPDATE_COMPLETED,
-		}
-	}
 }
 
 /**********************************************
@@ -158,7 +153,7 @@ const User = (state=defaultState, action) => {
 	}
 }
 
-const UserUpdateDone = () => State.UpdateUserCompleted();
+const UserUpdateDone = () => ({ type: UPDATE_COMPLETED });
 export {
 	User, FetchUser, UpdateUser, UserUpdateDone
 }

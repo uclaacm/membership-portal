@@ -71,7 +71,7 @@ const mapDispatchToProps = (dispatch)=>{
 		fetchUser: () => {
 			dispatch(Action.FetchUser());
 		},
-		updateUser: (newprofile) => {
+		updateUser: newprofile => {
 			dispatch(Action.UpdateUser(newprofile))
 		},
 		redirectHome: () => {

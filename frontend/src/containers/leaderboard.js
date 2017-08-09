@@ -21,7 +21,8 @@ class Leaderboard extends React.Component {
   }
 
   render() {
-    return <LeaderboardComponent leaderboard={this.props.leaderboard} user={this.props.user} />;
+    return <LeaderboardComponent leaderboard={this.props.leaderboard}
+                                 user={this.props.user} />;
   }
 }
 
@@ -44,6 +45,5 @@ const mapDispatchToProps = (dispatch)=>{
     },
   };
 };
-
 
 export default connect(mapStateToProps, mapDispatchToProps)(Leaderboard);

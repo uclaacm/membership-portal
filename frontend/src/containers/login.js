@@ -23,9 +23,8 @@ class Login extends React.Component {
   }
 
   render() {
-    return <LoginComponent
-              onsubmit={this.handleLogin.bind(this)}
-              error={this.props.error} />;
+    return <LoginComponent onsubmit={this.handleLogin.bind(this)}
+                           error={this.props.error} />;
   }
 }
 
