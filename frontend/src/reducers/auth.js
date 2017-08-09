@@ -5,7 +5,7 @@ import Immutable from 'immutable';
 import { replace } from 'react-router-redux';
 
 /**********************************************
- ** Contants                                 **
+ ** Constants                                **
  *********************************************/
 
 const AUTH_USER = Symbol('AUTH_USER');

@@ -5,12 +5,12 @@ import Immutable from 'immutable';
 
 import { LogoutUser } from './auth';
 
-//////////////////
-//// ACTIONS /////
-//////////////////
+/**********************************************
+ ** Constants                                **
+ *********************************************/
 
-const GET_EVENTS = Symbol('GET_EVENTS');
-const GET_EVENTS_ERROR = Symbol('GET_EVENTS_ERROR');
+const FETCH_EVENTS = Symbol('FETCH_EVENTS');
+const FETCH_EVENTS_ERROR = Symbol('FETCH_EVENTS_ERROR');
 const POST_EVENT_SUCCESS = Symbol('POST_EVENT_SUCCESS');
 const POST_EVENT_ERROR = Symbol('POST_EVENT_ERROR');
 const POST_EVENT_DONE = Symbol('POST_EVENT_DONE');
@@ -18,24 +18,49 @@ const UPDATE_EVENT_SUCCESS = Symbol('UPDATE_EVENT_SUCCESS');
 const UPDATE_EVENT_ERROR = Symbol('UPDATE_EVENT_ERROR');
 const UPDATE_EVENT_DONE = Symbol('UPDATE_EVENT_DONE');
 
-const UpdateEvents = (events)=>{
-	return {
-		type: GET_EVENTS,
-		events
-	};
-};
+const defaultState = Immutable.fromJS({
+	events: [],
+	error: null,
+	posted: false,
+	updated: false,
+	postSuccess: false,
+	updateSuccess: false,
+});
 
-const UpdateEventsError = (error)=>{
-	return {
-		type: GET_EVENTS_ERROR,
-		error
-	};
-};
+/**********************************************
+ ** Event States                              **
+ *********************************************/
+
+class State {
+	static FetchEvents(error, events) {
+		return {
+			type   : error ? FETCH_EVENTS_ERROR : FETCH_EVENTS,
+			events : error ? undefined : events,
+			error  : error || undefined,
+		};
+	}
+	static PostEvent(error) {
+		return {
+			type  : error ? POST_EVENT_ERROR : POST_EVENT_SUCCESS,
+			error : error || undefined,
+		};
+	}
+	static UpdateEvent(error) {
+		return {
+			type  : error ? UPDATE_EVENT_ERROR : UPDATE_EVENT_SUCCESS,
+			error : error || undefined,
+		};
+	}
+}
+
+/**********************************************
+ ** Actions                                  **
+ *********************************************/
 
 const GetCurrentEvents = () => {
 	return async (dispatch) => {
 		try {
-			const response = await fetch(Config.API_URL + Config.routes.events.event, {
+			const eventsRes = await fetch(Config.API_URL + Config.routes.events.event, {
 				method: 'GET',
 				headers: {
 					'Accept': 'application/json',
@@ -44,21 +69,18 @@ const GetCurrentEvents = () => {
 				}
 			});
 
-			const status = await response.status;
-
-            if (status === 401 || status === 403) {
+			let status = await eventsRes.status;
+      if (status === 401 || status === 403) {
 				return dispatch(LogoutUser());
 			}
 
-			const data = await response.json();
-
-			if(!data){
+			const eventsData = await eventsRes.json();
+			if (!eventsData)
 				throw new Error("Empty response from server");
-			} else if(data.error){
-				throw new Error(data.error.message);
-			}
+			else if (eventsData.error)
+				throw new Error(eventsData.error.message);
 
-			const response2 = await fetch(Config.API_URL + Config.routes.attendance.fetch, {
+			const attendanceRes = await fetch(Config.API_URL + Config.routes.attendance.fetch, {
 				method: 'GET',
 				headers: {
 					'Accept': 'application/json',
@@ -67,20 +89,19 @@ const GetCurrentEvents = () => {
 				}
 			});
 
-			const status2 = await response2.status;
-			const data2 = await response2.json();
+			status = await attendanceRes.status;
+			const attendanceData = await attendanceRes.json();
 
-			if(!data2){
+			if (!attendanceData)
 				throw new Error("Empty response from server");
-			} else if(data2.error){
-				throw new Error(data2.error.message);
-			}
+			else if (attendanceData.error)
+				throw new Error(attendanceData.error.message);
 
 			let attendanceMap = {};
-			for (let record of data2.attendance)
+			for (let record of attendanceData.attendance)
 				attendanceMap[record.event] = true;
 
-			const events = data.events.map(event => ({
+			const events = eventsData.events.map(event => ({
 				uuid: event.uuid,
 				cover: event.cover,
 				committee: event.committee,
@@ -94,34 +115,15 @@ const GetCurrentEvents = () => {
 				checkedIn: !!attendanceMap[event.uuid],
 			}));
 
-			dispatch(UpdateEvents(events));
+			dispatch(State.FetchEvents(null, events));
 		} catch (err) {
-			dispatch(UpdateEventsError(err.message));
+			dispatch(State.FetchEvents(err.message));
 		}
 	};
 };
 
-const PostNewEventSuccess = () => {
-	return {
-		type: POST_EVENT_SUCCESS,
-	};
-};
-
-const PostNewEventErr = (err) => {
-	return {
-		type: POST_EVENT_ERROR,
-		error: err,
-	};
-};
-
-const CreateEventDone = () => {
-	return {
-		type: POST_EVENT_DONE
-	};
-};
-
-const PostNewEvent = (newevent)=>{
-	return async (dispatch)=>{
+const PostNewEvent = event => {
+	return async dispatch => {
 		try {
 			const response = await fetch(Config.API_URL + Config.routes.events.event, {
 				method: 'POST',
@@ -130,7 +132,7 @@ const PostNewEvent = (newevent)=>{
 					'Content-Type': 'application/json',
 					'Authorization': `Bearer ${Storage.get("token")}`
 				},
-				body: JSON.stringify({'event': newevent}),
+				body: JSON.stringify({ event }),
 			});
 
 			const status = await response.status;
@@ -139,41 +141,21 @@ const PostNewEvent = (newevent)=>{
 			}
 			
 			const data = await response.json();
-
 			if (!data)
 				throw new Error("Empty response from server");
 			if (data.error)
 				throw new Error(data.error.message);
 
-			dispatch(PostNewEventSuccess());
+			dispatch(State.PostEvent());
 			dispatch(GetCurrentEvents());
-		} catch(err){
-			dispatch(PostNewEventErr(err.message));
+		} catch (err) {
+			dispatch(State.PostEvent(err.message));
 		}
 	};
 };
 
-const UpdateEventSuccess = () => {
-	return {
-		type: UPDATE_EVENT_SUCCESS,
-	};
-};
-
-const UpdateEventErr = (err) => {
-	return {
-		type: UPDATE_EVENT_ERROR,
-		error: err,
-	};
-};
-
-const UpdateEventDone = () => {
-	return {
-		type: UPDATE_EVENT_DONE
-	};
-};
-
-const UpdateEvent = (event)=>{
-	return async (dispatch)=>{
+const UpdateEvent = event => {
+	return async dispatch => {
 		try {
 			const response = await fetch((Config.API_URL + Config.routes.events.event + '/' + event.uuid), {
 				method: 'PATCH',
@@ -182,55 +164,40 @@ const UpdateEvent = (event)=>{
 					'Content-Type': 'application/json',
 					'Authorization': `Bearer ${Storage.get("token")}`
 				},
-				body: JSON.stringify({'event': event}),
+				body: JSON.stringify({ event }),
 			});
 
 			const status = await response.status;
-
       if (status === 401 || status === 403) {
 				dispatch(LogoutUser());
 			}
 			
 			const data = await response.json();
-
 			if (!data)
 				throw new Error("Empty response from server");
 			if (data.error)
 				throw new Error(data.error.message);
 
-			dispatch(UpdateEventSuccess());
+			dispatch(State.UpdateEvent());
 			dispatch(GetCurrentEvents());
-		} catch(err){
-			dispatch(UpdateEventErr(err.message));
+		} catch (err) {
+			dispatch(State.UpdateEvent(err.message));
 		}
 	};
 };
 
-///////////////
-/// STATE /////
-///////////////
-
-const defaultState = Immutable.fromJS({
-	events: [],
-	error: '',
-	posted: false,
-	postSuccess: false,
-	updated: false,
-	updateSuccess: false,
-});
-
-//////////////////
-//// REDUCERS ////
-//////////////////
+/**********************************************
+ ** Events Reducer                           **
+ *********************************************/
 
 const Events = (state=defaultState, action) => {
 	switch(action.type) {
-		case GET_EVENTS:
+		case FETCH_EVENTS:
 			return state.withMutations(val => {
 				val.set('events', action.events)
 			});
 
-		case GET_EVENTS_ERROR:
+		case FETCH_EVENTS_ERROR:
 			return state.withMutations(val => {
 				val.set('error', action.error);
 				val.set('events', []);
@@ -238,38 +205,38 @@ const Events = (state=defaultState, action) => {
 
 		case POST_EVENT_SUCCESS:
 			return state.withMutations(val => {
+				val.set('error', null);
 				val.set('posted', true);
 				val.set('postSuccess', true);
-				val.set('error', '');
 			});
 
 		case POST_EVENT_ERROR:
 			return state.withMutations(val => {
+				val.set('error', action.error);
 				val.set('posted', true);
 				val.set('postSuccess', false);
-				val.set('error', action.error);
 			});
 
 		case UPDATE_EVENT_SUCCESS:
 			return state.withMutations(val => {
+				val.set('error', null);
 				val.set('updated', true);
 				val.set('updateSuccess', true);
-				val.set('error', '');
 			});
 
 		case UPDATE_EVENT_ERROR:
 			return state.withMutations(val => {
+				val.set('error', action.error);
 				val.set('updated', true);
 				val.set('updateSuccess', false);
-				val.set('error', action.error);
 			});
 
 		case POST_EVENT_DONE:
 		case UPDATE_EVENT_DONE:
 			return state.withMutations(val => {
+				val.set('error', null);
 				val.set('updated', false);
 				val.set('posted', false);
-				val.set('error', '');
 			});
 
 		default:
@@ -277,6 +244,8 @@ const Events = (state=defaultState, action) => {
 	}
 }
 
+const CreateEventDone = () => ({ type: POST_EVENT_DONE });
+const UpdateEventDone = () => ({ type: UPDATE_EVENT_DONE });
 export {
 	Events, GetCurrentEvents, PostNewEvent, UpdateEvent, CreateEventDone, UpdateEventDone
 }

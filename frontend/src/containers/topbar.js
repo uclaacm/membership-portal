@@ -12,7 +12,7 @@ class TopbarContainer extends React.Component {
 	}
 
 	render() {
-		return this.props.fetchSuccess && <Topbar isAdmin={this.props.isAdmin} />;
+		return this.props.fetchSuccess ? <Topbar isAdmin={this.props.isAdmin} /> : null;
 	}
 }
 

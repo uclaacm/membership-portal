@@ -4,7 +4,7 @@ import Immutable from 'immutable';
 import {Action} from 'reducers';
 
 /**********************************************
- ** Contants                                 **
+ ** Constants                                **
  *********************************************/
 
 const CHECK_IN_SUCCESS = Symbol('CHECK_IN_SUCCESS');

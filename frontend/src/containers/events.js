@@ -86,15 +86,11 @@ const mapDispatchToProps = (dispatch)=>{
 			dispatch(Action.ResetCheckIn());
 		},
 
-		getTime: (input) => {
-			dispatch(Action.TimeGet());
-		},
-
-		addEvent: (event)=>{
+		addEvent: event => {
 			dispatch(Action.PostNewEvent(event));
 		},
 
-		updateEvent: (event)=>{
+		updateEvent: event => {
 			dispatch(Action.UpdateEvent(event));
 		},
 
@@ -107,6 +103,5 @@ const mapDispatchToProps = (dispatch)=>{
 		},
 	};
 };
-
 
 export default connect(mapStateToProps, mapDispatchToProps)(Events);

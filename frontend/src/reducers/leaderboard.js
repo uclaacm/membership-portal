@@ -5,28 +5,40 @@ import Immutable from 'immutable';
 
 import { LogoutUser } from './auth';
 
-//////////////////
-//// ACTIONS /////
-//////////////////
+/**********************************************
+ ** Constants                                **
+ *********************************************/
 
 const FETCH_SUCCESS = Symbol('FETCH_SUCCESS');
 const FETCH_ERR = Symbol('FETCH_ERR');
 const INVALIDATE = Symbol('INVALIDATE');
 
-const fetchSuccess = leaderboard => {
-	return {
-		type: FETCH_SUCCESS,
-		time: Date.now(),
-		leaderboard,
-	};
-};
+const defaultState = Immutable.fromJS({
+	leaderboard: [],
+	error: null,
+	fetched: false,
+	fetchSuccess: false,
+	fetchTime: 0,
+});
 
-const fetchError = error => {
-	return {
-		type: FETCH_ERR,
-		error,
-	};
-};
+/**********************************************
+ ** Leaderboard States                       **
+ *********************************************/
+
+class State {
+	static FetchLeaderboard(error, leaderboard) {
+		return {
+			type        : error ? FETCH_ERR : FETCH_SUCCESS,
+			time        : error ? undefined : Date.now(),
+			leaderboard : error ? undefined : leaderboard,
+			error       : error || undefined
+		}
+	}
+}
+
+/**********************************************
+ ** Actions                                  **
+ *********************************************/
 
 const FetchLeaderboard = () => {
 	return async dispatch => {
@@ -41,57 +53,36 @@ const FetchLeaderboard = () => {
 			});
 
 			const status = await response.status;
-
-            if (status === 401 || status === 403) {
+      if (status === 401 || status === 403) {
 				return dispatch(LogoutUser());
 			}
 
 			const data = await response.json();
-
 			if (!data)
 				throw new Error("Empty response from server");
 			if (data.error)
 				throw new Error(data.error.message);
 
-			dispatch(fetchSuccess(data.leaderboard));
+			dispatch(State.FetchLeaderboard(null, data.leaderboard));
 		} catch(err){
-			dispatch(fetchError(err.message));
+			dispatch(State.FetchLeaderboard(err.message));
 		}
 	};
 };
 
-const InvalidateLeaderboard = ()=>{
-	return {
-		type: INVALIDATE,
-	};
-};
-
-
-///////////////
-/// STATE /////
-///////////////
-
-const defaultState = Immutable.fromJS({
-	leaderboard: [],
-	error: '',
-	fetched: false,
-	fetchSuccess: false,
-	fetchTime: 0,
-});
-
-//////////////////
-//// REDUCERS ////
-//////////////////
+/**********************************************
+ ** Leaderboard Reducer                      **
+ *********************************************/
 
 const Leaderboard = (state=defaultState, action) => {
 	switch(action.type) {
 		case FETCH_SUCCESS:
 			return state.withMutations(val => {
-				val.set('leaderboard', action.leaderboard);
-				val.set('error', '');
+				val.set('error', null);
 				val.set('fetched', true);
-				val.set('fetchSuccess', true);
 				val.set('fetchTime', action.time);
+				val.set('fetchSuccess', true);
+				val.set('leaderboard', action.leaderboard);
 			});
 
 		case FETCH_ERR:
@@ -106,12 +97,12 @@ const Leaderboard = (state=defaultState, action) => {
 				val.set('fetchTime', 0);
 			});
 
-
 		default:
 			return state;
 	}
 }
 
+const InvalidateLeaderboard = () => ({ type: INVALIDATE });
 export {
 	Leaderboard, FetchLeaderboard, InvalidateLeaderboard,
 }

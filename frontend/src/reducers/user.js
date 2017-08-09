@@ -5,7 +5,7 @@ import Config from 'config';
 import { LogoutUser } from './auth';
 
 /**********************************************
- ** Contants                                 **
+ ** Constants                                **
  *********************************************/
 
 const FETCH_USER = Symbol('FETCH_USER');
@@ -24,7 +24,7 @@ const defaultState = Immutable.fromJS({
 });
 
 /**********************************************
- ** Auth States                              **
+ ** User States                              **
  *********************************************/
 
 class State {

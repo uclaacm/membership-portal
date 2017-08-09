@@ -3,7 +3,7 @@ import Immutable from 'immutable';
 import {Action} from 'reducers';
 
 /**********************************************
- ** Contants                                 **
+ ** Constants                                **
  *********************************************/
 
 const REGISTER_SUCCESS = Symbol('REGISTER_SUCCESS');

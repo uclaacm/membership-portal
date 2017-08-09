@@ -1,11 +1,11 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import { replace } from 'react-router-redux';
 
 import {Action} from 'reducers';
 import LeaderboardComponent from 'components/Leaderboard';
 
-const REFRESH_INTERVAL = 30000; // ms to wait before allow refetching of leaderboard
+// ms to wait before allow refetching of leaderboard
+const REFRESH_INTERVAL = 30000;
 
 class Leaderboard extends React.Component {
   componentWillMount() {
@@ -29,9 +29,6 @@ class Leaderboard extends React.Component {
 const mapStateToProps = (state)=>{
   return {
     leaderboard: state.Leaderboard.get('leaderboard'),
-    error: state.Leaderboard.get('error'),
-    fetched: state.Leaderboard.get('fetched'),
-    fetchSuccess: state.Leaderboard.get('fetchSuccess'),
     fetchTime: state.Leaderboard.get('fetchTime'),
     authenticated: state.Auth.get('authenticated'),
     user: state.User.get('profile')
@@ -40,7 +37,7 @@ const mapStateToProps = (state)=>{
 
 const mapDispatchToProps = (dispatch)=>{
   return {
-    fetchLeaderboard: ()=>{
+    fetchLeaderboard: () => {
       dispatch(Action.FetchLeaderboard());
     },
   };
