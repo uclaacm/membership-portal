@@ -15,6 +15,7 @@ services:
       - "8080:8080"
     links:
       - postgres
+    restart: always
     environment:
       - PG_HOST=postgres
       - PG_PORT=5432
@@ -30,6 +31,7 @@ services:
     image: nkansal/static
     links:
       - backend
+    restart: always
     ports:
       - "80:80"
       - "443:443"

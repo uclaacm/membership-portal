@@ -29,16 +29,16 @@ run:
 logs:
 	sudo docker logs --follow $$(sudo docker ps | grep "nkansal/backend" | cut -d' ' -f1)
 
+nginx-logs:
+	sudo docker exec -it $$(sudo docker ps | grep "nkansal/static" | cut -d' ' -f1) tail -f /var/log/nginx/access.log
+
 gen-certs:
 	rm -rf certs-data
 	mkdir -p certs-data
 	sudo docker run -it --rm -v $(pwd)/certs:/etc/letsencrypt -v $(pwd)/certs-data:/data/letsencrypt deliverous/certbot certonly --webroot --webroot-path=/data/letsencrypt -d members.uclaacm.com
 
 stop:
-	-sudo docker stop $$(sudo docker ps | grep "nkansal/static" | cut -d' ' -f1)
-	-sudo docker stop $$(sudo docker ps | grep "nkansal/backend" | cut -d' ' -f1)
-	-sudo docker stop $$(sudo docker ps | grep "postgres" | cut -d' ' -f1)
-	-sudo docker stop $$(sudo docker ps | grep "redis" | cut -d' ' -f1)
+	sudo docker-compose down
 
 reset: stop
 	-sudo docker rm $$(sudo docker ps -aq)
