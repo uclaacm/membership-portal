@@ -23,7 +23,8 @@ export default class AdminEvents extends React.Component {
         };
 
         this.state = {
-            showAddEvent: false, isEditEvent: false,
+            showAddEvent: false,
+            isEditEvent: false,
             eventPlaceholder: this.emptyEvent
         };
 
@@ -39,6 +40,7 @@ export default class AdminEvents extends React.Component {
         console.log(e);
         this.setState(prev => ({
             showAddEvent: true,
+            isEditEvent: false,
             eventPlaceholder: this.emptyEvent
         }));
     }
@@ -54,8 +56,7 @@ export default class AdminEvents extends React.Component {
     //Handles when update/add event
     addEvent(event) {
         // call either this.props.addEvent(event) or this.props.updateEvent(event)
-        console.log(event);
-        if(event.uuid){
+        if (event.uuid){
             this.props.updateEvent(event);
         } else {
             this.props.addEvent(event);
@@ -114,7 +115,12 @@ export default class AdminEvents extends React.Component {
                     showing={this.props.updated || this.props.created}
                     success={this.props.updateSuccess || this.props.createSuccess}
                     message={bannerMessage} />
-                <AdminAddEvent event={this.state.eventPlaceholder} onClickAdd={this.addEvent} onClickCancel={this.cancelAddEventParent} isEdit={this.state.isEditEvent} showing={this.state.showAddEvent} />
+                <AdminAddEvent
+                    event={this.state.eventPlaceholder}
+                    onClickAdd={this.addEvent}
+                    onClickCancel={this.cancelAddEventParent}
+                    isEdit={this.state.isEditEvent}
+                    showing={this.state.showAddEvent} />
 
                 {!this.state.showAddEvent && <Button
                     className="checkin-button"
