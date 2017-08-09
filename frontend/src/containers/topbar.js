@@ -16,20 +16,12 @@ class TopbarContainer extends React.Component {
 	}
 }
 
-const mapStateToProps = (state) => {
-	if (state.User.get("fetchSuccess")) {
-		return {
-			fetchSuccess: true,
-			authenticated: true,
-			isAdmin: state.Auth.get('isAdmin')
-		}
-	} else {
-		return {
-			fetchSuccess: false,
-			authenticated: state.Auth.get("authenticated"),
-			isAdmin: state.Auth.get('isAdmin')
-		}
-	}
+const mapStateToProps = state => {
+	return {
+		fetchSuccess: state.User.get('fetchSuccess'),
+		authenticated: state.User.get('authenticated'),
+		isAdmin: state.User.get('isAdmin'),
+	};
 };
 
 const mapDispatchToProps = dispatch => {

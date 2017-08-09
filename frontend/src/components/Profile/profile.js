@@ -68,13 +68,7 @@ export default class Profile extends React.Component {
             newPassword: this.state.passwordNew,
             confPassword: this.state.passwordConf,
         };
-        // console.log(newProfile);
-        // this.setState(prev => {
-        //     let newState = Object.assign({}, prev);
-        //     newState.password = '';
-        //     newState.passwordNew = '';
-        //     newState.passwordConf = '';
-        // });
+        
         this.props.saveChanges(newProfile);
     }
 
@@ -120,9 +114,9 @@ export default class Profile extends React.Component {
         this.setState({
             profile: Object.assign({}, nextProps.profile),
             originalProfile: Object.assign({}, nextProps.profile),
-            password: '',
-            passwordNew: '',
-            passwordConf: '',
+            password: nextProps.updateSuccess ? '' : this.state.password,
+            passwordNew: nextProps.updateSuccess ? '' : this.state.passwordNew,
+            passwordConf: nextProps.updateSuccess ? '' : this.state.passwordConf,
             showChangePassword: this.state.showChangePassword && !nextProps.updateSuccess
         });
 

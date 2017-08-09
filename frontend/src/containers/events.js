@@ -78,7 +78,7 @@ const mapDispatchToProps = (dispatch)=>{
 			dispatch(Action.GetCurrentEvents());
 		},
 
-		checkIn: (id) => {
+		checkIn: id => {
 			dispatch(Action.CheckInto(id));
 		},
 

@@ -18,7 +18,7 @@ const defaultState = Immutable.fromJS({
 });
 
 /**********************************************
- ** Registrations States                     **
+ ** Registration States                      **
  *********************************************/
 
 class State {
@@ -62,6 +62,10 @@ const RegisterUser = user => {
 		}
 	};
 };
+
+/**********************************************
+ ** Registration Reducer                     **
+ *********************************************/
 
 const Registration = (state=defaultState, action) => {
 	switch (action.type) {
