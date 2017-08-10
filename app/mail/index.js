@@ -22,10 +22,10 @@ const sendPasswordReset = (email, firstName, code) => {
     to: email,
     from: 'UCLA ACM <membership@mail.uclaacm.com>',
     subject: 'ACM Membership Password Reset',
-    text: passwordResetTemplate({ 
+    html: passwordResetTemplate({ 
       email,
       firstName, 
-      code: `https://members.uclaacm.com/resetPassword/${code}`,
+      link: `https://members.uclaacm.com/resetpassword/${code}`,
     }),
   };
   return sendMessage(data);
