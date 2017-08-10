@@ -1,5 +1,4 @@
 import React from 'react';
-import Config from 'config';
 import Topbar from 'containers/topbar';
 import Sidebar from 'containers/sidebar';
 import Resources from './resources';

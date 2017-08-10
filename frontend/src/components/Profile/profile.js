@@ -1,5 +1,5 @@
 import React from 'react';
-import Config from 'config';
+import Utils from 'utils';
 import Button from 'components/Button';
 import OverlayPopup from 'components/OverlayPopup';
 import BannerMessage from 'components/BannerMessage';
@@ -127,18 +127,7 @@ export default class Profile extends React.Component {
         if (this.props.error)
             return <div className="profile-wrapper"><h1>{this.props.error}</h1></div>;
 
-        let currLevel = Config.levels[0];
-        let nextLevel = Config.levels[1];
-        let currLevelNumber = 0;
-        for (let i = 0; i < Config.levels.length; i++) {
-            if (Config.levels[i].startsAt > this.props.profile.points) {
-                currLevel = Config.levels[i - 1];
-                currLevelNumber = i - 1;
-                nextLevel = Config.levels[i];
-                break;
-            }
-        }
-        
+        const { currLevel, nextLevel } = Utils.getLevel(this.props.profile.points);
         return (
             <div>
                 <BannerMessage

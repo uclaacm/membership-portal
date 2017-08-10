@@ -40,6 +40,8 @@ module.exports = {
     }),
     new webpack.optimize.UglifyJsPlugin(),
     new webpack.optimize.AggressiveMergingPlugin(),
+    // remove useless locales that moment automatically bundles
+    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new ExtractTextPlugin('build/[name].css'),
   ],
   watchOptions: {

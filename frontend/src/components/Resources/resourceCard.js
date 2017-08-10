@@ -1,5 +1,4 @@
 import React from 'react';
-import Config from 'config';
 
 export default class ResourceCard extends React.Component {
     render() {

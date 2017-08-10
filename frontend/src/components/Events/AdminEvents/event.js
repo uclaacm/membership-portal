@@ -1,5 +1,4 @@
 import React from 'react'
-import DOMPurify from 'dompurify'
 import Button from 'components/Button/index'
 
 export default class AdminEventCard extends React.Component {

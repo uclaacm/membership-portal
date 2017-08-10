@@ -1,5 +1,4 @@
 import React from 'react';
-import Config from 'config';
 
 export default class OfficerTile extends React.Component {
     render() {

@@ -1,5 +1,5 @@
 import React from 'react'
-import DOMPurify from 'dompurify'
+import {sanitize} from 'dompurify'
 import Button from 'components/Button/index'
 
 export default class EventCard extends React.Component {
@@ -37,7 +37,7 @@ export default class EventCard extends React.Component {
                     <h2>{event.title}</h2>
                     <h3>{event.committee}</h3>
                     <div className="midcontent">
-                        <div className="description" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(event.description) }}></div>
+                        <div className="description" dangerouslySetInnerHTML={{ __html: sanitize(event.description) }}></div>
                         <p><a target="_BLANK" href={event.eventLink}>Go to the event page</a></p>
                     </div>
                     <div className="subcontent">

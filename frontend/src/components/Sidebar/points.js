@@ -1,21 +1,10 @@
 import React from 'react'
-import Config from 'config'
+import Utils from 'utils';
 import PointsBar from './pointsBar'
 
 export default class Points extends React.Component {
     render () {
-        let currLevel = null;
-        let nextLevel = null;
-        let currLevelNumber = 0;
-        for (let i = 0; i < Config.levels.length; i++) {
-            if (Config.levels[i].startsAt > this.props.points) {
-                currLevel = Config.levels[i - 1];
-                currLevelNumber = i - 1;
-                nextLevel = Config.levels[i];
-                break;
-            }
-        }
-
+        const { currLevel, nextLevel, currLevelNumber } = Utils.getLevel(this.props.points);
         return (
             <div className="points-component">
                 <div className="points-wrapper">

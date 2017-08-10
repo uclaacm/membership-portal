@@ -1,5 +1,5 @@
 import React from 'react';
-import Config from 'config';
+import Utils from 'utils';
 import TopUser from './topUser';
 
 export default class Leaderboard extends React.Component {
@@ -9,14 +9,7 @@ export default class Leaderboard extends React.Component {
     }
 
     rankForUser(user) {
-        let currentLevel = Config.levels[0];
-        for (let level of Config.levels) {
-            if (level.startsAt > user.points)
-                break;
-            currentLevel = level;
-        }
-
-        return currentLevel.rank;
+        return Utils.getLevel(user.points).currLevel.rank;
     }
 
     render() {

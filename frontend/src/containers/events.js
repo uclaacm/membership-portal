@@ -1,9 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
 
-import moment from 'moment';
-
-import Config from 'config';
 import {Action} from 'reducers';
 import Topbar from 'containers/topbar';
 import Sidebar from 'containers/sidebar';
