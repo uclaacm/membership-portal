@@ -28,7 +28,7 @@ COPY src/ /var/www/membership/working/src/
 COPY .babelrc *.js /var/www/membership/working/
 
 # build and copy files to server root
-RUN npm run build && \
+RUN make build && \
     cp -rv pages/* ../static/ && \
     cp -rv lib/build/* ../static/build/
 
