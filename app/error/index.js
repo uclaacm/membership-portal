@@ -46,6 +46,12 @@ class NotFound extends HTTPError {
 	}
 }
 
+class Unprocessable extends HTTPError {
+	constructor(message) {
+		super(422, message || "Unprocessable request");
+	}
+}
+
 class TooManyRequests extends HTTPError {
 	constructor(message) {
 		super(429, message);

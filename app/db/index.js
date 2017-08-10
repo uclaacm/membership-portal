@@ -28,7 +28,7 @@ let setup = (force) => {
 				year: 4,
 				major: 'Computer Science'
 			}
-        });
+    });
 	});
 };
 
