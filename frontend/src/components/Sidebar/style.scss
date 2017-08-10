@@ -29,9 +29,15 @@
         position: absolute;
         // top: 15px;
         // left: 15px;
-        padding: 15px;
+        padding: 20px;
+        padding-top: 15px;
         font-size: 1.4em;
         color: white;
+        transform: scaleX(-1);
+        -moz-transform: scaleX(-1);
+        -o-transform: scaleX(-1);
+        -webkit-transform: scaleX(-1);
+        -ms-filter: "FlipH";
 
         &:hover {
             opacity: 0.5;
@@ -89,7 +95,7 @@
                 color: $secondaryblue;
             }
         }
-        
+
         .navigation-tile {
             background: $secondaryblue;
             width: 120.5px;
