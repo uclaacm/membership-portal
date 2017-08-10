@@ -17,7 +17,7 @@ module.exports = {
 		user: process.env.PG_USER,
 	},
 	mailgun: {
-		apiKey: 'key-3efc7ab8638e9cd4b5d109ed75c03608',
+		apiKey: process.env.MAILGUN_KEY,
 		domain: 'mail.uclaacm.com',
 	},
 	session: {

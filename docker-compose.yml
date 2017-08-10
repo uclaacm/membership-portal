@@ -16,15 +16,8 @@ services:
     links:
       - postgres
     restart: always
-    environment:
-      - PG_HOST=postgres
-      - PG_PORT=5432
-      - PG_DATABASE=postgres
-      - PG_USER=postgres
-      - PORT=8080
-      - HOST=localhost
-      - NODE_ENV=production
-      - NUM_WORKERS=2
+    env_file:
+      - node.env
 
   nginx:
     build: ./static

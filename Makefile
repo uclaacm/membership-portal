@@ -9,9 +9,22 @@ setup:
 	if [ ! -f app/config/SESSION_SECRET ]; then \
 		cat /dev/urandom | od -N 32 -t x4 -An | tr -d '\n ' > app/config/SESSION_SECRET; \
 	fi
+
+certs:
 	gpg certs.tar.gz.gpg
 	tar -xvzf certs.tar.gz
 	rm -rf certs.tar.gz
+
+gen-certs:
+	rm -rf certs-data
+	mkdir -p certs-data
+	sudo docker run -it --rm -v $(pwd)/certs:/etc/letsencrypt -v $(pwd)/certs-data:/data/letsencrypt deliverous/certbot certonly --webroot --webroot-path=/data/letsencrypt -d members.uclaacm.com
+
+env:
+	gpg node.env.gpg
+
+gen-env:
+	gpg -c node.env
 
 update:
 	git pull origin master
@@ -32,10 +45,8 @@ logs:
 nginx-logs:
 	sudo docker exec -it $$(sudo docker ps | grep "nkansal/static" | cut -d' ' -f1) tail -f /var/log/nginx/access.log
 
-gen-certs:
-	rm -rf certs-data
-	mkdir -p certs-data
-	sudo docker run -it --rm -v $(pwd)/certs:/etc/letsencrypt -v $(pwd)/certs-data:/data/letsencrypt deliverous/certbot certonly --webroot --webroot-path=/data/letsencrypt -d members.uclaacm.com
+psql:
+	sudo docker exec -it $$(sudo docker ps | grep "postgres" | cut -d' ' -f1) psql -U postgres
 
 stop:
 	sudo docker-compose down
