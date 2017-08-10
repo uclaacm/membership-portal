@@ -233,5 +233,9 @@ module.exports = (Sequelize, db) => {
 		return this.getDataValue('state') === 'BLOCKED';
 	};
 
+	User.Instance.prototype.requestedPasswordReset = function() {
+		return this.getDataValue('state') === 'PASSWORD_RESET';
+	}
+
 	return User;
 };

@@ -3,11 +3,11 @@ const jwt = require('jsonwebtoken');
 const config = require('../../../config');
 const error = require('../../../error');
 const log = require('../../../logger');
-let User = require('../../../db').User;
+const Mail = require('../../../mail');
+const { User } = require('../../../db');
 let router = express.Router();
 
-const dayseconds = 86400;
-const dayweek = dayseconds * 6;
+const TOKEN_EXPIRES = 86400; // 1 day in seconds
 
 const authenticated = (req, res, next) => {
 	const authHeader = req.get('Authorization');
@@ -51,9 +51,9 @@ router.post("/login", (req, res, next) => {
 				throw new error.UserError('Invalid email or password');
 		}).then(() => new Promise((resolve, reject) => {
 			jwt.sign({
-				uuid     : user.getDataValue('uuid'),
-				admin    : user.isAdmin()
-			}, config.session.secret, {expiresIn: dayseconds}, (err, token) => {
+				uuid  : user.getDataValue('uuid'),
+				admin : user.isAdmin()
+			}, config.session.secret, { expiresIn: TOKEN_EXPIRES }, (err, token) => {
 				return err ? reject(err) : resolve(token);
 			});
 		}));
@@ -86,11 +86,53 @@ router.get('/activate/:accessCode', (req, res, next) => {
 		return next(new error.BadRequest('Invalid access code'));
 	User.findByAccessCode(req.params.accessCode).then(user => {
 		if (!user)
-			throw new error.BadRequest('Invalid access code or no such user');
+			throw new error.BadRequest('Invalid access code');
 		if (!user.isPending())
 			throw new error.BadRequest('Your account does not need to be activated');
 		return user.update({ state: 'ACTIVE' });
-	}).then(user => {
+	}).then(() => {
+		res.json({ error: null });
+	}).catch(next);
+});
+
+router.get('/resetPassword/:email', (req, res, next) => {
+	User.findByEmail(req.params.email).then(user => {
+		if (!user)
+			throw new error.NotFound('Invalid user');
+		if (user.isBlocked())
+			throw new error.Forbidden('Your account has been blocked');
+		if (user.isPending())
+			throw new error.Unprocessable('You must activate your account first');
+
+		return User.generateAccessCode().then(code => {
+			user.accessCode = code;
+			user.state = 'PASSWORD_RESET';
+			return Mail.sendPasswordReset(user.email, user.firstName, code);	
+		}).then(user.save);
+	}).then(() => {
+		res.json({ error: null });
+	}).catch(next);
+});
+
+router.post('/resetPassword/:accessCode', (req, res, next) => {
+	if (!req.params.accessCode)
+		return next(new error.BadRequest('Invalid access code'));
+	if (!req.body.user || !req.body.user.newPassword || !req.body.user.confPassword)
+		return next(new error.BadRequest('Invalid user data'));
+	if (req.body.user.newPassword !== req.body.user.confPassword)
+			return next(new error.UserError('Passwords do not match'));
+	if (req.body.user.newPassword.length < 10)
+			return next(new error.UserError('New password must be at least 10 characters'));
+
+	User.findByAccessCode(req.params.accessCode).then(user => {
+		if (!user)
+			throw new error.BadRequest('Invalid access code');
+		return User.generateHash(req.body.user.newPassword).then(hash => {
+			user.hash = hash;
+			user.state = 'ACTIVE';
+			return user.save();
+		});
+	}).then(() => {
 		res.json({ error: null });
 	}).catch(next);
 });

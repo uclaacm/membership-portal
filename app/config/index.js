@@ -1,7 +1,5 @@
 const fs = require('fs');
-
 const env = process.env.NODE_ENV || "development";
-const keys = require('./keys');
 
 module.exports = {
 	isProduction: (env === "production"),
@@ -16,15 +14,16 @@ module.exports = {
 		host: process.env.PG_HOST,
 		port: process.env.PG_PORT,
 		db: process.env.PG_DATABASE,
-		user: process.env.PG_USER
+		user: process.env.PG_USER,
+	},
+	mailgun: {
+		apiKey: 'key-3efc7ab8638e9cd4b5d109ed75c03608',
+		domain: 'mail.uclaacm.com',
 	},
 	session: {
-		secret: fs.readFileSync('app/config/SESSION_SECRET').toString().trim()
-	},
-	cache: {
-		keys: keys
+		secret: fs.readFileSync('app/config/SESSION_SECRET').toString().trim(),
 	},
 	logging: {
-		level: "debug"
+		level: "debug",
 	}
 };
