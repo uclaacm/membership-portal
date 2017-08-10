@@ -2,10 +2,8 @@
 # Alpine is super light
 FROM alpine:3.5
 
-# Download and install nginx
-# RUN echo "deb http://archive.ubuntu.com/ubuntu/ raring main universe" >> /etc/apt/sources.list
-RUN apk update
-RUN apk add -U curl nginx bash python make g++ nodejs
+# Download and install packages
+RUN apk add -U nginx python make g++ nodejs
 
 # Create directories
 #   /working is the build directory
