@@ -108,7 +108,7 @@ router.get('/resetPassword/:email', (req, res, next) => {
 			user.accessCode = code;
 			user.state = 'PASSWORD_RESET';
 			return Mail.sendPasswordReset(user.email, user.firstName, code);	
-		}).then(user.save);
+		}).then(() => user.save());
 	}).then(() => {
 		res.json({ error: null });
 	}).catch(next);
@@ -130,6 +130,7 @@ router.post('/resetPassword/:accessCode', (req, res, next) => {
 		return User.generateHash(req.body.user.newPassword).then(hash => {
 			user.hash = hash;
 			user.state = 'ACTIVE';
+			user.accessCode = '';
 			return user.save();
 		});
 	}).then(() => {
