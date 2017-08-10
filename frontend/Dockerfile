@@ -25,7 +25,7 @@ RUN /usr/bin/node --max_semi_space_size=8 \
 # Copy the source files
 COPY pages/ /var/www/membership/working/pages/
 COPY src/ /var/www/membership/working/src/
-COPY .babelrc *.js /var/www/membership/working/
+COPY .babelrc *.js Makefile /var/www/membership/working/
 
 # build and copy files to server root
 RUN make build && \
