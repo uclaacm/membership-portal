@@ -32,9 +32,14 @@ module.exports = {
     modules: [path.resolve(__dirname, "src"), "node_modules"],
   },
   plugins: [
-      new webpack.DefinePlugin({
-          'process.env.WEBPACK': JSON.stringify(process.env.WEBPACK || '')
-      }),
+    new webpack.DefinePlugin({
+      'process.env': {
+        'NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+        'WEBPACK': JSON.stringify(process.env.WEBPACK || ''),
+      }
+    }),
+    new webpack.optimize.UglifyJsPlugin(),
+    new webpack.optimize.AggressiveMergingPlugin(),
     new ExtractTextPlugin('build/[name].css'),
   ],
   watchOptions: {

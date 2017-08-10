@@ -1,7 +1,7 @@
 all: build
 
 build:
-	npm run build
+	NODE_ENV=production npm run build
 
 dev:
 	WEBPACK=true npm run build-dev
