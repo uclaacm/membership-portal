@@ -60,8 +60,8 @@ const FetchUser = () => {
 			});
 
 			const status = await response.status;
-      if (status === 401 || status === 403) {
-				dispatch(LogoutUser());
+			if (status === 401 || status === 403) {
+				return dispatch(LogoutUser());
 			}
 
 			const data = await response.json();
@@ -91,7 +91,7 @@ const UpdateUser = user => {
 			});
 
 			const status = await response.status;
-      if (status === 401 || status === 403) {
+			if (status === 401 || status === 403) {
 				return dispatch(LogoutUser());
 			}
 			

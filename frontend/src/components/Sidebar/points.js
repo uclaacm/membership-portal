@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import Utils from 'utils';
 import PointsBar from './pointsBar'
 

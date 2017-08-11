@@ -1,4 +1,5 @@
 import React from 'react';
+import Utils from 'utils';
 
 export default class TopUser extends React.Component {
     constructor(props) {

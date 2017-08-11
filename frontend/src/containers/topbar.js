@@ -20,7 +20,7 @@ const mapStateToProps = state => {
 	return {
 		fetchSuccess: state.User.get('fetchSuccess'),
 		authenticated: state.User.get('authenticated'),
-		isAdmin: state.User.get('isAdmin'),
+		isAdmin: state.Auth.get('isAdmin'),
 	};
 };
 
