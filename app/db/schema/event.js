@@ -138,12 +138,12 @@ module.exports = (Sequelize, db) => {
 				fields: ['uuid']
 			},
 			{
-				name: 'start_date_index',
+				name: 'event_start_date_index',
 				method: 'BTREE',
 				fields: ['startDate', { attribute: 'startDate', order: 'DESC' }]
 			},
 			{
-				name: 'end_date_index',
+				name: 'event_end_date_index',
 				method: 'BTREE',
 				fields: ['endDate', { attribute: 'endDate', order: 'DESC' }]
 			}
