@@ -1,5 +1,5 @@
-let applyDelta = (delta, target) => {
-	for (let key in delta) {
+const applyDelta = (delta, target) => {
+	for (const key in delta) {
 		if (delta[key].constructor === Object)
 			applyDelta(delta[key], target[key])
 		else {
@@ -12,7 +12,7 @@ let applyDelta = (delta, target) => {
 	}
 };
 
-let update = function(from, to) {
+const update = function(from, to) {
 	if (!from)
 		return;
 	applyDelta(from, to);

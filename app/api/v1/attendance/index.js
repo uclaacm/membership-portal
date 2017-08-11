@@ -1,9 +1,7 @@
 const express = require('express');
-let router = express.Router();
-
 const error = require('../../../error');
-const Event = require('../../../db').Event;
-const Attendance = require('../../../db').Attendance;
+const { Event, Activity, Attendance } = require('../../../db');
+const router = express.Router();
 
 router.route('/:uuid?')
 .get((req, res, next) => {
@@ -34,6 +32,7 @@ router.route('/attend')
 
 			return Promise.all([
 				Attendance.attendEvent(req.user.uuid, event.uuid),
+				Activity.attendedEvent(req.user.uuid, event.title, event.attendancePoints),
 				req.user.addPoints(event.attendancePoints)
 			]);
 		}).then(() => {

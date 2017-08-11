@@ -4,17 +4,18 @@ const config = require('../config');
 const error = require('../error');
 const devSetup = require('./dev-setup');
 
-let db = new Sequelize(config.database.db, config.database.user, config.database.password, {
+const db = new Sequelize(config.database.db, config.database.user, config.database.password, {
 	dialect: 'postgres',
 	host: config.database.host,
 	logging: config.isDevelopment ? logger.debug : false
 });
 
-let User = require('./schema/user')(Sequelize, db);
-let Event = require('./schema/event')(Sequelize, db);
-let Attendance = require('./schema/attendance')(Sequelize, db);
+const User = require('./schema/user')(Sequelize, db);
+const Event = require('./schema/event')(Sequelize, db);
+const Activity = require('./schema/activity')(Sequelize, db);
+const Attendance = require('./schema/attendance')(Sequelize, db);
 
-let setup = (force) => {
+const setup = (force) => {
 	return (force ? db.sync({ force: true }).then(() => devSetup(User, Event, Attendance)) : db.sync()).then(() => {
 		User.findOrCreate({
 			where: { email: 'admin@ucla.edu'},
@@ -32,7 +33,7 @@ let setup = (force) => {
 	});
 };
 
-let errorHandler = (err, req, res, next) => {
+const errorHandler = (err, req, res, next) => {
 	if (!err || !(err instanceof Sequelize.Error))
 		return next(err);
 	if (err instanceof Sequelize.ValidationError) {
@@ -42,4 +43,4 @@ let errorHandler = (err, req, res, next) => {
 	return next(new error.HTTPError(err.name, 500, err.message));
 };
 
-module.exports = { User, Event, Attendance, setup, errorHandler }; 
+module.exports = { User, Event, Activity, Attendance, setup, errorHandler }; 

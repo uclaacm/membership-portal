@@ -1,5 +1,5 @@
 module.exports = (Sequelize, db) => {
-	let Attendance = db.define('attendance', {
+	const Attendance = db.define('attendance', {
 		id: {
 			type: Sequelize.INTEGER,
 			autoIncrement: true,
@@ -57,7 +57,17 @@ module.exports = (Sequelize, db) => {
 				name: 'date_btree_index',
 				method: 'BTREE',
 				fields: ['date', { attribute: 'date', order: 'ASC' }]
-			}
+			},
+      {
+        name: 'user_btree_index',
+        method: 'BTREE',
+        fields: ['user', { attribute: 'user', order: 'ASC' }]
+      },
+      {
+        name: 'event_btree_index',
+        method: 'BTREE',
+        fields: ['event', { attribute: 'event', order: 'ASC' }]
+      },
 		]
 	});
 

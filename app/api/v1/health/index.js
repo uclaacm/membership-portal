@@ -2,7 +2,7 @@ const express = require('express');
 const config = require('../../../config');
 const error = require('../../../error');
 const db = require('../../../db');
-let router = express.Router();
+const router = express.Router();
 
 router.get('/', (req, res, next) => {
 	res.json({

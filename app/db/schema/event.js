@@ -1,7 +1,7 @@
 const _ = require('underscore');
 
 module.exports = (Sequelize, db) => {
-	let Event = db.define('event', {
+	const Event = db.define('event', {
 		id: {
 			type: Sequelize.INTEGER,
 			autoIncrement: true,
@@ -23,13 +23,7 @@ module.exports = (Sequelize, db) => {
 		},
 		committee: {
 			type: Sequelize.STRING,
-			defaultValue: "ACM"
-			// validate: {
-			// 	isIn: {
-			// 		args: [["ICPC","Hack","VRCG","AI","ACM-W"]],
-			// 		msg: "If specified, the committee must be one of ['ICPC','Hack','VRCG','AI','ACM-W']"
-			// 	}
-			// }
+			defaultValue: "ACM",
 		},
 		thumb: {
 			type: Sequelize.STRING,

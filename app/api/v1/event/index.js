@@ -1,13 +1,12 @@
 const express = require('express');
-let router = express.Router();
-
 const error = require('../../../error');
-const Event = require('../../../db').Event;
+const { Event } = require('../../../db');
+const router = express.Router();
 
 router.route('/past')
 .get((req, res, next) => {
-	let offset = parseInt(req.query.offset);
-	let limit = parseInt(req.query.limit);
+	const offset = parseInt(req.query.offset);
+	const limit = parseInt(req.query.limit);
 	Event.getPastEvents(offset, limit).then(events => {
 		res.json({ error: null, events: events.map(e => e.getPublic()) });
 	}).catch(next);
@@ -15,8 +14,8 @@ router.route('/past')
 
 router.route('/future')
 .get((req, res, next) => {
-	let offset = parseInt(req.query.offset);
-	let limit = parseInt(req.query.limit);
+	const offset = parseInt(req.query.offset);
+	const limit = parseInt(req.query.limit);
 	Event.getFutureEvents(offset, limit).then(events => {
 		res.json({ error: null, events: events.map(e => e.getPublic()) });
 	}).catch(next);
@@ -25,8 +24,8 @@ router.route('/future')
 router.route('/:uuid?')
 .get((req, res, next) => {
 	if (!req.params.uuid || !req.params.uuid.trim()) {
-		let offset = parseInt(req.query.offset);
-		let limit = parseInt(req.query.limit);
+		const offset = parseInt(req.query.offset);
+		const limit = parseInt(req.query.limit);
 		Event.getAll(offset, limit).then(events => {
 			res.json({ error: null, events: events.map(e => e.getPublic(req.user.isAdmin())) });
 		}).catch(next);
