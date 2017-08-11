@@ -125,7 +125,7 @@ module.exports = (Sequelize, db) => {
 				fields: ['accessCode']
 			},
 			{
-				name: 'points_btree_index',
+				name: 'user_points_btree_index',
 				method: 'BTREE',
 				fields: ['points', { attribute: 'points', order: 'DESC' }]
 			}

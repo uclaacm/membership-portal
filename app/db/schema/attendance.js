@@ -54,17 +54,17 @@ module.exports = (Sequelize, db) => {
 				fields: ['event']
 			},
 			{
-				name: 'date_btree_index',
+				name: 'attendance_date_btree_index',
 				method: 'BTREE',
 				fields: ['date', { attribute: 'date', order: 'ASC' }]
 			},
       {
-        name: 'user_btree_index',
+        name: 'attendance_user_btree_index',
         method: 'BTREE',
         fields: ['user', { attribute: 'user', order: 'ASC' }]
       },
       {
-        name: 'event_btree_index',
+        name: 'attendance_event_btree_index',
         method: 'BTREE',
         fields: ['event', { attribute: 'event', order: 'ASC' }]
       },
