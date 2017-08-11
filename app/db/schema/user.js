@@ -4,7 +4,7 @@ const crypto = require('crypto');
 const HASH_ROUNDS = 10;
 
 module.exports = (Sequelize, db) => {
-	let User = db.define('user', {
+	const User = db.define('user', {
 		id: {
 			type: Sequelize.INTEGER,
 			autoIncrement: true,
