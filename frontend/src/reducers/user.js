@@ -19,7 +19,7 @@ const defaultState = Immutable.fromJS({
 	profile: {},
 	updated: false,
 	updateSuccess: false,
-	fetchsuccess: false,
+	fetchSuccess: false,
 	error: null,
 });
 
