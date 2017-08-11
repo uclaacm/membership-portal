@@ -12,13 +12,13 @@ router.route('/')
         return next(new error.BadRequest());
 
     const updatedInfo = {};
-    if (req.body.user.firstName && req.body.user.firstName.length > 0)
+    if (req.body.user.firstName && req.body.user.firstName.length > 0 && req.body.user.firstName !== req.user.firstName)
         updatedInfo.firstName = req.body.user.firstName;
-    if (req.body.user.lastName && req.body.user.lastName.length > 0)
+    if (req.body.user.lastName && req.body.user.lastName.length > 0 && req.body.user.lastName !== req.user.lastName)
         updatedInfo.lastName = req.body.user.lastName;
-    if (req.body.user.major && req.body.user.major.length > 0)
+    if (req.body.user.major && req.body.user.major.length > 0 && req.body.user.major !== req.user.major)
         updatedInfo.major = req.body.user.major;
-    if (req.body.user.year && parseInt(req.body.user.year) > 0)
+    if (req.body.user.year && parseInt(req.body.user.year) > 0 && req.body.user.year !== req.user.year)
         updatedInfo.year = parseInt(req.body.user.year);
 
     if (req.body.user.newPassword && req.body.user.confPassword) {
