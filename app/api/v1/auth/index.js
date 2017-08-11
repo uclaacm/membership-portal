@@ -4,7 +4,7 @@ const config = require('../../../config');
 const error = require('../../../error');
 const log = require('../../../logger');
 const Mail = require('../../../mail');
-const { User } = require('../../../db');
+const { User, Activity } = require('../../../db');
 const router = express.Router();
 
 const TOKEN_EXPIRES = 86400; // 1 day in seconds
