@@ -69,6 +69,7 @@ module.exports = (Sequelize, db) => {
     return this.create({ 
       user,
       type: 'ACCOUNT_CREATE',
+      public: true,
     });
   };
 
