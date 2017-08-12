@@ -38,6 +38,7 @@ router.post("/login", (req, res, next) => {
 	if(!req.body.password || req.body.password.length < 1)
 		return next(new error.BadRequest('Password must be provided'));
 
+	let userInfo = null;
 	User.findByEmail(req.body.email.toLowerCase()).then((user)=>{
 		if (!user)
 			throw new error.UserError('Invalid email or password');
@@ -49,6 +50,7 @@ router.post("/login", (req, res, next) => {
 		return user.verifyPassword(req.body.password).then(verified => {
 			if (!verified)
 				throw new error.UserError('Invalid email or password');
+			userInfo = user;
 		}).then(() => new Promise((resolve, reject) => {
 			jwt.sign({
 				uuid  : user.getDataValue('uuid'),
@@ -59,6 +61,7 @@ router.post("/login", (req, res, next) => {
 		}));
 	}).then(token => {
 		res.json({ error: null, token: token });
+		Activity.accountLoggedIn(userInfo.uuid);
 	}).catch(next);
 });
 
