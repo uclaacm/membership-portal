@@ -4,7 +4,7 @@ const crypto = require('crypto');
 const HASH_ROUNDS = 10;
 
 module.exports = (Sequelize, db) => {
-	let User = db.define('user', {
+	const User = db.define('user', {
 		id: {
 			type: Sequelize.INTEGER,
 			autoIncrement: true,
@@ -125,7 +125,7 @@ module.exports = (Sequelize, db) => {
 				fields: ['accessCode']
 			},
 			{
-				name: 'points_btree_index',
+				name: 'user_points_btree_index',
 				method: 'BTREE',
 				fields: ['points', { attribute: 'points', order: 'DESC' }]
 			}

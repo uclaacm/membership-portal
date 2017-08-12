@@ -4,8 +4,8 @@ const config = require('../../../config');
 const error = require('../../../error');
 const log = require('../../../logger');
 const Mail = require('../../../mail');
-const { User } = require('../../../db');
-let router = express.Router();
+const { User, Activity } = require('../../../db');
+const router = express.Router();
 
 const TOKEN_EXPIRES = 86400; // 1 day in seconds
 
@@ -81,6 +81,7 @@ router.post("/register", (req, res, next) => {
 		return User.create(userModel);
 	}).then(user => {
 		res.json({ error: null, user: user.getPublicProfile() });
+		Activity.accountCreated(user.uuid);
 	}).catch(next);
 });
 
@@ -93,8 +94,9 @@ router.get('/activate/:accessCode', (req, res, next) => {
 		if (!user.isPending())
 			throw new error.BadRequest('Your account does not need to be activated');
 		return user.update({ state: 'ACTIVE' });
-	}).then(() => {
+	}).then(user => {
 		res.json({ error: null });
+		Activity.accountActivated(user.uuid);
 	}).catch(next);
 });
 
@@ -112,8 +114,9 @@ router.get('/resetPassword/:email', (req, res, next) => {
 			user.state = 'PASSWORD_RESET';
 			return Mail.sendPasswordReset(user.email, user.firstName, code);	
 		}).then(() => user.save());
-	}).then(() => {
+	}).then(user => {
 		res.json({ error: null });
+		Activity.accountRequestedResetPassword(user.uuid);
 	}).catch(next);
 });
 
@@ -136,8 +139,9 @@ router.post('/resetPassword/:accessCode', (req, res, next) => {
 			user.accessCode = '';
 			return user.save();
 		});
-	}).then(() => {
+	}).then(user => {
 		res.json({ error: null });
+		Activity.accountResetPassword(user.uuid);
 	}).catch(next);
 });
 
