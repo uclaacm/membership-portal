@@ -17,7 +17,8 @@ export default class ResetPassCard extends React.Component {
 
 	submitForm(e) {
 		e.preventDefault();
-		this.props.onSubmit(this.email);
+		if (!this.props.disableForm)
+			this.props.onSubmit(this.email);
 	}
 
 	render() {
@@ -30,7 +31,7 @@ export default class ResetPassCard extends React.Component {
 							<p className="text">Enter your email address <span className="info">(@ucla.edu)</span></p>
 							<input type="text" className="input-large" name="email" onChange={this.handleChange}></input>
 						</div>
-						<Button className="btn" style="blue" text="Reset Password" onClick={this.submitForm}/>
+						<Button className="btn" loading={this.props.disableForm} style="blue" text="Reset Password" onClick={this.submitForm}/>
 					</form>
 				</div>
 			</div>

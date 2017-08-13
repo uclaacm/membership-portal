@@ -23,8 +23,7 @@ class Login extends React.Component {
   }
 
   render() {
-    return <LoginComponent onsubmit={this.handleLogin.bind(this)}
-                           error={this.props.error} />;
+    return <LoginComponent onsubmit={this.handleLogin.bind(this)} error={this.props.error} />;
   }
 }
 
@@ -32,6 +31,7 @@ const mapStateToProps = state => {
   return {
     error: state.Auth.get('error'),
     isAdmin: state.Auth.get('isAdmin'),
+    timestamp: state.Auth.get('timestamp'),
     authenticated: state.Auth.get('authenticated'),
   };
 };

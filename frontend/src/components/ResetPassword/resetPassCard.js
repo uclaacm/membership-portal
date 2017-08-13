@@ -21,7 +21,8 @@ export default class ResetPassCard extends React.Component {
 
 	submitForm(e) {
 		e.preventDefault();
-		this.props.onSubmit(this.accessCode, this.user);
+		if (!this.props.disableForm)
+			this.props.onSubmit(this.accessCode, this.user);
 	}
 
 	render() {
@@ -38,7 +39,7 @@ export default class ResetPassCard extends React.Component {
 							<p className="text">Confirm Password <span className="info">(at least 10 characters)</span></p>
 							<input type="password" className="input-large" name="confPassword" onChange={this.handleChange}></input>
 						</div>
-						<Button className="btn" style="blue" text="Reset Password" onClick={this.submitForm}/>
+						<Button className="btn" loading={this.props.disableForm} style="blue" text="Reset Password" onClick={this.submitForm}/>
 					</form>
 				</div>
 			</div>

@@ -18,6 +18,15 @@ class ResetPassword extends React.Component {
 		this.props.resetPassword(code, user);
 	}
 
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.requestedResetPassword || nextProps.resetPassword) {
+			setTimeout(() => {
+				this.props.requestResetPasswordDone();
+				this.props.resetPasswordDone();
+			}, 1000);
+		}
+	}
+
 	render() {
 		return <ResetPasswordComponent showBanner={!!this.props.error && (this.props.requestedResetPassword || this.props.resetPassword)}
 		                               didRequestResetPassword={this.props.requestedResetPassword}
@@ -40,6 +49,9 @@ const mapDispatchToProps = dispatch => {
 	return {
 		requestResetPassword: email => dispatch(Action.RequestResetPassword(email)),
 		resetPassword: (code, user) => dispatch(Action.ResetPassword(code, user)),
+
+		requestResetPasswordDone: () => dispatch(Action.RequestResetPasswordDone()),
+		resetPasswordDone: () => dispatch(Action.ResetPasswordDone()),
 	}
 };
 

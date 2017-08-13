@@ -16,6 +16,7 @@ export default class RegisterComponent extends React.Component {
 		super(props);
 		this.state = {
 			currentPage: PAGE_FB_LOGIN,
+			disableForm: false,
 			profile: {
 				firstName: "",
 				lastName: "",
@@ -43,6 +44,7 @@ export default class RegisterComponent extends React.Component {
 							profile={this.state.profile}
 							onChange={this.handleProfileChange}
 							onSubmit={this.handleProfileSubmit}
+							disableForm={this.state.disableForm}
 							profileValid={this.profileValid} />
 			case PAGE_SUCCESS_CARD:
 				return <SuccessCard />
@@ -75,9 +77,12 @@ export default class RegisterComponent extends React.Component {
 
 	handleProfileSubmit(e) {
 		e.preventDefault();
-		if (!this.profileValid())
-			return;
-		this.props.createUser(this.state.profile);
+		if (!this.state.disableForm) {
+			if (!this.profileValid())
+				return;
+			this.setState(prev => Object.assign({}, prev, { disableForm: true }));
+			this.props.createUser(this.state.profile);
+		}
 	}
 
 	profileValid() {
@@ -96,8 +101,11 @@ export default class RegisterComponent extends React.Component {
 			this.setState(prev => {
 				let newState = Object.assign({}, prev);
 				newState.currentPage = PAGE_SUCCESS_CARD;
+				newState.disableForm = false;
 				return newState;
 			});
+		} else {
+			this.setState(prev => Object.assign({}, prev, { disableForm: false }));
 		}
 	}
 

@@ -5,12 +5,24 @@ import SignIn from './signIn'
 import SignUp from './signUp'
 
 class LoginForm extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = { disableForm: false };
+	}
+
 	handleLogin(e) {
 		e.preventDefault();
-		const email = this.refs.email.value;
-		const password = this.refs.password.value;
-		this.props.onsubmit(email, password);
+		if (!this.state.disableForm) {
+			this.setState(prev => Object.assign({}, prev, { disableForm: true }));
+			const email = this.refs.email.value;
+			const password = this.refs.password.value;
+			this.props.onsubmit(email, password);
+		}
 	};
+
+	componentWillReceiveProps(nextProps) {
+		this.setState(prev => Object.assign({}, prev, { disableForm: false }));
+	}
 
 	render() {
 		return(
@@ -20,7 +32,7 @@ class LoginForm extends React.Component {
 				<p>Password</p>
 				<input type="password" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;" ref="password"></input>
 				{ this.props.error ? <span><b>Error</b>: {this.props.error}</span> : <span>&nbsp;</span> }
-				<SignIn />
+				<SignIn loading={this.state.disableForm} />
 			</form>
 		);
 	}

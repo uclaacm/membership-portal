@@ -44,7 +44,7 @@ export default class DetailsCard extends React.Component {
 								<option value={5}>Post-senior</option>
 							</select>
 						</div><br />
-						<Button className="btn" style={this.props.profileValid() ? "green" : "disabled"} text="Finish" onClick={this.props.onSubmit}/>
+						<Button className="btn" loading={this.props.disableForm} style={this.props.profileValid() ? "green" : "disabled"} text="Finish" onClick={this.props.onSubmit}/>
 					</form>
 				</div>
 			</div>

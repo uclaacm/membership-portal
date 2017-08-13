@@ -14,14 +14,17 @@ const AUTH_ERROR = Symbol('AUTH_ERROR');
 
 const REQUEST_PASSWORD_RESET_SUCCESS = Symbol();
 const REQUEST_PASSWORD_RESET_ERROR = Symbol();
+const REQUEST_PASSWORD_RESET_DONE = Symbol();
 
 const RESET_PASSWORD_SUCCESS = Symbol();
 const RESET_PASSWORD_ERROR = Symbol();
+const RESET_PASSWORD_DONE = Symbol();
 
 const initState = () => {
 	const token = Storage.get('token');
 	return Immutable.fromJS({
 		error: null,
+		timestamp: null,
 		authenticated: !!token,
 		isAdmin: !!token && tokenIsAdmin(token),
 
@@ -179,8 +182,9 @@ const Auth = (state=initState(), action) => {
 	switch (action.type) {
 		case AUTH_USER:
 			return state.withMutations(val => {
-				val.set('authenticated', true);
 				val.set('error', null);
+				val.set('timestamp', Date.now());
+				val.set('authenticated', true);
 				val.set('isAdmin', action.isAdmin);
 			});
 
@@ -193,6 +197,7 @@ const Auth = (state=initState(), action) => {
 		case AUTH_ERROR:
 			return state.withMutations(val => {
 				val.set('error', action.error);
+				val.set('timestamp', Date.now());
 			});
 		
 		case REQUEST_PASSWORD_RESET_SUCCESS:
@@ -223,11 +228,22 @@ const Auth = (state=initState(), action) => {
 				val.set('requestedResetPassword', false);
 			});
 
+		case REQUEST_PASSWORD_RESET_DONE:
+		case RESET_PASSWORD_DONE:
+			return state.withMutations(val => {
+				val.set('error', null);
+				val.set('resetPassword', false);
+				val.set('requestedResetPassword', false);
+			});		
+
 		default:
 			return state;
 	}
 }
 
+const RequestResetPasswordDone = () => ({ type: REQUEST_PASSWORD_RESET_DONE });
+const ResetPasswordDone = () => ({ type: RESET_PASSWORD_DONE });
 export {
-	Auth, LoginUser, LogoutUser, RequestResetPassword, ResetPassword
+	Auth, LoginUser, LogoutUser, RequestResetPassword, ResetPassword,
+	RequestResetPasswordDone, ResetPasswordDone
 }
