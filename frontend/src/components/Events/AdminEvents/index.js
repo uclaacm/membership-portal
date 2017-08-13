@@ -37,7 +37,6 @@ export default class AdminEvents extends React.Component {
 
     //Shows the add event sidebar
     showAddEvent(e) {
-        console.log(e);
         this.setState(prev => ({
             showAddEvent: true,
             isEditEvent: false,

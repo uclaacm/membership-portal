@@ -13,7 +13,6 @@ export default class Leaderboard extends React.Component {
     }
 
     render() {
-        console.log(this.props.leaderboard, this.props.user);
         if (!this.props.leaderboard || !this.props.leaderboard.length || this.props.leaderboard.length < 3)
             return null;
         if (this.props.error) {
