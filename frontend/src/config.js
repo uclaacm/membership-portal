@@ -8,7 +8,8 @@ export default {
 		user: '/api/v1/user',
 		auth: {
 		  register: '/api/v1/auth/register',
-		  login: '/api/v1/auth/login'
+			login: '/api/v1/auth/login',
+			resetPassword: '/api/v1/auth/resetPassword',
 		},
 		events: {
 		  event: '/api/v1/event',

@@ -29,7 +29,7 @@ class App extends React.Component {
 						<Switch>
 							<Route path="/login" component={Login}/>
 							<Route path="/register" component={Register}/>
-							<Route path="/resetpass" component={ResetPassword}/>
+							<Route path="/resetpassword" component={ResetPassword}/>
 							<Route path="/confirm" component={ConfirmAccount}/>
 							<Route path="/events" component={requireAuth(Events)}/>
 							<Route path="/profile" component={requireAuth(Profile)}/>

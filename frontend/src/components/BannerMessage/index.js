@@ -25,7 +25,7 @@ export default class BannerMessage extends React.Component {
             return {
                 showing: true,
                 success: success,
-                message: message,
+                message: message.toString(),
                 timeout: setTimeout(this.hideBanner, duration)
             };
         });
