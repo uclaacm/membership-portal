@@ -14,7 +14,6 @@ const AUTH_ERROR = Symbol('AUTH_ERROR');
 
 const REQUEST_PASSWORD_RESET_SUCCESS = Symbol();
 const REQUEST_PASSWORD_RESET_ERROR = Symbol();
-const REQUEST_PASSWORD_RESET_DONE = Symbol();
 
 const RESET_PASSWORD_SUCCESS = Symbol();
 const RESET_PASSWORD_ERROR = Symbol();
@@ -228,7 +227,6 @@ const Auth = (state=initState(), action) => {
 				val.set('requestedResetPassword', false);
 			});
 
-		case REQUEST_PASSWORD_RESET_DONE:
 		case RESET_PASSWORD_DONE:
 			return state.withMutations(val => {
 				val.set('error', null);
@@ -241,9 +239,7 @@ const Auth = (state=initState(), action) => {
 	}
 }
 
-const RequestResetPasswordDone = () => ({ type: REQUEST_PASSWORD_RESET_DONE });
 const ResetPasswordDone = () => ({ type: RESET_PASSWORD_DONE });
 export {
-	Auth, LoginUser, LogoutUser, RequestResetPassword, ResetPassword,
-	RequestResetPasswordDone, ResetPasswordDone
+	Auth, LoginUser, LogoutUser, RequestResetPassword, ResetPassword, ResetPasswordDone
 }
