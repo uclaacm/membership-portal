@@ -1,7 +1,7 @@
 import React from 'react';
 import Config from 'config';
+import {NavLink} from 'react-router-dom';
 import BannerMessage from 'components/BannerMessage';
-
 import ReqResetPassCard from './requestResetPassCard';
 import ReqResetPassSuccessCard from './requestResetPassSuccessCard';
 import ResetPassCard from './resetPassCard';
@@ -54,7 +54,7 @@ export default class ResetPasswordComponent extends React.Component {
 			<div>
 				<BannerMessage showing={this.props.showBanner} success={false} message={this.props.error} />
 				<div className="reset-pass-component">
-					<a href="/login" className="no-style Title-2White login-link"><i className="fa fa-chevron-left" aria-hidden="true"></i>&nbsp; Back to Login</a>
+					<NavLink to="/login" className="no-style Title-2White login-link"><i className="fa fa-chevron-left" aria-hidden="true"></i>&nbsp; Back to Login</NavLink>
 					{ this.renderComponentForPage(this.state.currentPage) }
 					<img src={Config.organization.logoLight} className="corner-logo" />
 				</div>
