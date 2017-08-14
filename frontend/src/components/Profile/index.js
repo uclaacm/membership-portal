@@ -10,7 +10,13 @@ export default class ProfileComponent extends React.Component {
 			<div className="profile">
 				<Topbar />
 				<Sidebar/>
-				<Profile updated={this.props.updated} updateSuccess={this.props.updateSuccess} updateError={this.props.updateError} profile={ this.props.profile } saveChanges={ this.props.saveChanges } logout={this.props.logout} />
+				<Profile updated={this.props.updated} 
+				         updateSuccess={this.props.updateSuccess} 
+								 updateError={this.props.updateError} 
+								 profile={ this.props.profile }
+								 activities={ this.props.activities }
+								 saveChanges={ this.props.saveChanges } 
+								 logout={this.props.logout} />
 			</div>
 		);
 	}

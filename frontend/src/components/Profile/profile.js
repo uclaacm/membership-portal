@@ -230,7 +230,7 @@ export default class Profile extends React.Component {
 
 					<div className="divider"></div>
 					<h1 className="Display-2Primary">Your Activity</h1>
-					<Activities />
+					<Activities activities={this.props.activities} />
 				</div>
 			</div>
 		);
