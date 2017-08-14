@@ -3,85 +3,142 @@
 .hidden { display: none; }
 
 .mobile-profile-head {
-    height: 64px;
-    width: 100%;
-    margin-top: -70px;
-    background-color: rgba(0, 0, 0, 0.05);
-    transition: margin-top 0.25s ease-in-out;
+	height: 64px;
+	width: 100%;
+	margin-top: -70px;
+	background-color: rgba(0, 0, 0, 0.05);
+	transition: margin-top 0.25s ease-in-out;
 
-    // .profile-picture {
-        
-    // }
-
-    @media (max-width: 700px) {
-        margin-top: 40px;
-    }
+	@media (max-width: 700px) {
+		margin-top: 40px;
+	}
 }
 
 .profile-wrapper {
-    margin-left: $sidebar-width;
-    padding: 60px;
-    overflow: visible;
-    transition: margin-left 0.125s ease-in-out;
+	margin-left: $sidebar-width;
+	padding: 60px;
+	overflow: visible;
+	transition: margin-left 0.125s ease-in-out;
 
-    .profile-action-button {
-        margin: 6px;
-    }
+	.profile-action-button {
+		margin: 6px;
+	}
 
-    .profile-action-button:first-child {
-        margin-left: 0px;
-    }
+	.profile-action-button:first-child {
+		margin-left: 0px;
+	}
 
-    .form-elem {
-        padding-bottom: 30px;
+	.form-elem {
+		padding-bottom: 30px;
 
-        p {
-            padding: 2px 0px;
-            font-size: 1.1em;
+		p {
+			padding: 2px 0px;
+			font-size: 1.1em;
 
-            span {
-                font-size: 1.1em;
-                padding: 0px 5px;
-            }
-        }
-        
-        textarea {
-            display: inline-block;
-            outline: none;
-            border:none;
-            width: 100%;
-            max-width: 400px;
-            border-bottom: 2px dashed #DADADA;
-            transition: 0.125s ease-in-out;
-            resize: none;
-        }
+			span {
+				font-size: 1.1em;
+				padding: 0px 5px;
+			}
+		}
+		
+		textarea {
+			display: inline-block;
+			outline: none;
+			border:none;
+			width: 100%;
+			max-width: 400px;
+			border-bottom: 2px dashed #DADADA;
+			transition: 0.125s ease-in-out;
+			resize: none;
+		}
 
-        textarea:focus {
-            border-bottom: 2px solid #AAAAAA;
-        }
+		textarea:focus {
+			border-bottom: 2px solid #AAAAAA;
+		}
 
-        select {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            border: none;
-            outline: none;
-            background: none;
-            border-bottom: 2px dashed #DADADA;
-            padding: 5px 0px;
-        }
-    }
+		select {
+			-webkit-appearance: none;
+			-moz-appearance: none;
+			appearance: none;
+			border: none;
+			outline: none;
+			background: none;
+			border-bottom: 2px dashed #DADADA;
+			padding: 5px 0px;
+		}
+	}
 
-    .divider {
-        width: 100%;
-        height: 1px;
-        background-color: #CCCCCC;
-        margin-bottom: 30px;
-    }
+	.divider {
+		width: 100%;
+		height: 1px;
+		background-color: #CCCCCC;
+		margin-bottom: 30px;
+	}
 
 
-    @media (max-width: 700px) {
-        margin-left: 0px;
-        margin-top: 30px;
-    }
+	@media (max-width: 700px) {
+		margin-left: 0px;
+		margin-top: 30px;
+	}
+}
+
+.activity-wrapper {
+	.month h2 {
+		font-size: 1.1em;
+		font-weight: normal;
+		margin: 10px 0px;
+		
+		span {
+			color: #666666;
+			font-size: 0.8em;
+			padding: 0px 5px;
+		}
+	}
+
+	.day {
+		border-left: 1px solid #EEE;
+		padding-bottom: 30px;
+		position: relative;
+		margin-left: 10px;
+
+		.day-label {
+			font-size: 0.7em;
+			position: absolute;
+			height: 30px;
+			width: 30px;
+			text-align: center;
+			line-height: 30px;
+			background-color: #EEE;
+			border: 2px solid white;
+			border-radius: 100%;
+			margin-left: -16px;
+		}
+
+		.activity-item {
+			margin: 0px 30px 20px 30px;
+
+			h3 {
+				font-size: 1.0em;
+				font-weight: normal;
+				color: #333333;
+				margin-top: 0px;
+				margin-bottom: 5px;
+				margin-left: 25px;
+				text-indent: -12px;
+
+				i {
+					padding-right: 8px;
+					color: #444444;
+				}
+
+				i.level-up-icon { color: #FFD600; }
+			}
+
+			p.description {
+				color: #666666;
+				font-size: 0.8em;
+				margin-left: 25px;
+			}
+		}
+	}
 }
