@@ -1,6 +1,7 @@
 import Immutable from 'immutable';
 import Storage from 'storage';
 import Config from 'config';
+import moment from 'moment';
 
 import { LogoutUser } from './auth';
 
@@ -15,21 +16,17 @@ const UPDATE_USER_ERR = Symbol('UPDATE_USER_ERR');
 const UPDATE_USER_SUCCESS = Symbol('UPDATE_USER_SUCCESS');
 const UPDATE_COMPLETED = Symbol('UPDATE_COMPLETED');
 
-const FETCHING_ACTIVITY = Symbol('FETCH_ACTIVITY');
 const FETCH_ACTIVITY_SUCCESS = Symbol('FETCH_ACTIVITY_SUCCESS');
 const FETCH_ACTIVITY_ERR = Symbol('FETCH_ACTIVITY_ERR');
 
 const defaultState = Immutable.fromJS({
 	profile: {},
+	activity: [],
 	updated: false,
 	updateSuccess: false,
 	fetchSuccess: false,
 	error: null,
-	activity: {},
-	fetchingActivity: false,
-	fetchedActivity: false,
-	fetchActivitySuccess: false,
-	errorActivity: false,
+	activityError: null,
 });
 
 /**********************************************
@@ -50,19 +47,13 @@ class State {
 			error : error || undefined,
 		}
 	}
-
-	static FetchingActivity(){
-		return {
-			type: FETCHING_ACTIVITY,
-		};
-	}
-
 	static FetchActivity(error, activity){
 		return {
-			type    : error ? FETCH_ACTIVITY_ERR : FETCH_ACTIVITY_SUCCESS,
-			activity: error ? undefined : activity,
-			error   : error || undefined,
+			type     : error ? FETCH_ACTIVITY_ERR : FETCH_ACTIVITY_SUCCESS,
+			activity : error ? undefined : activity,
+			error    : error || undefined,
 		};
+	}
 }
 
 /**********************************************
@@ -151,7 +142,12 @@ const FetchActivity = () => {
 			if (data.error)
 				throw new Error(data.error.message);
 
-			dispatch(State.FetchActivity(null, data.activity));
+			const activity = data.activity.map(a => {
+				a.date = moment(a.date);
+				return a;
+			});
+
+			dispatch(State.FetchActivity(null, activity));
 		} catch (err) {
 			dispatch(State.FetchActivity(err.message));
 		}
@@ -197,31 +193,16 @@ const User = (state=defaultState, action) => {
 				val.set('updated', false);
 			});
 
-		case FETCHING_ACTIVITY:
-			return state.withMutations(val => {
-				val.set('activity', []);
-				val.set('fetchingActivity', true);
-				val.set('fetchedActivity', false);
-				val.set('fetchActivitySuccess', false);
-				val.set('errorActivity', false);
-			});
-
 		case FETCH_ACTIVITY_SUCCESS:
 			return state.withMutations(val => {
 				val.set('activity', action.activity);
-				val.set('fetchingActivity', false);
-				val.set('fetchedActivity', true);
-				val.set('fetchActivitySuccess', true);
-				val.set('errorActivity', false);
+				val.set('activityError', null);
 			});
 
 		case FETCH_ACTIVITY_ERR:
 			return state.withMutations(val => {
 				val.set('activity', []);
-				val.set('fetchingActivity', false);
-				val.set('fetchedActivity', true);
-				val.set('fetchActivitySuccess', false);
-				val.set('errorActivity', action.error);
+				val.set('activityError', action.error);
 			});
 
 		default:

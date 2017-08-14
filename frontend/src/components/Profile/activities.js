@@ -1,6 +1,5 @@
 import React from 'react';
 import Utils from 'utils';
-import moment from 'moment';
 import {activityTypes} from './activity';
 import ActivitiesMonth from './activitiesMonth';
 

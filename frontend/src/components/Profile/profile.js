@@ -230,7 +230,8 @@ export default class Profile extends React.Component {
 
 					<div className="divider"></div>
 					<h1 className="Display-2Primary">Your Activity</h1>
-					<Activities activities={this.props.activities} />
+					{ !this.props.activityError && <Activities activities={this.props.activity} /> }
+					{  this.props.activityError && <p className="activity-error">{this.props.activityError}</p> }
 				</div>
 			</div>
 		);

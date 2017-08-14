@@ -45,8 +45,8 @@ class Profile extends React.Component {
 			updateError={this.props.updateError}
 			saveChanges={this.saveChanges.bind(this)}
 			logout={this.props.logout}
-			activities={this.props.activities}
-			errorActivity={this.props.errorActivity}
+			activity={this.props.activity}
+			activityError={this.props.activityError}
 		/>;
 	}
 }
@@ -62,22 +62,16 @@ const mapStateToProps = (state)=>{
 		profile.points = User.points;
 	}
 
-	let activities = state.User.get('activity');
-	for(let i = 0; i < activities.length; i++){
-		let k = activities[i];
-		k.date = moment(k.date);
-	}
-
 	return {
 		profile,
+		activity: state.User.get('activity'),
 		fetchSuccess : state.User.get('fetchSuccess'),
 		updated: state.User.get('updated'),
 		updateSuccess: state.User.get('updateSuccess'),
 		updateError: state.User.get('error'),
 		authenticated: state.Auth.get("authenticated"),
 		isAdmin: state.Auth.get('isAdmin'),
-		activities,
-		errorActivity: state.User.get('errorActivity'),
+		activityError: state.User.get('activityError'),
 	};
 };
 
