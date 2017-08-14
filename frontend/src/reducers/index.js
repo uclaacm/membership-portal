@@ -3,7 +3,7 @@ import createHistory from 'history/createBrowserHistory';
 import {routerReducer, routerMiddleware, push} from 'react-router-redux';
 import thunk from 'redux-thunk';
 
-import {User, FetchUser, UpdateUser, UserUpdateDone} from './user';
+import {User, FetchUser, UpdateUser, UserUpdateDone, FetchActivity} from './user';
 import {Auth, LoginUser, LogoutUser, RequestResetPassword, ResetPassword, ResetPasswordDone} from './auth';
 import {Events, GetCurrentEvents, PostNewEvent, UpdateEvent, UpdateEventDone, CreateEventDone} from './events';
 import {Leaderboard, FetchLeaderboard, InvalidateLeaderboard} from './leaderboard';
@@ -27,7 +27,7 @@ const store = createStore(
 );
 
 const Action = {
-  LoginUser, LogoutUser, FetchUser, UpdateUser, UserUpdateDone,
+  LoginUser, LogoutUser, FetchUser, UpdateUser, UserUpdateDone, FetchActivity,
   RequestResetPassword, ResetPassword, ResetPasswordDone,
   GetCurrentEvents, PostNewEvent, UpdateEvent, CreateEventDone, UpdateEventDone,
   FetchLeaderboard, InvalidateLeaderboard,

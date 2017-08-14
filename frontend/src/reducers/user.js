@@ -15,12 +15,21 @@ const UPDATE_USER_ERR = Symbol('UPDATE_USER_ERR');
 const UPDATE_USER_SUCCESS = Symbol('UPDATE_USER_SUCCESS');
 const UPDATE_COMPLETED = Symbol('UPDATE_COMPLETED');
 
+const FETCHING_ACTIVITY = Symbol('FETCH_ACTIVITY');
+const FETCH_ACTIVITY_SUCCESS = Symbol('FETCH_ACTIVITY_SUCCESS');
+const FETCH_ACTIVITY_ERR = Symbol('FETCH_ACTIVITY_ERR');
+
 const defaultState = Immutable.fromJS({
 	profile: {},
 	updated: false,
 	updateSuccess: false,
 	fetchSuccess: false,
 	error: null,
+	activity: {},
+	fetchingActivity: false,
+	fetchedActivity: false,
+	fetchActivitySuccess: false,
+	errorActivity: false,
 });
 
 /**********************************************
@@ -41,6 +50,19 @@ class State {
 			error : error || undefined,
 		}
 	}
+
+	static FetchingActivity(){
+		return {
+			type: FETCHING_ACTIVITY,
+		};
+	}
+
+	static FetchActivity(error, activity){
+		return {
+			type    : error ? FETCH_ACTIVITY_ERR : FETCH_ACTIVITY_SUCCESS,
+			activity: error ? undefined : activity,
+			error   : error || undefined,
+		};
 }
 
 /**********************************************
@@ -75,10 +97,11 @@ const FetchUser = () => {
 			dispatch(State.FetchUser(err.message));
 		}
 	}
-}
+};
 
 const UpdateUser = user => {
 	return async dispatch => {
+		dispatch();
 		try {
 			const response = await fetch(Config.API_URL + Config.routes.user,  {
 				method: 'PATCH',
@@ -94,7 +117,7 @@ const UpdateUser = user => {
 			if (status === 401 || status === 403) {
 				return dispatch(LogoutUser());
 			}
-			
+
 			const data = await response.json();
 			if (!data)
 				throw new Error('Empty response from server');
@@ -107,7 +130,33 @@ const UpdateUser = user => {
 			dispatch(State.UpdateUser(err.message));
 		}
 	}
-}
+};
+
+const FetchActivity = user => {
+	return async dispatch => {
+		try {
+			const response = await fetch(Config.API_URL + Config.routes.activity,  {
+				method: 'GET',
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${Storage.get('token')}`
+				},
+			});
+
+			const status = await response.status;
+			const data = await response.json();
+			if (!data)
+				throw new Error('Empty response from server');
+			if (data.error)
+				throw new Error(data.error.message);
+
+			dispatch(State.FetchActivity(null, data.activity));
+		} catch (err) {
+			dispatch(State.FetchActivity(err.message));
+		}
+	};
+};
 
 /**********************************************
  ** User Reducer                             **
@@ -148,6 +197,33 @@ const User = (state=defaultState, action) => {
 				val.set('updated', false);
 			});
 
+		case FETCHING_ACTIVITY:
+			return state.withMutations(val => {
+				val.set('activity', {});
+				val.set('fetchingActivity', true);
+				val.set('fetchedActivity', false);
+				val.set('fetchActivitySuccess', false);
+				val.set('errorActivity', false);
+			});
+
+		case FETCH_ACTIVITY_SUCCESS:
+			return state.withMutations(val => {
+				val.set('activity', action.activity);
+				val.set('fetchingActivity', false);
+				val.set('fetchedActivity', true);
+				val.set('fetchActivitySuccess', true);
+				val.set('errorActivity', false);
+			});
+
+		case FETCH_ACTIVITY_ERR:
+			return state.withMutations(val => {
+				val.set('activity', {});
+				val.set('fetchingActivity', false);
+				val.set('fetchedActivity', true);
+				val.set('fetchActivitySuccess', false);
+				val.set('errorActivity', action.error);
+			});
+
 		default:
 			return state;
 	}
@@ -155,5 +231,5 @@ const User = (state=defaultState, action) => {
 
 const UserUpdateDone = () => ({ type: UPDATE_COMPLETED });
 export {
-	User, FetchUser, UpdateUser, UserUpdateDone
+	User, FetchUser, UpdateUser, UserUpdateDone, FetchActivity,
 }
