@@ -44,7 +44,7 @@ export default class Leaderboard extends React.Component {
 									<td>{i + 4}</td>
 									<td className="name">
 										<div>
-											<img src={user.picture} />
+											<img src={user.picture || "/assets/images/unknown.png"} />
 											<span>{user.firstName} {user.lastName}</span>
 										</div>
 									</td>
