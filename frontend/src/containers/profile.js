@@ -5,6 +5,8 @@ import {replace} from 'react-router-redux';
 import {Action} from 'reducers';
 import ProfileComponent from 'components/Profile';
 
+import moment from 'moment';
+
 class Profile extends React.Component {
 	constructor(props) {
 		super(props);
@@ -20,6 +22,7 @@ class Profile extends React.Component {
 		}
 		if (this.props.authenticated) {
 			this.props.fetchUser();
+			this.props.fetchActivity();
 		}
 	}
 
@@ -35,12 +38,16 @@ class Profile extends React.Component {
 	}
 
 	render() {
-		return <ProfileComponent profile={this.props.profile}
-		                         updated={this.props.updated}
-														 updateSuccess={this.props.updateSuccess}
-														 updateError={this.props.updateError}
-														 saveChanges={this.saveChanges.bind(this)}
-														 logout={this.props.logout} />;
+		return <ProfileComponent
+			profile={this.props.profile}
+			updated={this.props.updated}
+			updateSuccess={this.props.updateSuccess}
+			updateError={this.props.updateError}
+			saveChanges={this.saveChanges.bind(this)}
+			logout={this.props.logout}
+			activities={this.props.activities}
+			errorActivity={this.props.errorActivity}
+		/>;
 	}
 }
 
@@ -55,6 +62,12 @@ const mapStateToProps = (state)=>{
 		profile.points = User.points;
 	}
 
+	let activities = state.User.get('activity');
+	for(let i = 0; i < activities.length; i++){
+		let k = activities[i];
+		k.date = moment(k.date);
+	}
+
 	return {
 		profile,
 		fetchSuccess : state.User.get('fetchSuccess'),
@@ -63,6 +76,8 @@ const mapStateToProps = (state)=>{
 		updateError: state.User.get('error'),
 		authenticated: state.Auth.get("authenticated"),
 		isAdmin: state.Auth.get('isAdmin'),
+		activities,
+		errorActivity: state.User.get('errorActivity'),
 	};
 };
 
@@ -82,6 +97,9 @@ const mapDispatchToProps = (dispatch)=>{
 		},
 		logout: () => {
 			dispatch(Action.LogoutUser());
+		},
+		fetchActivity: ()=>{
+			dispatch(Action.FetchActivity());
 		},
 	};
 };

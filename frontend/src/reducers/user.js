@@ -132,7 +132,7 @@ const UpdateUser = user => {
 	}
 };
 
-const FetchActivity = user => {
+const FetchActivity = () => {
 	return async dispatch => {
 		try {
 			const response = await fetch(Config.API_URL + Config.routes.activity,  {
@@ -199,7 +199,7 @@ const User = (state=defaultState, action) => {
 
 		case FETCHING_ACTIVITY:
 			return state.withMutations(val => {
-				val.set('activity', {});
+				val.set('activity', []);
 				val.set('fetchingActivity', true);
 				val.set('fetchedActivity', false);
 				val.set('fetchActivitySuccess', false);
@@ -217,7 +217,7 @@ const User = (state=defaultState, action) => {
 
 		case FETCH_ACTIVITY_ERR:
 			return state.withMutations(val => {
-				val.set('activity', {});
+				val.set('activity', []);
 				val.set('fetchingActivity', false);
 				val.set('fetchedActivity', true);
 				val.set('fetchActivitySuccess', false);
