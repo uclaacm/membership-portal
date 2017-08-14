@@ -85,7 +85,7 @@ class State {
  *********************************************/
 
 const LoginUser = (email, password) => {
-  return async (dispatch) => {
+	return async (dispatch) => {
 		try {
 			const response = await fetch(Config.API_URL + Config.routes.auth.login, {
 				method: 'POST',
@@ -109,7 +109,7 @@ const LoginUser = (email, password) => {
 		} catch (err) {
 			dispatch(State.Auth(err.message));
 		}
-  };
+	};
 }
 
 const LogoutUser = (error) => {
@@ -138,7 +138,7 @@ const RequestResetPassword = email => {
 				throw new Error('Empty response from server');
 			if (data.error)
 				throw new Error(data.error.message);
-			
+
 			dispatch(State.RequestResetPassword());
 		} catch (err) {
 			dispatch(State.RequestResetPassword(err));
@@ -165,7 +165,7 @@ const ResetPassword = (code, user) => {
 				throw new Error('Empty response from server');
 			if (data.error)
 				throw new Error(data.error.message);
-			
+
 			dispatch(State.ResetPassword());
 		} catch (err) {
 			dispatch(State.ResetPassword(err));
@@ -198,7 +198,7 @@ const Auth = (state=initState(), action) => {
 				val.set('error', action.error);
 				val.set('timestamp', Date.now());
 			});
-		
+
 		case REQUEST_PASSWORD_RESET_SUCCESS:
 			return state.withMutations(val => {
 				val.set('error', null);
@@ -232,7 +232,7 @@ const Auth = (state=initState(), action) => {
 				val.set('error', null);
 				val.set('resetPassword', false);
 				val.set('requestedResetPassword', false);
-			});		
+			});
 
 		default:
 			return state;
