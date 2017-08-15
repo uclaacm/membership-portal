@@ -101,19 +101,11 @@ const GetCurrentEvents = () => {
 			for (let record of attendanceData.attendance)
 				attendanceMap[record.event] = true;
 
-			const events = eventsData.events.map(event => ({
-				uuid: event.uuid,
-				cover: event.cover,
-				committee: event.committee,
-				startDate: moment(event.startDate),
-				endDate: moment(event.endDate),
-				eventLink: event.eventLink,
-				title: event.title,
-				location: event.location,
-				description: event.description,
-				attendancePoints: event.attendancePoints,
-				checkedIn: !!attendanceMap[event.uuid],
-			}));
+			const events = eventsData.events.map(event => {
+				event.startDate = moment(event.startDate);
+				event.endDate = moment(event.endDate);
+				event.checkedIn = !!attendanceMap[event.uuid];
+			});
 
 			dispatch(State.FetchEvents(null, events));
 		} catch (err) {
