@@ -5,7 +5,7 @@ import ActivitiesMonth from './activitiesMonth';
 
 export default class Activities extends React.Component {
 	render() {
-		const activities = this.props.activities.reverse();
+		const activities = this.props.activities;
 		const months = [];
 		let totalPoints = 0;
 		let currStatus = Utils.getLevel(totalPoints);
@@ -16,7 +16,8 @@ export default class Activities extends React.Component {
 			while (i < activities.length && activities[i].date.month() === month.date.month()) {
 				if (month.days.length === 0 || activities[i].date.date() !== month.days[month.days.length - 1].date.date())
 					month.days.push({ date: activities[i].date, activities: [] });
-
+				month.days[month.days.length - 1].activities.push(activities[i]);
+				
 				totalPoints += activities[i].pointsEarned;
 				const nextStatus = Utils.getLevel(totalPoints);
 
@@ -30,8 +31,6 @@ export default class Activities extends React.Component {
 
 					currStatus = nextStatus;
 				}
-
-				month.days[month.days.length - 1].activities.push(activities[i]);
 				i++;
 			}
 			months.push(month);
