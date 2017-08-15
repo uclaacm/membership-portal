@@ -5,7 +5,7 @@ import ActivitiesMonth from './activitiesMonth';
 
 export default class Activities extends React.Component {
 	render() {
-		const activities = this.props.activities;
+		const activities = this.props.activities.reverse();
 		const months = [];
 		let totalPoints = 0;
 		let currStatus = Utils.getLevel(totalPoints);

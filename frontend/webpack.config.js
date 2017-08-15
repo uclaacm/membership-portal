@@ -38,7 +38,7 @@ module.exports = {
         'WEBPACK': JSON.stringify(process.env.WEBPACK || ''),
       }
     }),
-    new webpack.optimize.DedupePlugin(),
+
     new webpack.optimize.UglifyJsPlugin(),
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.optimize.AggressiveMergingPlugin(),
