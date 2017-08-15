@@ -63,7 +63,7 @@ class State {
 const FetchUser = () => {
 	return async dispatch => {
 		try {
-			const response = await fetch(Config.API_URL + Config.routes.user, {
+			const response = await fetch(Config.API_URL + Config.routes.user.user, {
 				method: 'GET',
 				headers: {
 					'Accept': 'application/json',
@@ -94,7 +94,7 @@ const UpdateUser = user => {
 	return async dispatch => {
 		dispatch();
 		try {
-			const response = await fetch(Config.API_URL + Config.routes.user,  {
+			const response = await fetch(Config.API_URL + Config.routes.user.user,  {
 				method: 'PATCH',
 				headers: {
 					'Accept': 'application/json',
@@ -126,7 +126,7 @@ const UpdateUser = user => {
 const FetchActivity = () => {
 	return async dispatch => {
 		try {
-			const response = await fetch(Config.API_URL + Config.routes.activity,  {
+			const response = await fetch(Config.API_URL + Config.routes.user.activity,  {
 				method: 'GET',
 				headers: {
 					'Accept': 'application/json',

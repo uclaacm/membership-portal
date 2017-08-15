@@ -5,7 +5,10 @@ export default {
 		appId: '1356860031017067'
 	},
 	routes: {
-		user: '/api/v1/user',
+		user: {
+			user: '/api/v1/user',
+			activity: '/api/v1/user/activity',
+		},
 		activity: '/api/v1/activity',
 		auth: {
 			register: '/api/v1/auth/register',
