@@ -17,7 +17,7 @@ export default class Activities extends React.Component {
 				if (month.days.length === 0 || activities[i].date.date() !== month.days[month.days.length - 1].date.date())
 					month.days.push({ date: activities[i].date, activities: [] });
 				month.days[month.days.length - 1].activities.push(activities[i]);
-				
+
 				totalPoints += activities[i].pointsEarned;
 				const nextStatus = Utils.getLevel(totalPoints);
 
@@ -33,12 +33,13 @@ export default class Activities extends React.Component {
 				}
 				i++;
 			}
-			months.push(month);
+			month.forEach(day => day.reverse());
+			months.push(month.reverse());
 		}
 		
 		return (
 			<div className="activity-wrapper">
-				{ months.map((month, i) => <ActivitiesMonth key={'month'+i} month={month} />) }
+				{ months.splice().reverse().map((month, i) => <ActivitiesMonth key={'month'+i} month={month} />) }
 			</div>
 		);
 	}
