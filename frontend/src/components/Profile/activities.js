@@ -39,7 +39,7 @@ export default class Activities extends React.Component {
 		
 		return (
 			<div className="activity-wrapper">
-				{ months.splice().reverse().map((month, i) => <ActivitiesMonth key={'month'+i} month={month} />) }
+				{ months.slice().reverse().map((month, i) => <ActivitiesMonth key={'month'+i} month={month} />) }
 			</div>
 		);
 	}
