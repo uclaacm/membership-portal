@@ -15,17 +15,17 @@ const Event = require('./schema/event')(Sequelize, db);
 const Activity = require('./schema/activity')(Sequelize, db);
 const Attendance = require('./schema/attendance')(Sequelize, db);
 
-const setup = (force) => {
-	return (force ? db.sync({ force: true }).then(() => devSetup(User, Event, Attendance)) : db.sync()).then(() => {
+const setup = (force, dev) => {
+	return (dev ? db.sync({ force }).then(() => devSetup(User, Event, Attendance)) : db.sync({ force })).then(() => {
 		User.findOrCreate({
-			where: { email: 'admin@ucla.edu'},
+			where: { email: 'acm@ucla.edu'},
 			defaults: {
-				email: 'admin@ucla.edu',
+				email: 'acm@ucla.edu',
 				accessType: 'ADMIN',
 				state: 'ACTIVE',
 				firstName: 'ACM',
 				lastName: 'Admin',
-				hash: '$2a$10$db7eYhWGZ1LZl27gvyX/iOgb33ji1PHY5.pPzRyXaNlbctCFWMF9G', //test1234
+				hash: '$2a$10$db7eYhWGZ1LZl27gvyX/iOgb33ji1PHY5.pPzRyXaNlbctCFWMF9G',
 				year: 4,
 				major: 'Computer Science'
 			}
