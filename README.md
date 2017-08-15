@@ -9,7 +9,7 @@ You must have either Docker or Vagrant installed and the repository cloned.  `cd
 
 ```bash
 user@local:~$ cd membership-portal
-user@local:~/membership-portal$ git submodule update --init --recursive
+user@local:~/membership-portal$ make update
 ```
 
 ### Setup (Vagrant)
@@ -24,9 +24,24 @@ user@local:~/membership-portal$ vagrant ssh
 vagrant@acm:~$ cd /vagrant
 ```
 
+### Setup (App)
+
+The very first time you deploy, you need to set up the environment:
+
+```bash
+$ make
+```
+
+You also need to decrypt the environment variables and SSL certificates (a password is required):
+
+```bash
+$ make certs
+$ make env
+```
+
 ### Deploy
 
-The very first time you deploy, you need to also run `make setup`. Subsequently, you can just run:
+To deploy:
 
 ```Bash
 $ make
@@ -47,6 +62,8 @@ $ make dev
 The following commands are also available:
 
 - `make logs` – attach to the standard output of the process and view the logs
+- `make nginx-logs` - attach to the nginx server and view access log
+- `make psql` - attach to the database and run queries
 - `make reset` – completely obliterate the currently built images
 - `make build` – only run the image build
 - `make run` – only run in detached mode
@@ -54,10 +71,4 @@ The following commands are also available:
 
 ### Accessing the Server
 
-If you're running Vagrant, the virtual machine is setup to forward port `8080` (host) to `80` (guest). To access the server from outside the virtual machine, run:
-
-```Bash
-$ curl http://127.0.0.1:8080/api/v1/health
-```
-
-If you're not running Vagrant, you can simply access the server through its Docker port directly (`80`)
+The nginx server runs on port `80`, and all API routes can be accessed through nginx by prepending `/app` to API URLs (e.g. `/app/api/v1/auth/login` and `/app/api/v1/user`).

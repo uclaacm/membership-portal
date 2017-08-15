@@ -125,7 +125,7 @@ module.exports = (Sequelize, db) => {
   };
 
   Activity.getPublicStream = function(user) {
-		return this.findAll({ where: { user, public: true }, order: [['date', 'ASC']] });
+		return this.findAll({ where: { user, public: true }, order: [['date', 'DESC']] });
   };
 
   Activity.Instance.prototype.getPublic = function() {
