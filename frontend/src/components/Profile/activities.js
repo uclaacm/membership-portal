@@ -33,8 +33,9 @@ export default class Activities extends React.Component {
 				}
 				i++;
 			}
-			month.days.forEach(day => day.activities.reverse()).reverse();
-			months.push(month);
+			month.days.forEach(day => day.activities.reverse());
+			month.days.reverse();
+			months.push(month.reverse);
 		}
 		
 		return (
