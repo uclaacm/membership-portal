@@ -105,6 +105,7 @@ const GetCurrentEvents = () => {
 				event.startDate = moment(event.startDate);
 				event.endDate = moment(event.endDate);
 				event.checkedIn = !!attendanceMap[event.uuid];
+				return event;
 			});
 
 			dispatch(State.FetchEvents(null, events));
