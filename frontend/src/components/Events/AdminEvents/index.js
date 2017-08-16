@@ -4,6 +4,7 @@ import Button from 'components/Button'
 import BannerMessage from 'components/BannerMessage'
 import EventMonth from './eventMonth'
 import AdminAddEvent from './adminAddEvent'
+import EarlierEventsIcon from 'components/Events/earlierEventsIcon';
 
 export default class AdminEvents extends React.Component {
 	constructor(props) {
@@ -25,7 +26,8 @@ export default class AdminEvents extends React.Component {
 		this.state = {
 			showAddEvent: false,
 			isEditEvent: false,
-			eventPlaceholder: this.emptyEvent
+			eventPlaceholder: this.emptyEvent,
+			showEarlierEvents: false,
 		};
 
 		this.showAddEvent = this.showAddEvent.bind(this);
@@ -49,6 +51,15 @@ export default class AdminEvents extends React.Component {
 			let newState = Object.assign({}, prev);
 			newState.showAddEvent = false;
 			return newState;
+		});
+	}
+
+	showEarlierEvents(){
+		this.setState({
+			showAddEvent: this.state.showAddEvent,
+			isEditEvent: this.state.isEditEvent,
+			eventPlaceholder: this.state.eventPlaceholder,
+			showEarlierEvents: true,
 		});
 	}
 
@@ -104,9 +115,14 @@ export default class AdminEvents extends React.Component {
 			months.push(month);
 		}
 
+		const today = new Date();
+
+		const pastMonths = months.filter(month => month.days[month.days.length - 1].date < today);
+		const futureMonths = months.filter(month => month.days[month.days.length - 1].date >= today);
+
 		const bannerMessage = (this.props.updateSuccess) ? "Event updated successfully" :
 													(this.props.createSuccess) ? "Event created successfully" :
-																								       this.props.error;
+																												this.props.error;
 
 		return (
 			<div className="events-dashboard admin-dashboard">
@@ -128,7 +144,10 @@ export default class AdminEvents extends React.Component {
 					text="Add Event"
 					onClick={this.showAddEvent} />}
 
-				{months.map((month, i) => <EventMonth month={month} key={i} handleEditClick={this.handleEditClick} />)}
+				{ !this.state.showEarlierEvents && <EarlierEventsIcon onClick={()=>{this.showEarlierEvents();}}/> }
+				{ this.state.showEarlierEvents && pastMonths.map((month, i) => <EventMonth month={month} key={i} handleEditClick{this.handleEditClick}/>) }
+
+				{ futureMonths.map((month, i) => <EventMonth month={month} key={i} handleEditClick={this.handleEditClick} />) }
 			</div>
 		);
 	}
