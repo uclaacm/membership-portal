@@ -108,16 +108,18 @@ export default class UserEvents extends React.Component {
             return (<div className="events-dashboard user-dashboard"><h1>{this.props.error}</h1></div>);
 
         const days = [];
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
         for (let event of this.props.events) {
             if (days.length === 0 || event.startDate.date() !== days[days.length - 1].date.date())
                 days.push({ date: event.startDate, events: [event] });
             else
                 days[days.length - 1].events.push(event);
         }
-        const futureDays = days.filter(day => day.date > today);
-        const pastDays = days.filter(day => day.date <= today);
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const pastDays = days.filter(day => day.date < today);
+        const futureDays = days.filter(day => day.date >= today);
+        
         return (
             <div className="events-dashboard user-dashboard">
                 {this.renderAttendanceForm()}

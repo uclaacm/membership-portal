@@ -116,9 +116,10 @@ export default class AdminEvents extends React.Component {
 		}
 
 		const today = new Date();
-
-		const pastMonths = months.filter(month => month.days[month.days.length - 1].date < today);
-		const futureMonths = months.filter(month => month.days[month.days.length - 1].date >= today);
+		today.setHours(0, 0, 0, 0);
+		today.setDate(1);
+		const pastMonths = months.filter(month => month.days[0].date < today);
+		const futureMonths = months.filter(month => month.days[0].date >= today);
 
 		const bannerMessage = (this.props.updateSuccess) ? "Event updated successfully" :
 													(this.props.createSuccess) ? "Event created successfully" :
@@ -145,7 +146,7 @@ export default class AdminEvents extends React.Component {
 					onClick={this.showAddEvent} />}
 
 				{ !this.state.showEarlierEvents && <EarlierEventsIcon onClick={()=>{this.showEarlierEvents();}}/> }
-				{ this.state.showEarlierEvents && pastMonths.map((month, i) => <EventMonth month={month} key={i} handleEditClick{this.handleEditClick}/>) }
+				{ this.state.showEarlierEvents && pastMonths.map((month, i) => <EventMonth month={month} key={i} handleEditClick={this.handleEditClick}/>) }
 
 				{ futureMonths.map((month, i) => <EventMonth month={month} key={i} handleEditClick={this.handleEditClick} />) }
 			</div>
