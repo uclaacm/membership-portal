@@ -115,11 +115,11 @@ export default class AdminEvents extends React.Component {
 			months.push(month);
 		}
 
-		const today = new Date();
-		today.setHours(0, 0, 0, 0);
-		today.setDate(1);
-		const pastMonths = months.filter(month => month.days[0].date < today);
-		const futureMonths = months.filter(month => month.days[0].date >= today);
+		const thisMonth = new Date();
+		thisMonth.setHours(0, 0, 0, 0);
+		thisMonth.setDate(1);
+		const pastMonths = months.filter(month => month.date < thisMonth);
+		const futureMonths = months.filter(month => month.date >= thisMonth);
 
 		const bannerMessage = (this.props.updateSuccess) ? "Event updated successfully" :
 													(this.props.createSuccess) ? "Event created successfully" :
