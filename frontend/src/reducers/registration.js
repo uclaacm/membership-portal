@@ -6,9 +6,9 @@ import {Action} from 'reducers';
  ** Constants                                **
  *********************************************/
 
-const REGISTER_SUCCESS = Symbol('REGISTER_SUCCESS');
-const REGISTER_ERR = Symbol('REGISTER_ERR');
-const REGISTER_DONE = Symbol('REGISTER_DONE');
+const REGISTER_SUCCESS = Symbol();
+const REGISTER_ERR = Symbol();
+const REGISTER_DONE = Symbol();
 
 const defaultState = Immutable.fromJS({
 	user: {},

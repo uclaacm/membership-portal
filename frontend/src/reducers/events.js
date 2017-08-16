@@ -9,14 +9,14 @@ import { LogoutUser } from './auth';
  ** Constants                                **
  *********************************************/
 
-const FETCH_EVENTS = Symbol('FETCH_EVENTS');
-const FETCH_EVENTS_ERROR = Symbol('FETCH_EVENTS_ERROR');
-const POST_EVENT_SUCCESS = Symbol('POST_EVENT_SUCCESS');
-const POST_EVENT_ERROR = Symbol('POST_EVENT_ERROR');
-const POST_EVENT_DONE = Symbol('POST_EVENT_DONE');
-const UPDATE_EVENT_SUCCESS = Symbol('UPDATE_EVENT_SUCCESS');
-const UPDATE_EVENT_ERROR = Symbol('UPDATE_EVENT_ERROR');
-const UPDATE_EVENT_DONE = Symbol('UPDATE_EVENT_DONE');
+const FETCH_EVENTS = Symbol();
+const FETCH_EVENTS_ERROR = Symbol();
+const POST_EVENT_SUCCESS = Symbol();
+const POST_EVENT_ERROR = Symbol();
+const POST_EVENT_DONE = Symbol();
+const UPDATE_EVENT_SUCCESS = Symbol();
+const UPDATE_EVENT_ERROR = Symbol();
+const UPDATE_EVENT_DONE = Symbol();
 
 const defaultState = Immutable.fromJS({
 	events: [],

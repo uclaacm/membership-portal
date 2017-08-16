@@ -7,9 +7,9 @@ import DetailsCard from './detailsCard';
 import SuccessCard from './successCard';
 import FacebookLoginCard from './facebookLoginCard';
 
-const PAGE_FB_LOGIN = Symbol('PAGE_FB_LOGIN');
-const PAGE_DETAILS_CARD = Symbol('PAGE_DETAILS_CARD');
-const PAGE_SUCCESS_CARD = Symbol('PAGE_SUCCESS_CARD');
+const PAGE_FB_LOGIN = Symbol();
+const PAGE_DETAILS_CARD = Symbol();
+const PAGE_SUCCESS_CARD = Symbol();
 
 export default class RegisterComponent extends React.Component {
 	constructor(props) {

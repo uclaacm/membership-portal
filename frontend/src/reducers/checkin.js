@@ -7,9 +7,9 @@ import {Action} from 'reducers';
  ** Constants                                **
  *********************************************/
 
-const CHECK_IN_SUCCESS = Symbol('CHECK_IN_SUCCESS');
-const CHECK_IN_ERROR = Symbol('CHECK_IN_ERROR');
-const CHECK_IN_RESET = Symbol('CHECK_IN_RESET');
+const CHECK_IN_SUCCESS = Symbol();
+const CHECK_IN_ERROR = Symbol();
+const CHECK_IN_RESET = Symbol();
 
 const defaultState = Immutable.fromJS({
 	submitted: false,

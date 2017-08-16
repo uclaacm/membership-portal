@@ -9,15 +9,15 @@ import { LogoutUser } from './auth';
  ** Constants                                **
  *********************************************/
 
-const FETCH_USER = Symbol('FETCH_USER');
-const FETCH_USER_ERR = Symbol('FETCH_USER_ERR');
+const FETCH_USER = Symbol();
+const FETCH_USER_ERR = Symbol();
 
-const UPDATE_USER_ERR = Symbol('UPDATE_USER_ERR');
-const UPDATE_USER_SUCCESS = Symbol('UPDATE_USER_SUCCESS');
-const UPDATE_COMPLETED = Symbol('UPDATE_COMPLETED');
+const UPDATE_USER_ERR = Symbol();
+const UPDATE_USER_SUCCESS = Symbol();
+const UPDATE_COMPLETED = Symbol();
 
-const FETCH_ACTIVITY_SUCCESS = Symbol('FETCH_ACTIVITY_SUCCESS');
-const FETCH_ACTIVITY_ERR = Symbol('FETCH_ACTIVITY_ERR');
+const FETCH_ACTIVITY_SUCCESS = Symbol();
+const FETCH_ACTIVITY_ERR = Symbol();
 
 const defaultState = Immutable.fromJS({
 	profile: {},
@@ -39,13 +39,13 @@ class State {
 			type  : error ? FETCH_USER_ERR : FETCH_USER,
 			user  : error ? undefined : user,
 			error : error || undefined,
-		}
+		};
 	}
 	static UpdateUser(error) {
 		return {
 			type  : error ? UPDATE_USER_ERR : UPDATE_USER_SUCCESS,
 			error : error || undefined,
-		}
+		};
 	}
 	static FetchActivity(error, activity){
 		return {
@@ -92,7 +92,6 @@ const FetchUser = () => {
 
 const UpdateUser = user => {
 	return async dispatch => {
-		dispatch();
 		try {
 			const response = await fetch(Config.API_URL + Config.routes.user.user,  {
 				method: 'PATCH',

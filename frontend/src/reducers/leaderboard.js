@@ -9,9 +9,9 @@ import { LogoutUser } from './auth';
  ** Constants                                **
  *********************************************/
 
-const FETCH_SUCCESS = Symbol('FETCH_SUCCESS');
-const FETCH_ERR = Symbol('FETCH_ERR');
-const INVALIDATE = Symbol('INVALIDATE');
+const FETCH_SUCCESS = Symbol();
+const FETCH_ERR = Symbol();
+const INVALIDATE = Symbol();
 
 const defaultState = Immutable.fromJS({
 	leaderboard: [],

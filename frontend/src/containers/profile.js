@@ -39,15 +39,14 @@ class Profile extends React.Component {
 
 	render() {
 		return <ProfileComponent
-			profile={this.props.profile}
-			updated={this.props.updated}
-			updateSuccess={this.props.updateSuccess}
-			updateError={this.props.updateError}
-			saveChanges={this.saveChanges.bind(this)}
-			logout={this.props.logout}
-			activity={this.props.activity}
-			activityError={this.props.activityError}
-		/>;
+		         profile={this.props.profile}
+		         updated={this.props.updated}
+		         updateSuccess={this.props.updateSuccess}
+		         updateError={this.props.updateError}
+		         saveChanges={this.saveChanges.bind(this)}
+		         logout={this.props.logout}
+		         activity={this.props.activity}
+		         activityError={this.props.activityError} />;
 	}
 }
 

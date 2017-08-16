@@ -153,7 +153,6 @@ export default class Profile extends React.Component {
 						<input type="password" placeholder="Confirm new password..." onChange={(e)=>{let v = e.target.value;this.setState((prev)=>{
 							return Object.assign({}, prev, {passwordConf: v});
 						  });}}/><br />
-						{ this.props.checkInError ? <span className="CaptionSecondary error">{ this.props.checkInError }</span> : <span className="CaptionSecondary error">&nbsp;</span> }
 					</form>
 				</OverlayPopup>
 				{/*<MobileProfile profile={this.props.profile} />*/}

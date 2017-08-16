@@ -8,9 +8,9 @@ import { replace } from 'react-router-redux';
  ** Constants                                **
  *********************************************/
 
-const AUTH_USER = Symbol('AUTH_USER');
-const UNAUTH_USER = Symbol('UNAUTH_USER');
-const AUTH_ERROR = Symbol('AUTH_ERROR');
+const AUTH_USER = Symbol();
+const UNAUTH_USER = Symbol();
+const AUTH_ERROR = Symbol();
 
 const REQUEST_PASSWORD_RESET_SUCCESS = Symbol();
 const REQUEST_PASSWORD_RESET_ERROR = Symbol();
