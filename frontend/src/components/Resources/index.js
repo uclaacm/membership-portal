@@ -4,13 +4,13 @@ import Sidebar from 'containers/sidebar';
 import Resources from './resources';
 
 export default class ResourcesComponent extends React.Component {
-    render () {
-        return(
-            <div className="resources">
-                <Topbar />
-                <Sidebar/>
-                <Resources />
-            </div>
-        );
-    }
+	render () {
+		return(
+			<div className="resources">
+				<Topbar />
+				<Sidebar/>
+				<Resources />
+			</div>
+		);
+	}
 }

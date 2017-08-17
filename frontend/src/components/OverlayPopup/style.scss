@@ -1,82 +1,82 @@
 .overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    z-index: 11;
-    background: $primaryblue-alpha;
+	position: fixed;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	z-index: 11;
+	background: $primaryblue-alpha;
 }
 
 .overlay-popup {
-    position: relative;
-    margin: 150px auto;
-    background: white;
-    width: 400px;
-    height: auto;
-    border-radius: 5px;
-    box-shadow: 0 4px 0 0 rgba(255, 255, 255, 0.5);
+	position: relative;
+	margin: 150px auto;
+	background: white;
+	width: 400px;
+	height: auto;
+	border-radius: 5px;
+	box-shadow: 0 4px 0 0 rgba(255, 255, 255, 0.5);
 
-    @media (max-width: 425px) {
-        width: 300px;
-        margin: 100px auto;
+	@media (max-width: 425px) {
+		width: 300px;
+		margin: 100px auto;
 
-        h2 {
-            font-size: 1.2em;
-        }
-    }
+		h2 {
+			font-size: 1.2em;
+		}
+	}
 
-    h2 {
-        text-align: center;
-        padding: 40px 20px 0px 20px;
-        color: $primaryblack;
-    }
+	h2 {
+		text-align: center;
+		padding: 40px 20px 0px 20px;
+		color: $primaryblack;
+	}
 
-    h3 {
-        text-align: center;
-        padding-top: 10px;
-        color: $primaryblack;
-    }
+	h3 {
+		text-align: center;
+		padding-top: 10px;
+		color: $primaryblack;
+	}
 
-    .points {
-        text-align: center;
-        font-size: 1.5em;
-    }
+	.points {
+		text-align: center;
+		font-size: 1.5em;
+	}
 
-    form {
-        margin: auto;
-        text-align: center;
-        width: 100%;
+	form {
+		margin: auto;
+		text-align: center;
+		width: 100%;
 
-        input[type=text], input[type=password] {
-            border: 1px solid $gray2;
-            border-radius: 5px;
-            box-sizing: border-box;
-            width: $sidebar-input-width;
-            height: 30px;
-            padding: 5px;
-            margin-top: 5px;
-            margin-bottom: 5px;
-        }
+		input[type=text], input[type=password] {
+			border: 1px solid $gray2;
+			border-radius: 5px;
+			box-sizing: border-box;
+			width: $sidebar-input-width;
+			height: 30px;
+			padding: 5px;
+			margin-top: 5px;
+			margin-bottom: 5px;
+		}
+		
+		span.error {
+			color: $light-red;
+			display: inline-block;
+			margin-bottom: 10px;
+		}
+	}
 
-        span.error {
-            color: $light-red;
-            display: inline-block;
-            margin-bottom: 10px;
-        }
-    }
+	.popup-buttons {
+		margin: auto;
+		padding-bottom: 30px;
+		text-align: center;
 
-    .popup-buttons {
-        margin: auto;
-        padding-bottom: 30px;
-        text-align: center;
+		.popup-button {
+			margin: 0px 5px;
+		}
 
-        .popup-button {
-            margin: 0px 5px;
-        }
-
-        .popup-button:first-child {
-            margin-left: 0px;
-        }
-    }
+		.popup-button:first-child {
+			margin-left: 0px;
+		}
+	}
 }

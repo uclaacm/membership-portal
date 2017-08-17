@@ -17,7 +17,6 @@ import Leaderboard from 'containers/leaderboard';
 import Resources from 'containers/resources';
 import Register from 'containers/register';
 import ResetPassword from 'containers/resetPassword';
-import ConfirmAccount from 'containers/confirmAccount';
 import requireAuth from 'containers/requireAuth';
 
 class App extends React.Component {

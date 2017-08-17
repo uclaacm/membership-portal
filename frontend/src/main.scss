@@ -8,7 +8,6 @@
 @import "components/Login/style";
 @import "components/Register/style";
 @import "components/ResetPassword/style";
-@import "components/ConfirmAccount/style";
 
 @import "components/Events/style";
 @import "components/Profile/style";
@@ -20,17 +19,17 @@
 
 
 html, body {
-    margin: 0px;
-    height: auto;
-    min-height: 100%;
-    font-family: 'Lato', sans-serif;
+	margin: 0px;
+	height: auto;
+	min-height: 100%;
+	font-family: 'Lato', sans-serif;
 }
 
 a, a:visited {
-    color: #2196F3;
-    text-decoration: none;
+	color: #2196F3;
+	text-decoration: none;
 }
 
 a:hover {
-    color: #1976D2;
+	color: #1976D2;
 }

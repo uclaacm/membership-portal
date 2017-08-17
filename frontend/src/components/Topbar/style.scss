@@ -1,46 +1,46 @@
 @import "styles/vars";
 
 .topbar {
-    position: fixed;
-    height: 40px;
-    width: 100%;
-    top: -80px;
-    left: 0;
-    z-index: 9;
-    background: $primaryblue;
-    color: $white;
-    transition: top 0.125s ease-in-out;
+	position: fixed;
+	height: 40px;
+	width: 100%;
+	top: -80px;
+	left: 0;
+	z-index: 9;
+	background: $primaryblue;
+	color: $white;
+	transition: top 0.125s ease-in-out;
 
-    @media (max-width: 700px) {
-        top: 0px;
-    }
+	@media (max-width: 700px) {
+		top: 0px;
+	}
 
-    .topbar-container {
-        text-align: center;
-        width: 100%;
-    }
+	.topbar-container {
+		text-align: center;
+		width: 100%;
+	}
 
-    a.selected .navigation-item {
-        color: $secondaryblue;
-        background-color: $white;
-    }
+	a.selected .navigation-item {
+		color: $secondaryblue;
+		background-color: $white;
+	}
 
-    .navigation-item {
-        display: inline-block;
-        height: 30px;
-        line-height: 30px;
-        margin: 5px 4px;
-        padding: 0px 10px;
-        font-size: 0.8em;
-        font-weight: 400;
-        border-radius: 20px;
-        color: white;
-        transition: 0.125s ease-in-out;
+	.navigation-item {
+		display: inline-block;
+		height: 30px;
+		line-height: 30px;
+		margin: 5px 4px;
+		padding: 0px 10px;
+		font-size: 0.8em;
+		font-weight: 400;
+		border-radius: 20px;
+		color: white;
+		transition: 0.125s ease-in-out;
 
-        &:hover {
-            color: $secondaryblue;
-            background-color: $white;
-            cursor: pointer;
-        }
-    }
+		&:hover {
+			color: $secondaryblue;
+			background-color: $white;
+			cursor: pointer;
+		}
+	}
 }

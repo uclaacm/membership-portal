@@ -1,125 +1,125 @@
 @import "styles/vars";
 
 html, body {
-    margin: 0px;
-    height: 100%;
-    min-height: 100%;
+	margin: 0px;
+	height: 100%;
+	min-height: 100%;
 }
 
 .login-tile {
-    position: fixed;
-    display: inline-block;
-    height: 100%;
-    width: 100%;
-    background-color: $primaryblue;
+	position: fixed;
+	display: inline-block;
+	height: 100%;
+	width: 100%;
+	background-color: $primaryblue;
 
-    .login-tile-inner {
-        opacity: 0.4;
-        height: 100%;
-        width: 100%;
-        // background: url(https://scontent.xx.fbcdn.net/v/t31.0-8/14570580_1314756125231128_7673056146755155018_o.jpg?oh=d3ba6059b61553fae942ff0012568ef2&oe=59A02E9B) center center fixed;
-        background-position: center center;
-        background-attachment: fixed;
-        background-size: cover;
+	.login-tile-inner {
+		opacity: 0.4;
+		height: 100%;
+		width: 100%;
+		// background: url(https://scontent.xx.fbcdn.net/v/t31.0-8/14570580_1314756125231128_7673056146755155018_o.jpg?oh=d3ba6059b61553fae942ff0012568ef2&oe=59A02E9B) center center fixed;
+		background-position: center center;
+		background-attachment: fixed;
+		background-size: cover;
 
-        @media (max-width: 425px) {
-            display: none;
-        }
-    }
+		@media (max-width: 425px) {
+			display: none;
+		}
+	}
 }
 
 .login-sidebar {
-    position: relative;
-    display: inline-block;
-    background: $primaryblue;
-    width: $sidebar-width;
-    height: 100vh;
-    color: $white;
-    font-size: 12px;
-    box-shadow: 0px 0px 4px #222222;
+	position: relative;
+	display: inline-block;
+	background: $primaryblue;
+	width: $sidebar-width;
+	height: 100vh;
+	color: $white;
+	font-size: 12px;
+	box-shadow: 0px 0px 4px #222222;
 
-    @media (max-width: 500px) {
-        width: 100%;
-    }
+	@media (max-width: 500px) {
+		width: 100%;
+	}
 
-    .login-container {
-        background: $primaryblue;
-        padding: 50px 10px;
-    }
+	.login-container {
+		background: $primaryblue;
+		padding: 50px 10px;
+	}
 
-    .login-logo {
-        display: block;
-        margin: auto;
-        height: 170px;
-        margin-bottom: 20px;
-    }
+	.login-logo {
+		display: block;
+		margin: auto;
+		height: 170px;
+		margin-bottom: 20px;
+	}
 
-    .login-input {
-        width: $sidebar-input-width;
-        margin: auto;
-        text-align: left;
-        margin-bottom: $sidebar-vertical-spacing;
+	.login-input {
+		width: $sidebar-input-width;
+		margin: auto;
+		text-align: left;
+		margin-bottom: $sidebar-vertical-spacing;
 
-        input {
-            border: 1px solid $gray2;
-            box-sizing: border-box;
-            border-radius: 5px;
-            height: 30px;
-            padding: 5px;
-            margin-top: 5px;
-            margin-bottom: 10px;
-        }
+		input {
+			border: 1px solid $gray2;
+			box-sizing: border-box;
+			border-radius: 5px;
+			height: 30px;
+			padding: 5px;
+			margin-top: 5px;
+			margin-bottom: 10px;
+		}
 
-        p {
-            margin: 0px;
-            font-size: 0.8em;
-            font-weight: 600;
-        }
+		p {
+			margin: 0px;
+			font-size: 0.8em;
+			font-weight: 600;
+		}
 
-        input {
-            width: $sidebar-input-width;
-        }
-    }
+		input {
+			width: $sidebar-input-width;
+		}
+	}
 
-    .sign-in {
-        margin-top: 20px;
-        text-align: center;
+	.sign-in {
+		margin-top: 20px;
+		text-align: center;
 
-        .forgot-password {
-            margin-top: 10px;
-            color: $white;
-            text-decoration: underline;
-        }
-    }
+		.forgot-password {
+			margin-top: 10px;
+			color: $white;
+			text-decoration: underline;
+		}
+	}
 
-    .sign-up {
-        margin-top: 100px;
-        text-align: center;
+	.sign-up {
+		margin-top: 100px;
+		text-align: center;
 
-        .new-account {
-            margin-bottom: 10px;
-        }
-    }
+		.new-account {
+			margin-bottom: 10px;
+		}
+	}
 
-    .input-button {
-        border: none;
-        outline: none; 
-    }
+	.input-button {
+		border: none;
+		outline: none; 
+	}
 
-    .sign-in-button {
-        background: $light-green;
-        box-shadow: 0 3px 0 $dark-green;    
-    }
+	.sign-in-button {
+		background: $light-green;
+		box-shadow: 0 3px 0 $dark-green;    
+	}
 
-    .input-text {
-      display: block;
-      text-align: center;
-    }
+	.input-text {
+	  display: block;
+	  text-align: center;
+	}
 
-    a, a:link, a:visited, a:hover, a:active {
-        color: inherit;
-        text-decoration: inherit;
-        font-weight: inherit;
-        font-size: 14px;
-    }
+	a, a:link, a:visited, a:hover, a:active {
+		color: inherit;
+		text-decoration: inherit;
+		font-weight: inherit;
+		font-size: 14px;
+	}
 }
