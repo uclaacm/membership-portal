@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/ucladevx/membership-portal#readme",
   "dependencies": {
+    "@risingstack/trace": "^3.16.0",
     "bcrypt": "^1.0.2",
     "body-parser": "^1.15.2",
     "compression": "^1.6.2",

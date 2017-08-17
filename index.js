@@ -1,3 +1,4 @@
+const trace = require('@risingstack/trace');
 const cluster = require('cluster');
 const express = require('express');
 const morgan = require('morgan');
