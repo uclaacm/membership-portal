@@ -64,7 +64,7 @@ The following commands are also available:
 - `make logs` – attach to the standard output of the process and view the logs
 - `make nginx-logs` - attach to the nginx server and view access log
 - `make psql` - attach to the database and run queries
-- `make pg_kbup` - take a snapshot of the database
+- `make pg_bkup` - take a snapshot of the database
 - `make reset` – completely obliterate the currently built images
 - `make build` – only run the image build
 - `make run` – only run in detached mode
