@@ -119,21 +119,21 @@ export default class UserEvents extends React.Component {
         today.setHours(0, 0, 0, 0);
         const pastDays = days.filter(day => day.date < today);
         const futureDays = days.filter(day => day.date >= today);
-        
+
         return (
             <div className="events-dashboard user-dashboard">
                 {this.renderAttendanceForm()}
                 {this.renderCheckInSuccess()}
                 {this.renderCheckInFailure()}
                 { !this.state.showEarlierEvents && <EarlierEventsIcon onClick={ this.showEarlierEvents } /> }
-                {  this.state.showEarlierEvents && pastDays.map((day, i) => <EventDay day={day} key={i} admin={false} />) }
+                {  this.state.showEarlierEvents && pastDays.map((day, i) => <EventDay day={day} key={day.date.toString()} admin={false} />) }
                 <Button
                     className={ "checkin-button" + (this.state.showCheckIn ? " hidden" : "")}
                     style="blue collapsible"
                     icon="fa-calendar-check-o"
                     text="Check In"
                     onClick={ this.showCheckIn } />
-                { futureDays.map((day, i) => <EventDay day={day} key={i + pastDays.length} admin={false} />) }
+                { futureDays.map((day, i) => <EventDay day={day} key={day.date.toString()} admin={false} />) }
             </div>
         );
     }

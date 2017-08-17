@@ -40,7 +40,7 @@ export default class Leaderboard extends React.Component {
 						<tbody>
 						{
 							this.props.leaderboard.slice(3).map((user,i) =>  
-								<tr className={user.uuid === this.props.user.uuid ? "current-user" : ""} key={i}>
+								<tr className={user.uuid === this.props.user.uuid ? "current-user" : ""} key={user.uuid}>
 									<td>{i + 4}</td>
 									<td className="name">
 										<div>

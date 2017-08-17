@@ -146,9 +146,9 @@ export default class AdminEvents extends React.Component {
 					onClick={this.showAddEvent} />}
 
 				{ !this.state.showEarlierEvents && <EarlierEventsIcon onClick={()=>{this.showEarlierEvents();}}/> }
-				{ this.state.showEarlierEvents && pastMonths.map((month, i) => <EventMonth month={month} key={i} handleEditClick={this.handleEditClick}/>) }
+				{ this.state.showEarlierEvents && pastMonths.map((month, i) => <EventMonth month={month} key={month.date.toString()} handleEditClick={this.handleEditClick}/>) }
 
-				{ futureMonths.map((month, i) => <EventMonth month={month} key={i} handleEditClick={this.handleEditClick} />) }
+				{ futureMonths.map((month, i) => <EventMonth month={month} key={month.date.toString()} handleEditClick={this.handleEditClick} />) }
 			</div>
 		);
 	}

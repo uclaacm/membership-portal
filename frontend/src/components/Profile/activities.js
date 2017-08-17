@@ -25,6 +25,7 @@ export default class Activities extends React.Component {
 					month.days[month.days.length - 1].activities.push({
 						type: activityTypes.LEVEL_UP,
 						date: activities[i].date,
+						uuid: currStatus.currLevel.rank,
 						prevLevel: currStatus.currLevel,
 						nextLevel: nextStatus.currLevel,
 					});
@@ -39,7 +40,7 @@ export default class Activities extends React.Component {
 		
 		return (
 			<div className="activity-wrapper">
-				{ months.slice().reverse().map((month, i) => <ActivitiesMonth key={'month'+i} month={month} />) }
+				{ months.slice().reverse().map((month, i) => <ActivitiesMonth key={month.date.toString()} month={month} />) }
 			</div>
 		);
 	}
