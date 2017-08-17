@@ -9,6 +9,9 @@ setup:
 	if [ ! -f app/config/SESSION_SECRET ]; then \
 		cat /dev/urandom | od -N 32 -t x4 -An | tr -d '\n ' > app/config/SESSION_SECRET; \
 	fi
+	if [ ! -d pg_bkup ]; then \
+		mkdir pg_bkup; \
+	fi
 
 certs:
 	gpg certs.tar.gz.gpg
@@ -48,6 +51,9 @@ nginx-logs:
 psql:
 	sudo docker exec -it $$(sudo docker ps | grep "postgres" | cut -d' ' -f1) psql -U postgres
 
+pg_bkup:
+	sudo docker exec -it $$(sudo docker ps | grep "postgres" | cut -d' ' -f1) /bin/ash -c 'pg_dump -U postgres > "/backup/pg_bkup_$(shell date --iso-8601=minutes)"'
+
 stop:
 	sudo docker-compose down
 
@@ -57,3 +63,5 @@ reset: stop
 	-sudo docker rmi nkansal/backend
 	-sudo docker volume rm postgres_data
 	-sudo docker volume rm membershipportal_postgres_data
+
+.PHONY: pg_bkup
