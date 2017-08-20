@@ -3,11 +3,13 @@ import Config from 'config';
 import { NavLink } from 'react-router-dom';
 import BannerMessage from 'components/BannerMessage';
 
+import NameCard from './nameCard';
 import DetailsCard from './detailsCard';
 import SuccessCard from './successCard';
 import FacebookLoginCard from './facebookLoginCard';
 
 const PAGE_FB_LOGIN = Symbol();
+const PAGE_NAME_CARD = Symbol();
 const PAGE_DETAILS_CARD = Symbol();
 const PAGE_SUCCESS_CARD = Symbol();
 
@@ -28,29 +30,44 @@ export default class RegisterComponent extends React.Component {
 			}
 		}
 
+		this.nameValid = this.nameValid.bind(this);
+		this.profileValid = this.profileValid.bind(this);
+		this.skipFacebookLogin = this.skipFacebookLogin.bind(this);
 		this.handleFacebookLogin = this.handleFacebookLogin.bind(this);
 		this.handleProfileChange = this.handleProfileChange.bind(this);
 		this.handleProfileSubmit = this.handleProfileSubmit.bind(this);
-		this.profileValid = this.profileValid.bind(this);
+		this.handleNameEntryComplete = this.handleNameEntryComplete.bind(this);
 		this.renderComponentForPage = this.renderComponentForPage.bind(this);
 	}
 
 	renderComponentForPage(page) {
 		switch (page) {
 			case PAGE_FB_LOGIN:
-				return <FacebookLoginCard facebookCallback={this.handleFacebookLogin} />
+				return <FacebookLoginCard
+				         facebookCallback={this.handleFacebookLogin}
+								 skipFacebookLogin={this.skipFacebookLogin} />
+			case PAGE_NAME_CARD:
+				return <NameCard
+				         onChange={this.handleProfileChange}
+								 onSubmit={this.handleNameEntryComplete} 
+								 profileValid={this.nameValid} />
 			case PAGE_DETAILS_CARD:
 				return <DetailsCard
-							profile={this.state.profile}
-							onChange={this.handleProfileChange}
-							onSubmit={this.handleProfileSubmit}
-							disableForm={this.state.disableForm}
-							profileValid={this.profileValid} />
+				         profile={this.state.profile}
+				         onChange={this.handleProfileChange}
+				         onSubmit={this.handleProfileSubmit}
+				         disableForm={this.state.disableForm}
+				         profileValid={this.profileValid} />
 			case PAGE_SUCCESS_CARD:
 				return <SuccessCard />
 			default:
 				return null
 		}
+	}
+
+	skipFacebookLogin(e) {
+		e.preventDefault();
+		this.setState(prev => Object.assign({}, prev, { currentPage: PAGE_NAME_CARD }));
 	}
 
 	handleFacebookLogin(response) {
@@ -65,6 +82,15 @@ export default class RegisterComponent extends React.Component {
 				profileId: response.id
 			}
 		})
+	}
+
+	handleNameEntryComplete(e) {
+		e.preventDefault();
+		if (!this.state.disableForm) {
+			if (!this.nameValid())
+				return;
+			this.setState(prev => Object.assign({}, prev, { currentPage: PAGE_DETAILS_CARD }));
+		}
 	}
 
 	handleProfileChange(name, value) {
@@ -94,6 +120,10 @@ export default class RegisterComponent extends React.Component {
 			&& /^.{2,}\@([^\.\@]{1,}\.)*ucla\.edu$/.test(p.email)
 			&& parseInt(p.year) !== NaN && parseInt(p.year) > 0
 			&& p.password && p.password.length >= 10;
+	}
+
+	nameValid() {
+		return this.state.profile.firstName && this.state.profile.lastName;
 	}
 
 	componentWillReceiveProps(nextProps) {

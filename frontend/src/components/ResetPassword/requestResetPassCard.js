@@ -24,6 +24,7 @@ export default class ResetPassCard extends React.Component {
 	render() {
 		return (
 			<div className="card details-card">
+				<img src={Config.organization.logo} />
 				<p className="question">Forgot your password?</p>
 				<div className="inner">
 					<form onSubmit={this.submitForm} autoComplete="off">

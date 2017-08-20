@@ -40,9 +40,13 @@ input {
 
 .card {
 	width: 552px;
-	height: 307px;
+	height: 320px;
 	background: $white;
 	text-align: center;
+
+	a {
+		cursor: pointer;
+	}
 
 	img {
 		display: none;
@@ -69,6 +73,16 @@ input {
 		color: #666666;
 		padding-left: 10%;
 		padding-right: 10%;
+	}
+
+	p.info-compact {
+		font-size: 0.8em;
+		font-weight: normal;
+		text-align: center;
+		margin-top: 10px;
+		color: #666666;
+		padding-left: 5%;
+		padding-right: 5%;
 	}
 
 	@media (max-width: 575px) {

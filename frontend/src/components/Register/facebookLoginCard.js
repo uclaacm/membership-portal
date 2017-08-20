@@ -4,7 +4,7 @@ import Button from 'components/Button/index'
 import FacebookLogin from 'react-facebook-login';
 
 export default class FacebookLoginCard extends React.Component {
-	render () {
+	render() {
 		return(
 			<div className="card fb-login-card">
 				<img src={Config.organization.logo} />
@@ -18,7 +18,7 @@ export default class FacebookLoginCard extends React.Component {
 						icon="fa-facebook"
 						callback={this.props.facebookCallback} />
 				</div>
-				<p className="info">We only use your Facebook to fetch your first name, last name, and profile picture. We will never post on your Facebook or read any other information from your Facebook in the future.</p>
+				<p className="info">We only use your Facebook to fetch your first name, last name, and profile picture. We will never post on your Facebook or read any other information from your Facebook in the future. <i><a to="#" onClick={this.props.skipFacebookLogin}>Skip this step</a></i></p>
 			</div>
 		);
 	}
