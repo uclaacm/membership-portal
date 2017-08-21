@@ -1,14 +1,22 @@
 module.exports = (Sequelize, db) => {
+	/**
+	 * Activity keeps track of non-trivial things users are doing in the system. Each
+	 * Activity object represents one action of a specified type
+	 */
 	const Activity = db.define('activity', {
 		id: {
 			type: Sequelize.INTEGER,
 			autoIncrement: true,
 			primaryKey: true,
 		},
+
+		// uuid that uniquely identifies this activity
 		uuid: {
 			type: Sequelize.UUID,
 			defaultValue: Sequelize.UUIDV4,
 		},
+
+		// the user that committed this action
 		user: {
 			type: Sequelize.UUID,
 			allowNull: false,
@@ -22,6 +30,15 @@ module.exports = (Sequelize, db) => {
 				},
 			},
 		},
+
+		// the type of action committed
+		//   ACCOUNT_CREATE             - a user created an account
+		//   ACCOUNT_ACTIVATE           - the user activated their account
+		//   ACCOUNT_RESET_PASS         - the user reset their password
+		//   ACCOUNT_RESET_PASS_REQUEST - the user requested a code to reset their password
+		//   ACCOUNT_UPDATE_INFO        - the user updated some account information
+		//   ACCOUNT_LOGIN              - the user logged into their account
+		//   ATTEND_EVENT               - the user attended an event
 		type: {
 			type: Sequelize.ENUM(
 				'ACCOUNT_CREATE',
@@ -34,31 +51,70 @@ module.exports = (Sequelize, db) => {
 			),
 			allowNull: false,
 		},
+
+		// decription of the event, or some other human-readable context/information regarding
+		// this activity
 		description: {
 			type: Sequelize.STRING,
 		},
+
+		// points earned as a result of this activity (if applicable)
 		pointsEarned: {
 			type: Sequelize.INTEGER,
 			defaultValue: 0,
 		},
+
+		// date of the activity
 		date: {
 			type: Sequelize.DATE,
 			defaultValue: Sequelize.NOW,
 		},
+
+		// whether this is a public or internal activity
+		// public activities are shown to the user, whereas internal activites are used for
+		// logging purposes.
 		public: {
 			type: Sequelize.BOOLEAN,
 			default: false,
 		},
 	}, {
-		tableName: 'activities',
+		// set the table name in the database
+		tableName: 'activity',
+
+		// creating indices on frequently accessed fields improves efficiency
 		indexes: [
+			// a hash index on the uuid makes lookup by UUID O(1)
 			{
-				name: 'activities_date_btree_index',
+				unique: true,
+				fields: ['uuid']
+			},
+
+			// a BTREE index on the type makes retrieving activities by type O(N)
+			{
+				name: 'activity_type_btree_index',
+				method: 'BTREE',
+				fields: ['type', { attribute: 'type', order: 'ASC' }]
+			},
+
+			// a BTREE index on public makes retrieving public activities O(N), where N is 
+			// the number of public activities
+			{
+				name: 'activity_public_btree_index',
+				method: 'BTREE',
+				fields: ['public', { attribute: 'public', order: 'ASC' }]
+			},
+
+			// a BTREE index on the date makes retrieving all events in chronological order O(N)
+			{
+				name: 'activity_date_btree_index',
 				method: 'BTREE',
 				fields: ['date', { attribute: 'date', order: 'ASC' }]
 			},
+			
+			// a BTREE index on the user makes retrieving all events for a user O(N), where N
+			// is the number of activities for the user
 			{
-				name: 'activities_user_btree_index',
+				name: 'activity_user_btree_index',
 				method: 'BTREE',
 				fields: ['user', { attribute: 'user', order: 'ASC' }]
 			},

@@ -6,11 +6,15 @@ module.exports = (Sequelize, db) => {
 			type: Sequelize.INTEGER,
 			autoIncrement: true,
 			primaryKey: true
-		}, 
+		},
+
+		// event UUID: uniquely identifies an event
 		uuid: {
 			type: Sequelize.UUID,
 			defaultValue: Sequelize.UUIDV4
 		},
+
+		// currently unused, but the organization that the event is for
 		organization: {
 			type: Sequelize.STRING,
 			defaultValue: "ACM",
@@ -21,10 +25,14 @@ module.exports = (Sequelize, db) => {
 				}
 			}
 		},
+
+		// committee that is hosting the event (empty signifies general event)
 		committee: {
 			type: Sequelize.STRING,
 			defaultValue: "ACM",
 		},
+
+		// currently unused, but a thumbnail image (square-ish) URL
 		thumb: {
 			type: Sequelize.STRING,
 			validate: {
@@ -34,6 +42,8 @@ module.exports = (Sequelize, db) => {
 				}
 			}
 		},
+
+		// URL for a (rectangular, larger) cover image
 		cover: {
 			type: Sequelize.STRING,
 			validate: {
@@ -43,6 +53,8 @@ module.exports = (Sequelize, db) => {
 				}
 			}
 		},
+
+		// event title
 		title: {
 			type: Sequelize.STRING,
 			allowNull: false,
@@ -56,6 +68,8 @@ module.exports = (Sequelize, db) => {
 				}
 			}
 		},
+
+		// event description
 		description: {
 			type: Sequelize.TEXT,
 			allowNull: false,
@@ -69,6 +83,8 @@ module.exports = (Sequelize, db) => {
 				}
 			}
 		},
+
+		// physical location of the event
 		location: {
 			type: Sequelize.STRING,
 			validate: {
@@ -78,6 +94,8 @@ module.exports = (Sequelize, db) => {
 				}
 			}
 		},
+
+		// link to a FB event, evite, etc. (currently required)
 		eventLink: {
 			type: Sequelize.STRING,
 			validate: {
@@ -87,6 +105,8 @@ module.exports = (Sequelize, db) => {
 				}
 			}
 		},
+
+		// event start date and time (stored as UTC Datestring)
 		startDate: {
 			type: Sequelize.DATE,
 			allowNull: false,
@@ -99,6 +119,8 @@ module.exports = (Sequelize, db) => {
 				}
 			}
 		},
+
+		// event end date and time (stored as UTC Datestring) 
 		endDate: {
 			type: Sequelize.DATE,
 			allowNull: false,
@@ -111,6 +133,8 @@ module.exports = (Sequelize, db) => {
 				}
 			}
 		},
+
+		// attendance code for the event (should be unique across all events)
 		attendanceCode: {
 			type: Sequelize.STRING,
 			unique: true,
@@ -122,6 +146,8 @@ module.exports = (Sequelize, db) => {
 				}
 			}
 		},
+
+		// amount of points attending this event is worth
 		attendancePoints: {
 			type: Sequelize.INTEGER,
 			allowNull: false,
@@ -132,16 +158,22 @@ module.exports = (Sequelize, db) => {
 			}
 		}
 	}, {
+		// creating indices on frequently accessed fields improves efficiency
 		indexes: [
+			// a hash index on the uuid makes lookup by UUID O(1)
 			{
 				unique: true,
 				fields: ['uuid']
 			},
+
+			// a BTREE index on the start date makes retrieving all events in chronological order O(N)
 			{
 				name: 'event_start_date_index',
 				method: 'BTREE',
 				fields: ['startDate', { attribute: 'startDate', order: 'DESC' }]
 			},
+			
+			// a BTREE index on the end date makes retrieving all events in chronological order O(N)
 			{
 				name: 'event_end_date_index',
 				method: 'BTREE',

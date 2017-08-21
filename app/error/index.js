@@ -1,5 +1,20 @@
 const logger = require('../logger');
 
+/**
+ * This file defines error classes based on their semantic meaning. It abstracts away
+ * HTTP status codes so they can be used in a RESTful way without worrying about a 
+ * consistent error interface.
+ * 
+ * These classes descend from the base Error class, so they also automatically capture
+ * stack traces -- useful for debugging.
+ */
+
+
+/**
+ * Base error class
+ * 
+ * Supports HTTP status codes and a custom message
+ */
 class HTTPError extends Error {
 	constructor(name, status, message) {
 		if (message === undefined){
@@ -76,7 +91,11 @@ class NotAvailable extends HTTPError {
 	}
 }
 
-let errorHandler = (err, req, res, next) => {
+/**
+ * General error handler middleware. Attaches to express so that throwing or calling next() with
+ * an error ends up here and all errors are handled uniformly.
+ */
+const errorHandler = (err, req, res, next) => {
 	if (!err)
 		err = new InternalServerError("An unknown error occurred");
 	if (!err.status)
@@ -96,8 +115,12 @@ let errorHandler = (err, req, res, next) => {
 	});
 }
 
-let notFoundHandler = (req, res, next) => {
-	let err = new NotFound("The resource " + req.url + " was not found");
+/**
+ * 404 errors aren't triggered by an error object, so this is a catch-all middleware
+ * for requests that don't hit a route.
+ */
+const notFoundHandler = (req, res, next) => {
+	const err = new NotFound("The resource " + req.url + " was not found");
 	logger.warn("%s [Flow %s]: %s [%d]: %s", new Date(), req.id, err.name, err.status, err.message);
 	res.status(err.status).json({
 		error : {

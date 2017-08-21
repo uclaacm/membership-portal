@@ -10,13 +10,19 @@ module.exports = (Sequelize, db) => {
 			autoIncrement: true,
 			primaryKey: true
 		},
+
+		// user ID: main way of querying the user
 		uuid: {
 			type: Sequelize.UUID,
 			defaultValue: Sequelize.UUIDV4
 		},
+
+		// facebook profile of the user: used to generate profile picture
 		profileId: {
 			type: Sequelize.STRING
 		},
+
+		// email address of the user
 		email: {
 			type: Sequelize.STRING,
 			allowNull: false,
@@ -30,17 +36,32 @@ module.exports = (Sequelize, db) => {
 				}
 			}
 		},
+
+		// type of account
+		//   RESTRICTED - not used currently
+		//   STANDARD   - a regular member
+		//   ADMIN      - admin type user
 		accessType: {
 			type: Sequelize.ENUM('RESTRICTED','STANDARD','ADMIN'),
 			defaultValue: 'STANDARD'
 		},
+
+		// account state
+		//   PENDING        - account pending activation (newly created)
+		//   ACTIVE         - account activated and in good standing
+		//   BLOCKED        - account is blocked, login is denied
+		//   PASSWORD_RESET - account has requested password reset
 		state: {
 			type: Sequelize.ENUM('PENDING', 'ACTIVE', 'BLOCKED', 'PASSWORD_RESET'),
 			defaultValue: 'PENDING'
 		},
+
+		// access code: the code that should be matched when activating account or resetting password
 		accessCode: {
 			type: Sequelize.STRING
 		},
+
+		// user's first name
 		firstName: {
 			type: Sequelize.STRING,
 			allowNull: false,
@@ -54,6 +75,8 @@ module.exports = (Sequelize, db) => {
 				}
 			}
 		},
+
+		// user's last name
 		lastName: {
 			type: Sequelize.STRING,
 			allowNull: false,
@@ -67,6 +90,8 @@ module.exports = (Sequelize, db) => {
 				}
 			}
 		},
+
+		// user's password hash
 		hash: {
 			type: Sequelize.STRING,
 			allowNull: false,
@@ -76,6 +101,9 @@ module.exports = (Sequelize, db) => {
 				}
 			}
 		},
+
+		// user's year
+		//   typical mapping: [1,2,3,4,5] => [Freshman,Sophomore,Junior,Senior,Post-senior]
 		year: {
 			type: Sequelize.INTEGER,
 			allowNull: false,
@@ -89,6 +117,8 @@ module.exports = (Sequelize, db) => {
 				}
 			}
 		},
+
+		// user's major
 		major: {
 			type: Sequelize.STRING,
 			allowNull: false,
@@ -102,28 +132,40 @@ module.exports = (Sequelize, db) => {
 				}
 			}
 		},
+
+		// amount of points the user has
 		points: {
 			type: Sequelize.INTEGER,
 			defaultValue: 0
 		},
+
+		// date of last login
 		lastLogin: {
 			type: Sequelize.DATE,
 			defaultValue: Sequelize.NOW
 		}
 	}, {
+		// creating indices on frequently accessed fields improves efficiency
 		indexes: [
+			// a hash index on the uuid makes lookup by UUID O(1)
 			{
 				unique: true,
 				fields: ['uuid']
 			},
+
+			// a hash index on the email makes lookup by email O(1)
 			{
 				unique: true,
 				fields: ['email']
 			},
+
+			// a hash index on the access code makes lookup by access code O(1)
 			{
 				unique: true,
 				fields: ['accessCode']
 			},
+
+			// a BTREE index on the uuid makes retrieving the leaderboard O(N)
 			{
 				name: 'user_points_btree_index',
 				method: 'BTREE',
@@ -186,12 +228,13 @@ module.exports = (Sequelize, db) => {
 
 	User.Instance.prototype.getUserProfile = function() {
 		const profileId = this.getDataValue('profileId');
+		const uuid = this.getDataValue('uuid');
 		return {
-			uuid       : this.getDataValue('uuid'),
+			uuid,
 			firstName  : this.getDataValue('firstName'),
 			lastName   : this.getDataValue('lastName'),
-			picture    : profileId ? 'https://graph.facebook.com/' + profileId + '/picture?width=300' : 
-			                         `https://www.gravatar.com/avatar/${ this.getDataValue('uuid').replace(/[^0-9a-f]/g, '') }?d=identicon&s=300`,
+			picture    : profileId ? `https://graph.facebook.com/${ profileId }/picture?width=300` : 
+			                         `https://www.gravatar.com/avatar/${ uuid.replace(/[^0-9a-f]/g, '') }?d=identicon&s=300`,
 			email      : this.getDataValue('email'),
 			year       : this.getDataValue('year'),
 			major      : this.getDataValue('major'),
@@ -201,13 +244,6 @@ module.exports = (Sequelize, db) => {
 
 	User.Instance.prototype.verifyPassword = function(password) {
 		return bcrypt.compare(password, this.getDataValue('hash'));
-	};
-
-	User.Instance.prototype.updatePassword = function(password) {
-		let self = this;
-		return User.generateHash(password).then(hash => {
-			self.hash = hash;
-		});
 	};
 
 	User.Instance.prototype.isAdmin = function() {
