@@ -23,7 +23,7 @@ class App extends React.Component {
 	render(){
 		return (
 			<Provider store={store}>
-				<ConnectedRouter history={history}>
+				<ConnectedRouter onUpdate={() => window.scrollTo(0, 0)} history={history}>
 					<div>
 						<Switch>
 							<Route path="/login" component={Login}/>
