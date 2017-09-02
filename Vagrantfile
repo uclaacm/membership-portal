@@ -52,7 +52,8 @@ Vagrant.configure("2") do |config|
 		vb.cpus = "4"
 	end
 
-	config.vm.network "forwarded_port", guest: 80, host: 8080
+	config.vm.network "forwarded_port", guest: 8080, host: 8080
+	config.vm.network "forwarded_port", guest: 8000, host: 8000
 	#
 	# View the documentation for the provider you are using for more
 	# information on available options.
