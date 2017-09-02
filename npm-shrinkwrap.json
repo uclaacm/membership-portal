@@ -421,33 +421,6 @@
       "from": "combined-stream@>=1.0.5 <1.1.0",
       "resolved": "https://registry.npmjs.org/combined-stream/-/combined-stream-1.0.5.tgz"
     },
-    "compressible": {
-      "version": "2.0.11",
-      "from": "compressible@>=2.0.10 <2.1.0",
-      "resolved": "https://registry.npmjs.org/compressible/-/compressible-2.0.11.tgz"
-    },
-    "compression": {
-      "version": "1.7.0",
-      "from": "compression@>=1.6.2 <2.0.0",
-      "resolved": "https://registry.npmjs.org/compression/-/compression-1.7.0.tgz",
-      "dependencies": {
-        "bytes": {
-          "version": "2.5.0",
-          "from": "bytes@2.5.0",
-          "resolved": "https://registry.npmjs.org/bytes/-/bytes-2.5.0.tgz"
-        },
-        "debug": {
-          "version": "2.6.8",
-          "from": "debug@2.6.8",
-          "resolved": "https://registry.npmjs.org/debug/-/debug-2.6.8.tgz"
-        },
-        "ms": {
-          "version": "2.0.0",
-          "from": "ms@2.0.0",
-          "resolved": "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz"
-        }
-      }
-    },
     "concat-map": {
       "version": "0.0.1",
       "from": "concat-map@0.0.1",

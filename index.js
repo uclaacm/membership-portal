@@ -1,13 +1,16 @@
-const trace = require('@risingstack/trace');
 const cluster = require('cluster');
 const express = require('express');
 const morgan = require('morgan');
 const uuid = require('uuid');
-const compression = require('compression');
 const bodyParser = require('body-parser');
 const app = require('./app');
 const log = app.logger;
 let server = express();
+
+// enable app performance metrics in production
+if (app.config.isProduction) {
+	require('@risingstack/trace');
+}
 
 // enable CORS in development
 if (app.config.isDevelopment) {
@@ -28,9 +31,6 @@ server.use((req, res, next) => {
 	res.set('X-Flow-Id', req.id);
 	next();
 });
-
-// Use gzip compression to reduce bandwidth usage
-server.use(compression());
 
 // Enable logging for debugging and tracing purposes
 server.use(morgan(':date[web] [IP :req[X-Forwarded-For]] [Flow :res[X-Flow-Id]] :method :url :status :response-time[3]ms'));

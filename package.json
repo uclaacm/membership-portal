@@ -23,7 +23,6 @@
     "@risingstack/trace": "^3.16.0",
     "bcrypt": "^1.0.2",
     "body-parser": "^1.15.2",
-    "compression": "^1.6.2",
     "express": "^4.14.0",
     "handlebars": "^4.0.10",
     "jsonwebtoken": "^7.3.0",
