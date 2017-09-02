@@ -183,13 +183,12 @@ router.post('/resetPassword/:accessCode', (req, res, next) => {
 	// find the user using the given access code
 	User.findByAccessCode(req.params.accessCode).then(user => {
 		// if no such user was found, probably the access code is invalid or non-existent
-		if (!user)
+		if (!user || !user.requestedPasswordReset())
 			throw new error.BadRequest('Invalid access code');
 		// use the new password to update the user's hash and account state
 		return User.generateHash(req.body.user.newPassword).then(hash => {
 			user.hash = hash;
 			user.state = 'ACTIVE';
-			user.accessCode = '';
 			return user.save();
 		});
 	}).then(user => {
