@@ -71,6 +71,12 @@ export default {
 				picture: "/assets/images/officers/jerry.jpg"
 			},
 			{
+				name: "Tanya Al-Rehani",
+				position: "President of NetSec",
+				email: "alrehanitanya@gmail.com",
+				picture: "/assets/images/officers/tanya.jpg"
+			},
+			{
 				name: "Tyler Lindberg",
 				position: "President of VRCG",
 				email: "tlindberg@ucla.edu",
