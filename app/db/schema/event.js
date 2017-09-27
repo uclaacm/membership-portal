@@ -74,10 +74,6 @@ module.exports = (Sequelize, db) => {
 			type: Sequelize.TEXT,
 			allowNull: false,
 			validate: {
-				is: {
-					args: /^.{3,}$/,
-					msg: "The description must be at least 3 characters long"
-				},
 				notEmpty: {
 					msg: "The description field is required"
 				}
