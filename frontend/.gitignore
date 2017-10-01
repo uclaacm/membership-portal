@@ -36,5 +36,11 @@ jspm_packages
 # Optional REPL history
 .node_repl_history
 
+# OS-specific
+Thumbs.db
+desktop.ini
+.DS_Store
+.Trashes
+
 lib/
 public/
