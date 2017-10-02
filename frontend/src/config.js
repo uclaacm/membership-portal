@@ -129,11 +129,16 @@ export default {
 		]
 	},
 	levels: [
-		{ startsAt: 0, rank: "Newbie" },
-		{ startsAt: 20, rank: "Newbie II" },
-		{ startsAt: 50, rank: "Newbie III" },
-		{ startsAt: 100, rank: "Hacker" },
-		{ startsAt: 150, rank: "Hacker II" },
-		{ startsAt: 200, rank: "Hacker III" }
+		{ startsAt: 0, rank: "Hello, World!" },
+		{ startsAt: 20, rank: "Factorial Fly" },
+		{ startsAt: 40, rank: "Exponential Elephant" },
+		{ startsAt: 80, rank: "Cubic Caterpillar" },
+		{ startsAt: 120, rank: "Quadratic Quokka" },
+		{ startsAt: 180, rank: "Linearithmic Lizard" },
+		{ startsAt: 240, rank: "Linear Lemur" },
+		{ startsAt: 320, rank: "Square Root Sabre-Tooth" },
+		{ startsAt: 400, rank: "Logarithmic Lynx" },
+		{ startsAt: 500, rank: "Constant Cheetah" },
+		{ startsAt: 800, rank: "Extraterrestrial" },
 	],
 };
