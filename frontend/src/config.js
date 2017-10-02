@@ -139,6 +139,6 @@ export default {
 		{ startsAt: 320, rank: "Square Root Sabre-Tooth" },
 		{ startsAt: 400, rank: "Logarithmic Lynx" },
 		{ startsAt: 500, rank: "Constant Cheetah" },
-		{ startsAt: 800, rank: "Extraterrestrial" },
+		{ startsAt: 800, rank: "Extraterrestrial Eagle" },
 	],
 };
