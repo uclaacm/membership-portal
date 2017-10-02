@@ -132,7 +132,7 @@ export default {
 		{ startsAt: 0, rank: "Hello, World!" },
 		{ startsAt: 20, rank: "Factorial Fly" },
 		{ startsAt: 40, rank: "Exponential Elephant" },
-		{ startsAt: 80, rank: "Cubic Caterpillar" },
+		{ startsAt: 80, rank: "Cubic Chipmunk" },
 		{ startsAt: 120, rank: "Quadratic Quokka" },
 		{ startsAt: 180, rank: "Linearithmic Lizard" },
 		{ startsAt: 240, rank: "Linear Lemur" },
