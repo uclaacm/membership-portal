@@ -96,7 +96,7 @@ module.exports = (Sequelize, db) => {
 				fields: ['type', { attribute: 'type', order: 'ASC' }]
 			},
 
-			// a BTREE index on public makes retrieving public activities O(N), where N is 
+			// a BTREE index on public makes retrieving public activities O(N), where N is
 			// the number of public activities
 			{
 				name: 'activity_public_btree_index',
@@ -110,7 +110,7 @@ module.exports = (Sequelize, db) => {
 				method: 'BTREE',
 				fields: ['date', { attribute: 'date', order: 'ASC' }]
 			},
-			
+
 			// a BTREE index on the user makes retrieving all events for a user O(N), where N
 			// is the number of activities for the user
 			{
@@ -122,7 +122,7 @@ module.exports = (Sequelize, db) => {
 	});
 
 	Activity.accountCreated = function(user, description) {
-		return this.create({ 
+		return this.create({
 			user,
 			description,
 			type: 'ACCOUNT_CREATE',
@@ -131,7 +131,7 @@ module.exports = (Sequelize, db) => {
 	};
 
 	Activity.accountActivated = function(user, description) {
-		return this.create({ 
+		return this.create({
 			user,
 			description,
 			type: 'ACCOUNT_ACTIVATE',
@@ -139,7 +139,7 @@ module.exports = (Sequelize, db) => {
 	};
 
 	Activity.accountResetPassword = function(user, description) {
-		return this.create({ 
+		return this.create({
 			user,
 			description,
 			type: 'ACCOUNT_RESET_PASS',
@@ -147,7 +147,7 @@ module.exports = (Sequelize, db) => {
 	};
 
 	Activity.accountRequestedResetPassword = function(user, description) {
-		return this.create({ 
+		return this.create({
 			user,
 			description,
 			type: 'ACCOUNT_RESET_PASS_REQUEST',
@@ -155,7 +155,7 @@ module.exports = (Sequelize, db) => {
 	};
 
 	Activity.accountUpdatedInfo = function(user, description) {
-		return this.create({ 
+		return this.create({
 			user,
 			description,
 			type: 'ACCOUNT_UPDATE_INFO',
@@ -163,7 +163,7 @@ module.exports = (Sequelize, db) => {
 	};
 
 	Activity.accountLoggedIn = function(user, description) {
-		return this.create({ 
+		return this.create({
 			user,
 			description,
 			type: 'ACCOUNT_LOGIN',
@@ -184,7 +184,7 @@ module.exports = (Sequelize, db) => {
 		return this.findAll({ where: { user, public: true }, order: [['date', 'ASC']] });
 	};
 
-	Activity.Instance.prototype.getPublic = function() {
+	Activity.prototype.getPublic = function() {
 		return {
 			uuid         : this.getDataValue('uuid'),
 			user         : this.getDataValue('user'),
@@ -194,6 +194,6 @@ module.exports = (Sequelize, db) => {
 			pointsEarned : this.getDataValue('pointsEarned'),
 		};
 	};
-	
+
 	return Activity;
 };

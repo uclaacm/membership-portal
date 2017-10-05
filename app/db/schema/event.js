@@ -116,7 +116,7 @@ module.exports = (Sequelize, db) => {
 			}
 		},
 
-		// event end date and time (stored as UTC Datestring) 
+		// event end date and time (stored as UTC Datestring)
 		endDate: {
 			type: Sequelize.DATE,
 			allowNull: false,
@@ -168,7 +168,7 @@ module.exports = (Sequelize, db) => {
 				method: 'BTREE',
 				fields: ['startDate', { attribute: 'startDate', order: 'DESC' }]
 			},
-			
+
 			// a BTREE index on the end date makes retrieving all events in chronological order O(N)
 			{
 				name: 'event_end_date_index',
@@ -183,7 +183,7 @@ module.exports = (Sequelize, db) => {
 		if (!limit || limit < 0)  limit = undefined;
 		return this.findAll({ offset, limit, order: [['startDate', 'ASC']] });
 	};
-	
+
 	Event.findByUUID = function(uuid) {
 		return this.findOne({ where: { uuid } });
 	};
@@ -230,7 +230,7 @@ module.exports = (Sequelize, db) => {
 		return event;
 	};
 
-	Event.Instance.prototype.getPublic = function(admin) {
+	Event.prototype.getPublic = function(admin) {
 		return {
 			uuid             : this.getDataValue('uuid'),
 			organization     : this.getDataValue('organization'),

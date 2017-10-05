@@ -8,8 +8,8 @@ module.exports = (Sequelize, db) => {
 			type: Sequelize.INTEGER,
 			autoIncrement: true,
 			primaryKey: true
-		}, 
-		
+		},
+
 		// uniquely identifites this attendance
 		uuid: {
 			type: Sequelize.UUID,
@@ -81,7 +81,7 @@ module.exports = (Sequelize, db) => {
 			},
 
 			// a BTREE index on the user makes retrieving all attendance for a user O(N), where
-			// N is the number of attendances for this user			
+			// N is the number of attendances for this user
 			{
 				name: 'attendance_user_btree_index',
 				method: 'BTREE',
@@ -114,7 +114,7 @@ module.exports = (Sequelize, db) => {
 		return this.create({ user, event });
 	};
 
-	Attendance.Instance.prototype.getPublic = function() {
+	Attendance.prototype.getPublic = function() {
 		return {
 			uuid  : this.getDataValue('uuid'),
 			user  : this.getDataValue('user'),

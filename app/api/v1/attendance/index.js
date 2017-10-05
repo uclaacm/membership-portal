@@ -1,6 +1,7 @@
+const Sequelize = require('sequelize');
 const express = require('express');
 const error = require('../../../error');
-const { Event, Activity, Attendance } = require('../../../db');
+const { Event, Activity, Attendance, db } = require('../../../db');
 const router = express.Router();
 
 /**
@@ -40,20 +41,28 @@ router.route('/attend')
 		if (now < event.startDate || now > event.endDate)
 			throw new error.UserError("You can only enter the attendance code during the event!");
 
-		// check if the user has already attended this event
-		return Attendance.userAttendedEvent(req.user.uuid, event.uuid).then(attended => {
-			if (attended)
-				throw new error.UserError("You have already attended this event!");
+		// use a database transaction around the critical section
+		// this makes sure that a user cannot get duplicate points by ensuring
+		// the invariant "user has not attended event"
+		return db.transaction({
+			// disallow dirty read and varying repeated read
+			isolationLevel: Sequelize.Transaction.ISOLATION_LEVELS.REPEATABLE_READ
+		}, transaction => {
+			// check if the user has already attended this event
+			return Attendance.userAttendedEvent(req.user.uuid, event.uuid).then(attended => {
+				if (attended)
+					throw new error.UserError("You have already attended this event!");
 
-			// simulaneously execute three promises
-			return Promise.all([
-				// mark the event as attended by the user
-				Attendance.attendEvent(req.user.uuid, event.uuid),
-				// add an antry for this attendance in the user's activity
-				Activity.attendedEvent(req.user.uuid, event.title, event.attendancePoints),
-				// add the points for the event
-				req.user.addPoints(event.attendancePoints)
-			]);
+				// simulaneously execute three promises
+				return Promise.all([
+					// mark the event as attended by the user
+					Attendance.attendEvent(req.user.uuid, event.uuid),
+					// add an antry for this attendance in the user's activity
+					Activity.attendedEvent(req.user.uuid, event.title, event.attendancePoints),
+					// add the points for the event
+					req.user.addPoints(event.attendancePoints)
+				]);
+			});
 		}).then(() => {
 			res.json({ error: null, event: event.getPublic() });
 		});

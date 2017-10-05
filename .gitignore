@@ -4,4 +4,4 @@ app/config/SESSION_SECRET
 certs-data
 certs
 node.env
-pg_bkup
+pg_bkup*

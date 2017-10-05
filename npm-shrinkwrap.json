@@ -321,9 +321,14 @@
       }
     },
     "@types/geojson": {
-      "version": "1.0.2",
-      "resolved": "https://registry.npmjs.org/@types/geojson/-/geojson-1.0.2.tgz",
-      "integrity": "sha1-sC0QqwKOKSisWSoFGqpJgaGUHQM="
+      "version": "1.0.4",
+      "resolved": "https://registry.npmjs.org/@types/geojson/-/geojson-1.0.4.tgz",
+      "integrity": "sha512-idP+xKlqFG1egc5M52mDat/Z0VMrwY93LCd81dzW/IjeTIYTMWuzVu+fBf19QK/mX9K7jM2UNN5nzDRgM950GA=="
+    },
+    "@types/node": {
+      "version": "8.0.32",
+      "resolved": "https://registry.npmjs.org/@types/node/-/node-8.0.32.tgz",
+      "integrity": "sha512-n1zzgeQehndikZc/8N4rGSZc99cO6Tb3OInKzvWYniJsT/jet3m57buaBFa5cMeVNFosN4PKZ2LM1y16CFD7Rg=="
     },
     "abbrev": {
       "version": "1.1.0",
@@ -442,9 +447,9 @@
       "integrity": "sha1-+PwEyjoTeErenhZBr5hXjPvWR6k="
     },
     "async-listener": {
-      "version": "0.6.7",
-      "resolved": "https://registry.npmjs.org/async-listener/-/async-listener-0.6.7.tgz",
-      "integrity": "sha512-6Bmzy9dHE1WWZdru7teS6kecmOy42cCzumQOn57vHa/49kjPMExdPLozDvr25J0hbQf5wMwFitJKnO7O3eqh2A==",
+      "version": "0.6.8",
+      "resolved": "https://registry.npmjs.org/async-listener/-/async-listener-0.6.8.tgz",
+      "integrity": "sha512-1Sy1jDhjlgxcSd9/ICHqiAHT8VSJ9R1lzEyWwP/4Hm9p8nVTNtU0SxG/Z15XHD/aZvQraSw9BpDU3EBcFnOVrw==",
       "requires": {
         "semver": "5.3.0",
         "shimmer": "1.1.0"
@@ -521,9 +526,9 @@
       }
     },
     "bluebird": {
-      "version": "3.5.0",
-      "resolved": "https://registry.npmjs.org/bluebird/-/bluebird-3.5.0.tgz",
-      "integrity": "sha1-eRQg1/VR7qKJdFOop3ZT+WYG1nw="
+      "version": "3.5.1",
+      "resolved": "https://registry.npmjs.org/bluebird/-/bluebird-3.5.1.tgz",
+      "integrity": "sha512-MKiLiV+I1AA596t9w1sQJ8jkiSr5+ZKi0WKrYGUn6d1Fx+Ij4tIj+m2WMQSGczs5jZVxV339chE8iwk6F64wjA=="
     },
     "body-parser": {
       "version": "1.17.2",
@@ -634,6 +639,15 @@
         }
       }
     },
+    "cls-bluebird": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/cls-bluebird/-/cls-bluebird-2.0.1.tgz",
+      "integrity": "sha1-wlmkgK4CwOUGE0MHuxPbMERu4uc=",
+      "requires": {
+        "is-bluebird": "1.0.2",
+        "shimmer": "1.1.0"
+      }
+    },
     "co": {
       "version": "4.6.0",
       "resolved": "https://registry.npmjs.org/co/-/co-4.6.0.tgz",
@@ -692,7 +706,7 @@
       "resolved": "https://registry.npmjs.org/continuation-local-storage/-/continuation-local-storage-3.2.0.tgz",
       "integrity": "sha1-4Z/Da1lwkKXU5KOy6j68XilpSiQ=",
       "requires": {
-        "async-listener": "0.6.7",
+        "async-listener": "0.6.8",
         "emitter-listener": "1.0.1"
       }
     },
@@ -799,9 +813,9 @@
       "integrity": "sha1-l4hXRCxEdJ5CBmE+N5RiBYJqvYA="
     },
     "dottie": {
-      "version": "1.1.1",
-      "resolved": "https://registry.npmjs.org/dottie/-/dottie-1.1.1.tgz",
-      "integrity": "sha1-RcKj9IvWUo7u0memmoSOqspvqmo="
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/dottie/-/dottie-2.0.0.tgz",
+      "integrity": "sha1-2hkZgci41xPKARXViYzzl8Lw3dA="
     },
     "ecc-jsbn": {
       "version": "0.1.1",
@@ -1326,6 +1340,11 @@
       "resolved": "https://registry.npmjs.org/ipaddr.js/-/ipaddr.js-1.4.0.tgz",
       "integrity": "sha1-KWrKh4qCGBbluF0KKFqZvP9FgvA="
     },
+    "is-bluebird": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/is-bluebird/-/is-bluebird-1.0.2.tgz",
+      "integrity": "sha1-CWQ5Bg9KpBGr7hkUOoTWpVNG1uI="
+    },
     "is-buffer": {
       "version": "1.1.5",
       "resolved": "https://registry.npmjs.org/is-buffer/-/is-buffer-1.1.5.tgz",
@@ -1500,9 +1519,9 @@
       }
     },
     "lodash": {
-      "version": "4.12.0",
-      "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.12.0.tgz",
-      "integrity": "sha1-K9bcRqBA9Z5obJcu0h2T3FkFMlg="
+      "version": "4.17.4",
+      "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.17.4.tgz",
+      "integrity": "sha1-eCA6TRwyiuHYbcpkYONptX9AVa4="
     },
     "lodash.assign": {
       "version": "4.2.0",
@@ -2198,11 +2217,11 @@
       }
     },
     "retry-as-promised": {
-      "version": "2.3.0",
-      "resolved": "https://registry.npmjs.org/retry-as-promised/-/retry-as-promised-2.3.0.tgz",
-      "integrity": "sha1-J79czZmZMrMWZWloJc82MMJ8Vi0=",
+      "version": "2.3.1",
+      "resolved": "https://registry.npmjs.org/retry-as-promised/-/retry-as-promised-2.3.1.tgz",
+      "integrity": "sha1-91BZGD+XMHccCbrR7tV1N5McvJ0=",
       "requires": {
-        "bluebird": "3.5.0",
+        "bluebird": "3.5.1",
         "debug": "2.2.0"
       }
     },
@@ -2269,32 +2288,46 @@
       }
     },
     "sequelize": {
-      "version": "3.30.4",
-      "resolved": "https://registry.npmjs.org/sequelize/-/sequelize-3.30.4.tgz",
-      "integrity": "sha1-vaLfHjGFSwmeQUmhEen8Clyh0aQ=",
+      "version": "4.13.5",
+      "resolved": "https://registry.npmjs.org/sequelize/-/sequelize-4.13.5.tgz",
+      "integrity": "sha512-0sOQBWYnnzP8pkmo6E4vFHIy5Ye2U3zNHcKo5HCRxdjOXs7G+uybiUd6vRh+Sj0XsBVfhwdADyjf0jmmirUWFA==",
       "requires": {
-        "bluebird": "3.5.0",
+        "bluebird": "3.5.1",
+        "cls-bluebird": "2.0.1",
+        "debug": "3.1.0",
         "depd": "1.1.1",
-        "dottie": "1.1.1",
-        "generic-pool": "2.4.2",
+        "dottie": "2.0.0",
+        "generic-pool": "3.1.8",
         "inflection": "1.12.0",
-        "lodash": "4.12.0",
+        "lodash": "4.17.4",
         "moment": "2.18.1",
         "moment-timezone": "0.5.13",
-        "retry-as-promised": "2.3.0",
+        "retry-as-promised": "2.3.1",
         "semver": "5.3.0",
-        "shimmer": "1.1.0",
         "terraformer-wkt-parser": "1.1.2",
         "toposort-class": "1.0.1",
         "uuid": "https://registry.npmjs.org/uuid/-/uuid-3.1.0.tgz",
-        "validator": "5.7.0",
-        "wkx": "0.2.0"
+        "validator": "8.2.0",
+        "wkx": "0.4.2"
       },
       "dependencies": {
+        "debug": {
+          "version": "3.1.0",
+          "resolved": "https://registry.npmjs.org/debug/-/debug-3.1.0.tgz",
+          "integrity": "sha512-OX8XqP7/1a9cqkxYw2yXss15f26NKWBpDXQd0/uK/KPqdQhxbPa994hnzjcE2VqQpDslf55723cKPUOGSmMY3g==",
+          "requires": {
+            "ms": "2.0.0"
+          }
+        },
         "generic-pool": {
-          "version": "2.4.2",
-          "resolved": "https://registry.npmjs.org/generic-pool/-/generic-pool-2.4.2.tgz",
-          "integrity": "sha1-iGvFvwvrfblugby7oHiBjeWmJoM="
+          "version": "3.1.8",
+          "resolved": "https://registry.npmjs.org/generic-pool/-/generic-pool-3.1.8.tgz",
+          "integrity": "sha1-CYRLZUW8kXfsIYvTXUrYlMZb4nE="
+        },
+        "ms": {
+          "version": "2.0.0",
+          "resolved": "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz",
+          "integrity": "sha1-VgiurfwAvmwpAd9fmGF4jeDVl8g="
         }
       }
     },
@@ -2520,7 +2553,7 @@
       "resolved": "https://registry.npmjs.org/terraformer/-/terraformer-1.0.8.tgz",
       "integrity": "sha1-UeCtiXRvzyFh3G9lqnDkI3fItZM=",
       "requires": {
-        "@types/geojson": "1.0.2"
+        "@types/geojson": "1.0.4"
       }
     },
     "terraformer-wkt-parser": {
@@ -2678,9 +2711,9 @@
       "integrity": "sha1-PdPT55Crwk17DToDT/q6vijrvAQ="
     },
     "validator": {
-      "version": "5.7.0",
-      "resolved": "https://registry.npmjs.org/validator/-/validator-5.7.0.tgz",
-      "integrity": "sha1-eoelgUa2laxIYHEUHAxJ1n2gXlw="
+      "version": "8.2.0",
+      "resolved": "https://registry.npmjs.org/validator/-/validator-8.2.0.tgz",
+      "integrity": "sha512-Yw5wW34fSv5spzTXNkokD6S6/Oq92d8q/t14TqsS3fAiA1RYnxSFSIZ+CY3n6PGGRCq5HhJTSepQvFUS2QUDxA=="
     },
     "vary": {
       "version": "1.1.1",
@@ -2737,9 +2770,12 @@
       "integrity": "sha1-oJYpuakgAo1yFAT7Q1vc/1yRvCE="
     },
     "wkx": {
-      "version": "0.2.0",
-      "resolved": "https://registry.npmjs.org/wkx/-/wkx-0.2.0.tgz",
-      "integrity": "sha1-dsJPFqzQzY+TzTSqMx4PeWElboQ="
+      "version": "0.4.2",
+      "resolved": "https://registry.npmjs.org/wkx/-/wkx-0.4.2.tgz",
+      "integrity": "sha1-d201pjSlwi5lbkdEvetU+D/Szo0=",
+      "requires": {
+        "@types/node": "8.0.32"
+      }
     },
     "wordwrap": {
       "version": "1.0.0",

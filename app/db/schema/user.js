@@ -213,11 +213,11 @@ module.exports = (Sequelize, db) => {
 		return user;
 	};
 
-	User.Instance.prototype.addPoints = function(points) {
+	User.prototype.addPoints = function(points) {
 		return this.increment({ points });
 	};
 
-	User.Instance.prototype.getPublicProfile = function() {
+	User.prototype.getPublicProfile = function() {
 		return {
 			firstName : this.getDataValue('firstName'),
 			lastName  : this.getDataValue('lastName'),
@@ -226,14 +226,14 @@ module.exports = (Sequelize, db) => {
 		};
 	};
 
-	User.Instance.prototype.getUserProfile = function() {
+	User.prototype.getUserProfile = function() {
 		const profileId = this.getDataValue('profileId');
 		const uuid = this.getDataValue('uuid');
 		return {
 			uuid,
 			firstName  : this.getDataValue('firstName'),
 			lastName   : this.getDataValue('lastName'),
-			picture    : profileId ? `https://graph.facebook.com/${ profileId }/picture?width=300` : 
+			picture    : profileId ? `https://graph.facebook.com/${ profileId }/picture?width=300` :
 			                         `https://www.gravatar.com/avatar/${ uuid.replace(/[^0-9a-f]/g, '') }?d=identicon&s=300`,
 			email      : this.getDataValue('email'),
 			year       : this.getDataValue('year'),
@@ -242,35 +242,35 @@ module.exports = (Sequelize, db) => {
 		};
 	};
 
-	User.Instance.prototype.verifyPassword = function(password) {
+	User.prototype.verifyPassword = function(password) {
 		return bcrypt.compare(password, this.getDataValue('hash'));
 	};
 
-	User.Instance.prototype.isAdmin = function() {
+	User.prototype.isAdmin = function() {
 		return this.getDataValue('accessType') === 'ADMIN';
 	};
 
-	User.Instance.prototype.isStandard = function() {
+	User.prototype.isStandard = function() {
 		return this.getDataValue('accessType') === 'STANDARD';
 	};
 
-	User.Instance.prototype.isRestricted = function() {
+	User.prototype.isRestricted = function() {
 		return this.getDataValue('accessType') === 'RESTRICTED';
 	};
 
-	User.Instance.prototype.isActive = function() {
+	User.prototype.isActive = function() {
 		return this.getDataValue('state') === 'ACTIVE';
 	};
 
-	User.Instance.prototype.isPending = function() {
+	User.prototype.isPending = function() {
 		return this.getDataValue('state') === 'PENDING';
 	};
 
-	User.Instance.prototype.isBlocked = function() {
+	User.prototype.isBlocked = function() {
 		return this.getDataValue('state') === 'BLOCKED';
 	};
 
-	User.Instance.prototype.requestedPasswordReset = function() {
+	User.prototype.requestedPasswordReset = function() {
 		return this.getDataValue('state') === 'PASSWORD_RESET';
 	}
 
