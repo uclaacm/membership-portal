@@ -78,7 +78,7 @@ export default {
 			},
 			{
 				name: "Tyler Lindberg",
-				position: "President of VRCG",
+				position: "President of Studio",
 				email: "tlindberg@ucla.edu",
 				picture: "/assets/images/officers/tyler.jpg"
 			},
