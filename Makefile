@@ -18,10 +18,21 @@ certs:
 	tar -xvzf certs.tar.gz
 	rm -rf certs.tar.gz
 
-gen-certs:
+package-certs:
+	tar -cvzf certs.tar.gz certs
+	gpg -c certs.tar.gz
+	rm -rf certs.tar.gz
+
+renew-certs:
 	rm -rf certs-data
 	mkdir -p certs-data
-	sudo docker run -it --rm -v $(pwd)/certs:/etc/letsencrypt -v $(pwd)/certs-data:/data/letsencrypt deliverous/certbot certonly --webroot --webroot-path=/data/letsencrypt -d members.uclaacm.com
+	sudo docker run \
+		-v $(shell pwd)/certs:/etc/letsencrypt \
+		-v $(shell pwd)/certs-data:/data/letsencrypt \
+		-e domains="members.uclaacm.com" \
+		-e email="acm@ucla.edu" \
+		--net=host \
+		--rm -t pierreprinetti/certbot:latest
 
 env:
 	gpg node.env.gpg
@@ -64,4 +75,4 @@ reset: stop
 	-sudo docker volume rm postgres_data
 	-sudo docker volume rm membershipportal_postgres_data
 
-.PHONY: pg_bkup
+.PHONY: pg_bkup certs
