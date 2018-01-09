@@ -81,4 +81,27 @@ router.get('/activity', (req, res, next) => {
 	}).catch(next);
 });
 
+/**
+ * For all further requests on this route, the user needs to be an admin
+ */
+router.route('/milestone')
+.all((req, res, next) => {
+	if (!req.user.isAdmin())
+		return next(new error.Forbidden());
+	return next();
+})
+.post((req, res, next) => {
+	if (!req.body.milestone || !req.body.milestone.name || typeof req.body.milestone.name !== 'string')
+		return next(new error.BadRequest("Invalid request format"));
+	
+	User.findAll({}).then(users => {
+		users.forEach(user => {
+			Activity.createMilestone(user.uuid, req.body.milestone.name, user.points)
+			if (req.body.milestone.resetPoints) {
+				req.user.update({ points: 0 });
+			}
+		});
+	}).then(() => res.json({ error: null })).catch(next);
+})
+
 module.exports = { router };

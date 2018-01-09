@@ -39,6 +39,7 @@ module.exports = (Sequelize, db) => {
 		//   ACCOUNT_UPDATE_INFO        - the user updated some account information
 		//   ACCOUNT_LOGIN              - the user logged into their account
 		//   ATTEND_EVENT               - the user attended an event
+		//   MILESTONE                  - a custom event (milestone)
 		type: {
 			type: Sequelize.ENUM(
 				'ACCOUNT_CREATE',
@@ -47,7 +48,8 @@ module.exports = (Sequelize, db) => {
 				'ACCOUNT_RESET_PASS_REQUEST',
 				'ACCOUNT_UPDATE_INFO',
 				'ACCOUNT_LOGIN',
-				'ATTEND_EVENT'
+				'ATTEND_EVENT',
+				'MILESTONE'
 			),
 			allowNull: false,
 		},
@@ -176,6 +178,16 @@ module.exports = (Sequelize, db) => {
 			description,
 			pointsEarned,
 			type: 'ATTEND_EVENT',
+			public: true,
+		});
+	};
+
+	Activity.createMilestone = function(user, description, pointsEarned) {
+		return this.create({
+			user,
+			description,
+			pointsEarned,
+			type: 'MILESTONE',
 			public: true,
 		});
 	};
