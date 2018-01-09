@@ -9,7 +9,7 @@ let server = express();
 
 // enable app performance metrics in production
 if (app.config.isProduction) {
-	require('@risingstack/trace');
+	// require('@risingstack/trace');
 }
 
 // enable CORS in development
