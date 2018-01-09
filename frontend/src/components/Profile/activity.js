@@ -5,6 +5,7 @@ const activityTypes = {
 	ACCOUNT_CREATE: 'ACCOUNT_CREATE',
 	ATTEND_EVENT: 'ATTEND_EVENT',
 	LEVEL_UP: 'LEVEL_UP',
+	MILESTONE: 'MILESTONE',
 };
 
 const mapActivity = activity => {
@@ -26,6 +27,12 @@ const mapActivity = activity => {
 				icon: 'fa-star level-up-icon',
 				title: 'Leveled Up!',
 				description: `${activity.prevLevel.rank} <i class="fa fa-long-arrow-right"></i> ${activity.nextLevel.rank}`,
+			};
+		case activityTypes.MILESTONE:
+			return {
+				icon: 'fa-trophy',
+				title: 'Quarter complete',
+				description: `You finished ${activity.description} with <b>${activity.pointsEarned}</b> points!`,
 			};
 		default:
 			return null;
