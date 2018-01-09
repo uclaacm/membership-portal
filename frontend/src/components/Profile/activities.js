@@ -18,7 +18,8 @@ export default class Activities extends React.Component {
 					month.days.push({ date: activities[i].date, activities: [] });
 				month.days[month.days.length - 1].activities.push(activities[i]);
 
-				totalPoints += activities[i].pointsEarned;
+				if (activities[i].type !== 'MILESTONE')
+					totalPoints += activities[i].pointsEarned;
 				const nextStatus = Utils.getLevel(totalPoints);
 
 				if (currStatus.currLevel !== nextStatus.currLevel) {
