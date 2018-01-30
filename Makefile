@@ -31,7 +31,7 @@ renew-certs:
 		-v $(shell pwd)/certs-data:/data/letsencrypt \
 		-e domains="members.uclaacm.com" \
 		-e email="acm@ucla.edu" \
-		--net=host \
+		-p 80:80 -p 443:443 \
 		--rm -t pierreprinetti/certbot:latest
 
 env:
