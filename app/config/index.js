@@ -27,7 +27,7 @@ module.exports = {
 
 	// mail information
 	mailgun: {
-		apiKey: process.env.MAILGUN_KEY,
+		apiKey: process.env.MAILGUN_KEY || " ",
 		domain: 'mail.uclaacm.com',
 	},
 

@@ -5,12 +5,7 @@ The ACM Membership Portal
 
 ### Prerequisites
 
-You must have either Docker or Vagrant installed and the repository cloned.  `cd` to the respository. Initialize and download the static (frontend) submobule:
-
-```bash
-user@local:~$ cd membership-portal
-user@local:~/membership-portal$ make update
-```
+You must have either Docker or Vagrant installed and the repository cloned.
 
 ### Setup (Vagrant)
 
@@ -32,44 +27,16 @@ The very first time you deploy, you need to set up the environment:
 $ make setup
 ```
 
-You also need to decrypt the environment variables and SSL certificates (a password is required):
+### Development
 
-```bash
-$ make certs
-$ make env
-```
-
-### Deploy
-
-To deploy:
+To run in development:
 
 ```Bash
 $ make
 ```
 
-To stop all services (including the databases):
-
-```Bash
-$ make stop
-```
-
-To run in development mode:
-
-```Bash
-$ make dev
-```
-
-The following commands are also available:
-
-- `make logs` – attach to the standard output of the process and view the logs
-- `make nginx-logs` - attach to the nginx server and view access log
-- `make psql` - attach to the database and run queries
-- `make pg_bkup` - take a snapshot of the database
-- `make reset` – completely obliterate the currently built images
-- `make build` – only run the image build
-- `make run` – only run in detached mode
-- `make run-dev` – only run in attached mode
+This command will create and up the database in addition to the backend API.
 
 ### Accessing the Server
 
-The nginx server runs on ports `80` and `443`, and all API routes can be accessed through nginx by prepending `/app` to API URLs (e.g. `/app/api/v1/auth/login` and `/app/api/v1/user`).
+The server runs on port `8080`.

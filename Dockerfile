@@ -1,7 +1,7 @@
 # load the alpine base image
 FROM alpine:3.5
 
-RUN apk update && apk add curl bash python make gcc g++ 'nodejs<6.10'
+RUN apk add -U python make gcc g++ 'nodejs<6.10'
 
 # create the working directory
 RUN mkdir -p /var/www/membership

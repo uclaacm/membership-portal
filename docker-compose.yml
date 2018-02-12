@@ -11,27 +11,20 @@ services:
 
   backend:
     build: .
-    image: nkansal/backend
     ports:
       - "8080:8080"
     links:
       - postgres
     restart: always
-    env_file:
-      - node.env
-
-  nginx:
-    build: ./static
-    image: nkansal/static
-    links:
-      - backend
-    restart: always
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - "./certs:/etc/nginx/certs:ro"
-      - "./certs-data:/data/letsencrypt"
-
+    environment:
+      - PORT=8080
+      - HOST=0.0.0.0
+      - PG_HOST=postgres
+      - PG_USER=postgres
+      - PG_PORT=5432
+      - PG_DATABASE=postgres
+      - NODE_ENV=development
+      - MAILGUN_KEY=
+    
 volumes:
   postgres_data:

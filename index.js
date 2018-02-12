@@ -7,11 +7,6 @@ const app = require('./app');
 const log = app.logger;
 let server = express();
 
-// enable app performance metrics in production
-if (app.config.isProduction) {
-	// require('@risingstack/trace');
-}
-
 // enable CORS in development
 if (app.config.isDevelopment) {
 	server.use(function(req, res, next) {
