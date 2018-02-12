@@ -1,14 +1,20 @@
-all: build
+APP_NAME=membership-portal-ui
+ECR_URL=527059199351.dkr.ecr.us-west-1.amazonaws.com
 
-build:
-	NODE_ENV=production npm run build
+all: build-static
+
+ecr-login:
+	$(shell aws ecr get-login --no-include-email --region us-west-1)
 
 dev:
 	WEBPACK=true npm run build-dev
 
-gen: build
-	mkdir -p public
-	mkdir -p public/build
-	cp -r pages/* public
-	cp lib/build/main.css public/build
-	cp lib/build/main.js public/build
+build-static:
+	NODE_ENV=production npm run build
+
+build:
+	docker build -t $(APP_NAME) .
+
+push: ecr-login build
+	docker tag $(APP_NAME):latest $(ECR_URL)/$(APP_NAME):latest
+	docker push $(ECR_URL)/$(APP_NAME):latest

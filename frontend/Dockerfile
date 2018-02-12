@@ -26,14 +26,23 @@ COPY src/ /var/www/membership/working/src/
 COPY .babelrc *.js Makefile /var/www/membership/working/
 
 # build and copy files to server root
-RUN make build && \
+RUN make build-static && \
     cp -rv pages/* ../static/ && \
     cp -rv lib/build/* ../static/build/
+
+# Use separate build stage to serve files. This reduces the image size drastically
+FROM alpine:3.5
+
+# add nginx
+RUN apk add -U nginx
 
 # Copy the configuration file
 RUN mkdir -p /run/nginx
 COPY conf/ /etc/nginx/
+
+# Copy the build files from the previous stage
 WORKDIR /var/www/membership/static
+COPY --from=0 /var/www/membership/static /var/www/membership/static
 
 # Run the server
 EXPOSE 80
