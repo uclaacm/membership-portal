@@ -30,18 +30,7 @@ class ControlPanel extends React.Component {
 }
 
 const mapStateToProps = (state)=>{
-	let profile = { name: "", major: "", year: 0, points: 0};
-
-	if (state.User.get("fetchSuccess")) {
-		const User = state.User.get("profile");
-		profile.name = `${User.firstName} ${User.lastName}`;
-		profile.major = User.major;
-		profile.year = User.year;
-		profile.points = User.points;
-	}
-
 	return {
-		profile,
 		authenticated: state.Auth.get("authenticated"),
 		isAdmin: state.Auth.get('isAdmin'),
 	};
