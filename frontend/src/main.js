@@ -14,10 +14,12 @@ import Events from 'containers/events';
 import Login from 'containers/login';
 import Profile from 'containers/profile';
 import Leaderboard from 'containers/leaderboard';
+import ControlPanel from 'containers/controlPanel';
 import Resources from 'containers/resources';
 import Register from 'containers/register';
 import ResetPassword from 'containers/resetPassword';
 import requireAuth from 'containers/requireAuth';
+
 
 class App extends React.Component {
 	render(){
@@ -33,6 +35,7 @@ class App extends React.Component {
 							<Route path="/profile" component={requireAuth(Profile)}/>
 							<Route path="/resources" component={requireAuth(Resources)}/>
 							<Route path="/leaderboard" component={requireAuth(Leaderboard)}/>
+							<Route path="/controlpanel" component={requireAuth(ControlPanel)}/>
 							<Redirect to="/events"/>
 						</Switch>
 					</div>
