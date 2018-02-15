@@ -16,7 +16,7 @@ export default class ControlPanel extends React.Component {
 				</div>
 				<div className="form-elem">
 					<Button
-						className="profile-action-button"
+						className="control-panel-action-button"
 						style={ "blue"}
 						text="Create" />
 				</div>

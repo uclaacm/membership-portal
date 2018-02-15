@@ -7,6 +7,13 @@
 	.form-elem {
 		padding-bottom: 30px;
 		
+		.control-panel-action-button {
+			margin: 6px;
+		}
+
+		.control-panel-action-button:first-child {
+			margin-left: 0px;
+		}
 		textarea {
 			display: inline-block;
 			outline: none;
