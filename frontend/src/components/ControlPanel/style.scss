@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .control-panel-wrapper {
   margin-left: $sidebar-width;
 	padding: 60px;
@@ -21,4 +22,11 @@
 		}
 	}
 
+=======
+.control-panel-wrapper{
+	margin-left: $sidebar-width;
+	padding: 60px;
+	overflow: visible;
+	transition:margin-left 0.125s ease-in-out;
+>>>>>>> master
 }

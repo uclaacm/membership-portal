@@ -20,6 +20,7 @@ import Register from 'containers/register';
 import ResetPassword from 'containers/resetPassword';
 import requireAuth from 'containers/requireAuth';
 
+
 class App extends React.Component {
 	render(){
 		return (

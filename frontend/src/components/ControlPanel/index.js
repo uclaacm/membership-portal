@@ -7,10 +7,17 @@ import ControlPanel from './controlPanel';
 export default class ControlPanelComponent extends React.Component {
 	render() {
 		return (
+<<<<<<< HEAD
 			<div className="control-panel">
 				<Topbar />
 				<Sidebar/>
         <ControlPanel />
+=======
+			<div className="controlpanel">
+				<Topbar />
+				<Sidebar/>
+				<ControlPanel/>
+>>>>>>> master
 			</div>
 		);
 	}
