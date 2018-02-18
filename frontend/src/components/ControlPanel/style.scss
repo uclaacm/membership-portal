@@ -7,12 +7,10 @@
 	.form-elem {
 		padding-bottom: 30px;
 
-		p {
-			padding: 2px 0px;
-			font-size: 1.1em;
-		}
-
 		select {
+			-webkit-appearance: none;
+			-moz-appearance: none;
+			appearance: none;
 			border: none;
 			outline: none;
 			background: none;

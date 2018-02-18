@@ -5,8 +5,8 @@ export default class ControlPanel extends React.Component {
 		return (
 			<div className="control-panel-wrapper">
 				<div className="form-elem">
-					<p className="SubheaderSecondary">Committee</p>
-					<select className="Display-2Primary">
+					<h1 className="DisplayPrimary">Event Analytics</h1>
+					<select className="Headline-2Secondary">
 						<option>General</option>
 						<option>AI</option>
 						<option>Board</option>
