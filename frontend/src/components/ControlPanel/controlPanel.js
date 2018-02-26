@@ -1,5 +1,5 @@
 import React from 'react';
-
+import Button from 'components/Button';
 
 export default class ControlPanel extends React.Component {
 	render() {
@@ -12,7 +12,7 @@ export default class ControlPanel extends React.Component {
 				<div className="form-elem">
 					<Button
 						className="control-panel-action-button"
-						style={ "blue"}
+						style="blue"
 						text="Create" />
 				</div>
 			</div>
