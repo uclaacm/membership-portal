@@ -16,14 +16,14 @@ class ControlPanel extends React.Component {
 		if (!this.props.isAdmin) {
 			return this.props.redirectHome();
 		}
-		
+
 	}
 
 	componentWillReceiveProps(nextProps) {
 		if (!nextProps.isAdmin) {
 			return nextProps.redirectHome();
 		}
-		
+
 	}
 
 	render() {
@@ -42,7 +42,7 @@ const mapStateToProps = (state)=>{
 
 const mapDispatchToProps = (dispatch)=>{
 	return {
-		
+
 	};
 };
 

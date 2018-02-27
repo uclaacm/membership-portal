@@ -6,7 +6,7 @@ export default class Navigation extends React.Component {
 	render() {
 		return (
 			<div>
-			{ /* USER NAVIGATION */ !this.props.isAdmin && 
+			{ /* USER NAVIGATION */ !this.props.isAdmin &&
 				<div className="navigation">
 					<NavLink to="/events" activeClassName="selected"><NavigationTile icon="fa-calendar fa-2x" text="Events" /></NavLink>
 					<NavLink to="/profile" activeClassName="selected"><NavigationTile icon="fa-user fa-2x" text="Profile" /></NavLink>
