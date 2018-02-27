@@ -9,6 +9,8 @@ export default class ControlPanel extends React.Component {
 				<div className="form-elem">
 					<h1>Create a milestone</h1>
 					<input type="text" name="name" placeholder="Quarter (e.g. Fall 2017)" />
+				</div>
+				<div className="form-elem">
 					<Button
 						className="control-panel-action-button"
 						style="blue"
