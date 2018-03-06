@@ -16,24 +16,21 @@ class ControlPanel extends React.Component {
 		if (!this.props.isAdmin) {
 			return this.props.redirectHome();
 		}
-
 	}
 
 	componentWillReceiveProps(nextProps) {
 		if (!nextProps.isAdmin) {
 			return nextProps.redirectHome();
 		}
-
 	}
 
 	render() {
-		return <ControlPanelComponent/>;
+		return <ControlPanelComponent
+		         logout={this.props.logout}/>;
 	}
 }
 
 const mapStateToProps = (state)=>{
-
-
 	return {
 		authenticated: state.Auth.get("authenticated"),
 		isAdmin: state.Auth.get('isAdmin'),
@@ -42,7 +39,12 @@ const mapStateToProps = (state)=>{
 
 const mapDispatchToProps = (dispatch)=>{
 	return {
-
+		redirectHome: () => {
+			dispatch(replace('/'));
+		},
+		logout: () => {
+			dispatch(Action.LogoutUser());
+		},
 	};
 };
 

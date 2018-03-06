@@ -2,11 +2,37 @@
 	margin-left: $sidebar-width;
 	padding: 60px;
 	overflow: visible;
-	transition:margin-left 0.125s ease-in-out;
+	transition: margin-left 0.125s ease-in-out;
+
+	.signout-action-button {
+		margin: 6px;
+	}
+
+	.signout-action-button:first-child {
+		margin-left: 0px;
+	}
+
+	.deleteevents-action-button {
+		margin: 6px;
+	}
+
+	.deleteevents-action-button:first-child {
+		margin-left: 0px;
+	}
 
 	.form-elem {
 		padding-bottom: 30px;
-		
+
+		p {
+			padding: 2px 0px;
+			font-size: 1.1em;
+
+			span {
+				font-size: 1.1em;
+				padding: 0px 5px;
+			}
+		}
+
 		.control-panel-action-button {
 			margin: 6px;
 		}
@@ -14,7 +40,6 @@
 		.control-panel-action-button:first-child {
 			margin-left: 0px;
 		}
-
 		input[type=text] {
 			display: inline-block;
 			outline: none;
