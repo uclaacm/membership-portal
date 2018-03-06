@@ -14,7 +14,8 @@ export default class ControlPanelComponent extends React.Component {
 						<Button
 							className="signout-action-button"
 							style="blue"
-							text="Sign Out"/>
+							text="Sign Out"
+							onClick={this.props.logout}/>
 						<Button
 							className="deleteevents-action-button"
 							style="red"

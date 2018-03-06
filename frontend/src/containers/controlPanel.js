@@ -25,7 +25,8 @@ class ControlPanel extends React.Component {
 	}
 
 	render() {
-		return <ControlPanelComponent />;
+		return <ControlPanelComponent
+		logout={this.props.logout}/>;
 	}
 }
 
