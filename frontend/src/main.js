@@ -14,11 +14,12 @@ import Events from 'containers/events';
 import Login from 'containers/login';
 import Profile from 'containers/profile';
 import Leaderboard from 'containers/leaderboard';
+import ControlPanel from 'containers/controlPanel';
 import Resources from 'containers/resources';
 import Register from 'containers/register';
 import ResetPassword from 'containers/resetPassword';
 import requireAuth from 'containers/requireAuth';
-import ControlPanel from 'containers/controlPanel';
+
 
 
 class App extends React.Component {

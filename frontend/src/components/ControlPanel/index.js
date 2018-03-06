@@ -11,7 +11,7 @@ export default class ControlPanelComponent extends React.Component {
 				<Topbar />
 				<Sidebar/>
 				<ControlPanel
-				logout={this.props.logout}/>
+				   logout={this.props.logout}/>
 			</div>
 		);
 	}

@@ -33,7 +33,14 @@
 			}
 		}
 
-		textarea {
+		.control-panel-action-button {
+			margin: 6px;
+		}
+
+		.control-panel-action-button:first-child {
+			margin-left: 0px;
+		}
+		input[type=text] {
 			display: inline-block;
 			outline: none;
 			border:none;
@@ -42,9 +49,11 @@
 			border-bottom: 2px dashed #DADADA;
 			transition: 0.125s ease-in-out;
 			resize: none;
+			font-family: Lato,sans-serif;
+			font-size: 20px;
 		}
 
-		textarea:focus {
+		input[type=text]:focus {
 			border-bottom: 2px solid #AAAAAA;
 		}
 
