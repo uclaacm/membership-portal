@@ -1,5 +1,12 @@
 import React from 'react';
 import Button from 'components/Button';
+import TopAttendee from './topAttendee'
+
+var names = ["Howard", "Nikhil", "Carey"];
+var points = [50, 100, 70];
+
+
+
 
 export default class ControlPanelComponent extends React.Component {
 	render() {
@@ -17,6 +24,7 @@ export default class ControlPanelComponent extends React.Component {
 							className="deleteevents-action-button"
 							style="red"
 							text="Delete Events"/>
+
 				</div>
 				<div className="form-elem">
 					<h1>Create a milestone</h1>
@@ -27,8 +35,35 @@ export default class ControlPanelComponent extends React.Component {
 						className="control-panel-action-button"
 						style="blue"
 						text="Create" />
-				</div>
+				</div>	
 
+				<div className="form-elem">
+					<h1>Top Attendees</h1>
+					<table className="test-table">
+							<tr>
+								<th>
+									<span>#</span>
+								</th>
+								<th className="name">
+									<span>Name</span>
+								</th>
+								<th className="name">
+									<span>Points</span>
+								</th>
+							</tr>
+						{	
+							<div>
+								<tr>
+									<td>0</td>
+									<td>
+										Hoard
+									</td>
+
+								</tr>
+							</div>
+						}
+					</table>
+				</div>
 				<div className="form-elem">
 					<h1 className="DisplayPrimary">Event Analytics</h1>
 					<select className="Headline-2Secondary">
