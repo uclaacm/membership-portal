@@ -18,10 +18,14 @@ export default class Activities extends React.Component {
 					month.days.push({ date: activities[i].date, activities: [] });
 				month.days[month.days.length - 1].activities.push(activities[i]);
 
-				if (activities[i].type !== 'MILESTONE')
+				if (activities[i].type !== 'MILESTONE') {
 					totalPoints += activities[i].pointsEarned;
-				const nextStatus = Utils.getLevel(totalPoints);
+				} else {
+					totalPoints = 0;
+					currStatus = Utils.getLevel(totalPoints);
+				}
 
+				const nextStatus = Utils.getLevel(totalPoints);
 				if (currStatus.currLevel !== nextStatus.currLevel) {
 					month.days[month.days.length - 1].activities.push({
 						type: activityTypes.LEVEL_UP,
