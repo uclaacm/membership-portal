@@ -218,11 +218,18 @@ module.exports = (Sequelize, db) => {
 	};
 
 	User.prototype.getPublicProfile = function() {
+		const profileId = this.getDataValue('profileId');
+		const uuid = this.getDataValue('uuid');
 		return {
+			uuid,
 			firstName : this.getDataValue('firstName'),
 			lastName  : this.getDataValue('lastName'),
 			picture   : this.getDataValue('picture'),
 			points    : this.getDataValue('points'),
+			picture    : profileId ? `https://graph.facebook.com/${ profileId }/picture?width=300` :
+									 `https://www.gravatar.com/avatar/${ uuid.replace(/[^0-9a-f]/g, '') }?d=identicon&s=300`,
+			year       : this.getDataValue('year'),
+			major      : this.getDataValue('major')
 		};
 	};
 
