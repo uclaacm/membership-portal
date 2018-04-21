@@ -7,6 +7,7 @@ router.use('/user', auth, require('./user').router);
 router.use('/event', auth, require('./event').router);
 router.use('/attendance', auth, require('./attendance').router);
 router.use('/leaderboard', auth, require('./leaderboard').router);
+router.use('/analytics', require('./analytics').router)
 
 // Public API
 router.use('/auth', require('./auth').router);

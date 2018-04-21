@@ -14,7 +14,7 @@ Sequelize.useCLS(transactionNamespace);
 const db = new Sequelize(config.database.db, config.database.user, config.database.password, {
 	dialect: 'postgres',
 	host: config.database.host,
-	logging: config.isDevelopment ? logger.debug : false
+	logging: false
 });
 
 // Create schemas
