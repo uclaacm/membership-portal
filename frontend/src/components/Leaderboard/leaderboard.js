@@ -5,13 +5,34 @@ import TopUser from './topUser';
 export default class Leaderboard extends React.Component {
 	constructor(props) {
 		super(props)
+		this.state = {
+			maxItems: 200
+		}
 		this.rankForUser = this.rankForUser.bind(this);
 	}
-
+	componentDidMount() {
+		document.addEventListener('scroll', this.trackScrolling);
+	}
+	componentWillUnmount() {
+		document.removeEventListener('scroll', this.trackScrolling);
+	}
 	rankForUser(user) {
 		return Utils.getLevel(user.points).currLevel.rank;
 	}
-
+	reachedBottom(wrapper) {
+		return wrapper.getBoundingClientRect().bottom <= window.innerHeight;
+	}
+	loadMoreUsers = () => {
+		this.setState(prev => ({
+			maxItems: Math.min(prev.maxItems + 100, this.props.leaderboard.length)
+		}));
+	};
+	trackScrolling = () => {
+		const leaderboardWrapper = document.getElementsByClassName('leaderboard-table')[0];
+		if (this.reachedBottom(leaderboardWrapper) && this.state.maxItems < this.props.leaderboard.length) {
+			this.loadMoreUsers();
+		}
+	};
 	render() {
 		if (!this.props.leaderboard || !this.props.leaderboard.length || this.props.leaderboard.length < 3)
 			return null;
@@ -39,7 +60,7 @@ export default class Leaderboard extends React.Component {
 						</tr></thead>
 						<tbody>
 						{
-							this.props.leaderboard.slice(3).map((user,i) =>  
+							this.props.leaderboard.slice(3, 3 + this.state.maxItems).map((user,i) =>  
 								<tr className={user.uuid === this.props.user.uuid ? "current-user" : ""} key={user.uuid}>
 									<td>{i + 4}</td>
 									<td className="name">
