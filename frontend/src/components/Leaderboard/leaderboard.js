@@ -2,11 +2,14 @@ import React from 'react';
 import Utils from 'utils';
 import TopUser from './topUser';
 
+const INIT_ITEMS = 200;
+const SCROLL_INCR = 100;
+
 export default class Leaderboard extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			maxItems: 200
+			maxItems: INIT_ITEMS
 		}
 		this.rankForUser = this.rankForUser.bind(this);
 	}
@@ -19,17 +22,17 @@ export default class Leaderboard extends React.Component {
 	rankForUser(user) {
 		return Utils.getLevel(user.points).currLevel.rank;
 	}
-	reachedBottom(wrapper) {
-		return wrapper.getBoundingClientRect().bottom <= window.innerHeight;
+	reachedBottom() {
+		const leaderboardWrapper = document.getElementsByClassName('leaderboard-table')[0];
+		return leaderboardWrapper.getBoundingClientRect().bottom <= window.innerHeight;
 	}
 	loadMoreUsers = () => {
 		this.setState(prev => ({
-			maxItems: Math.min(prev.maxItems + 100, this.props.leaderboard.length)
+			maxItems: Math.min(prev.maxItems + SCROLL_INCR, this.props.leaderboard.length)
 		}));
 	};
 	trackScrolling = () => {
-		const leaderboardWrapper = document.getElementsByClassName('leaderboard-table')[0];
-		if (this.reachedBottom(leaderboardWrapper) && this.state.maxItems < this.props.leaderboard.length) {
+		if (this.reachedBottom() && this.state.maxItems < this.props.leaderboard.length) {
 			this.loadMoreUsers();
 		}
 	};
