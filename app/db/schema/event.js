@@ -214,6 +214,12 @@ module.exports = (Sequelize, db) => {
 		return this.findAll({ where: { startDate : { $gte : now } }, order: [['startDate', 'ASC']], offset, limit });
 	};
 
+	Event.getByTimeFrame = function(start, end) {
+		if (!start || start < 0) start = new Date(0);
+		if (!end || end < 0) end = new Date();
+		return this.findAll({ where: { }});
+	}
+
 	Event.sanitize = function(event) {
 		event = _.pick(event, ['committee', 'cover', 'thumb', 'title', 'description', 'location', 'eventLink', 'startDate', 'endDate', 'attendanceCode', 'attendancePoints']);
 		if (event.committee !== undefined && event.committee.length === 0)

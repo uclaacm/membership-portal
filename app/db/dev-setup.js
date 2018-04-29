@@ -1,6 +1,7 @@
 module.exports = (User, Event, Attendance) => {
 	return Promise.all([
 		User.create({
+			uuid: '1b1ccafc-734a-4fc4-9247-064ac0b5d337',
 			email: 'admin@ucla.edu',
 			accessType: 'ADMIN',
 			state: 'ACTIVE',
@@ -12,6 +13,7 @@ module.exports = (User, Event, Attendance) => {
 		}),
 
 		User.create({
+			uuid: '5b2f8226-eb6b-4221-9a07-7cb47e086108',
 			email: 'carey@ucla.edu',
 			accessType: 'STANDARD',
 			state: 'ACTIVE',
@@ -25,6 +27,7 @@ module.exports = (User, Event, Attendance) => {
 		}),
 
 		User.create({
+			uuid: '4e1cb733-d1af-4a93-9fdd-ed81c6d27302',
 			email: 'joebruin@ucla.edu',
 			accessType: 'STANDARD',
 			state: 'ACTIVE',
@@ -38,6 +41,7 @@ module.exports = (User, Event, Attendance) => {
 		}),
 
 		User.create({
+			uuid: '85b2990f-365e-4974-909d-8cadd422b97a',
 			email: 'ram@ucla.edu',
 			accessType: 'STANDARD',
 			state: 'ACTIVE',
@@ -51,6 +55,7 @@ module.exports = (User, Event, Attendance) => {
 		}),
 
 		User.create({
+			uuid: 'fa564971-b792-4974-b300-61bd6c642734',
 			email: 'justin@ucla.edu',
 			accessType: 'STANDARD',
 			state: 'ACTIVE',
@@ -64,6 +69,7 @@ module.exports = (User, Event, Attendance) => {
 		}),
 
 		User.create({
+			uuid: '21074cef-3b3f-4054-831c-0a1bad91f3ce',
 			email: 'mihir@ucla.edu',
 			accessType: 'STANDARD',
 			state: 'ACTIVE',
@@ -77,6 +83,7 @@ module.exports = (User, Event, Attendance) => {
 		}),
 
 		User.create({
+			uuid: 'd2eae4aa-af34-4ae2-a8de-dc0c8091bc86',
 			email: 'dmitri@ucla.edu',
 			accessType: 'STANDARD',
 			state: 'ACTIVE',
@@ -90,6 +97,7 @@ module.exports = (User, Event, Attendance) => {
 		}), 
 
 		User.create({
+			uuid: '2d3422d0-6367-454e-bc32-96919fe72d0c',
 			email: 'vic@ucla.edu',
 			accessType: 'STANDARD',
 			state: 'ACTIVE',
@@ -103,6 +111,7 @@ module.exports = (User, Event, Attendance) => {
 		}), 
 
 		User.create({
+			uuid: '5607f792-3ebb-41d2-b70c-bc9c4f3700d9',
 			email: 'yvonne@ucla.edu',
 			accessType: 'STANDARD',
 			state: 'ACTIVE',
@@ -116,6 +125,7 @@ module.exports = (User, Event, Attendance) => {
 		}), 
 		
 		User.create({
+			uuid: 'de99efd3-1b6c-4720-a0dc-f03f03e46408',
 			email: 'helenhyewonlee@ucla.edu',
 			accessType: 'STANDARD',
 			state: 'ACTIVE',
@@ -129,6 +139,7 @@ module.exports = (User, Event, Attendance) => {
 		}),
 
 		User.create({
+			uuid: '961330d3-1469-4e2e-89f4-3fa2cf26cdf3',
 			email: 'thanathanyang@ucla.edu',
 			accessType: 'STANDARD',
 			state: 'ACTIVE',
@@ -142,6 +153,7 @@ module.exports = (User, Event, Attendance) => {
 		}),
 		
 		Event.create({
+			uuid: 'f83f3358-4eab-49a5-87a2-480c84bee758',
 			title: "Project A*: Dynamic Programming",
 			description: "<p>Our sixth session will be this Friday, May 19th, from 4 - 6 PM in Boelter 4760. We will be covering dynamic programming!</p><p>ACM's Project A* is a quarter-long academy led by ACM-ICPC that teaches algorithmic concepts and implementation. If you are interested in acing your technical interviews or want to learn & practice coding up important algorithms, join us on Fridays from 4 - 6 PM in Boelter 4760!</p>",
 			committee: "ICPC",
@@ -155,6 +167,7 @@ module.exports = (User, Event, Attendance) => {
 		}),
 
 		Event.create({
+			uuid: '3f80844d-653f-41a2-8d60-c26847f44644',
 			title: "Intro to React",
 			description: "<p>React is high-demand front-end Javascript library first created by Facebook. React powers the front-end of several major companies ranging from Facebook, AirBnb, Uber, and much more. We'll be hosting an introduction to React led by a Codesmith instructor to give you the tools necessary to work on your very first React project. Bring your laptop!</p><p>This session is designed for beginners to intermediates. React is perfect for beginners with basic HTML/CSS/Javascript knowledge looking to turn their static websites into full-fledged interactive web-apps. If you are already familiar with Javascript libraries like jQuery, learning React is a powerful alternative. Furthermore, React can be used to build mobile apps through Facebook's React Native library.</p>",
 			committee: "Hack",
@@ -168,6 +181,7 @@ module.exports = (User, Event, Attendance) => {
 		}),
 
 		Event.create({
+			uuid: 'a11c7027-54ca-43d5-9be9-4779fcc47b33',
 			title: "Machine Learning with Tensorflow (part 5)",
 			description: "<p>ACM AI is hosting a multi-part workshop series on machine learning with Tensorflow this quarter. If you're interested in learning machine learning and getting familiar with one of the most popular libraries out there, join us on Thursdays, weeks 3 - 9 from 4 - 6pm in Boelter 4760!</p><p>This is a hands-on series, where you'll have the opportunity to apply machine learning on real-world problems and datasets throughout the series.</p>",
 			committee: "AI",
@@ -181,6 +195,7 @@ module.exports = (User, Event, Attendance) => {
 		}),
 
 		Event.create({
+			uuid: '84feb61b-7c22-4e3e-aabd-500f13beaa12',
 			title: "Pet a Doggo",
 			description: "<p>Interested in petting a doggo? Come out to pet some doggos!</p>",
 			committee: "Hack",
@@ -191,6 +206,90 @@ module.exports = (User, Event, Attendance) => {
 			endDate: new Date(2017, 5, 8, 18),
 			attendanceCode: "d0ggo",
 			attendancePoints: 50
+		}),
+
+		Attendance.create({
+			user: '1b1ccafc-734a-4fc4-9247-064ac0b5d337',
+			event: '84feb61b-7c22-4e3e-aabd-500f13beaa12',
+			date: new Date(2017, 5, 8, 14, 0, 55)
+		}),
+
+		Attendance.create({
+			user: '5b2f8226-eb6b-4221-9a07-7cb47e086108',
+			event: '84feb61b-7c22-4e3e-aabd-500f13beaa12',
+			date: new Date(2017, 5, 8, 14, 3, 34)
+		}),
+
+		Attendance.create({
+			user: '4e1cb733-d1af-4a93-9fdd-ed81c6d27302',
+			event: '84feb61b-7c22-4e3e-aabd-500f13beaa12',
+			date: new Date(2017, 5, 8, 14, 15, 0)
+		}),
+
+		Attendance.create({
+			user: '85b2990f-365e-4974-909d-8cadd422b97a',
+			event: '84feb61b-7c22-4e3e-aabd-500f13beaa12',
+			date: new Date(2017, 5, 8, 14, 22, 2)
+		}),
+
+		Attendance.create({
+			user: 'fa564971-b792-4974-b300-61bd6c642734',
+			event: '84feb61b-7c22-4e3e-aabd-500f13beaa12',
+			date: new Date(2017, 5, 8, 15, 1, 34)
+		}),
+
+		Attendance.create({
+			user: '21074cef-3b3f-4054-831c-0a1bad91f3ce',
+			event: '84feb61b-7c22-4e3e-aabd-500f13beaa12',
+			date: new Date(2017, 5, 8, 15, 3, 49)
+		}),
+
+		Attendance.create({
+			user: 'd2eae4aa-af34-4ae2-a8de-dc0c8091bc86',
+			event: '84feb61b-7c22-4e3e-aabd-500f13beaa12',
+			date: new Date(2017, 5, 8, 15, 3, 25)
+		}),
+
+		Attendance.create({
+			user: '2d3422d0-6367-454e-bc32-96919fe72d0c',
+			event: '84feb61b-7c22-4e3e-aabd-500f13beaa12',
+			date: new Date(2017, 5, 8, 15, 3, 30)
+		}),
+
+		Attendance.create({
+			user: '5607f792-3ebb-41d2-b70c-bc9c4f3700d9',
+			event: '84feb61b-7c22-4e3e-aabd-500f13beaa12',
+			date: new Date(2017, 5, 8, 15, 5, 12)
+		}),
+
+		Attendance.create({
+			user: 'de99efd3-1b6c-4720-a0dc-f03f03e46408',
+			event: '84feb61b-7c22-4e3e-aabd-500f13beaa12',
+			date: new Date(2017, 5, 8, 15, 5, 35)
+		}),
+
+		Attendance.create({
+			user: '4e1cb733-d1af-4a93-9fdd-ed81c6d27302',
+			event: '3f80844d-653f-41a2-8d60-c26847f44644',
+			date: new Date(2017, 5, 7, 19)
+		}),
+
+		Attendance.create({
+			user: 'de99efd3-1b6c-4720-a0dc-f03f03e46408',
+			event: '3f80844d-653f-41a2-8d60-c26847f44644',
+			date: new Date(2017, 5, 7, 19)
+		}),
+
+		Attendance.create({
+			user: '85b2990f-365e-4974-909d-8cadd422b97a',
+			event: '3f80844d-653f-41a2-8d60-c26847f44644',
+			date: new Date(2017, 5, 7, 20)
+		}),
+
+		Attendance.create({
+			user: 'fa564971-b792-4974-b300-61bd6c642734',
+			event: '3f80844d-653f-41a2-8d60-c26847f44644',
+			date: new Date(2017, 5, 7, 20)
 		}),
 	]);
 };
