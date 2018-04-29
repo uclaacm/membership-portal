@@ -1,5 +1,26 @@
 const error = require('../../../error');
 
+/**
+* parse URL parameters
+* committee
+*   valid value: hack, ai, icpc, netsec, studio, w
+*   default value: undefined
+* startDate
+*   valid value: UTC (Coordinated Universal Time) format time
+*   default value: 1970-01-01T00:00:00.000Z
+* endDate
+*   valid value: UTC (Coordinated Universal Time) format time
+*   default value: current date
+* offset
+*   valid value: nonnegative integer value
+*   default value: undefined
+* limit
+*   valid value: nonnegative integer value
+*   default value: undefined
+*
+* parsed result in req.filters
+**/
+
 const parseFilters = (req, res, next) => {
   const filters = {};
 
