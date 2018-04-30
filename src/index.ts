@@ -1,9 +1,10 @@
-const cluster = require('cluster');
-const express = require('express');
-const morgan = require('morgan');
-const uuid = require('uuid');
-const bodyParser = require('body-parser');
-const app = require('./app');
+import cluster from 'cluster';
+import express from 'express';
+import morgan from 'morgan';
+import uuid from 'uuid';
+import bodyParser from 'body-parser';
+
+import app from './app';
 const log = app.logger;
 let server = express();
 

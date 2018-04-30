@@ -1,5 +1,5 @@
 const express = require('express');
-const config = require('../../../config');
+const { config } = require('../../../config');
 const error = require('../../../error');
 const db = require('../../../db');
 const router = express.Router();

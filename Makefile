@@ -9,7 +9,7 @@ ecr-login:
 
 setup:
 	if [ ! -f app/config/SESSION_SECRET ]; then \
-		cat /dev/urandom | od -N 32 -t x4 -An | tr -d '\n ' > app/config/SESSION_SECRET; \
+		cat /dev/urandom | od -N 32 -t x4 -An | tr -d '\n ' > SESSION_SECRET; \
 	fi
 
 ash:

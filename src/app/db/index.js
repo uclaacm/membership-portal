@@ -1,8 +1,7 @@
 const Sequelize = require('sequelize');
 const cls = require('continuation-local-storage');
 
-const logger = require('../logger');
-const config = require('../config');
+const { config } = require('../config');
 const error = require('../error');
 const devSetup = require('./dev-setup');
 
@@ -14,7 +13,7 @@ Sequelize.useCLS(transactionNamespace);
 const db = new Sequelize(config.database.db, config.database.user, config.database.password, {
 	dialect: 'postgres',
 	host: config.database.host,
-	logging: config.isDevelopment ? logger.debug : false
+	logging: false
 });
 
 // Create schemas

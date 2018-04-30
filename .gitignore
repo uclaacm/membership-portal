@@ -1,6 +1,8 @@
+dist
 node_modules
 npm-debug.log
-app/config/SESSION_SECRET
+yarn-error.log
+SESSION_SECRET
 certs-data
 certs
 node.env

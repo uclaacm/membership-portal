@@ -1,4 +1,4 @@
-const logger = require('../logger');
+const { logger } = require('../logger');
 
 /**
  * This file defines error classes based on their semantic meaning. It abstracts away

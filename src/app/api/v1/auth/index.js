@@ -1,8 +1,8 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const config = require('../../../config');
+const { config } = require('../../../config');
 const error = require('../../../error');
-const log = require('../../../logger');
+const { log } = require('../../../logger');
 const Mail = require('../../../mail');
 const { User, Activity } = require('../../../db');
 const router = express.Router();
