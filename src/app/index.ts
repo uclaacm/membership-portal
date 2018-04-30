@@ -4,7 +4,7 @@ import { logger } from "./logger";
 import * as mail from "./mail";
 
 export default {
-  api,
+  api,                    
   config,
   logger,
   mail,
