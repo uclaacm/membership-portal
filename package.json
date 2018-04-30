@@ -9,9 +9,9 @@
   "scripts": {
     "lint": "tslint -c tslint.json -p tsconfig.json -e node_modules --fix src/**/*.ts",
     "build": "tsc -p .",
-    "precommit": "yarn build && yarn lint",
     "start": "node dist/index"
   },
+  "pre-commit": "yarn build && yarn lint",
   "repository": "git+https://github.com/uclaacm/membership-portal.git",
   "author": "Nikhil Kansal",
   "license": "ISC",
