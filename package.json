@@ -9,11 +9,8 @@
   "scripts": {
     "lint": "tslint -c tslint.json -p tsconfig.json -e node_modules --fix src/**/*.ts",
     "build": "tsc -p .",
-    "precommit": "yarn build && lint-staged",
+    "precommit": "yarn build && lint-staged -c lint-staged.json",
     "start": "node dist/index"
-  },
-  "lint-staged": {
-    "src/**/*.ts": "tslint -c tslint.json -p tsconfig.json -e node_modules --fix src/**/*.ts"
   },
   "repository": "git+https://github.com/uclaacm/membership-portal.git",
   "author": "Nikhil Kansal",
