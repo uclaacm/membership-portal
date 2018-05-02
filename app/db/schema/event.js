@@ -214,10 +214,11 @@ module.exports = (Sequelize, db) => {
 		return this.findAll({ where: { startDate : { $gte : now } }, order: [['startDate', 'ASC']], offset, limit });
 	};
 
-	Event.getByTimeFrame = function(start, end) {
+	Event.getByFilters = function(filters) {
+		const { start, end, committee } = filters;
 		if (!start || start < 0) start = new Date(0);
 		if (!end || end < 0) end = new Date();
-		return this.findAll({ where: { }});
+		return this.findAll({ where: { startDate : { $gte : start }, endDate : { $lte : end }, committee : { $ilike : '%' + committee + '%'}}, order: [['startDate', 'ASC']]});
 	}
 
 	Event.sanitize = function(event) {

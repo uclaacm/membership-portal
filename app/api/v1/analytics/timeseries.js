@@ -12,7 +12,6 @@ router.route('/')
 	const committee = 'Hack';
 	let analytics = [];
 
-	console.log("ENTERED TIMESERIES");
 	Event.getByFilters({ start, end, committee }).then(events => {
 		const attendances = [];
 		events.forEach(event => {
@@ -34,7 +33,7 @@ router.route('/')
 				return time;
 			});
 
-			analytics[index].analytics = aggregatedTimes;
+			analytics[index].attendance = aggregatedTimes;
 		});
 		res.json(analytics);
 	})
