@@ -1,6 +1,6 @@
 const express = require('express');
 const error = require('../../../error');
-const { User } = require('../../../db');
+const { User, Activity } = require('../../../db');
 const router = express.Router();
 
 /**
@@ -16,7 +16,17 @@ router.route('/')
 	
 	User.getLeaderboard(offset, limit).then(users => {
 		// map the user objects to public (just name, picture, and points) for privacy reasons
-		res.json({ error: null, leaderboard: users.map(u => u.getPublicProfile()) });
+		const leaderboard = users.map(u => u.getPublicProfile());
+		// return leaderboard;
+		return Promise.all(users.map(user => Activity.getPublicStream(user.uuid)))
+			.then(activityStreams => {
+				activityStreams.forEach((activity, i) => {
+					leaderboard[i].activity = activity;
+				})
+				return leaderboard;
+			})
+	}).then(leaderboard => {
+		res.json({ error: null, leaderboard });
 	}).catch(next);
 });
 
