@@ -1,4 +1,4 @@
-module.exports = (User, Event, Attendance) => {
+module.exports = (User, Event, Attendance, Activity) => {
 	return Promise.all([
 		User.create({
 			uuid: '1b1ccafc-734a-4fc4-9247-064ac0b5d337',
@@ -214,11 +214,15 @@ module.exports = (User, Event, Attendance) => {
 			date: new Date(2017, 5, 8, 14, 0, 55)
 		}),
 
+		Activity.attendedEvent('1b1ccafc-734a-4fc4-9247-064ac0b5d337', 'Pet a Doggo', 50),
+
 		Attendance.create({
 			user: '5b2f8226-eb6b-4221-9a07-7cb47e086108',
 			event: '84feb61b-7c22-4e3e-aabd-500f13beaa12',
 			date: new Date(2017, 5, 8, 14, 3, 34)
 		}),
+
+		Activity.attendedEvent('5b2f8226-eb6b-4221-9a07-7cb47e086108', 'Pet a Doggo', 10),
 
 		Attendance.create({
 			user: '4e1cb733-d1af-4a93-9fdd-ed81c6d27302',
@@ -226,11 +230,15 @@ module.exports = (User, Event, Attendance) => {
 			date: new Date(2017, 5, 8, 14, 15, 0)
 		}),
 
+		Activity.attendedEvent('4e1cb733-d1af-4a93-9fdd-ed81c6d27302', 'Pet a Doggo', 10),
+
 		Attendance.create({
 			user: '85b2990f-365e-4974-909d-8cadd422b97a',
 			event: '84feb61b-7c22-4e3e-aabd-500f13beaa12',
 			date: new Date(2017, 5, 8, 14, 22, 2)
 		}),
+
+		Activity.attendedEvent('85b2990f-365e-4974-909d-8cadd422b97a', 'Pet a Doggo', 10),
 
 		Attendance.create({
 			user: 'fa564971-b792-4974-b300-61bd6c642734',
@@ -238,11 +246,15 @@ module.exports = (User, Event, Attendance) => {
 			date: new Date(2017, 5, 8, 15, 1, 34)
 		}),
 
+		Activity.attendedEvent('fa564971-b792-4974-b300-61bd6c642734', 'Pet a Doggo', 10),
+
 		Attendance.create({
 			user: '21074cef-3b3f-4054-831c-0a1bad91f3ce',
 			event: '84feb61b-7c22-4e3e-aabd-500f13beaa12',
 			date: new Date(2017, 5, 8, 15, 3, 49)
 		}),
+
+		Activity.attendedEvent('21074cef-3b3f-4054-831c-0a1bad91f3ce', 'Pet a Doggo', 10),
 
 		Attendance.create({
 			user: 'd2eae4aa-af34-4ae2-a8de-dc0c8091bc86',
@@ -250,11 +262,15 @@ module.exports = (User, Event, Attendance) => {
 			date: new Date(2017, 5, 8, 15, 3, 25)
 		}),
 
+		Activity.attendedEvent('d2eae4aa-af34-4ae2-a8de-dc0c8091bc86', 'Pet a Doggo', 10),
+
 		Attendance.create({
 			user: '2d3422d0-6367-454e-bc32-96919fe72d0c',
 			event: '84feb61b-7c22-4e3e-aabd-500f13beaa12',
 			date: new Date(2017, 5, 8, 15, 3, 30)
 		}),
+
+		Activity.attendedEvent('2d3422d0-6367-454e-bc32-96919fe72d0c', 'Pet a Doggo', 10),
 
 		Attendance.create({
 			user: '5607f792-3ebb-41d2-b70c-bc9c4f3700d9',
@@ -262,11 +278,15 @@ module.exports = (User, Event, Attendance) => {
 			date: new Date(2017, 5, 8, 15, 5, 12)
 		}),
 
+		Activity.attendedEvent('5607f792-3ebb-41d2-b70c-bc9c4f3700d9', 'Pet a Doggo', 10),
+
 		Attendance.create({
 			user: 'de99efd3-1b6c-4720-a0dc-f03f03e46408',
 			event: '84feb61b-7c22-4e3e-aabd-500f13beaa12',
 			date: new Date(2017, 5, 8, 15, 5, 35)
 		}),
+
+		Activity.attendedEvent('de99efd3-1b6c-4720-a0dc-f03f03e46408', 'Pet a Doggo', 10),
 
 		Attendance.create({
 			user: '4e1cb733-d1af-4a93-9fdd-ed81c6d27302',
@@ -274,11 +294,15 @@ module.exports = (User, Event, Attendance) => {
 			date: new Date(2017, 5, 7, 19)
 		}),
 
+		Activity.attendedEvent('4e1cb733-d1af-4a93-9fdd-ed81c6d27302', 'Intro to React', 20),
+
 		Attendance.create({
 			user: 'de99efd3-1b6c-4720-a0dc-f03f03e46408',
 			event: '3f80844d-653f-41a2-8d60-c26847f44644',
 			date: new Date(2017, 5, 7, 19)
 		}),
+
+		Activity.attendedEvent('de99efd3-1b6c-4720-a0dc-f03f03e46408', 'Intro to React', 20),
 
 		Attendance.create({
 			user: '85b2990f-365e-4974-909d-8cadd422b97a',
@@ -286,10 +310,14 @@ module.exports = (User, Event, Attendance) => {
 			date: new Date(2017, 5, 7, 20)
 		}),
 
+		Activity.attendedEvent('85b2990f-365e-4974-909d-8cadd422b97a', 'Intro to React', 20),
+
 		Attendance.create({
 			user: 'fa564971-b792-4974-b300-61bd6c642734',
 			event: '3f80844d-653f-41a2-8d60-c26847f44644',
 			date: new Date(2017, 5, 7, 20)
 		}),
+
+		Activity.attendedEvent('fa564971-b792-4974-b300-61bd6c642734', 'Intro to React', 20),
 	]);
 };

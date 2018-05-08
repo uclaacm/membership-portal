@@ -27,7 +27,7 @@ const Attendance = require('./schema/attendance')(Sequelize, db);
  * DB setup function to sync tables and add admin if doesn't exist
  */
 const setup = (force, dev) => {
-	return (dev ? db.sync({ force }).then(() => devSetup(User, Event, Attendance)) : db.sync({ force })).then(() => {
+	return (dev ? db.sync({ force }).then(() => devSetup(User, Event, Attendance, Activity)) : db.sync({ force })).then(() => {
 		User.findOrCreate({
 			where: { email: 'acm@ucla.edu'},
 			defaults: {
