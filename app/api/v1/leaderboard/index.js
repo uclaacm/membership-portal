@@ -17,14 +17,11 @@ const router = express.Router();
  	User.getLeaderboard(offset, limit).then(users => {
  		// map the user objects to public (just name, picture, and points) for privacy reasons
 
-    const leaderboard = users.map(u => u.getUserProfile());
-    leaderboard.forEach((user, i) => {
-      Activity.getPublicStream(user.uuid).then(activity => {
-			  leaderboard[i].activity = activity.map(a => a.getPublic());
-			})
-    })
-
-		res.json({ error: null, leaderboard: leaderboard});
+		res.json({ error: null, leaderboard: users.map(u => u.getUserProfile()), extend: users.map(user => {
+			Activity.getPublicStream(user.uuid).then(activity => {
+			  return activity.map(a => a.getPublic());
+			}).catch(next);
+		})});
  	}).catch(next);
  });
 
