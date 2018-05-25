@@ -190,14 +190,13 @@ export default class Profile extends React.Component {
 						<Button
 							className="profile-action-button"
 							style={ this.profileUpdated() ? "green" : "disabled" }
-							onClick= { this.saveProfile }
+							onClick={ this.profileUpdated() ? this.saveProfile : null }
 							text="Save" />
-						<a href="/profile" className="no-style">
-							<Button
+						<Button
 								className="profile-action-button"
 								style={ this.profileUpdated() ? "red" : "disabled" }
+								onClick={ this.profileUpdated() ? () => location.reload() : null }
 								text="Discard" />
-						</a>
 					</div>
 
 					<div className="divider"></div>
