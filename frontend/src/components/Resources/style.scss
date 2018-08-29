@@ -128,8 +128,8 @@
 	transition: 0.125s ease-in-out;
 
 	img {
-		width: 80px;
-		height: 80px;
+		width: 70px;
+		height: 70px;
 		border-radius: 50px;
 		border: 3px solid #DADADA;
 		display: inline-block;
@@ -149,17 +149,17 @@
 			
 			&.name {
 				font-weight: bold;
-				font-size: 1.25em;
+				font-size: 1.15em;
 			}
 
 			&.position {
 				color: #444444;
-				font-size: 1.05em;
+				font-size: 0.95em;
 			}
 
 			&.email {
 				color: #666666;
-				font-size: 0.9em;
+				font-size: 0.8em;
 			}
 		}
 	}
