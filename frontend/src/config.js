@@ -35,58 +35,58 @@ export default {
 		mission: "To create and support an inclusive community for all of those interested in computer science at UCLA and cultivate the next generation of technology leaders by promoting the spirit of innovation, a culture of creativity, and aspiration of entrepreneurship.",
 		officers: [
 			{
-				name: "Mihir Mathur",
-				position: "President",
-				email: "mihirmathur@ucla.edu",
-				picture: "/assets/images/officers/mihir.jpg"
-			},
-			{
-				name: "Nikhil Kansal",
-				position: "Vice President",
-				email: "nkansal@ucla.edu",
-				picture: "/assets/images/officers/nikhil.jpg"
-			},
-			{
-				name: "Jennifer Liaw",
-				position: "Vice President",
-				email: "jdliaw@ucla.edu",
-				picture: "/assets/images/officers/jennifer.jpg"
-			},
-			{
-				name: "Rohan Varma",
-				position: "President of AI",
-				email: "rvarm1@gmail.com",
-				picture: "/assets/images/officers/rohan.jpg"
-			},
-			{
 				name: "Yvonne Chen",
-				position: "President of Hack",
+				position: "President",
 				email: "ycyvonne@ucla.edu",
 				picture: "/assets/images/officers/yvonne.jpg"
 			},
 			{
-				name: "Jerry Li",
+				name: "Nathan Yang",
+				position: "External VP",
+				email: "thenathanyang@ucla.edu",
+				picture: "/assets/images/officers/nathan.jpg"
+			},
+			{
+				name: "Natasha Kohli",
+				position: "Internal VP",
+				email: "jdliaw@ucla.edu",
+				picture: "/assets/images/officers/natasha.jpg"
+			},
+			{
+				name: "Adit Deshpande",
+				position: "President of AI",
+				email: "rvarm1@gmail.com",
+				picture: "/assets/images/officers/adit.jpg"
+			},
+			{
+				name: "Kevin Tan",
+				position: "President of Hack",
+				email: "rvarm1@gmail.com",
+				picture: "/assets/images/officers/kevin.jpg"
+			},
+			{
+				name: "Jeffrey Zhao",
 				position: "President of ICPC",
 				email: "jerrylinew@gmail.com",
-				picture: "/assets/images/officers/jerry.jpg"
+				picture: "/assets/images/officers/jeffrey.jpg"
 			},
 			{
-				name: "Tanya Al-Rehani",
-				position: "President of NetSec",
+				name: "Akshara Sundara",
+				position: "President of Cyber",
 				email: "alrehanitanya@gmail.com",
-				picture: "/assets/images/officers/tanya.jpg"
+				picture: "/assets/images/officers/akshara.jpg"
 			},
 			{
-				name: "Tyler Lindberg",
-				position: "President of Studio",
+				name: "CJ Ordog & Judy Kim",
+				position: "Co-Presidents of Studio",
 				email: "tlindberg@ucla.edu",
-				picture: "/assets/images/officers/tyler.jpg"
+				picture: "/assets/images/officers/cj_judy.png"
 			},
 			{
-				name: "Garima Lunawat",
+				name: "Caroline Quigg",
 				position: "President of ACM-W",
 				email: "glunawat@ucla.edu",
-				picture: "/assets/images/officers/garima.jpg"
+				picture: "/assets/images/officers/caroline.jpg"
 			}
 		],
 		resources: [
