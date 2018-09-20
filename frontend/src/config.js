@@ -77,10 +77,10 @@ export default {
 				picture: "/assets/images/officers/akshara.jpg"
 			},
 			{
-				name: "CJ Ordog & Judy Kim",
-				position: "Co-Presidents of Studio",
-				email: "tlindberg@ucla.edu",
-				picture: "/assets/images/officers/cj_judy.png"
+				name: "Judy Kim",
+				position: "President of Studio",
+				email: "judyapplekim@gmail.com",
+				picture: "/assets/images/officers/judy.jpg"
 			},
 			{
 				name: "Caroline Quigg",
