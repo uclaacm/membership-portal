@@ -1,9 +1,9 @@
 # Need a custom image here so that we can incorporate an npm build too
 # Alpine is super light
-FROM alpine:3.5
+FROM alpine:3.8
 
 # Download and install packages
-RUN apk add -U nginx python make g++ nodejs
+RUN apk add -U nginx python make g++ nodejs npm
 
 # Create directories
 #   /working is the build directory
@@ -17,7 +17,6 @@ WORKDIR /var/www/membership/working
 COPY *.json /var/www/membership/working/
 RUN /usr/bin/node --max_semi_space_size=8 \
                   --max_old_space_size=298 \
-                  --max_executable_size=248 \
                   /usr/bin/npm install
 
 # Copy the source files
