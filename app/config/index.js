@@ -38,6 +38,6 @@ module.exports = {
 	
 	// logging level
 	logging: {
-		level: "debug",
+		level: "info",
 	}
 };
