@@ -98,7 +98,7 @@ router.route('/milestone')
 		users.forEach(user => {
 			Activity.createMilestone(user.uuid, req.body.milestone.name, user.points)
 			if (req.body.milestone.resetPoints) {
-				req.user.update({ points: 0 });
+				user.update({ points: 0 });
 			}
 		});
 	}).then(() => res.json({ error: null })).catch(next);
