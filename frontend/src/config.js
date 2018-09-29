@@ -49,31 +49,31 @@ export default {
 			{
 				name: "Natasha Kohli",
 				position: "Internal VP",
-				email: "jdliaw@ucla.edu",
+				email: "natashakohli@ucla.edu",
 				picture: "/assets/images/officers/natasha.jpg"
 			},
 			{
 				name: "Adit Deshpande",
 				position: "President of AI",
-				email: "rvarm1@gmail.com",
+				email: "adeshpande3@ucla.edu",
 				picture: "/assets/images/officers/adit.jpg"
 			},
 			{
 				name: "Kevin Tan",
 				position: "President of Hack",
-				email: "rvarm1@gmail.com",
+				email: "ktan17@ucla.edu",
 				picture: "/assets/images/officers/kevin.jpg"
 			},
 			{
 				name: "Jeffrey Zhao",
 				position: "President of ICPC",
-				email: "jerrylinew@gmail.com",
+				email: "zhouhengsun@gmail.com",
 				picture: "/assets/images/officers/jeffrey.jpg"
 			},
 			{
 				name: "Akshara Sundara",
 				position: "President of Cyber",
-				email: "alrehanitanya@gmail.com",
+				email: "akshara.sundar@gmail.com",
 				picture: "/assets/images/officers/akshara.jpg"
 			},
 			{
@@ -85,8 +85,20 @@ export default {
 			{
 				name: "Caroline Quigg",
 				position: "President of ACM-W",
-				email: "glunawat@ucla.edu",
+				email: "quiggc@ucla.edu",
 				picture: "/assets/images/officers/caroline.jpg"
+			},
+			{
+				name: "Arpi Beshlikyan",
+				position: "President of Design",
+				email: "aybeshlikyan@ucla.edu",
+				picture: "/assets/images/officers/arpi.jpg"
+			},
+			{
+				name: "John Stucky",
+				position: "President of Teach LA",
+				email: "stuckyj@gmail.com",
+				picture: "/assets/images/officers/john.jpg"
 			}
 		],
 		resources: [
