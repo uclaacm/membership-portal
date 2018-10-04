@@ -25,44 +25,19 @@
 		padding: 0px;
 	}
 
-	/*.logout-btn {
-		position: absolute;
-		// top: 15px;
-		// left: 15px;
-		padding: 20px;
-		padding-top: 15px;
-		font-size: 1.4em;
-		color: white;
-		transform: scaleX(-1);
-		-moz-transform: scaleX(-1);
-		-o-transform: scaleX(-1);
-		-webkit-transform: scaleX(-1);
-		-ms-filter: "FlipH";
-
-		&:hover {
-			opacity: 0.5;
-			cursor: pointer;
-		}
-	}*/
-
 	.profile-picture {
-		 padding-top: 60px;
+		padding-top: 60px;
+
 		.profile-img {
-			display: block;
-			margin: auto;
-			border-radius: 50%;
-			margin-bottom: 1.5*$sidebar-vertical-spacing;
-			background-color: white;
-			background-size: 120px;
-			border: 5px solid $white;
 			height: 150px;
 			width: 150px;
-		}
-
-		.profile-img.admin-profile-img {
-			border: 25px solid $white;
-			height: 110px;
-			width: 110px;
+			margin: auto;
+			margin-bottom: 1.5 * $sidebar-vertical-spacing;
+			background-color: white;
+			border: 5px solid $white;
+			border-radius: 50%;
+			background-position: center center;
+			background-size: cover;
 		}
 	}
 

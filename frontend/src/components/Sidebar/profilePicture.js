@@ -2,9 +2,13 @@ import React from 'react'
 
 export default class ProfilePicture extends React.Component {
 	render () {
+		const profilePictureAsBackground = {
+			backgroundImage: 'url(' + this.props.picture || '/assets/images/unknown.png' + ')'
+		};
+
 		return (
 			<div className="profile-picture">
-				<img className={"profile-img" + (this.props.isAdmin ? " admin-profile-img" : "")} src={this.props.picture || "/assets/images/unknown.png"} />
+				<div className="profile-img" style={profilePictureAsBackground}></div>
 			</div>
 		);
 	}
