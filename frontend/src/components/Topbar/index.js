@@ -22,6 +22,7 @@ export default class Topbar extends React.Component {
 					<NavLink to="/events" activeClassName="selected"><NavigationItem icon="fa-calendar" text="Events" /></NavLink>
 					<NavLink to="/leaderboard" activeClassName="selected"><NavigationItem icon="fa-list" text="Members" /></NavLink>
 					<NavLink to="/resources" activeClassName="selected"> <NavigationItem icon="fa-building-o" text="Organization" /></NavLink>
+					<NavLink to="/controlpanel" activeClassName="selected"> <NavigationItem icon="fa-gamepad fa-2x" text="Control Panel" /></NavLink>
 				</div>
 				}
 			</div>
