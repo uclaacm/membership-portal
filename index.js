@@ -7,6 +7,7 @@ const app = require('./app');
 const log = app.logger;
 let server = express();
 
+
 // enable CORS in development
 if (app.config.isDevelopment) {
 	server.use(function(req, res, next) {
