@@ -2,12 +2,6 @@ import React from 'react';
 import Button from 'components/Button';
 import PropTypes from 'prop-types';
 
-// import TopAttendee from './topAttendee'
-
-// const names = ['Howard', 'Nikhil', 'Carey'];
-// const points = [50, 100, 70];
-
-
 class ControlPanel extends React.Component {
   render() {
     const { logout } = this.props;
@@ -27,7 +21,6 @@ class ControlPanel extends React.Component {
             color="red"
             text="Delete Events"
           />
-
         </div>
         <div className="form-elem">
           <h1>Create a milestone</h1>
@@ -41,32 +34,6 @@ class ControlPanel extends React.Component {
           />
         </div>
 
-        <div className="form-elem">
-          <h1>Top Attendees</h1>
-          <table className="test-table">
-            <tr>
-              <th>
-                <span>#</span>
-              </th>
-              <th className="name">
-                <span>Name</span>
-              </th>
-              <th className="name">
-                <span>Points</span>
-              </th>
-            </tr>
-            {
-              <div>
-                <tr>
-                  <td>0</td>
-                  <td>
-                    Hoard
-                  </td>
-                </tr>
-              </div>
-            }
-          </table>
-        </div>
         <div className="form-elem">
           <h1 className="DisplayPrimary">Event Analytics</h1>
           <select className="Headline-2Secondary">
