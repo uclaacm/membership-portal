@@ -1,0 +1,10 @@
+{
+	"modulePaths": ["<rootDir>/src"],
+	"testRegex": "tests/.*\\.tests?\\.(js|ts)x?$",
+	"moduleFileExtensions": [
+		"ts",
+		"js",
+		"json",
+		"node"
+	]
+}

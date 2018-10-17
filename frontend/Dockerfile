@@ -3,7 +3,7 @@
 FROM alpine:3.8
 
 # Download and install packages
-RUN apk add -U nginx python make g++ nodejs npm
+RUN apk add -U nginx python make g++ nodejs npm yarn
 
 # Create directories
 #   /working is the build directory
@@ -14,18 +14,16 @@ RUN mkdir -p /var/www/membership/working && \
 
 # Install the required packages to build the frontend
 WORKDIR /var/www/membership/working
-COPY *.json /var/www/membership/working/
-RUN /usr/bin/node --max_semi_space_size=8 \
-                  --max_old_space_size=298 \
-                  /usr/bin/npm install
+COPY package.json yarn.lock /var/www/membership/working/
+RUN yarn  --pure-lockfile
 
 # Copy the source files
 COPY pages/ /var/www/membership/working/pages/
 COPY src/ /var/www/membership/working/src/
-COPY .babelrc *.js Makefile /var/www/membership/working/
+COPY .babelrc *.js *.json /var/www/membership/working/
 
 # build and copy files to server root
-RUN make build-static && \
+RUN yarn build && \
     cp -rv pages/* ../static/ && \
     cp -rv lib/build/* ../static/build/
 
@@ -44,5 +42,4 @@ WORKDIR /var/www/membership/static
 COPY --from=0 /var/www/membership/static /var/www/membership/static
 
 # Run the server
-EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
