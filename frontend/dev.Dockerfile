@@ -9,4 +9,4 @@ RUN apk add -U python g++ yarn nodejs npm
 WORKDIR /var/www/membership-portal-ui
 
 # Start the development server
-CMD ["/bin/sh", "-c", "npm rebuild node-sass && yarn dev"]
+CMD ["/bin/sh", "-c", "(node -e 'require(\"node-sass\")' || npm rebuild node-sass) && yarn dev"]
