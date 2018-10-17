@@ -57,7 +57,7 @@ if (cluster.isMaster) {
 	});
 } else {
 	// Start the server on each worker
-	server.listen(app.config.port, () => {
+	server.listen(app.config.port, app.config.host, () => {
 		log.info("Started server %s on port %d, PID: %d", app.config.host, app.config.port, process.pid);
 	});
 }
