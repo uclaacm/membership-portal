@@ -1,15 +1,9 @@
 {
-	"transform": {
-		"^.+\\.jsx?$": "babel-jest"
-	},
 	"modulePaths": ["<rootDir>/src"],
 	"testRegex": "tests/.*\\.tests?\\.(js|ts)x?$",
-	"setupTestFrameworkScriptFile": "<rootDir>/testSetup.js",
 	"moduleFileExtensions": [
 		"ts",
-		"tsx",
 		"js",
-		"jsx",
 		"json",
 		"node"
 	]

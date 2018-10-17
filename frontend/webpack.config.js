@@ -1,3 +1,4 @@
+const os = require('os');
 const path = require('path');
 const webpack = require('webpack');
 
@@ -26,18 +27,18 @@ module.exports = {
         use: ExtractTextPlugin.extract({
           use: [
             {
-              loader: "cache-loader",
+              loader: 'cache-loader',
             },
             {
-              loader: "css-loader",
+              loader: 'css-loader',
               options: {
                 minimize: true,
               },
             },
             {
-              loader: "sass-loader",
+              loader: 'sass-loader',
             },
-          ]
+          ],
         }),
       },
       {
@@ -45,31 +46,31 @@ module.exports = {
         exclude: /(node_modules)/,
         use: [
           {
-            loader: "cache-loader"
+            loader: 'cache-loader',
           },
           {
-            loader: "thread-loader",
+            loader: 'thread-loader',
             options: {
-              workers: require('os').cpus().length - 1,
+              workers: os.cpus().length - 1,
             },
           },
           {
-            loader: "source-map-loader",
+            loader: 'source-map-loader',
           },
           {
-            loader: "babel-loader",
+            loader: 'babel-loader',
           },
-        ]
+        ],
       },
     ],
   },
   resolve: {
-    modules: [path.resolve(__dirname, "src"), "node_modules"],
+    modules: [path.resolve(__dirname, 'src'), 'node_modules'],
     extensions: ['.js', '.jsx'],
     alias: {
       // use production bundles for JS libraries
       'chart.js': 'chart.js/dist/Chart.min.js',
-      'dexie': 'dexie/dist/dexie.min.js',
+      dexie: 'dexie/dist/dexie.min.js',
       // 'react-facebook-login': 'react-facebook-login/dist/facebook-login-render-props',
     },
   },
@@ -93,30 +94,30 @@ module.exports = {
           },
           mangle: {
             toplevel: true,
-          }
-        }
-      })
+          },
+        },
+      }),
     ],
     runtimeChunk: {
-      name: "manifest",
+      name: 'manifest',
     },
     splitChunks: {
       cacheGroups: {
         vendors: {
           test: /[\\/]node_modules[\\/]/,
-          name: "vendor",
-          chunks: "all",
+          name: 'vendor',
+          chunks: 'all',
           priority: -20,
         },
-      }
-    }
+      },
+    },
   },
   plugins: [
     new webpack.DefinePlugin({
       'process.env': {
-        'NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
-        'WEBPACK': JSON.stringify(process.env.WEBPACK || ''),
-      }
+        NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development'),
+        WEBPACK: JSON.stringify(process.env.WEBPACK || ''),
+      },
     }),
 
     new CleanWebpackPlugin(['lib']),
@@ -155,11 +156,11 @@ module.exports = {
     poll: 1000,
     ignored: /node_modules/,
   },
-  devtool: "source-map",
+  devtool: 'source-map',
   devServer: {
     contentBase: [path.join(__dirname, 'pages')],
     historyApiFallback: true,
-    host: "0.0.0.0",
+    host: '0.0.0.0',
     port: 8000,
   },
 };
