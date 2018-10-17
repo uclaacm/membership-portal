@@ -1,27 +1,20 @@
-# governor-acm
+# membership-portal-ui
 Frontend for ACM Membership Platform
 
 ## Setup
 Install the dependencies
 ```bash
-$ npm install
+# Install Yarn:
+$ curl -o- -L https://yarnpkg.com/install.sh | bash
+# Install the package dependencies
+$ yarn
 ```
 
 ## Development
-Make sure the backend is running first:
 
 ```bash
-$ cd ..
-$ make dev
-```
-
-Then run the webpack dev server:
-
-```bash
-$ make dev
+$ cd ../membership-portal-deployments
+$ make
 ```
 
 You can access the website from `http://localhost:8000` and the app will communicate with the backend directly on port `8080`.
-
-## Production
-To run in production, follow the instructions for the `membership-portal` repository.
