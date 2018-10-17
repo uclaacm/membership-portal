@@ -17,13 +17,13 @@ class Button extends React.Component {
 
   render() {
     const {
-      className, color, icon, loading, style, text,
+      className, color, icon, loading, style, text, type,
     } = this.props;
     const buttonClass = `button-component ${className}`;
     const buttonIcon = icon ? <i className={`fa ${icon} button-icon`} aria-hidden="true" /> : null;
     return (
       <div className={buttonClass} onClick={this.buttonAction}>
-        <button className={style || color} type="button">
+        <button className={style || color} type={type}>
           { !loading && buttonIcon }
           { !loading && <span>{text}</span> }
           { loading && <Loader /> }
@@ -41,6 +41,7 @@ Button.propTypes = {
   onClick: PropTypes.func,
   style: PropTypes.string,
   text: PropTypes.string.isRequired,
+  type: PropTypes.oneOf(['button', 'submit']),
 };
 
 Button.defaultProps = {
@@ -50,6 +51,7 @@ Button.defaultProps = {
   loading: false,
   onClick: () => {},
   style: null,
+  type: 'button',
 };
 
 export default Button;
