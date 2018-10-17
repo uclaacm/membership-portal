@@ -3,22 +3,20 @@
   "version": "1.0.0",
   "description": "The ACM Membership Portal",
   "main": "index.js",
-  "engines": {
-    "node": ">=6.9.0 <=6.10.2"
-  },
   "scripts": {
-    "start": "node index"
+    "start": "node index",
+    "dev": "nodemon --config nodemon.json index"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ucladevx/membership-portal.git"
+    "url": "git+https://github.com/uclaacm/membership-portal.git"
   },
   "author": "Nikhil Kansal",
-  "license": "ISC",
+  "license": "MPL-2.0",
   "bugs": {
-    "url": "https://github.com/ucladevx/membership-portal/issues"
+    "url": "https://github.com/uclaacm/membership-portal/issues"
   },
-  "homepage": "https://github.com/ucladevx/membership-portal#readme",
+  "homepage": "https://github.com/uclaacm/membership-portal#readme",
   "dependencies": {
     "bcrypt": "^1.0.2",
     "body-parser": "^1.15.2",
@@ -34,5 +32,15 @@
     "uuid": "https://registry.npmjs.org/uuid/-/uuid-3.1.0.tgz",
     "winston": "^2.3.1"
   },
-  "false": {}
+  "false": {},
+  "devDependencies": {
+    "eslint": "^5.7.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jest": "^21.25.1",
+    "husky": "^1.1.2",
+    "jest": "^23.6.0",
+    "lint-staged": "^7.3.0",
+    "nodemon": "^1.18.4"
+  }
 }
