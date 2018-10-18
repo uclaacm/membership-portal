@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node index",
-    "dev": "nodemon -e js -i node_modules -i .git -V index.js"
+    "dev": "nodemon -e js -i node_modules -i .git -V index.js",
+    "test": "jest --config jest.config.json"
   },
   "repository": {
     "type": "git",
@@ -34,6 +35,9 @@
   },
   "false": {},
   "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-jest": "^23.6.0",
+    "babel-preset-env": "^1.7.0",
     "eslint": "^5.7.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.14.0",
