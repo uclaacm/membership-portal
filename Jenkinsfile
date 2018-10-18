@@ -64,8 +64,10 @@ pipeline {
       when {
         branch "deploy"
       }
-      sshagent(credentials: ['members.uclaacm.com']) {
-        sh 'ssh -o StrictHostKeyChecking=no -l ec2-user members.uclaacm.com sh -c "cd membership-portal-deployments/prod && make deploy"'
+      steps {
+        sshagent(credentials: ['members.uclaacm.com']) {
+          sh 'ssh -o StrictHostKeyChecking=no -l ec2-user members.uclaacm.com sh -c "cd membership-portal-deployments/prod && make deploy"'
+        }
       }
     }
   }
