@@ -25,7 +25,8 @@ COPY .babelrc *.js *.json /var/www/membership/working/
 # build and copy files to server root
 RUN yarn build && \
     cp -rv pages/* ../static/ && \
-    cp -rv lib/build/* ../static/build/
+    cp -rv lib/build/* ../static/build/ && \
+    cp -rv lib/index.html ../static/index.html
 
 # Use separate build stage to serve files. This reduces the image size drastically
 FROM alpine:3.5
