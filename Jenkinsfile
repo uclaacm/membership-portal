@@ -50,7 +50,7 @@ pipeline {
       steps {
         script {
           def url = env.ECR_URL + env.IMAGE
-          def tags = [env.GIT_COMMIT[0..6], env.GIT_BRANCH.split("/")[-1]]
+          def tags = [env.GIT_COMMIT[0..6], env.GIT_BRANCH]
           docker.withRegistry(url, "ecr:us-west-1:AWS_CREDENTIALS") {
             tags.each { tag ->
               docker.image(env.IMAGE).push(tag)
@@ -66,7 +66,7 @@ pipeline {
       }
       steps {
         sshagent(credentials: ['members.uclaacm.com']) {
-          sh 'ssh -o StrictHostKeyChecking=no -l ec2-user members.uclaacm.com sh -c "cd membership-portal-deployments/prod && make deploy"'
+          sh 'ssh -o StrictHostKeyChecking=no -l ec2-user members.uclaacm.com "cd membership-portal-deployment/prod && make deploy"'
         }
       }
     }
