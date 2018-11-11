@@ -14,23 +14,25 @@
 @import "components/Resources/style";
 @import "components/Leaderboard/style";
 @import "components/ControlPanel/style";
+@import "components/Modal/style";
 
 @import "./styles/vars";
 @import "./styles/fonts";
 
-
-html, body {
-	margin: 0px;
-	height: auto;
-	min-height: 100%;
-	font-family: 'Lato', sans-serif;
+html,
+body {
+  margin: 0px;
+  height: auto;
+  min-height: 100%;
+  font-family: "Lato", sans-serif;
 }
 
-a, a:visited {
-	color: #2196F3;
-	text-decoration: none;
+a,
+a:visited {
+  color: #2196f3;
+  text-decoration: none;
 }
 
 a:hover {
-	color: #1976D2;
+  color: #1976d2;
 }
