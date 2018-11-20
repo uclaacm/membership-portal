@@ -12,9 +12,9 @@ Sequelize.useCLS(transactionNamespace);
 
 // The DB instance managed by sequelize
 const db = new Sequelize(config.database.db, config.database.user, config.database.password, {
-	dialect: 'postgres',
-	host: config.database.host,
-	logging: config.isDevelopment ? logger.debug : false
+  dialect: 'postgres',
+  host: config.database.host,
+  logging: config.isDevelopment ? logger.debug : false,
 });
 
 // Create schemas
@@ -23,26 +23,28 @@ const Event = require('./schema/event')(Sequelize, db);
 const Activity = require('./schema/activity')(Sequelize, db);
 const Attendance = require('./schema/attendance')(Sequelize, db);
 
+User.hasMany(Attendance, { foreignKey: 'user', as: 'attendance' });
+Event.hasMany(Attendance, { foreignKey: 'event', as: 'attendance' });
+
 /**
  * DB setup function to sync tables and add admin if doesn't exist
  */
-const setup = (force, dev) => {
-	return (dev ? db.sync({ force }).then(() => devSetup(User, Event, Attendance)) : db.sync({ force })).then(() => {
-		User.findOrCreate({
-			where: { email: 'acm@ucla.edu'},
-			defaults: {
-				email: 'acm@ucla.edu',
-				accessType: 'ADMIN',
-				state: 'ACTIVE',
-				firstName: 'ACM',
-				lastName: 'Admin',
-				hash: '$2a$10$db7eYhWGZ1LZl27gvyX/iOgb33ji1PHY5.pPzRyXaNlbctCFWMF9G',
-				year: 4,
-				major: 'Computer Science'
-			}
-		});
-	});
-};
+const setup = (force, dev) => (dev ? db.sync({ force })
+  .then(() => devSetup(User, Event, Attendance)) : db.sync({ force })).then(() => {
+  User.findOrCreate({
+    where: { email: 'acm@ucla.edu' },
+    defaults: {
+      email: 'acm@ucla.edu',
+      accessType: 'ADMIN',
+      state: 'ACTIVE',
+      firstName: 'ACM',
+      lastName: 'Admin',
+      hash: '$2a$10$db7eYhWGZ1LZl27gvyX/iOgb33ji1PHY5.pPzRyXaNlbctCFWMF9G',
+      year: 4,
+      major: 'Computer Science',
+    },
+  });
+});
 
 /**
  * Handles database errors (separate from the general error handler and the 404 error handler)
@@ -51,13 +53,14 @@ const setup = (force, dev) => {
  * manner. All other errors it lets fall through to the general error handler middleware.
  */
 const errorHandler = (err, req, res, next) => {
-	if (!err || !(err instanceof Sequelize.Error))
-		return next(err);
-	if (err instanceof Sequelize.ValidationError) {
-		const message = `Validation Error: ${err.errors.map(e => e.message).join('; ')}`;
-		return next(new error.HTTPError(err.name, 422, message))
-	}
-	return next(new error.HTTPError(err.name, 500, err.message));
+  if (!err || !(err instanceof Sequelize.Error)) return next(err);
+  if (err instanceof Sequelize.ValidationError) {
+    const message = `Validation Error: ${err.errors.map(e => e.message).join('; ')}`;
+    return next(new error.HTTPError(err.name, 422, message));
+  }
+  return next(new error.HTTPError(err.name, 500, err.message));
 };
 
-module.exports = { db, User, Event, Activity, Attendance, setup, errorHandler };
+module.exports = {
+  db, User, Event, Activity, Attendance, setup, errorHandler,
+};
