@@ -40,7 +40,9 @@ router.route('/future')
 router.route('/committee')
   .get((req, res, next) => {
     const { committee } = req.query;
-    Event.getCommitteeEvents(committee, 0, 0).then((events) => {
+    const offset = parseInt(req.query.offset, 10);
+    const limit = parseInt(req.query.limit, 10);
+    Event.getCommitteeEvents(committee, offset, limit).then((events) => {
       res.json({ error: null, events: events.map(e => e.getPublic()) });
     }).catch(next);
   });
