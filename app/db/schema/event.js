@@ -30,6 +30,7 @@ module.exports = (Sequelize, db) => {
     committee: {
       type: Sequelize.STRING,
       defaultValue: 'ACM',
+      method: 'BTREE',
     },
 
     // currently unused, but a thumbnail image (square-ish) URL

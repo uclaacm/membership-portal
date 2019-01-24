@@ -35,20 +35,7 @@ router.route('/future')
   });
 
 /**
- * Get all the events given a committee
- */
-router.route('/committee')
-  .get((req, res, next) => {
-    const { committee } = req.query;
-    const offset = parseInt(req.query.offset, 10);
-    const limit = parseInt(req.query.limit, 10);
-    Event.getCommitteeEvents(committee, offset, limit).then((events) => {
-      res.json({ error: null, events: events.map(e => e.getPublic()) });
-    }).catch(next);
-  });
-
-/**
- * Get all events, or a single event, based on whether a UUID is specified
+ * Get all events, all events by committe, a single event, based on whether a UUID is specified
  *
  * Supports pagination with 'offset' and 'limit' query parameters for listing all events
  */
@@ -58,11 +45,18 @@ router.route('/:uuid?')
     if (!req.params.uuid || !req.params.uuid.trim()) {
       const offset = parseInt(req.query.offset, 10);
       const limit = parseInt(req.query.limit, 10);
-      Event.getAll(offset, limit).then((events) => {
-        // return a list of public event objects (or admin versions, if user is admin)
-        res.json({ error: null, events: events.map(e => e.getPublic(req.user.isAdmin())) });
-      }).catch(next);
-
+      const { committee } = req.query;
+      // CASE: committee is present, return all events by committe
+      if (committee) {
+        Event.getCommitteeEvents(committee, offset, limit).then((events) => {
+          res.json({ error: null, events: events.map(e => e.getPublic(req.user.isAdmin())) });
+        }).catch(next);
+      } else {
+        Event.getAll(offset, limit).then((events) => {
+          // return a list of public event objects (or admin versions, if user is admin)
+          res.json({ error: null, events: events.map(e => e.getPublic(req.user.isAdmin())) });
+        }).catch(next);
+      }
       // CASE: UUID is present, should return matching event
     } else {
       Event.findByUUID(req.params.uuid).then((event) => {
