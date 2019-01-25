@@ -46,17 +46,14 @@ router.route('/:uuid?')
       const offset = parseInt(req.query.offset, 10);
       const limit = parseInt(req.query.limit, 10);
       const { committee } = req.query;
-      // CASE: committee is present, return all events by committe
-      if (committee) {
-        Event.getCommitteeEvents(committee, offset, limit).then((events) => {
-          res.json({ error: null, events: events.map(e => e.getPublic(req.user.isAdmin())) });
-        }).catch(next);
-      } else {
-        Event.getAll(offset, limit).then((events) => {
-          // return a list of public event objects (or admin versions, if user is admin)
-          res.json({ error: null, events: events.map(e => e.getPublic(req.user.isAdmin())) });
-        }).catch(next);
-      }
+      // CASE: committee is present, return all events for committee
+      // CASE: no committee in query, return all events
+      const getEvents = committee ? Event.getCommitteeEvents(committee, offset, limit)
+        : Event.getAll(offset, limit);
+      getEvents.then((events) => {
+        res.json({ error: null, events: events.map(e => e.getPublic(req.user.isAdmin())) });
+      }).catch(next);
+
       // CASE: UUID is present, should return matching event
     } else {
       Event.findByUUID(req.params.uuid).then((event) => {

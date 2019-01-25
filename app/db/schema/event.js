@@ -30,7 +30,6 @@ module.exports = (Sequelize, db) => {
     committee: {
       type: Sequelize.STRING,
       defaultValue: 'ACM',
-      method: 'BTREE',
     },
 
     // currently unused, but a thumbnail image (square-ish) URL
@@ -175,6 +174,11 @@ module.exports = (Sequelize, db) => {
         name: 'event_end_date_index',
         method: 'BTREE',
         fields: ['endDate', { attribute: 'endDate', order: 'DESC' }],
+      },
+      {
+        name: 'committee_index',
+        method: 'BTREE',
+        fields: ['committee'],
       },
     ],
   });
