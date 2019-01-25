@@ -1,245 +1,263 @@
 p {
-	margin: 0;
+  margin: 0;
 }
 
 input {
-	border: 0;
-	padding: 0;
+  border: 0;
+  padding: 0;
 }
 
 .register-component {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	height: 100vh;
-	background: $primaryblue;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: $primaryblue;
 
-	a.login-link {
-		position: absolute;
-		top: 32px;
-		left: 32px;
-		color: white;
-	}
+  a.login-link {
+    position: absolute;
+    top: 32px;
+    left: 32px;
+    color: white;
+  }
 
-	img.corner-logo {
-		position: absolute;
-		bottom: 32px;
-		right: 32px;
-		background-position: center center;
-		background-attachment: fixed;
-		background-size: cover;
-		height: 90px;
-		width: 90px;
-	}
+  img.corner-logo {
+    position: absolute;
+    bottom: 32px;
+    right: 32px;
+    background-position: center center;
+    background-attachment: fixed;
+    background-size: cover;
+    height: 90px;
+    width: 90px;
+  }
 
-	@media (max-width: 575px) {
-		.login-link { display: none; }
-		.corner-logo { display: none; }
-	}
+  @media (max-width: 575px) {
+    .login-link {
+      display: none;
+    }
+    .corner-logo {
+      display: none;
+    }
+  }
 }
 
 .card {
-	width: 552px;
-	height: 320px;
-	background: $white;
-	text-align: center;
+  width: 552px;
+  height: 320px;
+  background: $white;
+  text-align: center;
 
-	a {
-		cursor: pointer;
-	}
+  a {
+    cursor: pointer;
+  }
 
-	img {
-		display: none;
-		text-align: center;
-		height: 150px;
-		width: 150px;
-		margin-top: 60px;
-	}
+  img {
+    display: none;
+    text-align: center;
+    height: 150px;
+    width: 150px;
+    margin-top: 60px;
+  }
 
-	p.question {
-		font-size: 36px;
-		font-weight: bold;
-		color: $black;
-		margin-top: 60px;
-		margin-bottom: 30px;
-		padding: 0px 10px;
-	}
+  p.question {
+    font-size: 36px;
+    font-weight: bold;
+    color: $black;
+    margin-top: 60px;
+    margin-bottom: 30px;
+    padding: 0px 10px;
+  }
 
-	p.info {
-		font-size: 0.8em;
-		font-weight: normal;
-		text-align: center;
-		margin-top: 30px;
-		color: #666666;
-		padding-left: 10%;
-		padding-right: 10%;
-	}
+  p.info {
+    font-size: 0.8em;
+    font-weight: normal;
+    text-align: center;
+    margin-top: 30px;
+    color: #666666;
+    padding-left: 10%;
+    padding-right: 10%;
+  }
 
-	p.info-compact {
-		font-size: 0.8em;
-		font-weight: normal;
-		text-align: center;
-		margin-top: 10px;
-		color: #666666;
-		padding-left: 5%;
-		padding-right: 5%;
-	}
+  p.info-compact {
+    font-size: 0.8em;
+    font-weight: normal;
+    text-align: center;
+    margin-top: 10px;
+    color: #666666;
+    padding-left: 5%;
+    padding-right: 5%;
+  }
 
-	@media (max-width: 575px) {
-		width: 100% !important;
-		height: 100% !important;
-		overflow-y: scroll;
+  @media (max-width: 575px) {
+    width: 100% !important;
+    height: 100% !important;
+    overflow-y: scroll;
 
-		img {
-			display: inline-block;
-		}
+    img {
+      display: inline-block;
+    }
 
-		.info {
-			margin-bottom: 30px;
-		}
-	}
+    .info {
+      margin-bottom: 30px;
+    }
+  }
 }
 
 .name-confirm-card {
-	.name {
-		font-size: 24px;
-		font-weight: bold;
-		color: $--secondaryblack;
-		margin-bottom: 39px;
-	}
+  .name {
+    font-size: 24px;
+    font-weight: bold;
+    color: $--secondaryblack;
+    margin-bottom: 39px;
+  }
 
-	.btn {
-		display: inline-block;
-		margin: 0 auto;
-		margin-left: 8px;
-		margin-right: 8px;
-	}
+  .btn {
+    display: inline-block;
+    margin: 0 auto;
+    margin-left: 8px;
+    margin-right: 8px;
+  }
 }
 
 .details-card {
-	.inner {
-		max-width: 400px;
-		width: 100%;
-		margin: auto;
-		text-align: center;
-		box-sizing: border-box;
-	}
+  .inner {
+    max-width: 400px;
+    width: 100%;
+    margin: auto;
+    text-align: center;
+    box-sizing: border-box;
+  }
 
-	input {
-		border-radius: 5px;
-		border: solid 1px $gray2;
-		height: 20px;
-		margin-bottom: 5px;
-		padding: 9px;
-		font-size: 17px;
-		outline: none;
+  input {
+    border-radius: 5px;
+    border: solid 1px $gray2;
+    height: 20px;
+    margin-bottom: 5px;
+    padding: 9px;
+    font-size: 17px;
+    outline: none;
 
-		&:focus {
-			border: solid 1px $secondaryblue;
-		}
-	}
+    &:focus {
+      border: solid 1px $secondaryblue;
+    }
+  }
 
-	select {
-		-webkit-appearance: none;
-		-moz-appearance: none;
-		appearance: none;
-		border: none;
-		outline: none;
-		background: none;
-		border-radius: 5px;
-		border: solid 1px $gray2;
-		margin-bottom: 5px;
-		padding: 9px;
-		font-size: 17px;
-		outline: none;
+  select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: none;
+    outline: none;
+    background: none;
+    border-radius: 5px;
+    border: solid 1px $gray2;
+    margin-bottom: 5px;
+    padding: 9px;
+    font-size: 17px;
+    outline: none;
 
-		&:focus {
-			border: solid 1px $secondaryblue;
-		}
-	}
+    &:focus {
+      border: solid 1px $secondaryblue;
+    }
+  }
 
-	&.confirm-details {
-		input, select {
-			border: solid 1px $light-green;
-		}
+  &.confirm-details {
+    input,
+    select {
+      border: solid 1px $light-green;
+    }
 
-		.text {
-			color: $light-green;
+    .text {
+      color: $light-green;
 
-			span.info {
-				display: none;
-			}
-		}
-	}
+      span.info {
+        display: none;
+      }
+    }
+  }
 
-	input:focus ~ p {
-		color: $secondaryblue;
-	}
+  input:focus ~ p {
+    color: $secondaryblue;
+  }
 
-	.header {
-		margin-top: 13px;
-		margin-bottom: 5px;
-		font-family: Lato;
-		font-size: 20px;
-		font-weight: bold;
-		text-align: center;
-		color: $--secondaryblack;
-	}
+  .header {
+    margin-top: 13px;
+    margin-bottom: 5px;
+    font-family: Lato;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    color: $--secondaryblack;
+  }
 
-	.input-large {
-		width: 383px;
-	}
+  .input-large {
+    width: 383px;
+  }
+  .input-invalid {
+    width: 383px;
+    border: 1px solid $light-red;
+  }
 
-	.input-major {
-		width: 242px;
-		margin-right: 9px;
-	}
+  .input-major {
+    width: 242px;
+    margin-right: 9px;
+  }
 
-	.input-year {
-		width: 125px;
-	}
+  .input-year {
+    width: 125px;
+  }
 
-	.text {
-		font-size: 11px;
-		font-family: 'Lato', sans-serif;
-		font-weight: bold;
-		color: $--secondaryblack;
-		text-align: left;
-		margin-bottom: 5px;
+  .text {
+    font-size: 11px;
+    font-family: "Lato", sans-serif;
+    font-weight: bold;
+    color: $--secondaryblack;
+    text-align: left;
+    margin-bottom: 5px;
+    span.info {
+      font-size: 0.9em;
+      font-weight: normal;
+      color: $gray2;
+    }
+    &.invalid {
+      color: $light-red;
+      span.info {
+        color: $light-red;
+      }
+    }
+  }
 
-		span.info {
-			font-size: 0.9em;
-			font-weight: normal;
-			color: $gray2;
-		}
-	}
+  .align {
+    display: inline-block;
+  }
 
-	.align {
-		display: inline-block;
-	}
+  .btn {
+    display: inline-block;
+    margin: 0 auto;
+    margin-top: 5px;
+  }
 
-	.btn {
-		display: inline-block;
-		margin: 0 auto;
-		margin-top: 5px;
-	}
-
-	@media (max-width: 450px) {
-		.inner { padding: 0px 20px; }
-		.input-large, .input-major {
-			max-width: 383px;
-			width: calc(100% - 17px);
-			margin-right: 0px;
-		}
-		.align.align-input-major { display: block; }
-	}
+  @media (max-width: 450px) {
+    .inner {
+      padding: 0px 20px;
+    }
+    .input-large,
+    .input-major {
+      max-width: 383px;
+      width: calc(100% - 17px);
+      margin-right: 0px;
+    }
+    .align.align-input-major {
+      display: block;
+    }
+  }
 }
 
-
 .fb-login-card {
-	.fb-login-button {
-		i {
-			padding-right: 10px;
-		}
-	}
+  .fb-login-button {
+    i {
+      padding-right: 10px;
+    }
+  }
 }
