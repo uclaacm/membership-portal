@@ -25,6 +25,7 @@ pipeline {
             }
           }
           steps {
+            sh 'apk add -U python make gcc g++ nodejs yarn npm'
             sh 'yarn'
             sh 'yarn test'
           }
