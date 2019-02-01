@@ -1,11 +1,12 @@
 import React from 'react';
 import Utils from 'utils';
 import TopUser from './topUser';
+import LeaderboardPicture from './leaderboardPicture';
 
 const INIT_ITEMS = 200;
 const SCROLL_INCR = 100;
 
-export default class Leaderboard extends React.Component {
+class Leaderboard extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
@@ -36,6 +37,7 @@ export default class Leaderboard extends React.Component {
 			this.loadMoreUsers();
 		}
 	};
+	
 	render() {
 		if (!this.props.leaderboard || !this.props.leaderboard.length || this.props.leaderboard.length < 3)
 			return null;
@@ -67,8 +69,8 @@ export default class Leaderboard extends React.Component {
 								<tr className={user.uuid === this.props.user.uuid ? "current-user" : ""} key={user.uuid}>
 									<td>{i + 4}</td>
 									<td className="name">
-										<div>
-											<img src={user.picture || "/assets/images/unknown.png"} />
+										<div className="inner-name">
+											<LeaderboardPicture picture={user.picture} />
 											<span>{user.firstName} {user.lastName}</span>
 										</div>
 									</td>
@@ -84,3 +86,5 @@ export default class Leaderboard extends React.Component {
 		}
 	}
 }
+
+export default Leaderboard;
