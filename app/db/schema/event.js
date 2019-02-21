@@ -21,7 +21,7 @@ module.exports = (Sequelize, db) => {
       validate: {
         len: {
           args: [2, 255],
-          msg: 'The organization name must be at least 2 characters long',
+          msg: 'The organization name must be at between 2 and 255 characters long',
         },
       },
     },
@@ -38,7 +38,7 @@ module.exports = (Sequelize, db) => {
       validate: {
         len: {
           args: [3, 255],
-          msg: 'If specified, the thumbnail URL must be at least 3 characters long',
+          msg: 'If specified, the thumbnail URL must be between 3 and 255 characters long',
         },
       },
     },
@@ -49,7 +49,7 @@ module.exports = (Sequelize, db) => {
       validate: {
         len: {
           args: [3, 255],
-          msg: 'The cover image URL must be at least 3 characters long',
+          msg: 'The cover image URL must be between 3 and 255 characters long',
         },
       },
     },
@@ -61,7 +61,7 @@ module.exports = (Sequelize, db) => {
       validate: {
         len: {
           args: [3, 255],
-          msg: 'The title must be at least 3 characters long',
+          msg: 'The title must be between 3 and 255 characters long',
         },
         notEmpty: {
           msg: 'The title field is required',
@@ -86,7 +86,7 @@ module.exports = (Sequelize, db) => {
       validate: {
         len: {
           args: [3, 255],
-          msg: 'The location must be at least 3 characters long',
+          msg: 'The location must be between 3 and 255 characters long',
         },
       },
     },
@@ -97,7 +97,7 @@ module.exports = (Sequelize, db) => {
       validate: {
         len: {
           args: [3, 255],
-          msg: 'The event link must be at least 3 characters long',
+          msg: 'The event link must be between 3 and 255 characters long',
         },
       },
     },
@@ -138,7 +138,7 @@ module.exports = (Sequelize, db) => {
       validate: {
         len: {
           args: [3, 255],
-          msg: 'The attendance code must be at least 3 characters long',
+          msg: 'The attendance code must be between 3 and 255 characters long',
         },
       },
     },
