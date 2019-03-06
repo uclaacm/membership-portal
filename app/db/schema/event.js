@@ -153,6 +153,15 @@ module.exports = (Sequelize, db) => {
         },
       },
     },
+
+    // starting in winter 2019, we want to soft-delete events by marking them as 'deleted'
+    // and then not serving them to the user, vs. deleting them from the database entirely.
+    deleted: {
+      type: Sequelize.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+
   }, {
     // creating indices on frequently accessed fields improves efficiency
     indexes: [
