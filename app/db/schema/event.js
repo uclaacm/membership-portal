@@ -200,8 +200,8 @@ module.exports = (Sequelize, db) => {
     });
   };
 
-  Event.delete = function (uuid) {
-    console.log(uuid);
+  Event.remove = function (uuid) {
+    return this.update({ deleted: true }, { where: { uuid } });
   };
 
   Event.findByUUID = function (uuid) {

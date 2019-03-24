@@ -109,7 +109,7 @@ router.route('/:uuid?')
  */
   .delete((req, res, next) => {
     if (!req.params.uuid) return next(new error.BadRequest());
-    Event.update({ deleted: true }, { where: { uuid: req.params.uuid } }).then(events => res.json({ error: null, numberDeleted: events })).catch(next);
+    Event.remove(req.params.uuid).then(numEvents => res.json({ error: null, numberDeleted: numEvents })).catch(next);
   });
 
 module.exports = { router };
