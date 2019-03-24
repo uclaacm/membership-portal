@@ -79,9 +79,7 @@ router.route('/:uuid?')
 
     if (req.body.event.startDate && req.body.event.endDate && new Date(req.body.event.startDate) > new Date(req.body.event.endDate)) return next(new error.BadRequest('Start date must be before end date'));
 
-    Event.create(Event.sanitize(req.body.event)).then((event) => {
-      res.json({ error: null, event: event.getPublic() });
-    }).catch(next);
+    Event.create(Event.sanitize(req.body.event)).then(event => res.json({ error: null, event: event.getPublic() })).catch(next);
   })
 /**
  * Updates an event given an event UUID and the partial object with updates
@@ -96,14 +94,13 @@ router.route('/:uuid?')
 
     if (req.body.event.startDate && req.body.event.endDate && new Date(req.body.event.startDate) > new Date(req.body.event.endDate)) return next(new error.BadRequest('Start date must be before end date'));
 
+
     // find the existing event by the given UUID
     Event.findByUUID(req.params.uuid).then((event) => {
       if (!event) throw new error.BadRequest('No such event found');
       // update the event with the new information after sanitizing the input
       return event.update(Event.sanitize(req.body.event));
-    }).then((event) => {
-      res.json({ error: null, event: event.getPublic() });
-    }).catch(next);
+    }).then(event => res.json({ error: null, event: event.getPublic() })).catch(next);
   })
 /**
  * Delete an event given a UUID
@@ -112,9 +109,7 @@ router.route('/:uuid?')
  */
   .delete((req, res, next) => {
     if (!req.params.uuid) return next(new error.BadRequest());
-    Event.destroyByUUID(req.params.uuid).then((numDeleted) => {
-      res.json({ error: null, numDeleted });
-    }).catch(next);
+    Event.update({ deleted: true }, { where: { uuid: req.params.uuid } }).then(events => res.json({ error: null, numberDeleted: events })).catch(next);
   });
 
 module.exports = { router };

@@ -195,29 +195,35 @@ module.exports = (Sequelize, db) => {
   Event.getAll = function (offset, limit) {
     if (!offset || offset < 0) offset = 0;
     if (!limit || limit < 0) limit = undefined;
-    return this.findAll({ offset, limit, order: [['startDate', 'ASC']] });
+    return this.findAll({
+      where: { deleted: false }, offset, limit, order: [['startDate', 'ASC']],
+    });
+  };
+
+  Event.delete = function (uuid) {
+    console.log(uuid);
   };
 
   Event.findByUUID = function (uuid) {
-    return this.findOne({ where: { uuid } });
+    return this.findOne({ where: { uuid }, deleted: false });
   };
 
   Event.findByAttendanceCode = function (attendanceCode) {
-    return this.findOne({ where: { attendanceCode } });
+    return this.findOne({ where: { attendanceCode, deleted: false } });
   };
 
   Event.eventExists = function (uuid) {
-    return this.count({ where: { uuid } }).then(c => c !== 0);
+    return this.count({ where: { uuid, deleted: false } }).then(c => c !== 0);
   };
 
   Event.destroyByUUID = function (uuid) {
-    return this.destroy({ where: { uuid } });
+    return this.destroy({ where: { uuid }, deleted: false });
   };
 
   Event.getCommitteeEvents = function (committee, offset, limit) {
     if (!offset || offset < 0) offset = 0;
     if (!limit || limit < 0) limit = undefined;
-    return this.findAll({ where: { committee }, offset, limit });
+    return this.findAll({ where: { committee, deleted: false }, offset, limit });
   };
 
   Event.getPastEvents = function (offset, limit) {
@@ -225,16 +231,17 @@ module.exports = (Sequelize, db) => {
     if (!limit || limit < 0) limit = undefined;
     const now = new Date();
     return this.findAll({
-      where: { startDate: { $lt: now } }, order: [['startDate', 'ASC']], offset, limit,
+      where: { startDate: { $lt: now }, deleted: false }, order: [['startDate', 'ASC']], offset, limit,
     });
   };
+
 
   Event.getFutureEvents = function (offset, limit) {
     if (!offset || offset < 0) offset = 0;
     if (!limit || limit < 0) limit = undefined;
     const now = new Date();
     return this.findAll({
-      where: { startDate: { $gte: now } }, order: [['startDate', 'ASC']], offset, limit,
+      where: { startDate: { $gte: now }, deleted: false }, order: [['startDate', 'ASC']], offset, limit,
     });
   };
 
@@ -247,7 +254,7 @@ module.exports = (Sequelize, db) => {
 
     if (event.attendancePoints !== undefined) {
       const points = parseInt(event.attendancePoints, 10);
-      if (points === NaN || points < 0) delete event.attendancePoints;
+      if (isNaN(points) || points < 0) delete event.attendancePoints;
     }
 
     return event;
@@ -267,6 +274,7 @@ module.exports = (Sequelize, db) => {
       endDate: this.getDataValue('endDate'),
       attendanceCode: admin ? this.getDataValue('attendanceCode') : undefined,
       attendancePoints: this.getDataValue('attendancePoints'),
+      deleted: this.getDataValue('deleted'),
     };
   };
 
