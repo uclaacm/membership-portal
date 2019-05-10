@@ -1,4 +1,4 @@
-module.exports = (User, Event) => Promise.all([
+module.exports = (User, Event, Attendance) => Promise.all([
   User.create({
     email: 'admin@ucla.edu',
     accessType: 'ADMIN',
