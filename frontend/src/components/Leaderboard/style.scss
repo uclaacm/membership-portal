@@ -51,6 +51,7 @@
         background-size: cover;
         border-radius: 50%;
         background-color: #aaa;
+        cursor: pointer;
       }
 
       &.top-user-first {
@@ -69,6 +70,11 @@
       .name {
         font-weight: bold;
         font-size: 1em;
+        cursor: pointer;
+      }
+
+      .name:hover {
+        text-decoration: underline;
       }
 
       .level {
@@ -163,10 +169,16 @@
           border-radius: 50%;
           background-size: cover;
           background-position: center center;
+          cursor: pointer;
         }
 
         span {
           vertical-align: middle;
+          cursor: pointer;
+        }
+
+        span:hover {
+          text-decoration: underline;
         }
       }
     }

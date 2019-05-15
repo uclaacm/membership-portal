@@ -17,4 +17,4 @@ $ cd ../membership-portal-deployments
 $ make
 ```
 
-You can access the website from `http://localhost:8000` and the app will communicate with the backend directly on port `8080`.
+You can access the site from `http://localhost:8000` and the app will communicate with the backend directly on port `8080`.
