@@ -1,21 +1,17 @@
 import Config from 'config';
 
-const getLevel = points => {
+const getLevel = (points) => {
   // yes, this could be more efficient with binary search
   // however we wont have more than like 10 levels...
-  let currLevel = Config.levels[0];
-  let nextLevel = Config.levels[1];
-  let currLevelNumber = 0;
-  for (let i = 0; i < Config.levels.length; i++) {
-	  if (Config.levels[i].startsAt > points) {
-		  currLevel = Config.levels[i - 1];
-		  currLevelNumber = i - 1;
-		  nextLevel = Config.levels[i];
-		  break;
-	  }
+  let i = 1;
+  while (i < Config.levels.length && points > Config.levels[i].startsAt) {
+    i += 1;
   }
-	return { currLevel, nextLevel, currLevelNumber };
-}
+  const currLevel = Config.levels[i - 1];
+  const nextLevel = i === Config.levels.length ? null : Config.levels[i];
+  const currLevelNumber = i - 1;
+  return { currLevel, nextLevel, currLevelNumber };
+};
 
 export { getLevel };
 export default { getLevel };
