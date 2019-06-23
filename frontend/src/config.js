@@ -158,5 +158,7 @@ export default {
     { startsAt: 400, rank: 'Logarithmic Lynx' },
     { startsAt: 500, rank: 'Constant Cheetah' },
     { startsAt: 800, rank: 'Extraterrestrial Eagle' },
+    { startsAt: 1000, rank: 'Binomial Baboon' },
+    { startsAt: 1300, rank: 'Scalar Scorpion' },
   ],
 };

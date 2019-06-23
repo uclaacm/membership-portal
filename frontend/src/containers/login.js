@@ -1,9 +1,9 @@
 import React from 'react';
-import {connect} from 'react-redux';
-import {replace} from 'react-router-redux';
+import { connect } from 'react-redux';
+import { replace } from 'react-router-redux';
 
-import {Action} from 'reducers';
-import LoginComponent from 'components/Login'
+import { Action } from 'reducers';
+import LoginComponent from 'components/Login';
 
 class Login extends React.Component {
   handleLogin(email, password) {
@@ -11,13 +11,13 @@ class Login extends React.Component {
   }
 
   componentWillMount() {
-    if(this.props.authenticated) {
+    if (this.props.authenticated) {
       this.props.redirectHome();
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if(nextProps.authenticated) {
+    if (nextProps.authenticated) {
       this.props.redirectHome();
     }
   }
@@ -27,24 +27,20 @@ class Login extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    error: state.Auth.get('error'),
-    isAdmin: state.Auth.get('isAdmin'),
-    timestamp: state.Auth.get('timestamp'),
-    authenticated: state.Auth.get('authenticated'),
-  };
-};
+const mapStateToProps = state => ({
+  error: state.Auth.get('error'),
+  isAdmin: state.Auth.get('isAdmin'),
+  timestamp: state.Auth.get('timestamp'),
+  authenticated: state.Auth.get('authenticated'),
+});
 
-const mapDispatchToProps = dispatch => {
-  return {
-    login: (email, password) => {
-      dispatch(Action.LoginUser(email, password));
-    },
-    redirectHome: () => {
-      dispatch(replace('/'));
-    },
-  };
-};
+const mapDispatchToProps = dispatch => ({
+  login: (email, password) => {
+    dispatch(Action.LoginUser(email, password));
+  },
+  redirectHome: () => {
+    dispatch(replace('/'));
+  },
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);

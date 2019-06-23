@@ -5,20 +5,22 @@ import Sidebar from 'containers/sidebar';
 import Profile from './profile';
 
 export default class ProfileComponent extends React.Component {
-	render() {
-		return (
-			<div className="profile">
-				<Topbar />
-				<Sidebar/>
-				<Profile updated={this.props.updated} 
-				         updateSuccess={this.props.updateSuccess}
-				         updateError={this.props.updateError}
-								 activityError={this.props.activityError}
-				         profile={ this.props.profile }
-				         activity={ this.props.activity }
-				         saveChanges={ this.props.saveChanges } 
-				         logout={this.props.logout} />
-			</div>
-		);
-	}
+  render() {
+    return (
+      <div className="profile">
+        <Topbar />
+        <Sidebar />
+        <Profile
+          updated={this.props.updated}
+          updateSuccess={this.props.updateSuccess}
+          updateError={this.props.updateError}
+          activityError={this.props.activityError}
+          profile={this.props.profile}
+          activity={this.props.activity}
+          saveChanges={this.props.saveChanges}
+          logout={this.props.logout}
+        />
+      </div>
+    );
+  }
 }

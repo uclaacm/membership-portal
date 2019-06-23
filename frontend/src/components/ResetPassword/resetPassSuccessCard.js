@@ -5,16 +5,16 @@ import Config from 'config';
 import Button from 'components/Button';
 
 export default class SuccessCard extends React.Component {
-	render() {
-		return (
-			<div className="card success-card">
-				<img src={Config.organization.logo} />
-				<p className="question">Reset Password Complete</p>
-				<NavLink to="/login">
-					<Button className="continue-button" style="green" icon="fa fa-check" text="Continue to Login" />
-				</NavLink>
-				<p className="info">You've successfully reset your password</p>
-			</div>
-		);
-	}
+  render() {
+    return (
+      <div className="card success-card">
+        <img src={Config.organization.logo} />
+        <p className="question">Reset Password Complete</p>
+        <NavLink to="/login">
+          <Button className="continue-button" style="green" icon="fa fa-check" text="Continue to Login" />
+        </NavLink>
+        <p className="info">You've successfully reset your password</p>
+      </div>
+    );
+  }
 }
