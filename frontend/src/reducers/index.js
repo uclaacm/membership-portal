@@ -1,6 +1,6 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import createHistory from 'history/createBrowserHistory';
-import { routerReducer, routerMiddleware, push } from 'react-router-redux';
+import { routerReducer, routerMiddleware } from 'react-router-redux';
 import thunk from 'redux-thunk';
 
 import {
@@ -10,7 +10,8 @@ import {
   Auth, LoginUser, LogoutUser, RequestResetPassword, ResetPassword, ResetPasswordDone,
 } from './auth';
 import {
-  Events, GetCurrentEvents, PostNewEvent, UpdateEvent, UpdateEventDone, CreateEventDone,
+  Events, GetCurrentEvents, PostNewEvent, UpdateEvent,
+  DeleteEvent, UpdateEventDone, CreateEventDone,
 } from './events';
 import { Leaderboard, FetchLeaderboard, InvalidateLeaderboard } from './leaderboard';
 import { CheckIn, CheckInto, ResetCheckIn } from './checkin';
@@ -45,6 +46,7 @@ const Action = {
   GetCurrentEvents,
   PostNewEvent,
   UpdateEvent,
+  DeleteEvent,
   CreateEventDone,
   UpdateEventDone,
   FetchLeaderboard,

@@ -85,7 +85,6 @@
       padding: 30px;
       position: absolute;
       height: 80%;
-      width: 80%;
     }
 
     .button-container {
@@ -115,6 +114,10 @@
     border-radius: 25px;
     min-height: 300px;
     min-width: 300px;
+
+    h1 {
+      text-align: center;
+    }
 
     .button-container {
       position: absolute;
@@ -164,4 +167,9 @@ tr td {
   font-size: 0.9em;
   border-bottom: 1px solid #b4b4b4;
   vertical-align: middle;
+}
+
+.center {
+  display: flex;
+  justify-content: flex-end;
 }
