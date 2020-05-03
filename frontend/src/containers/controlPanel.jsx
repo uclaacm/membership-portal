@@ -25,7 +25,7 @@ class ControlPanel extends React.Component {
     return (
       <ControlPanelComponent
         logout={logout}
-        events={events}
+        events={events.reverse()}
         deleteEvent={deleteEvent}
       />
     );
