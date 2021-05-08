@@ -1,6 +1,6 @@
 # Need a custom image here so that we can incorporate an npm build too
 # Alpine is super light
-FROM alpine:3.8
+FROM alpine:3.13
 
 # Download and install packages
 RUN apk add -U nginx python make g++ nodejs npm yarn
@@ -29,7 +29,7 @@ RUN yarn build && \
     cp -rv lib/index.html ../static/index.html
 
 # Use separate build stage to serve files. This reduces the image size drastically
-FROM alpine:3.5
+FROM alpine:3.13
 
 # add nginx
 RUN apk add -U nginx
