@@ -1,5 +1,5 @@
 # load the alpine base image
-FROM alpine:3.8
+FROM alpine:3.13
 
 RUN apk add -U python make gcc g++ nodejs yarn npm
 
@@ -7,7 +7,7 @@ RUN apk add -U python make gcc g++ nodejs yarn npm
 RUN mkdir -p /var/www/membership
 
 # copy the package.json and shinkwrap file to app location
-# copy the node_modules to app location 
+# copy the node_modules to app location
 COPY package.json yarn.lock /var/www/membership/
 RUN cd /var/www/membership && yarn && npm rebuild bcrypt --build-from-source
 
