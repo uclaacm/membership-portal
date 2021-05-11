@@ -1,4 +1,4 @@
-import { createStore, combineReducers, applyMiddleware } from 'redux';
+import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import createHistory from 'history/createBrowserHistory';
 import { routerReducer, routerMiddleware } from 'react-router-redux';
 import thunk from 'redux-thunk';
@@ -20,6 +20,7 @@ import { Registration, RegisterUser, registerDone } from './registration';
 const history = createHistory();
 const routing = routerMiddleware(history);
 
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(
   combineReducers({
     Auth,
@@ -30,7 +31,7 @@ const store = createStore(
     Registration,
     router: routerReducer,
   }),
-  applyMiddleware(routing, thunk),
+  composeEnhancers(applyMiddleware(routing, thunk)),
 );
 
 const Action = {
