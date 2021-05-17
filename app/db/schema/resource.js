@@ -96,7 +96,7 @@ module.exports = (Sequelize, db) => {
       if (resource.uuid == null) {
         Resource.create(sanitizedResource);
       } else {
-        Resource.findOne({ where: { event } })
+        Resource.findOne({ where: { uuid: resource.uuid } })
           .then((record) => {
             if (!record) {
               return;
