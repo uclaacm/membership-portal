@@ -1,6 +1,7 @@
 const express = require('express');
 const error = require('../../../error');
-const { Event } = require('../../../db');
+const { Event, Resource } = require('../../../db');
+const { populateEventsWithResources, populateOneEventWithResources } = require('../../../util/resource_utils');
 
 const router = express.Router();
 
@@ -51,7 +52,10 @@ router.route('/:uuid?')
       const getEvents = committee ? Event.getCommitteeEvents(committee, offset, limit)
         : Event.getAll(offset, limit);
       getEvents.then((events) => {
-        res.json({ error: null, events: events.map(e => e.getPublic(req.user.isAdmin())) });
+        const publicEvents = events.map(e => e.getPublic(req.user.isAdmin()));
+        return populateEventsWithResources(publicEvents);
+      }).then((events) => {
+        res.json({ error: null, events });
       }).catch(next);
 
       // CASE: UUID is present, should return matching event
@@ -59,7 +63,10 @@ router.route('/:uuid?')
       Event.findByUUID(req.params.uuid).then((event) => {
         // return the public event object (or admin version, if user is admin) if
         // an event was found. otherwise, return null
-        res.json({ error: null, event: event ? event.getPublic(req.user.isAdmin()) : null });
+        const publicEvent = event ? event.getPublic(req.user.isAdmin()) : null;
+        return populateOneEventWithResources(publicEvent);
+      }).then((event) => {
+        res.json({ error: null, event });
       }).catch(next);
     }
   })
@@ -81,6 +88,7 @@ router.route('/:uuid?')
 
     Event.create(Event.sanitize(req.body.event)).then((event) => {
       res.json({ error: null, event: event.getPublic() });
+      Resource.addResources(req.body.event.resources, event.getPublic().uuid);
     }).catch(next);
   })
 /**
@@ -104,6 +112,8 @@ router.route('/:uuid?')
     }).then((event) => {
       res.json({ error: null, event: event.getPublic() });
     }).catch(next);
+
+    Resource.addResources(req.body.event.resources, req.params.uuid);
   })
 /**
  * Delete an event given a UUID
@@ -114,6 +124,7 @@ router.route('/:uuid?')
     if (!req.params.uuid) return next(new error.BadRequest());
     Event.destroyByUUID(req.params.uuid).then((numDeleted) => {
       res.json({ error: null, numDeleted });
+      return Resource.destroyByEvent(req.params.uuid);
     }).catch(next);
   });
 
