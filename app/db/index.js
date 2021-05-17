@@ -28,22 +28,22 @@ const Resource = require('./schema/resource')(Sequelize, db);
  * DB setup function to sync tables and add admin if doesn't exist
  */
 const setup = (force, dev) => (dev ? db.sync({ force })
-.then(() => devSetup(User, Event, Attendance)) : db.sync({ force }))
-.then(() => {
-  User.findOrCreate({
-    where: { email: 'acm@ucla.edu' },
-    defaults: {
-      email: 'acm@ucla.edu',
-      accessType: 'ADMIN',
-      state: 'ACTIVE',
-      firstName: 'ACM',
-      lastName: 'Admin',
-      hash: '$2a$10$db7eYhWGZ1LZl27gvyX/iOgb33ji1PHY5.pPzRyXaNlbctCFWMF9G',
-      year: 4,
-      major: 'Computer Science',
-    },
+  .then(() => devSetup(User, Event, Attendance)) : db.sync({ force }))
+  .then(() => {
+    User.findOrCreate({
+      where: { email: 'acm@ucla.edu' },
+      defaults: {
+        email: 'acm@ucla.edu',
+        accessType: 'ADMIN',
+        state: 'ACTIVE',
+        firstName: 'ACM',
+        lastName: 'Admin',
+        hash: '$2a$10$db7eYhWGZ1LZl27gvyX/iOgb33ji1PHY5.pPzRyXaNlbctCFWMF9G',
+        year: 4,
+        major: 'Computer Science',
+      },
+    });
   });
-});
 
 /**
  * Handles database errors (separate from the general error handler and the 404 error handler)

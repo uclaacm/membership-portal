@@ -17,15 +17,15 @@ module.exports = (Sequelize, db) => {
     // uuid of the event the resource is associated with
     event: {
       type: Sequelize.UUID,
-      // allowNull: false,
+      allowNull: false,
       validate: {
         isUUID: {
           args: 4,
           msg: 'Invalid value for event UUID',
         },
-        // notEmpty: {
-        //   msg: "The event UUID is a required field"
-        // }
+        notEmpty: {
+          msg: 'The event UUID is a required field',
+        },
       },
     },
 
@@ -80,21 +80,23 @@ module.exports = (Sequelize, db) => {
     ],
   });
 
-  Resource.getResourcesForOneEvent = event => this.findAll({ where: { event } });
+  Resource.getResourcesForOneEvent = event => Resource.findAll({ where: { event } });
 
-  Resource.getResourcesForEvents = events => this.findAll({ where: { event: { $in: events } } });
+  Resource.getResourcesForEvents = events => Resource.findAll({
+    where: { event: { $in: events } },
+  });
 
-  Resource.destroyByEvent = event => this.destroy({ where: { event } });
+  Resource.destroyByEvent = event => Resource.destroy({ where: { event } });
 
   Resource.addResources = (resources, event) => {
     if (!resources) return;
     (resources || []).forEach((resource) => {
-      const sanitizedResource = this.sanitize(resource);
+      const sanitizedResource = Resource.sanitize(resource);
       sanitizedResource.event = event;
       if (resource.uuid == null) {
-        this.create(sanitizedResource);
+        Resource.create(sanitizedResource);
       } else {
-        this.findOne({ where: { event } })
+        Resource.findOne({ where: { event } })
           .then((record) => {
             if (!record) {
               return;
@@ -105,11 +107,9 @@ module.exports = (Sequelize, db) => {
     });
   };
 
-  Resource.sanitize = (resource) => {
-    return _.pick(resource, ['type', 'title', 'value']);
-  };
+  Resource.sanitize = resource => _.pick(resource, ['type', 'title', 'value']);
 
-  Resource.prototype.getPublic = () => {
+  Resource.prototype.getPublic = function () {
     return {
       uuid: this.getDataValue('uuid'),
       event: this.getDataValue('event'),
