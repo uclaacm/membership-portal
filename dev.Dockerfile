@@ -1,6 +1,6 @@
 # Need a custom image here so that we can incorporate an npm build too
 # Alpine is super light
-FROM node:alpine-14
+FROM node:14-alpine
 
 # Download and install packages
 RUN apk add -U g++ yarn make
