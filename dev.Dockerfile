@@ -9,4 +9,4 @@ RUN apk add -U g++ yarn make
 WORKDIR /var/www/membership-portal
 
 # Start the development server
-CMD ["/bin/sh", "-c", "make setup && npm rebuild bcrypt --build-from-source) && yarn dev"]
+CMD ["/bin/sh", "-c", "make setup && npm rebuild bcrypt --build-from-source && yarn dev"]
