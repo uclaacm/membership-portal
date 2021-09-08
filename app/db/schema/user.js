@@ -1,5 +1,5 @@
 const _ = require('underscore');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const HASH_ROUNDS = 10;
 
