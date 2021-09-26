@@ -1,9 +1,8 @@
 # Need a custom image here so that we can incorporate an npm build too
 # Alpine is super light
-FROM alpine:3.13
+FROM node:10.24.1-alpine
 
-# Download and install packages
-RUN apk add -U nginx python make g++ nodejs npm yarn
+RUN apk add -U python2 make g++
 
 # Create directories
 #   /working is the build directory
