@@ -23,6 +23,7 @@ module.exports = {
 		port: process.env.PG_PORT,
 		db: process.env.PG_DATABASE,
 		user: process.env.PG_USER,
+		password: process.env.PG_PASSWORD,
 	},
 
 	// mail information
