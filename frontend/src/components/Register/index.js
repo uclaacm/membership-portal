@@ -6,18 +6,18 @@ import BannerMessage from 'components/BannerMessage';
 import NameCard from './nameCard';
 import DetailsCard from './detailsCard';
 import SuccessCard from './successCard';
-import GoogleLoginCard from './googleLoginCard';
+import FacebookLoginCard from './facebookLoginCard';
 
+const PAGE_FB_LOGIN = Symbol('FB Login');
 const PAGE_NAME_CARD = Symbol('Name Card');
 const PAGE_DETAILS_CARD = Symbol('Details Card');
 const PAGE_SUCCESS_CARD = Symbol('Success Card');
-const PAGE_GOOGLE_LOGIN = Symbol('Google Login');
 
 export default class RegisterComponent extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentPage: PAGE_GOOGLE_LOGIN,
+      currentPage: PAGE_FB_LOGIN,
       disableForm: false,
       profile: {
         firstName: '',
@@ -32,8 +32,8 @@ export default class RegisterComponent extends React.Component {
 
     this.nameValid = this.nameValid.bind(this);
     this.profileValid = this.profileValid.bind(this);
-    this.skipGoogleLogin = this.skipGoogleLogin.bind(this);
-    this.handleGoogleLogin = this.handleGoogleLogin.bind(this)
+    this.skipFacebookLogin = this.skipFacebookLogin.bind(this);
+    this.handleFacebookLogin = this.handleFacebookLogin.bind(this);
     this.handleProfileChange = this.handleProfileChange.bind(this);
     this.handleProfileSubmit = this.handleProfileSubmit.bind(this);
     this.handleNameEntryComplete = this.handleNameEntryComplete.bind(this);
@@ -53,21 +53,20 @@ export default class RegisterComponent extends React.Component {
     }
   }
 
-  skipGoogleLogin(e) {
+  skipFacebookLogin(e) {
     e.preventDefault();
     this.setState(prev => Object.assign({}, prev, { currentPage: PAGE_NAME_CARD }));
   }
 
-  handleGoogleLogin(response) {
-    if (!response || !response.profileObj || !response.profileObj.givenName
-      || !response.profileObj.familyName) return;
+  handleFacebookLogin(response) {
+    if (!response || !response.name || !response.id) return;
 
     this.setState({
       currentPage: PAGE_DETAILS_CARD,
       profile: {
-        firstName: response.profileObj.givenName,
-        lastName: response.profileObj.familyName,
-        profileId: response.googleId,
+        firstName: response.name.split(' ')[0],
+        lastName: response.name.split(' ')[1],
+        profileId: response.id,
       },
     });
   }
@@ -121,11 +120,11 @@ export default class RegisterComponent extends React.Component {
   renderComponentForPage(page) {
     const { profile, disableForm } = this.state;
     switch (page) {
-      case PAGE_GOOGLE_LOGIN:
+      case PAGE_FB_LOGIN:
         return (
-          <GoogleLoginCard
-            googleCallback={this.handleGoogleLogin}
-            skipGoogleLogin={this.skipGoogleLogin}
+          <FacebookLoginCard
+            facebookCallback={this.handleFacebookLogin}
+            skipFacebookLogin={this.skipFacebookLogin}
           />
         );
       case PAGE_NAME_CARD:

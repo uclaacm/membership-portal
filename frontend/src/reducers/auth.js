@@ -87,7 +87,7 @@ class State {
  ** Actions                                  **
  ******************************************** */
 
-const LoginUser = (tokenId) => async (dispatch) => {
+const LoginUser = (email, password) => async (dispatch) => {
   try {
     const response = await fetch(Config.API_URL + Config.routes.auth.login, {
       method: 'POST',
@@ -95,7 +95,7 @@ const LoginUser = (tokenId) => async (dispatch) => {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ 'tokenId': tokenId }),
+      body: JSON.stringify({ email, password }),
     });
 
     const status = await response.status;
@@ -105,9 +105,7 @@ const LoginUser = (tokenId) => async (dispatch) => {
     if (data.error) throw new Error(data.error.message);
 
     Storage.set('token', data.token);
-    console.log(data)
     dispatch(State.Auth(null, data.token));
-    dispatch(State.Register(null, data.user));
   } catch (err) {
     dispatch(State.Auth(err.message));
   }

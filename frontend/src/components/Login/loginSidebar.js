@@ -1,52 +1,58 @@
 import React from 'react';
 import Config from 'config';
 import Logo from './logo';
-import GoogleLogin from 'react-google-login';
+import SignIn from './signIn';
+import SignUp from './signUp';
 
-export default class LoginSidebar extends React.Component {
+class LoginForm extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { err: null };
+    this.state = { disableForm: false };
   }
 
-  handleLogin(response) {
-    if (!response || !response.tokenId) return;
-
-    this.props.onsubmit(response.tokenId)
-  }
-
-  handleError(error) {
-    let err = '';
-    switch (error) {
-      case "idpiframe_initialization_failed":
-        err = "Third party cookies disabled.";
-        break;
-      default:
-        err = "Sign in failed."
-        break;
+  handleLogin(e) {
+    e.preventDefault();
+    if (!this.state.disableForm) {
+      this.setState(prev => Object.assign({}, prev, { disableForm: true }));
+      const email = this.refs.email.value;
+      const password = this.refs.password.value;
+      this.props.onsubmit(email, password);
     }
-    this.setState({err:err})
   }
 
+  componentWillReceiveProps(nextProps) {
+    this.setState(prev => Object.assign({}, prev, { disableForm: false }));
+  }
+
+  render() {
+    return (
+      <form className="login-input" onSubmit={e => this.handleLogin(e)}>
+        <p>Email</p>
+        <input type="text" placeholder="example@ucla.edu" ref="email" />
+        <p>Password</p>
+        <input type="password" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;" ref="password" />
+        { this.props.error ? (
+          <span>
+            <b>Error</b>
+:
+            {' '}
+            {this.props.error}
+          </span>
+        ) : <span>&nbsp;</span> }
+        <SignIn loading={this.state.disableForm} />
+      </form>
+    );
+  }
+}
+
+export default class LoginSidebar extends React.Component {
   render() {
     return (
       <div className="login-sidebar">
         <div className="login-container">
           <Logo pic={Config.organization.logoLight} />
-          <GoogleLogin
-            clientId={Config.google.clientId}
-            onSuccess={this.handleLogin.bind(this)}
-            onFailure={this.handleError.bind(this)}
-            cookiePolicy={'single_host_origin'}
-          />
-          { this.state.err ? (
-            <span>
-              <b>Error</b>
-          :
-                {' '}
-                {this.state.err}
-            </span>
-          ) : <span>&nbsp;</span>}
+          <LoginForm onsubmit={this.props.onsubmit} error={this.props.error} />
+          <SignUp />
         </div>
       </div>
     );

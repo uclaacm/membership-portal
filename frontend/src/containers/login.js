@@ -6,8 +6,8 @@ import { Action } from 'reducers';
 import LoginComponent from 'components/Login';
 
 class Login extends React.Component {
-  handleLogin(token) {
-    this.props.login(token);
+  handleLogin(email, password) {
+    this.props.login(email, password);
   }
 
   componentWillMount() {
@@ -23,19 +23,20 @@ class Login extends React.Component {
   }
 
   render() {
-    return <LoginComponent onsubmit={this.handleLogin.bind(this)} />;
+    return <LoginComponent onsubmit={this.handleLogin.bind(this)} error={this.props.error} />;
   }
 }
 
 const mapStateToProps = state => ({
+  error: state.Auth.get('error'),
   isAdmin: state.Auth.get('isAdmin'),
   timestamp: state.Auth.get('timestamp'),
   authenticated: state.Auth.get('authenticated'),
 });
 
 const mapDispatchToProps = dispatch => ({
-  login: (token) => {
-    dispatch(Action.LoginUser(token));
+  login: (email, password) => {
+    dispatch(Action.LoginUser(email, password));
   },
   redirectHome: () => {
     dispatch(replace('/'));
