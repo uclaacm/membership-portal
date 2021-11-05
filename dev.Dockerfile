@@ -11,4 +11,4 @@ COPY membership-portal/package.json ./
 RUN yarn
 
 # Start the development server
-CMD ["/bin/sh", "-c", "make setup && (node -e 'require(\"bcryptjs\")' || npm rebuild bcryptjs --build-from-source) && yarn dev"]
+CMD ["/bin/sh", "-c", "make setup && yarn dev"]

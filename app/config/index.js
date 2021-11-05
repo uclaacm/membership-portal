@@ -16,7 +16,13 @@ module.exports = {
 
 	// determines the amount of processes to run that handle API requests
 	numCPUs: process.env.NUM_WORKERS || require('os').cpus().length,
-	
+
+	google: {
+		apiKey: process.env.GOOGLE_API_KEY,
+		authDomain: process.env.GOOGLE_AUTH_DOMAIN,
+		clientId: process.env.GOOGLE_CLIENT_ID,
+	},
+
 	// primary database connection information
 	database: {
 		host: process.env.PG_HOST,

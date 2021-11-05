@@ -56,11 +56,6 @@ module.exports = (Sequelize, db) => {
 			defaultValue: 'PENDING'
 		},
 
-		// access code: the code that should be matched when activating account or resetting password
-		accessCode: {
-			type: Sequelize.STRING
-		},
-
 		// user's first name
 		firstName: {
 			type: Sequelize.STRING,
@@ -91,15 +86,8 @@ module.exports = (Sequelize, db) => {
 			}
 		},
 
-		// user's password hash
-		hash: {
+		picture: {
 			type: Sequelize.STRING,
-			allowNull: false,
-			validate: {
-				notEmpty: {
-					msg: "The password cannot be empty"
-				}
-			}
 		},
 
 		// user's year
@@ -227,14 +215,12 @@ module.exports = (Sequelize, db) => {
 	};
 
 	User.prototype.getUserProfile = function() {
-		const profileId = this.getDataValue('profileId');
 		const uuid = this.getDataValue('uuid');
 		return {
 			uuid,
 			firstName  : this.getDataValue('firstName'),
 			lastName   : this.getDataValue('lastName'),
-			picture    : profileId ? `https://graph.facebook.com/${ profileId }/picture?width=300` :
-			                         `https://www.gravatar.com/avatar/${ uuid.replace(/[^0-9a-f]/g, '') }?d=identicon&s=300`,
+			picture    : this.getDataValue('picture'),
 			email      : this.getDataValue('email'),
 			year       : this.getDataValue('year'),
 			major      : this.getDataValue('major'),
