@@ -2,6 +2,7 @@ import React from 'react';
 import Config from 'config';
 import PropTypes from 'prop-types';
 import Button from 'components/Button';
+import user from '../../../../membership-portal/app/db/schema/user';
 
 export default class DetailsCard extends React.Component {
   constructor(props) {
@@ -110,5 +111,5 @@ DetailsCard.propTypes = {
   onChange: PropTypes.func.isRequired,
   disableForm: PropTypes.bool.isRequired,
   onSubmit: PropTypes.func.isRequired,
-  profileValid: PropTypes.bool.isRequired,
+  profileValid: PropTypes.func.isRequired,
 };

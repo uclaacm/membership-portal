@@ -4,6 +4,11 @@ export default {
   facebook: {
     appId: '1356860031017067',
   },
+  google:  {
+    apiKey: process.env.GOOGLE_API_KEY,
+    authDomain: process.env.GOOGLE_AUTH_DOMAIN,
+    clientId: process.env.GOOGLE_CLIENT_ID,
+  },
   routes: {
     user: {
       user: '/api/v1/user',

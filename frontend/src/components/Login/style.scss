@@ -44,7 +44,13 @@ html, body {
 
 	.login-container {
 		background: $primaryblue;
-		padding: 50px 10px;
+		padding: 50px 50px;
+		display: flex;
+		flex-direction: column;
+
+		span {
+			margin: 5px 0;
+		}
 	}
 
 	.login-logo {
