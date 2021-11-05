@@ -3,7 +3,7 @@
 FROM node:13.12.0-alpine
 RUN apk add alpine-sdk
 
-# Work in the membership-portal-ui directory
+# Work in the membership-portal directory
 WORKDIR /var/www/membership-portal
 COPY membership-portal/package.json ./
 
