@@ -1,7 +1,4 @@
 const _ = require('underscore');
-const bcrypt = require('bcryptjs');
-const crypto = require('crypto');
-const HASH_ROUNDS = 10;
 
 module.exports = (Sequelize, db) => {
 	const User = db.define('user', {
@@ -44,16 +41,6 @@ module.exports = (Sequelize, db) => {
 		accessType: {
 			type: Sequelize.ENUM('RESTRICTED','STANDARD','ADMIN'),
 			defaultValue: 'STANDARD'
-		},
-
-		// account state
-		//   PENDING        - account pending activation (newly created)
-		//   ACTIVE         - account activated and in good standing
-		//   BLOCKED        - account is blocked, login is denied
-		//   PASSWORD_RESET - account has requested password reset
-		state: {
-			type: Sequelize.ENUM('PENDING', 'ACTIVE', 'BLOCKED', 'PASSWORD_RESET'),
-			defaultValue: 'PENDING'
 		},
 
 		// user's first name
@@ -174,20 +161,6 @@ module.exports = (Sequelize, db) => {
 		return this.findOne({ where : { accessCode } });
 	};
 
-	User.generateHash = function(password) {
-		return bcrypt.hash(password, HASH_ROUNDS);
-	};
-
-	User.generateAccessCode = function() {
-		return new Promise((resolve, reject) => {
-			crypto.randomBytes(16, (err, data) => {
-				if (err)
-					return reject(err);
-				resolve(data.toString('hex'));
-			});
-		});
-	};
-
 	User.getLeaderboard = function(offset, limit) {
 		if (!offset || offset < 0) offset = 0;
 		if (!limit || limit < 0)  limit = undefined;
@@ -228,10 +201,6 @@ module.exports = (Sequelize, db) => {
 		};
 	};
 
-	User.prototype.verifyPassword = function(password) {
-		return bcrypt.compare(password, this.getDataValue('hash'));
-	};
-
 	User.prototype.isAdmin = function() {
 		return this.getDataValue('accessType') === 'ADMIN';
 	};
@@ -243,22 +212,6 @@ module.exports = (Sequelize, db) => {
 	User.prototype.isRestricted = function() {
 		return this.getDataValue('accessType') === 'RESTRICTED';
 	};
-
-	User.prototype.isActive = function() {
-		return this.getDataValue('state') === 'ACTIVE';
-	};
-
-	User.prototype.isPending = function() {
-		return this.getDataValue('state') === 'PENDING';
-	};
-
-	User.prototype.isBlocked = function() {
-		return this.getDataValue('state') === 'BLOCKED';
-	};
-
-	User.prototype.requestedPasswordReset = function() {
-		return this.getDataValue('state') === 'PASSWORD_RESET';
-	}
 
 	return User;
 };
