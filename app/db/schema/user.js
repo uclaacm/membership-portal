@@ -129,12 +129,6 @@ module.exports = (Sequelize, db) => {
         fields: ['email'],
       },
 
-      // a hash index on the access code makes lookup by access code O(1)
-      {
-        unique: true,
-        fields: ['accessCode'],
-      },
-
       // a BTREE index on the uuid makes retrieving the leaderboard O(N)
       {
         name: 'user_points_btree_index',
@@ -152,10 +146,6 @@ module.exports = (Sequelize, db) => {
     return this.findOne({ where: { email } });
   };
 
-  User.findByAccessCode = function (accessCode) {
-    return this.findOne({ where: { accessCode } });
-  };
-
   User.getLeaderboard = function (offset, limit) {
     if (!offset || offset < 0) offset = 0;
     if (!limit || limit < 0) limit = undefined;
@@ -164,8 +154,9 @@ module.exports = (Sequelize, db) => {
     });
   };
 
+  // TODO: need this?
   User.sanitize = function (user) {
-    user = _.pick(user, ['profileId', 'email', 'firstName', 'lastName', 'year', 'major']);
+    user = _.pick(user, ['email', 'firstName', 'lastName', 'year', 'major']);
     if (user.email) user.email = user.email.toLowerCase();
     return user;
   };

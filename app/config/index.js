@@ -34,7 +34,7 @@ module.exports = {
 
 	// mail information
 	mailgun: {
-		apiKey: process.env.MAILGUN_KEY || " ",
+		apiKey: process.env.MAILGUN_KEY || " ", // has to have a value - cannot be an empty string
 		domain: 'mail.uclaacm.com',
 	},
 

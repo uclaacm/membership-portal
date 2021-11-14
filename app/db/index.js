@@ -11,10 +11,11 @@ const transactionNamespace = cls.createNamespace('default-transaction-ns');
 Sequelize.useCLS(transactionNamespace);
 
 // The DB instance managed by sequelize
+console.log(config.database);
 const db = new Sequelize(config.database.db, config.database.user, config.database.password, {
 	dialect: 'postgres',
 	host: config.database.host,
-	logging: config.isDevelopment ? logger.debug : false
+	logging: config.isDevelopment ? logger.debug : false // false as a function
 });
 
 // Create schemas
@@ -27,16 +28,20 @@ const Attendance = require('./schema/attendance')(Sequelize, db);
  * DB setup function to sync tables and add admin if doesn't exist
  */
 const setup = (force, dev) => {
+	console.log("SETTING UP DATABASE FOR DEV")
+	console.log("SETTING UP DATABASE FOR DEV")
+	console.log("SETTING UP DATABASE FOR DEV")
+	console.log("SETTING UP DATABASE FOR DEV")
+	console.log("SETTING UP DATABASE FOR DEV")
 	return (dev ? db.sync({ force }).then(() => devSetup(User, Event, Attendance)) : db.sync({ force })).then(() => {
 		User.findOrCreate({
-			where: { email: 'acm@ucla.edu'},
+			where: { email: 'acm@g.ucla.edu' },
 			defaults: {
-				email: 'acm@ucla.edu',
+				email: 'acm@g.ucla.edu',
 				accessType: 'ADMIN',
 				state: 'ACTIVE',
 				firstName: 'ACM',
 				lastName: 'Admin',
-				hash: '$2a$10$db7eYhWGZ1LZl27gvyX/iOgb33ji1PHY5.pPzRyXaNlbctCFWMF9G',
 				year: 4,
 				major: 'Computer Science'
 			}
