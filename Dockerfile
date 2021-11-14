@@ -10,7 +10,7 @@ RUN mkdir -p /var/www/membership
 # copy the package.json and shinkwrap file to app location
 # copy the node_modules to app location
 COPY package.json yarn.lock /var/www/membership/
-RUN cd /var/www/membership && yarn && npm rebuild bcryptjs --build-from-source
+RUN cd /var/www/membership && yarn
 
 # set the working direction and copy the source
 WORKDIR /var/www/membership
