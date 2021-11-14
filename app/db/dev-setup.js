@@ -1,10 +1,6 @@
-module.exports = (User, Event, Attendance) => {
-console.log("ADDING DUMMY DATA");
-console.log("ADDING DUMMY DATA");
-console.log("ADDING DUMMY DATA");
-console.log("ADDING DUMMY DATA");
-console.log("ADDING DUMMY DATA");
+const { NotImplemented } = require("../error");
 
+module.exports = (User, Event, Attendance) => {
 Promise.all([
   User.create({
     email: 'admin@g.ucla.edu',
@@ -19,7 +15,7 @@ Promise.all([
 
   User.create({
     email: 'dylon@g.ucla.edu',
-    accessType: 'ADMIN',
+    accessType: 'STANDARD',
     state: 'ACTIVE',
     firstName: 'Dylon',
     lastName: 'Tjanaka',
@@ -201,10 +197,5 @@ Promise.all([
     attendancePoints: 50,
   }),
 ]); 
-console.log("DONE ADDING DUMMY DATA");
-console.log("DONE ADDING DUMMY DATA");
-console.log("DONE ADDING DUMMY DATA");
-console.log("DONE ADDING DUMMY DATA");
-console.log("DONE ADDING DUMMY DATA");
-
+return null; // we don't care about result (http://goo.gl/rRqMUw)
 }

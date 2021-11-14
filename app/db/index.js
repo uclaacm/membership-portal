@@ -10,8 +10,8 @@ const devSetup = require('./dev-setup');
 const transactionNamespace = cls.createNamespace('default-transaction-ns');
 Sequelize.useCLS(transactionNamespace);
 
+// https://stackoverflow.com/questions/65417340/docker-compose-postgres-restart-after-running-scripts-in-docker-entrypoint-initd/65417566#65417566
 // The DB instance managed by sequelize
-console.log(config.database);
 const db = new Sequelize(config.database.db, config.database.user, config.database.password, {
 	dialect: 'postgres',
 	host: config.database.host,
@@ -28,11 +28,6 @@ const Attendance = require('./schema/attendance')(Sequelize, db);
  * DB setup function to sync tables and add admin if doesn't exist
  */
 const setup = (force, dev) => {
-	console.log("SETTING UP DATABASE FOR DEV")
-	console.log("SETTING UP DATABASE FOR DEV")
-	console.log("SETTING UP DATABASE FOR DEV")
-	console.log("SETTING UP DATABASE FOR DEV")
-	console.log("SETTING UP DATABASE FOR DEV")
 	return (dev ? db.sync({ force }).then(() => devSetup(User, Event, Attendance)) : db.sync({ force })).then(() => {
 		User.findOrCreate({
 			where: { email: 'acm@g.ucla.edu' },

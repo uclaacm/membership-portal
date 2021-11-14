@@ -45,7 +45,7 @@ server.use(app.error.notFoundHandler);
 // Create workers
 if (cluster.isMaster) {
   // perform DB initialization once
-  app.db.setup();
+  app.db.setup(true, app.config.isDevelopment);
 
   log.debug('Creating %d cluster workers...', app.config.numCPUs);
   for (let i = 0; i < app.config.numCPUs; i++) cluster.fork();
