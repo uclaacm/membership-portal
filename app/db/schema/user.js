@@ -38,6 +38,15 @@ module.exports = (Sequelize, db) => {
       defaultValue: 'STANDARD',
     },
 
+	// account state
+	//   PENDING        - account pending activation (newly created)
+	//   ACTIVE         - account activated and in good standing
+	//   BLOCKED        - account is blocked, login is denied
+	state: {
+		type: Sequelize.ENUM('PENDING', 'ACTIVE', 'BLOCKED'),
+		defaultValue: 'PENDING'
+	},
+
     // user's first name
     firstName: {
       type: Sequelize.STRING,
@@ -198,6 +207,10 @@ module.exports = (Sequelize, db) => {
 
   User.prototype.isRestricted = function () {
     return this.getDataValue('accessType') === 'RESTRICTED';
+  };
+
+  User.prototype.isPending = function () {
+    return this.getDataValue('state') === 'PENDING';
   };
 
   User.prototype.isActive = function () {

@@ -54,7 +54,6 @@ const authenticated = (req, res, next) => {
 /**
  * Login route.
  *
- * POST body should be in the format of { email, password }
  * On success, this route will return a token
  */
 router.post('/login', (req, res, next) => {
@@ -66,6 +65,7 @@ router.post('/login', (req, res, next) => {
 	  {
 		uuid: user.getDataValue('uuid'),
 		admin: user.isAdmin(),
+		registered: !user.isPending(),
 	  },
 	  config.session.secret,
 	  { expiresIn: TOKEN_EXPIRES },
@@ -109,16 +109,16 @@ router.post('/login', (req, res, next) => {
               firstName: given_name,
               lastName: family_name,
               picture,
-              state: 'ACTIVE',
+              state: 'PENDING',
               // PLACEHOLDERS - need to add placeholders or make them nullable and then require they be added later...
               // or have a flow that requires a user to fill these in right after signing in the first time
               year: 1,
-              major: 'underwater basketweaving',
+              major: 'Undeclared',
             };
 
             User.create(userModel)
               .then((user) => {
-                if (user && user.isBlocked()) throw new error.Forbidden('Your account has been blocked');
+                if (user && user.isBlocked()) throw new error.Forbidden('Your account has been blocked'); // not needed?
                 // register the account creation as the user's first activity
                 Activity.accountCreated(user.uuid);
                 // responds with the newly created user
