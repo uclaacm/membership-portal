@@ -78,7 +78,7 @@ router.post('/login', (req, res, next) => {
 		  user: user.getPublicProfile(),
 		  token,
 		});
-		// register that the user logged in
+		// record that the user logged in
 		Activity.accountLoggedIn(user.uuid);
 	  },
 	);
@@ -139,4 +139,36 @@ router.post('/login', (req, res, next) => {
     })
     .catch(next);
 });
+
+/**
+ * Registration route.
+ * 
+ * POST body accepts a user object (see DB schema for user, sanitize function)
+ * Returns the created user on success
+ */
+ router.post("/register", (req, res, next) => {
+	if (!req.body.user)
+		return next(new error.BadRequest('User must be provided'));
+	if (!req.body.user.password)
+		return next(new error.BadRequest('Password must be provided'));
+	if (req.body.user.password.length < 10)
+		return next(new error.BadRequest('Password should be at least 10 characters long'));
+
+	// get a sanitized version of the input
+	let userModel = User.sanitize(req.body.user);
+	// TODO: implement email auth instead of just active
+	userModel.state = 'ACTIVE'; 
+	// create the password hash
+	User.generateHash(req.body.user.password).then(hash => {
+		userModel.hash = hash;
+		// add the user to the DB
+		return User.create(userModel);
+	}).then(user => {
+		// responsd with the newly created user
+		res.json({ error: null, user: user.getPublicProfile() });
+		// register the account creation as the user's first activity
+		Activity.accountCreated(user.uuid);
+	}).catch(next);
+});
+
 module.exports = { router, authenticated };
