@@ -13,6 +13,12 @@
     "url": "git+https://github.com/uclaacm/membership-portal.git"
   },
   "author": "Nikhil Kansal",
+  "contributors": [
+    {
+      "name": "Dylon Tjanaka",
+      "url": "https://dtjanaka.com"
+    }
+  ],
   "license": "MPL-2.0",
   "bugs": {
     "url": "https://github.com/uclaacm/membership-portal/issues"
