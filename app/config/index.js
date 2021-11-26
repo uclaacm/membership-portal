@@ -32,12 +32,6 @@ module.exports = {
 		password: process.env.PG_PASSWORD,
 	},
 
-	// mail information
-	mailgun: {
-		apiKey: process.env.MAILGUN_KEY || " ", // has to have a value - cannot be an empty string
-		domain: 'mail.uclaacm.com',
-	},
-
 	// session secret for signing token (warning: assumes the file exists)
 	session: {
 		secret: fs.readFileSync('app/config/SESSION_SECRET').toString().trim(),

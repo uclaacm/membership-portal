@@ -16,11 +16,11 @@ router.route('/')
  * Update user information given a 'user' object with fields to update and updated information
  */
 .patch((req, res, next) => {
-	if (req.user.isPending())
-		return next(new error.Forbidden());
-
 	if (!req.body.user)
 		return next(new error.BadRequest());
+		
+	if (req.user.isPending())
+		return next(new error.Forbidden());
 
 	// construct new, sanitized object of update information
 	const updatedInfo = {};

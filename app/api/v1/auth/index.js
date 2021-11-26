@@ -2,8 +2,6 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const config = require('../../../config');
 const error = require('../../../error');
-const log = require('../../../logger');
-const Mail = require('../../../mail');
 const { User, Activity } = require('../../../db');
 
 const router = express.Router();
@@ -54,6 +52,7 @@ const authenticated = (req, res, next) => {
 /**
  * Login route.
  *
+ * TODO: describe what this does
  * On success, this route will return a token
  */
 router.post('/login', (req, res, next) => {
@@ -63,9 +62,9 @@ router.post('/login', (req, res, next) => {
 	// create a token with the user's ID and privilege level
 	jwt.sign(
 	  {
-		uuid: user.getDataValue('uuid'),
-		admin: user.isAdmin(),
-		registered: !user.isPending(),
+      uuid: user.getDataValue('uuid'),
+      admin: user.isAdmin(),
+      registered: !user.isPending(),
 	  },
 	  config.session.secret,
 	  { expiresIn: TOKEN_EXPIRES },
@@ -143,31 +142,35 @@ router.post('/login', (req, res, next) => {
 /**
  * Registration route.
  * 
- * POST body accepts a user object (see DB schema for user, sanitize function)
- * Returns the created user on success
+ * TODO: describe what this does
+ * 
  */
  router.post("/register", (req, res, next) => {
-	if (!req.body.user)
-		return next(new error.BadRequest('User must be provided'));
-	if (!req.body.user.password)
-		return next(new error.BadRequest('Password must be provided'));
-	if (req.body.user.password.length < 10)
-		return next(new error.BadRequest('Password should be at least 10 characters long'));
+  if (!req.body.user)
+  return next(new error.BadRequest());
 
-	// get a sanitized version of the input
-	let userModel = User.sanitize(req.body.user);
-	// TODO: implement email auth instead of just active
-	userModel.state = 'ACTIVE'; 
-	// create the password hash
-	User.generateHash(req.body.user.password).then(hash => {
-		userModel.hash = hash;
-		// add the user to the DB
-		return User.create(userModel);
-	}).then(user => {
-		// responsd with the newly created user
-		res.json({ error: null, user: user.getPublicProfile() });
-		// register the account creation as the user's first activity
-		Activity.accountCreated(user.uuid);
+  if (req.user.isPending())
+  return next(new error.Forbidden());
+
+  if (!req.body.info)
+		return next(new error.BadRequest('Year and major must be provided'));
+
+	// construct new, sanitized object of update information
+	const updatedInfo = {};
+
+  if (req.body.user.major && req.body.user.major.length > 0 && req.body.user.major !== req.user.major)
+    updatedInfo.major = req.body.user.major;
+  
+  if (req.body.user.year && parseInt(req.body.user.year) !== NaN && parseInt(req.body.user.year) > 0 && parseInt(req.body.user.year) <= 5 && req.body.user.year !== req.user.year)
+    updatedInfo.year = parseInt(req.body.user.year);
+  
+  updatedInfo.state = "ACTIVE";
+
+  req.user.update(updatedInfo).then(user => {
+		// respond with the newly updated user profile
+		res.json({ error: null, user: user.getUserProfile() });
+		// record that the user changed some account information, and what info was changed
+		Activity.accountUpdatedInfo(user.uuid, Object.keys(updatedInfo).join(", "));
 	}).catch(next);
 });
 

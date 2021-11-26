@@ -1,5 +1,3 @@
-const _ = require('underscore');
-
 module.exports = (Sequelize, db) => {
   const User = db.define('user', {
     id: {
@@ -161,13 +159,6 @@ module.exports = (Sequelize, db) => {
     return this.findAll({
       where: { accessType: 'STANDARD' }, offset, limit, order: [['points', 'DESC']],
     });
-  };
-
-  // TODO: need this?
-  User.sanitize = function (user) {
-    user = _.pick(user, ['email', 'firstName', 'lastName', 'year', 'major']);
-    if (user.email) user.email = user.email.toLowerCase();
-    return user;
   };
 
   User.prototype.addPoints = function (points) {

@@ -11,6 +11,9 @@ const router = express.Router();
  */
 router.route('/')
 .get((req, res, next) => {
+	if (req.user.isPending())
+		return next(new error.Forbidden());
+
 	const offset = parseInt(req.query.offset);
 	const limit = parseInt(req.query.limit);
 	
