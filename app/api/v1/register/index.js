@@ -1,8 +1,12 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
+const config = require('../../../config');
 const error = require('../../../error');
 const { Activity } = require('../../../db');
 
 const router = express.Router();
+
+const TOKEN_EXPIRES = 86400; // 1 day in seconds
 
 /**
  * Registration route.
@@ -17,6 +21,19 @@ const router = express.Router();
     if (!req.body.info)
         return next(new error.BadRequest('Year and major must be provided'));
   
+    const createUserToken = (user) => {
+        // create a token with the user's ID and privilege level
+        return jwt.sign(
+            {
+                uuid: user.getDataValue('uuid'),
+                admin: user.isAdmin(),
+                registered: !user.isPending(),
+            },
+            config.session.secret,
+            { expiresIn: TOKEN_EXPIRES }
+        );
+    };
+
       // construct new, sanitized object of update information
       const updatedInfo = {};
   
@@ -30,8 +47,9 @@ const router = express.Router();
   
     req.user.update(updatedInfo).then(user => {
           // respond with the newly updated user profile
-          res.json({ error: null, user: user.getUserProfile() });
+          res.json({ error: null, user: user.getUserProfile(), token: createUserToken(user) });
           // record that the user changed some account information, and what info was changed
+          Activity.accountActivated(user.uuid, "Registered - added year and major");
           Activity.accountUpdatedInfo(user.uuid, Object.keys(updatedInfo).join(", "));
       }).catch(next);
   });

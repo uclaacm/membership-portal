@@ -44,8 +44,6 @@ module.exports = (Sequelize, db) => {
 			type: Sequelize.ENUM(
 				'ACCOUNT_CREATE',
 				'ACCOUNT_ACTIVATE',
-				'ACCOUNT_RESET_PASS',
-				'ACCOUNT_RESET_PASS_REQUEST',
 				'ACCOUNT_UPDATE_INFO',
 				'ACCOUNT_LOGIN',
 				'ATTEND_EVENT',
@@ -137,22 +135,6 @@ module.exports = (Sequelize, db) => {
 			user,
 			description,
 			type: 'ACCOUNT_ACTIVATE',
-		});
-	};
-
-	Activity.accountResetPassword = function(user, description) {
-		return this.create({
-			user,
-			description,
-			type: 'ACCOUNT_RESET_PASS',
-		});
-	};
-
-	Activity.accountRequestedResetPassword = function(user, description) {
-		return this.create({
-			user,
-			description,
-			type: 'ACCOUNT_RESET_PASS_REQUEST',
 		});
 	};
 
