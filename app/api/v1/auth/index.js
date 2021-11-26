@@ -59,28 +59,28 @@ router.post('/login', (req, res, next) => {
   if (!req.body.tokenId || req.body.tokenId.length < 1) return next(new error.BadRequest('Invalid token.'));
 
   const createUserToken = (user) => {
-	// create a token with the user's ID and privilege level
-	jwt.sign(
-	  {
-      uuid: user.getDataValue('uuid'),
-      admin: user.isAdmin(),
-      registered: !user.isPending(),
-	  },
-	  config.session.secret,
-	  { expiresIn: TOKEN_EXPIRES },
-	  (err, token) => {
-		if (err) return next(err);
-  
-		// respond with the token upon successful login
-		res.json({
-		  error: null,
-		  user: user.getPublicProfile(),
-		  token,
-		});
-		// record that the user logged in
-		Activity.accountLoggedIn(user.uuid);
-	  },
-	);
+    // create a token with the user's ID and privilege level
+    jwt.sign(
+      {
+        uuid: user.getDataValue('uuid'),
+        admin: user.isAdmin(),
+        registered: !user.isPending(),
+      },
+      config.session.secret,
+      { expiresIn: TOKEN_EXPIRES },
+      (err, token) => {
+      if (err) return next(err);
+    
+      // respond with the token upon successful login
+      res.json({
+        error: null,
+        user: user.getPublicProfile(),
+        token,
+      });
+      // record that the user logged in
+      Activity.accountLoggedIn(user.uuid);
+      },
+    );
   };
 
   client
@@ -137,41 +137,6 @@ router.post('/login', (req, res, next) => {
         .catch(next);
     })
     .catch(next);
-});
-
-/**
- * Registration route.
- * 
- * TODO: describe what this does
- * 
- */
- router.post("/register", (req, res, next) => {
-  if (!req.body.user)
-  return next(new error.BadRequest());
-
-  if (req.user.isPending())
-  return next(new error.Forbidden());
-
-  if (!req.body.info)
-		return next(new error.BadRequest('Year and major must be provided'));
-
-	// construct new, sanitized object of update information
-	const updatedInfo = {};
-
-  if (req.body.user.major && req.body.user.major.length > 0 && req.body.user.major !== req.user.major)
-    updatedInfo.major = req.body.user.major;
-  
-  if (req.body.user.year && parseInt(req.body.user.year) !== NaN && parseInt(req.body.user.year) > 0 && parseInt(req.body.user.year) <= 5 && req.body.user.year !== req.user.year)
-    updatedInfo.year = parseInt(req.body.user.year);
-  
-  updatedInfo.state = "ACTIVE";
-
-  req.user.update(updatedInfo).then(user => {
-		// respond with the newly updated user profile
-		res.json({ error: null, user: user.getUserProfile() });
-		// record that the user changed some account information, and what info was changed
-		Activity.accountUpdatedInfo(user.uuid, Object.keys(updatedInfo).join(", "));
-	}).catch(next);
 });
 
 module.exports = { router, authenticated };
