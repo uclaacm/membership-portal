@@ -31,7 +31,6 @@
     "google-auth-library": "^7.9.2",
     "handlebars": "^4.0.10",
     "jsonwebtoken": "^7.3.0",
-    "mailgun-js": "^0.12.1",
     "morgan": "^1.7.0",
     "node-gyp": "^4.0.0",
     "node-pre-gyp": "^0.13.0",
