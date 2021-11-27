@@ -9,7 +9,6 @@ const logger = require('../logger');
  * stack traces -- useful for debugging.
  */
 
-
 /**
  * Base error class
  * 

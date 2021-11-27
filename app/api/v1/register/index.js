@@ -23,16 +23,29 @@ const TOKEN_EXPIRES = 86400; // 1 day in seconds
   
     const createUserToken = (user) => {
         // create a token with the user's ID and privilege level
-        return jwt.sign(
+        jwt.sign(
             {
                 uuid: user.getDataValue('uuid'),
                 admin: user.isAdmin(),
                 registered: !user.isPending(),
             },
             config.session.secret,
-            { expiresIn: TOKEN_EXPIRES }
-        );
-    };
+            { expiresIn: TOKEN_EXPIRES },
+            (err, token) => {
+            if (err) return next(err);
+          
+            // respond with the token upon successful login
+            res.json({
+              error: null,
+              user: user.getPublicProfile(),
+              token,
+            });
+          // record that the user changed some account information, and what info was changed
+          Activity.accountActivated(user.uuid, "Registered - added year and major");
+          Activity.accountUpdatedInfo(user.uuid, Object.keys(updatedInfo).join(", "));
+            },
+          );
+        };
 
       // construct new, sanitized object of update information
       const updatedInfo = {};
@@ -45,13 +58,7 @@ const TOKEN_EXPIRES = 86400; // 1 day in seconds
     
     updatedInfo.state = "ACTIVE";
   
-    req.user.update(updatedInfo).then(user => {
-          // respond with the newly updated user profile
-          res.json({ error: null, user: user.getUserProfile(), token: createUserToken(user) });
-          // record that the user changed some account information, and what info was changed
-          Activity.accountActivated(user.uuid, "Registered - added year and major");
-          Activity.accountUpdatedInfo(user.uuid, Object.keys(updatedInfo).join(", "));
-      }).catch(next);
+    req.user.update(updatedInfo).then(user => createUserToken(user)).catch(next);
   });
 
 module.exports = { router };

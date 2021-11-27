@@ -52,8 +52,9 @@ const authenticated = (req, res, next) => {
 /**
  * Login route.
  *
- * TODO: describe what this does
- * On success, this route will return a token
+ * Expects a Google ID token
+ * 
+ * On success, this route will return the user's public profile and a user token containing user's ID and privilege levels
  */
 router.post('/login', (req, res, next) => {
   if (!req.body.tokenId || req.body.tokenId.length < 1) return next(new error.BadRequest('Invalid token.'));
@@ -90,6 +91,9 @@ router.post('/login', (req, res, next) => {
     })
     .then((ticket) => {
       const { email } = ticket.getPayload();
+
+      if (!email.toLowerCase().endsWith(config.google.hostedDomain))
+        return next(new error.Unauthorized('Unauthorized email'));
 
       User.findByEmail(email.toLowerCase())
         .then(user => ({ user, ticket }))

@@ -21,6 +21,7 @@ module.exports = {
 		apiKey: process.env.GOOGLE_API_KEY,
 		authDomain: process.env.GOOGLE_AUTH_DOMAIN,
 		clientId: process.env.GOOGLE_CLIENT_ID,
+		hostedDomain: 'g.ucla.edu',
 	},
 
 	// primary database connection information

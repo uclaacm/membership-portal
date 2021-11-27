@@ -12,7 +12,7 @@ const router = express.Router();
  */
 router.route('/past')
   .get((req, res, next) => {
-    if (req.user.isPending()) // test this
+    if (req.user.isPending())
 		  return next(new error.Forbidden());
 
     const offset = parseInt(req.query.offset, 10);
@@ -30,7 +30,7 @@ router.route('/past')
  */
 router.route('/future')
   .get((req, res, next) => {
-    if (req.user.isPending()) // test this
+    if (req.user.isPending())
 		  return next(new error.Forbidden());
 
     const offset = parseInt(req.query.offset, 10);

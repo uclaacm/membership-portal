@@ -4,7 +4,7 @@ const parseFilters = (req, res, next) => {
   const filters = {};
 
   if(req.query.committee){
-    if(["hack","ai","icpc","netsec","studio","w"].indexOf(req.query.committee) < 0){
+    if(["hack","ai","icpc","cyber","studio","w"].indexOf(req.query.committee) < 0){
       return next(new error.BadRequest("Invalid committee"));
     }else{
       filters.committee = req.query.committee;
