@@ -139,10 +139,10 @@ Promise.all([
     accessType: 'STANDARD',
     state: 'ACTIVE',
     firstName: 'Tony',
-    lastName: 'Stank',
+    lastName: 'Stark',
     points: 880,
     year: 2,
-    major: 'Billionaire Playboy Philanthropy',
+    major: 'Cognitive Science',
   }),
 
   Event.create({
