@@ -96,9 +96,7 @@ router.post('/login', (req, res, next) => {
         return next(new error.Unauthorized('Unauthorized email'));
 
       User.findByEmail(email.toLowerCase())
-        .then(user => ({ user, ticket }))
-        .then((userData) => {
-          const { user, ticket } = userData;
+        .then(user => {
           const {
             given_name, family_name, email, picture, googleId,
           } = ticket.getPayload();
