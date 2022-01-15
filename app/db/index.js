@@ -10,11 +10,12 @@ const devSetup = require('./dev-setup');
 const transactionNamespace = cls.createNamespace('default-transaction-ns');
 Sequelize.useCLS(transactionNamespace);
 
+// https://stackoverflow.com/questions/65417340/docker-compose-postgres-restart-after-running-scripts-in-docker-entrypoint-initd/65417566#65417566
 // The DB instance managed by sequelize
 const db = new Sequelize(config.database.db, config.database.user, config.database.password, {
 	dialect: 'postgres',
 	host: config.database.host,
-	logging: config.isDevelopment ? logger.debug : false
+	logging: config.isDevelopment ? logger.debug : false // false as a function
 });
 
 // Create schemas
@@ -29,14 +30,13 @@ const Attendance = require('./schema/attendance')(Sequelize, db);
 const setup = (force, dev) => {
 	return (dev ? db.sync({ force }).then(() => devSetup(User, Event, Attendance)) : db.sync({ force })).then(() => {
 		User.findOrCreate({
-			where: { email: 'acm@ucla.edu'},
+			where: { email: 'acm@g.ucla.edu' },
 			defaults: {
-				email: 'acm@ucla.edu',
+				email: 'acm@g.ucla.edu',
 				accessType: 'ADMIN',
 				state: 'ACTIVE',
 				firstName: 'ACM',
 				lastName: 'Admin',
-				hash: '$2a$10$db7eYhWGZ1LZl27gvyX/iOgb33ji1PHY5.pPzRyXaNlbctCFWMF9G',
 				year: 4,
 				major: 'Computer Science'
 			}

@@ -21,7 +21,7 @@ module.exports = (Sequelize, db) => {
       validate: {
         len: {
           args: [2, 255],
-          msg: 'The organization name must be at between 2 and 255 characters long',
+          msg: 'The organization name must be between 2 and 255 characters long',
         },
       },
     },

@@ -12,6 +12,9 @@ const router = express.Router();
  */
 router.route('/past')
   .get((req, res, next) => {
+    if (req.user.isPending())
+		  return next(new error.Forbidden());
+
     const offset = parseInt(req.query.offset, 10);
     const limit = parseInt(req.query.limit, 10);
     Event.getPastEvents(offset, limit).then((events) => {
@@ -27,6 +30,9 @@ router.route('/past')
  */
 router.route('/future')
   .get((req, res, next) => {
+    if (req.user.isPending())
+		  return next(new error.Forbidden());
+
     const offset = parseInt(req.query.offset, 10);
     const limit = parseInt(req.query.limit, 10);
     Event.getFutureEvents(offset, limit).then((events) => {
@@ -41,6 +47,9 @@ router.route('/future')
  */
 router.route('/:uuid?')
   .get((req, res, next) => {
+    if (req.user.isPending())
+		  return next(new error.Forbidden());
+
     // CASE: no UUID is present, should return all elements
     if (!req.params.uuid || !req.params.uuid.trim()) {
       const offset = parseInt(req.query.offset, 10);

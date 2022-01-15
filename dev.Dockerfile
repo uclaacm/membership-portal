@@ -3,7 +3,7 @@
 FROM node:13.12.0-alpine
 RUN apk add alpine-sdk
 
-# Work in the membership-portal-ui directory
+# Work in the membership-portal directory
 WORKDIR /var/www/membership-portal
 COPY membership-portal/package.json ./
 
@@ -11,4 +11,4 @@ COPY membership-portal/package.json ./
 RUN yarn
 
 # Start the development server
-CMD ["/bin/sh", "-c", "make setup && (node -e 'require(\"bcryptjs\")' || npm rebuild bcryptjs --build-from-source) && yarn dev"]
+CMD ["/bin/sh", "-c", "make setup && yarn dev"]

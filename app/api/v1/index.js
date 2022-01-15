@@ -3,6 +3,7 @@ const auth = require('./auth').authenticated;
 let router = express.Router();
 
 // Private API - use authentication middleware
+router.use('/register', auth, require('./register').router);
 router.use('/user', auth, require('./user').router);
 router.use('/event', auth, require('./event').router);
 router.use('/attendance', auth, require('./attendance').router);

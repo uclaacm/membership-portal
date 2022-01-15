@@ -10,6 +10,9 @@ const router = express.Router();
  */
 router.route('/:uuid?')
 .get((req, res, next) => {
+	if (req.user.isPending())
+		return next(new error.Forbidden());
+		
 	// store successful response function
 	//   map each attendance record in the db to its public version (see app/db/schema/attendance.js)
 	let callback = attendance => res.json({ error: null, attendance: attendance.map(a => a.getPublic() )});
@@ -29,9 +32,13 @@ router.route('/:uuid?')
  */
 router.route('/attend')
 .post((req, res, next) => {
+	if (req.user.isPending())
+		return next(new error.Forbidden());
+
 	// the user must specify the attendance code
 	if (!req.body.event.attendanceCode)
 		return next(new error.BadRequest());
+
 
 	let now = new Date();
 	Event.findByAttendanceCode(req.body.event.attendanceCode).then(event => {
