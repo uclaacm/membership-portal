@@ -5,7 +5,7 @@ import Button from '../Button';
 export default class LeaderboardModal extends React.Component {
   constructor() {
     super();
-    this.yearMap = ['Freshman', 'Sophomore', 'Junior', 'Senior'];
+    this.yearMap = ['Freshman', 'Sophomore', 'Junior', 'Senior', 'Post-Senior'];
   }
 
   render() {
@@ -28,16 +28,19 @@ export default class LeaderboardModal extends React.Component {
               <div className="text-container">
                 <h3>
 Name:
+{' '}
                   {firstName}
                   {' '}
                   {lastName}
                 </h3>
                 <h3>
 Major:
+{' '}
                   {major}
                 </h3>
                 <h3>
 Year:
+{' '}
                   {gradeLevel}
                 </h3>
               </div>

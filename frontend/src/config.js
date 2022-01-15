@@ -1,8 +1,11 @@
 export default {
   API_URL: process.env.WEBPACK ? 'http://localhost:8080/app' : '/app',
   CLIENT_ROOT_URL: '',
-  facebook: {
-    appId: '1356860031017067',
+  google:  {
+    apiKey: process.env.GOOGLE_API_KEY,
+    authDomain: process.env.GOOGLE_AUTH_DOMAIN,
+    clientId: process.env.GOOGLE_CLIENT_ID,
+    hostedDomain: 'g.ucla.edu',
   },
   routes: {
     user: {
@@ -11,9 +14,8 @@ export default {
     },
     activity: '/api/v1/activity',
     auth: {
-      register: '/api/v1/auth/register',
+      register: '/api/v1/register',
       login: '/api/v1/auth/login',
-      resetPassword: '/api/v1/auth/resetPassword',
     },
     events: {
       event: '/api/v1/event',
@@ -110,25 +112,25 @@ export default {
         type: 'facebook',
         title: 'Facebook',
         subtitle: 'facebook.com/uclaacm',
-        link: 'http://facebook.com/uclaacm',
+        link: 'https://facebook.com/uclaacm',
       },
       {
         type: 'twitter',
         title: 'Twitter',
         subtitle: 'twitter.com/uclaacm',
-        link: 'http://twitter.com/uclaacm',
+        link: 'https://twitter.com/uclaacm',
       },
       {
         type: 'github',
         title: 'Github',
         subtitle: 'github.com/uclaacm',
-        link: 'http://github.com/uclaacm',
+        link: 'https://github.com/uclaacm',
       },
       {
         type: 'website',
         title: 'Website',
         subtitle: 'acm.cs.ucla.edu',
-        link: 'http://acm.cs.ucla.edu',
+        link: 'https://acm.cs.ucla.edu',
       },
       {
         type: 'medium',
@@ -140,7 +142,7 @@ export default {
         type: 'slack',
         title: 'Slack',
         subtitle: 'uclaacm.slack.com',
-        link: 'http://uclaacm.slack.com',
+        link: 'https://uclaacm.slack.com',
       },
     ],
   },

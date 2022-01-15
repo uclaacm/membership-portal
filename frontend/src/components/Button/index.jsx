@@ -17,14 +17,16 @@ class Button extends React.Component {
 
   render() {
     const {
-      className, color, icon, loading, style, text, type,
+      className, color, icon, customIcon, loading, style, text, type,
     } = this.props;
     const buttonClass = `button-component ${className}`;
     const buttonIcon = icon ? <i className={`fa ${icon} button-icon`} aria-hidden="true" /> : null;
+    const buttonCustomIcon = customIcon ? <img src={customIcon} className="button-icon button-custom-icon" /> : null;
     return (
       <div className={buttonClass} onClick={this.buttonAction}>
-        <button className={style || color} type={type}>
-          { !loading && buttonIcon }
+        <button className={`${style} ${color} button-inside`} type={type}>
+          { !loading && buttonIcon && !buttonCustomIcon }
+          { !loading && buttonCustomIcon }
           { !loading && <span>{text}</span> }
           { loading && <Loader /> }
         </button>

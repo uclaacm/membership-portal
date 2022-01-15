@@ -24,15 +24,29 @@
 		transition: 0.125s ease-in-out;
 	}
 
+	.button-inside {
+		display: flex;
+		align-items: center;
+	}
+
 	.button-icon {
 		display: inline-block;
 		text-align: center;
 		margin-right: 10px;
 	}
 
+	.button-custom-icon {
+		width: 18px;
+		height: 18px;
+	}
+
 	.small {
 		height: $input-button-size*(2/3);
 		line-height: $input-button-size*(2/3);
+		font-size: 14px;
+	}
+
+	.small-text {
 		font-size: 14px;
 	}
 
@@ -59,7 +73,7 @@
 	.gray {
 		background: $white;
 		box-shadow: 0 4px 0 $gray1;
-		color: $gray1;
+		color: $black;
 	}
 
 	.disabled {
@@ -99,7 +113,7 @@
 		-webkit-transform: translateY(1px);
 		transform: translateY(1px);
 		box-shadow: 0 3px 0 $gray1;
-		color: $gray1;
+		color: $black;
 	}
 
 	.blue:active {
@@ -130,7 +144,7 @@
 		-webkit-transform: translateY(4px);
 		transform: translateY(4px);
 		box-shadow: 0 0px 0 $gray1;
-		color: $gray1;
+		color: $black;
 	}
 
 	.event-button {

@@ -76,10 +76,12 @@ class ControlPanel extends React.Component {
             <option>General</option>
             <option>AI</option>
             <option>Board</option>
+            <option>Cyber</option>
+            <option>Design</option>
             <option>Hack</option>
             <option>ICPC</option>
-            <option>NetSec</option>
             <option>Studio</option>
+            <option>TeachLA</option>
             <option>W</option>
           </select>
         </div>

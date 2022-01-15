@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { replace } from 'react-router-redux';
 import RegisterComponent from 'components/Register';
 import { Action } from 'reducers';
-
 
 class Register extends React.Component {
   constructor(props) {
@@ -12,6 +12,12 @@ class Register extends React.Component {
 
   createUser(profile) {
     this.props.registerUser(profile);
+  }
+
+  componentWillMount() {
+    if (this.props.tokenIsAuthenticated && this.props.tokenIsRegistered) {
+      this.props.redirectHome();
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -39,14 +45,19 @@ const mapStateToProps = state => ({
   error: state.Registration.get('error'),
   registered: state.Registration.get('registered'),
   registerSuccess: state.Registration.get('registerSuccess'),
+  tokenIsAuthenticated: state.Auth.get('authenticated'),
+  tokenIsRegistered: state.Auth.get('isRegistered'),
 });
 
 const mapDispatchToProps = dispatch => ({
-  registerUser: (newuser) => {
-    dispatch(Action.RegisterUser(newuser));
+  registerUser: (info) => {
+    dispatch(Action.RegisterUser(info));
   },
   registerDone: () => {
     dispatch(Action.registerDone());
+  },
+  redirectHome: () => {
+    dispatch(replace('/'));
   },
 });
 

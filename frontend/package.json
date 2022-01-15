@@ -15,6 +15,12 @@
     "url": "git+https://github.com/uclaacm/membership-portal-ui.git"
   },
   "author": "nkansal96",
+  "contributors": [
+    {
+      "name": "Dylon Tjanaka",
+      "url": "https://dtjanaka.com"
+    }
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/uclaacm/membership-portal-ui/issues"
@@ -84,7 +90,7 @@
     "react-chartjs-2": "^2.7.0",
     "react-datepicker": "^1.6.0",
     "react-dom": "^16.5.2",
-    "react-facebook-login": "^3.6.1",
+    "react-google-login": "^5.2.1",
     "react-input-mask": "^0.8.0",
     "react-redux": "^5.0.7",
     "react-router-dom": "^4.3.1",

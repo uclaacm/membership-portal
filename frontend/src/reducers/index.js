@@ -1,5 +1,5 @@
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
-import createHistory from 'history/createBrowserHistory';
+import { createBrowserHistory } from 'history';
 import { routerReducer, routerMiddleware } from 'react-router-redux';
 import thunk from 'redux-thunk';
 
@@ -7,8 +7,7 @@ import {
   User, FetchUser, UpdateUser, UserUpdateDone, FetchActivity,
 } from './user';
 import {
-  Auth, LoginUser, LogoutUser, RequestResetPassword, ResetPassword, ResetPasswordDone,
-} from './auth';
+  Auth, LoginUser, LogoutUser, RefreshToken, } from './auth';
 import {
   Events, GetCurrentEvents, PostNewEvent, UpdateEvent,
   DeleteEvent, UpdateEventDone, CreateEventDone,
@@ -17,7 +16,7 @@ import { Leaderboard, FetchLeaderboard, InvalidateLeaderboard } from './leaderbo
 import { CheckIn, CheckInto, ResetCheckIn } from './checkin';
 import { Registration, RegisterUser, registerDone } from './registration';
 
-const history = createHistory();
+const history = createBrowserHistory();
 const routing = routerMiddleware(history);
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
@@ -37,13 +36,11 @@ const store = createStore(
 const Action = {
   LoginUser,
   LogoutUser,
+  RefreshToken,
   FetchUser,
   UpdateUser,
   UserUpdateDone,
   FetchActivity,
-  RequestResetPassword,
-  ResetPassword,
-  ResetPasswordDone,
   GetCurrentEvents,
   PostNewEvent,
   UpdateEvent,
