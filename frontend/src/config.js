@@ -4,7 +4,7 @@ export default {
   google:  {
     apiKey: process.env.GOOGLE_API_KEY,
     authDomain: process.env.GOOGLE_AUTH_DOMAIN,
-    clientId: process.env.GOOGLE_CLIENT_ID,
+    clientId: '913307270840-751ad0psdu1q2a7m81np30g062osgpp5.apps.googleusercontent.com',
     hostedDomain: 'g.ucla.edu',
   },
   routes: {

@@ -1,8 +1,6 @@
 # Need a custom image here so that we can incorporate an npm build too
 # Alpine is super light
-FROM node:10.24.1-alpine
-
-RUN apk add -U python2 make g++
+FROM node:13.12.0-alpine
 
 # Create directories
 #   /working is the build directory
@@ -13,8 +11,8 @@ RUN mkdir -p /var/www/membership/working && \
 
 # Install the required packages to build the frontend
 WORKDIR /var/www/membership/working
-COPY package.json yarn.lock /var/www/membership/working/
-RUN yarn  --pure-lockfile
+COPY package.json /var/www/membership/working/
+RUN yarn
 
 # Copy the source files
 COPY pages/ /var/www/membership/working/pages/
@@ -43,3 +41,4 @@ COPY --from=0 /var/www/membership/static /var/www/membership/static
 
 # Run the server
 CMD ["nginx", "-g", "daemon off;"]
+
