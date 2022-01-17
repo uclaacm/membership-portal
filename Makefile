@@ -23,5 +23,5 @@ run:
 	docker run -p "8080:8080" $(APP_NAME)
 
 push: ecr-login build
-	docker tag $(APP_NAME):latest $(ECR_URL)/$(APP_NAME):latest
-	docker push $(ECR_URL)/$(APP_NAME):latest
+	docker tag $(APP_NAME):latest $(ECR_URL)/$(APP_NAME):deploy
+	docker push $(ECR_URL)/$(APP_NAME):deploy

@@ -71,7 +71,7 @@ router.post('/login', (req, res, next) => {
       { expiresIn: TOKEN_EXPIRES },
       (err, token) => {
       if (err) return next(err);
-    
+
       // respond with the token upon successful login
       res.json({
         error: null,
