@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/uclaacm/membership-portal#readme",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "body-parser": "^1.15.2",
     "continuation-local-storage": "^3.2.0",
     "express": "^4.14.0",
