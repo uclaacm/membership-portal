@@ -23,6 +23,7 @@ const User = require('./schema/user')(Sequelize, db);
 const Event = require('./schema/event')(Sequelize, db);
 const Activity = require('./schema/activity')(Sequelize, db);
 const Attendance = require('./schema/attendance')(Sequelize, db);
+const Secret = require('./schema/secret')(Sequelize, db);
 
 /**
  * DB setup function to sync tables and add admin if doesn't exist
