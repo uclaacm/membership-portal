@@ -37,8 +37,8 @@ module.exports = (Sequelize, db) => {
       type: Sequelize.STRING,
       validate: {
         len: {
-          args: [3, 255],
-          msg: 'If specified, the thumbnail URL must be between 3 and 255 characters long',
+          args: [3, 2048],
+          msg: 'If specified, the thumbnail URL must be between 3 and 2048 characters long',
         },
       },
     },
@@ -48,8 +48,8 @@ module.exports = (Sequelize, db) => {
       type: Sequelize.STRING,
       validate: {
         len: {
-          args: [3, 255],
-          msg: 'The cover image URL must be between 3 and 255 characters long',
+          args: [3, 2048],
+          msg: 'The cover image URL must be between 3 and 2048 characters long',
         },
       },
     },
@@ -96,8 +96,8 @@ module.exports = (Sequelize, db) => {
       type: Sequelize.STRING,
       validate: {
         len: {
-          args: [3, 255],
-          msg: 'The event link must be between 3 and 255 characters long',
+          args: [3, 2048],
+          msg: 'The event link must be between 3 and 2048 characters long',
         },
       },
     },
