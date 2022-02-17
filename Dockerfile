@@ -1,5 +1,5 @@
 # load the alpine base image
-FROM alpine:3.13
+FROM alpine:3.15
 
 RUN apk add -U python2 make gcc g++ nodejs yarn npm
 ENV PYTHONPATH /usr/lib/python2.7/site-packages
