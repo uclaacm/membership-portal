@@ -36,7 +36,8 @@ const setup = (force, dev) => {
         .catch(err => {
             console.error('Unable to connect to the database:', err);
         });
-	return (dev ? db.sync({ force }).then(() => devSetup(User, Event, Attendance)) : db.sync({ force })).then(() => {
+	return (dev ? db.sync({ force }).then(() => devSetup(User, Event)) : db.sync({ force })).then(() => {
+		Secret.generateHash("password").then((hash) => Secret.create({name: "one-click", hash: hash}));
 		User.findOrCreate({
 			where: { email: 'acm@g.ucla.edu' },
 			defaults: {

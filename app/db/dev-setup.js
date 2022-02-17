@@ -1,6 +1,6 @@
 const { NotImplemented } = require("../error");
 
-module.exports = (User, Event, Attendance) => {
+module.exports = (User, Event) => {
 Promise.all([
   User.create({
     email: 'admin@g.ucla.edu',
