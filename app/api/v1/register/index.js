@@ -11,7 +11,7 @@ const TOKEN_EXPIRES = 86400; // 1 day in seconds
 /**
  * Registration route.
  * 
- * TODO: describe what this does
+ * Add year and major to complete sign up process
  * 
  */
  router.post("/", (req, res, next) => {

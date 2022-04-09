@@ -3,6 +3,17 @@ const { NotImplemented } = require("../error");
 module.exports = (User, Event) => {
 Promise.all([
   User.create({
+    email: 'acm@g.ucla.edu',
+    accessType: 'SUPERADMIN',
+    state: 'ACTIVE',
+    firstName: 'ACM',
+    lastName: 'chapter at UCLA',
+    // points: should default to 0,
+    year: 5,
+    major: 'Computer Science',
+  }),
+
+  User.create({
     email: 'admin@g.ucla.edu',
     accessType: 'ADMIN',
     state: 'ACTIVE',

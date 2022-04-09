@@ -32,18 +32,18 @@ module.exports = (Sequelize, db) => {
     //   STANDARD   - a regular member
     //   ADMIN      - admin type user
     accessType: {
-      type: Sequelize.ENUM('RESTRICTED', 'STANDARD', 'ADMIN'),
+      type: Sequelize.ENUM('RESTRICTED', 'STANDARD', 'ADMIN', 'SUPERADMIN'),
       defaultValue: 'STANDARD',
     },
 
-	// account state
-	//   PENDING        - account pending activation (newly created)
-	//   ACTIVE         - account activated and in good standing
-	//   BLOCKED        - account is blocked, login is denied
-	state: {
-		type: Sequelize.ENUM('PENDING', 'ACTIVE', 'BLOCKED'),
-		defaultValue: 'PENDING'
-	},
+    // account state
+    //   PENDING        - account pending activation (newly created)
+    //   ACTIVE         - account activated and in good standing
+    //   BLOCKED        - account is blocked, login is denied
+    state: {
+      type: Sequelize.ENUM('PENDING', 'ACTIVE', 'BLOCKED'),
+      defaultValue: 'PENDING',
+    },
 
     // user's first name
     firstName: {
@@ -188,16 +188,20 @@ module.exports = (Sequelize, db) => {
     };
   };
 
-  User.prototype.isAdmin = function () {
-    return this.getDataValue('accessType') === 'ADMIN';
+  User.prototype.isRestricted = function () {
+    return this.getDataValue('accessType') === 'RESTRICTED';
   };
 
   User.prototype.isStandard = function () {
     return this.getDataValue('accessType') === 'STANDARD';
   };
 
-  User.prototype.isRestricted = function () {
-    return this.getDataValue('accessType') === 'RESTRICTED';
+  User.prototype.isAdmin = function () {
+    return this.getDataValue('accessType') === 'ADMIN' || this.getDataValue('accessType') === 'SUPERADMIN';
+  };
+
+  User.prototype.isSuperAdmin = function () {
+    return this.getDataValue('accessType') === 'SUPERADMIN';
   };
 
   User.prototype.isPending = function () {
