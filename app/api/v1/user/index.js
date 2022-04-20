@@ -36,7 +36,7 @@ router.route('/')
 		updatedInfo.year = parseInt(req.body.user.year);
 
 	// CASE:
-		// update the user information normally (with the given information, without any password changes)
+	// update the user information normally (with the given information, without any password changes)
 	req.user.update(updatedInfo).then(user => {
 		// respond with the newly updated user profile
 		res.json({ error: null, user: user.getUserProfile() });
@@ -57,7 +57,7 @@ router.get('/activity', (req, res, next) => {
 });
 
 /**
- * For all further requests on this route, the user needs to be an admin
+ * For all further requests on this route, the user needs to be at least an admin
  */
 router.route('/milestone')
 .all((req, res, next) => {
@@ -77,6 +77,23 @@ router.route('/milestone')
 			}
 		});
 	}).then(() => res.json({ error: null })).catch(next);
+})
+
+router.route('/admins')
+.all((req, res, next) => {
+	if (!req.user.isSuperAdmin())
+		return next(new error.Forbidden());
+	return next();
+})
+.get((req, res, next) => {
+	res.json({ error: null, admins: User.getAdmins() });
+})
+.post((req, res, next) => {
+
+})
+.delete((req, res, next) => {
+	// cannot only remove self as superadmin
+	// can reassign superadmin to a current admin, which will remove self as superadmin
 })
 
 module.exports = { router };

@@ -161,6 +161,16 @@ module.exports = (Sequelize, db) => {
     });
   };
 
+  User.getAdmins = function() {
+    return this.findAll({
+      where: { 
+        accessType: { 
+          [Op.or]: ['ADMIN', 'SUPERADMIN'] 
+        } 
+      },
+    });
+  };
+
   User.prototype.addPoints = function (points) {
     return this.increment({ points });
   };
