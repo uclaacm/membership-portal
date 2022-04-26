@@ -148,11 +148,25 @@ router
         if (!user) return next(new error.BadRequest("User not found"));
         if (user.accessType === "SUPERADMIN")
           return next(new error.Forbidden());
-        user.update({ accessType: "ADMIN" });
+        user.update({ accessType: "STANDARD" });
       })
       .then(() => res.json({ error: null }))
       .catch(next);
   })
-  .patch((req, res, next) => {});
+  .patch((req, res, next) => {
+    if (!req.body.email || typeof req.body.email !== "string")
+      return next(new error.BadRequest("Invalid email"));
+
+    User.findByEmail(req.body.email)
+      .then((user) => {
+        if (!user) return next(new error.BadRequest("User not found"));
+        if (user.accessType !== "ADMIN")
+          return next(new error.Forbidden("Superadmin must be an admin first"));
+				req.user.update({ accessType: "ADMIN" });
+        user.update({ accessType: "SUPERADMIN" });
+      })
+      .then(() => res.json({ error: null }))
+      .catch(next);
+	});
 
 module.exports = { router };
