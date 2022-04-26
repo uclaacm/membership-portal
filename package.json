@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index",
     "dev": "nodemon -L -e js -i node_modules -i .git -V index.js",
-    "test": "jest --config jest.config.json"
+    "test": "jest --config jest.config.json",
+    "lint": "prettier --write './**/*.js*'"
   },
   "repository": {
     "type": "git",
