@@ -1,13 +1,8 @@
 {
-	"transform": {
-		"^.+\\.js$": "babel-jest"
-	},
-	"modulePaths": ["<rootDir>/src"],
-	"testRegex": "tests/.*\\.tests?\\.(js|ts)$",
-	"moduleFileExtensions": [
-		"ts",
-		"js",
-		"json",
-		"node"
-	]
+  "transform": {
+    "^.+\\.js$": "babel-jest"
+  },
+  "modulePaths": ["<rootDir>/src"],
+  "testRegex": "tests/.*\\.tests?\\.(js|ts)$",
+  "moduleFileExtensions": ["ts", "js", "json", "node"]
 }
