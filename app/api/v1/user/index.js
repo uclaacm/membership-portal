@@ -162,11 +162,11 @@ router
         if (!user) return next(new error.BadRequest("User not found"));
         if (user.accessType !== "ADMIN")
           return next(new error.Forbidden("Superadmin must be an admin first"));
-				req.user.update({ accessType: "ADMIN" });
+        req.user.update({ accessType: "ADMIN" });
         user.update({ accessType: "SUPERADMIN" });
       })
       .then(() => res.json({ error: null }))
       .catch(next);
-	});
+  });
 
 module.exports = { router };
