@@ -81,4 +81,4 @@ const errorHandler = (err, req, res, next) => {
   return next(new error.HTTPError(err.name, 500, err.message));
 };
 
-module.exports = { db, User, Event, Activity, Attendance, setup, errorHandler };
+module.exports = { db, User, Event, Activity, Attendance, Secret, setup, errorHandler };
