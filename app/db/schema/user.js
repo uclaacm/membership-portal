@@ -172,7 +172,7 @@ module.exports = (Sequelize, db) => {
     return this.findAll({
       where: {
         accessType: {
-          [Op.or]: ["ADMIN", "SUPERADMIN"],
+          [Sequelize.Op.or]: ["ADMIN", "SUPERADMIN"],
         },
       },
     });

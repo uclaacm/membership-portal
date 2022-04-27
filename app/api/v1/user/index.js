@@ -120,7 +120,7 @@ router
     return next();
   })
   .get((req, res, next) => {
-    res.json({ error: null, admins: User.getAdmins() });
+    User.getAdmins().then((admins) => res.json({ error: null, admins: admins }));
   })
   .post((req, res, next) => {
     // add admins
