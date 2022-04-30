@@ -13,7 +13,7 @@ router
     // password verification
     Secret.findByName("one-click").then((secret) => {
       return secret.verifyPassword(req.body.password).then((verified) => {
-        if (!verified) throw new error.UserError("Invalid password");
+        if (!verified) return next(new error.UserError("Invalid password"));
 
         if (!req.body.event) return next(new error.BadRequest());
         if (
@@ -46,11 +46,14 @@ router
 
     Secret.findByName("one-click").then((secret) => {
       return secret.verifyPassword(req.body.oldPassword).then((verified) => {
-        if (!verified) throw new error.UserError("Invalid password");
+        if (!verified) return next(new error.UserError("Invalid password"));
 
         Secret.generateHash(req.body.newPassword).then((hash) =>
           secret.update({ hash: hash })
-        );
+        ).then(() => {
+          res.json({ error: null });
+        })
+        .catch(next);
       });
     });
   });
