@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index",
     "dev": "nodemon -L -e js -i node_modules -i .git -V index.js",
-    "test": "jest --config jest.config.json"
+    "test": "jest --config jest.config.json",
+    "lint": "prettier --write './**/*.js*'"
   },
   "repository": {
     "type": "git",
@@ -25,9 +26,11 @@
   },
   "homepage": "https://github.com/uclaacm/membership-portal#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.15.2",
     "continuation-local-storage": "^3.2.0",
     "express": "^4.14.0",
+    "express-rate-limit": "^6.2.1",
     "google-auth-library": "^7.9.2",
     "handlebars": "^4.0.10",
     "jsonwebtoken": "^7.3.0",

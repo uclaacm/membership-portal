@@ -6,9 +6,9 @@ module.exports = {
   settings: {
     "import/resolver": {
       node: {
-        paths: ["."]
-      }
-    }
+        paths: ["."],
+      },
+    },
   },
   rules: {
     "no-plusplus": "off",

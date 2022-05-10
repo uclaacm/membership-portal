@@ -1,11 +1,11 @@
-const express = require('express');
-const jwt = require('jsonwebtoken');
-const config = require('../../../config');
-const error = require('../../../error');
-const { User, Activity } = require('../../../db');
+const express = require("express");
+const jwt = require("jsonwebtoken");
+const config = require("../../../config");
+const error = require("../../../error");
+const { User, Activity } = require("../../../db");
 
 const router = express.Router();
-const { OAuth2Client } = require('google-auth-library');
+const { OAuth2Client } = require("google-auth-library");
 
 const client = new OAuth2Client(config.google.clientId);
 
@@ -22,16 +22,17 @@ const TOKEN_EXPIRES = 86400; // 1 day in seconds
 const authenticated = (req, res, next) => {
   // We're looking for a header in the form of:
   //   Authorization: Bearer <TOKEN>
-  const authHeader = req.get('Authorization');
+  const authHeader = req.get("Authorization");
   if (!authHeader) return next(new error.Unauthorized());
 
   // authHead should be in the form of ['Bearer', '<TOKEN>']
-  const authHead = authHeader.split(' ');
+  const authHead = authHeader.split(" ");
   if (
-    authHead.length !== 2
-    || authHead[0] !== 'Bearer'
-    || authHead[1].length < 1
-  ) return next(new error.Unauthorized());
+    authHead.length !== 2 ||
+    authHead[0] !== "Bearer" ||
+    authHead[1].length < 1
+  )
+    return next(new error.Unauthorized());
 
   const token = authHead[1];
   jwt.verify(token, config.session.secret, (err, decoded) => {
@@ -53,34 +54,36 @@ const authenticated = (req, res, next) => {
  * Login route.
  *
  * Expects a Google ID token
- * 
+ *
  * On success, this route will return the user's public profile and a user token containing user's ID and privilege levels
  */
-router.post('/login', (req, res, next) => {
-  if (!req.body.tokenId || req.body.tokenId.length < 1) return next(new error.BadRequest('Invalid token.'));
+router.post("/login", (req, res, next) => {
+  if (!req.body.tokenId || req.body.tokenId.length < 1)
+    return next(new error.BadRequest("Invalid token."));
 
   const createUserToken = (user) => {
     // create a token with the user's ID and privilege level
     jwt.sign(
       {
-        uuid: user.getDataValue('uuid'),
+        uuid: user.getDataValue("uuid"),
         admin: user.isAdmin(),
+        superAdmin: user.isSuperAdmin(),
         registered: !user.isPending(),
       },
       config.session.secret,
       { expiresIn: TOKEN_EXPIRES },
       (err, token) => {
-      if (err) return next(err);
+        if (err) return next(err);
 
-      // respond with the token upon successful login
-      res.json({
-        error: null,
-        user: user.getPublicProfile(),
-        token,
-      });
-      // record that the user logged in
-      Activity.accountLoggedIn(user.uuid);
-      },
+        // respond with the token upon successful login
+        res.json({
+          error: null,
+          user: user.getPublicProfile(),
+          token,
+        });
+        // record that the user logged in
+        Activity.accountLoggedIn(user.uuid);
+      }
     );
   };
 
@@ -93,13 +96,12 @@ router.post('/login', (req, res, next) => {
       const { email } = ticket.getPayload();
 
       if (!email.toLowerCase().endsWith(config.google.hostedDomain))
-        return next(new error.Unauthorized('Unauthorized email'));
+        return next(new error.Unauthorized("Unauthorized email"));
 
       User.findByEmail(email.toLowerCase())
-        .then(user => {
-          const {
-            given_name, family_name, email, picture, googleId,
-          } = ticket.getPayload();
+        .then((user) => {
+          const { given_name, family_name, email, picture, googleId } =
+            ticket.getPayload();
 
           if (!user) {
             // TODO: implement email auth instead of just active
@@ -110,26 +112,29 @@ router.post('/login', (req, res, next) => {
               firstName: given_name,
               lastName: family_name,
               picture,
-              state: 'PENDING',
+              state: "PENDING",
               // PLACEHOLDERS - need to add placeholders or make them nullable and then require they be added later...
               // or have a flow that requires a user to fill these in right after signing in the first time
               year: 1,
-              major: 'Undeclared',
+              major: "Undeclared",
             };
 
             User.create(userModel)
               .then((user) => {
-                if (user && user.isBlocked()) throw new error.Forbidden('Your account has been blocked'); // not needed?
+                if (user && user.isBlocked())
+                  throw new error.Forbidden("Your account has been blocked"); // not needed?
                 // register the account creation as the user's first activity
                 Activity.accountCreated(user.uuid);
                 // responds with the newly created user
                 return user;
               })
-              .then(user => createUserToken(user)).catch(next);
+              .then((user) => createUserToken(user))
+              .catch(next);
 
             return null; // we don't care about result (http://goo.gl/rRqMUw)
           }
-          if (user && user.isBlocked()) throw new error.Forbidden('Your account has been blocked');
+          if (user && user.isBlocked())
+            throw new error.Forbidden("Your account has been blocked");
           else {
             createUserToken(user);
 
