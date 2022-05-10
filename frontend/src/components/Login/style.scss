@@ -1,65 +1,66 @@
 @import "styles/vars";
 
-html, body {
-	margin: 0px;
-	height: 100%;
-	min-height: 100%;
+html,
+body {
+  margin: 0px;
+  height: 100%;
+  min-height: 100%;
 }
 
 .login-tile {
-	position: fixed;
-	display: inline-block;
-	height: 100%;
-	width: 100%;
-	background-color: $primaryblue;
+  position: fixed;
+  display: inline-block;
+  height: 100%;
+  width: 100%;
+  background-color: $primaryblue;
 
-	.login-tile-inner {
-		opacity: 0.4;
-		height: 100%;
-		width: 100%;
-		background-position: center center;
-		background-attachment: fixed;
-		background-size: cover;
+  .login-tile-inner {
+    opacity: 0.4;
+    height: 100%;
+    width: 100%;
+    background-position: center center;
+    background-attachment: fixed;
+    background-size: cover;
 
-		@media (max-width: 425px) {
-			display: none;
-		}
-	}
+    @media (max-width: 425px) {
+      display: none;
+    }
+  }
 }
 
 .login-sidebar {
-	position: relative;
-	display: inline-block;
-	background: $primaryblue;
-	width: $sidebar-width;
-	height: 100vh;
-	color: $white;
-	font-size: 12px;
-	box-shadow: 0px 0px 4px #222222;
+  position: relative;
+  display: inline-block;
+  background: $primaryblue;
+  width: $sidebar-width;
+  height: 100vh;
+  color: $white;
+  font-size: 12px;
+  box-shadow: 0px 0px 4px #222222;
 
-	@media (max-width: 500px) {
-		width: 100%;
-	}
+  @media (max-width: 500px) {
+    width: 100%;
+  }
 
-	.login-container {
-		background: $primaryblue;
-		padding: 50px 50px;
-		display: flex;
-		flex-direction: column;
+  .login-container {
+    background: $primaryblue;
+    padding: 50px 50px;
+    display: flex;
+    flex-direction: column;
 
-		span {
-			margin: 5px 0;
-		}
+    span {
+      margin: 5px 0;
+    }
 
-		.sign-in {
-			text-align: center;
-		}
-	}
+    .sign-in {
+      text-align: center;
+    }
+  }
 
-	.login-logo {
-		display: block;
-		margin: auto;
-		height: 170px;
-		margin-bottom: 40px;
-	}
+  .login-logo {
+    display: block;
+    margin: auto;
+    height: 170px;
+    margin-bottom: 40px;
+  }
 }

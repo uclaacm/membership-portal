@@ -1,7 +1,7 @@
-import 'jest';
+import "jest";
 
-describe('Jest Tests', () => {
-  test('Verify Tests Work', () => {
+describe("Jest Tests", () => {
+  test("Verify Tests Work", () => {
     expect(true).toBeTruthy();
   });
 });

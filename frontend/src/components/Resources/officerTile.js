@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 export default class OfficerTile extends React.Component {
   render() {
@@ -8,9 +8,9 @@ export default class OfficerTile extends React.Component {
       <div className="officer-tile">
         <img src={backgroundImage} />
         <div className="content">
-          { name && <span className="name">{name}</span> }
-          { position && <span className="position">{position}</span> }
-          { email && <span className="email">{email}</span> }
+          {name && <span className="name">{name}</span>}
+          {position && <span className="position">{position}</span>}
+          {email && <span className="email">{email}</span>}
         </div>
       </div>
     );

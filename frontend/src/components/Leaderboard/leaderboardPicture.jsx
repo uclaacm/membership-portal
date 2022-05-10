@@ -1,13 +1,11 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from "react";
+import PropTypes from "prop-types";
 
 class LeaderboardPicture extends React.Component {
   render() {
-    const {
-      picture, firstName, lastName, major, year, onChange,
-    } = this.props;
+    const { picture, firstName, lastName, major, year, onChange } = this.props;
 
-    const pict = picture || '/assets/images/unknown.png';
+    const pict = picture || "/assets/images/unknown.png";
     const profilePictureAsBackground = {
       backgroundImage: `url(${pict})`,
     };
@@ -23,7 +21,7 @@ class LeaderboardPicture extends React.Component {
 }
 
 LeaderboardPicture.propTypes = {
-  picture: PropTypes.string.isRequired,
+  picture: PropTypes.string,
   firstName: PropTypes.string.isRequired,
   lastName: PropTypes.string.isRequired,
   major: PropTypes.string.isRequired,

@@ -1,11 +1,11 @@
-import Config from 'config';
-import Storage from 'storage';
-import Immutable from 'immutable';
-import { Action } from 'reducers';
+import Config from "config";
+import Storage from "storage";
+import Immutable from "immutable";
+import { Action } from "reducers";
 
-/** ********************************************
- ** Constants                                **
- ******************************************** */
+/***********************************************
+ ** Constants                                 **
+ ***********************************************/
 
 const CHECK_IN_SUCCESS = Symbol();
 const CHECK_IN_ERROR = Symbol();
@@ -18,9 +18,9 @@ const defaultState = Immutable.fromJS({
   error: null,
 });
 
-/** ********************************************
- ** Check In States                          **
- ******************************************** */
+/***********************************************
+ ** Check In States                           **
+ ***********************************************/
 
 class State {
   static CheckIn(error, points) {
@@ -32,18 +32,18 @@ class State {
   }
 }
 
-/** ********************************************
- ** Actions                                  **
- ******************************************** */
+/***********************************************
+ ** Actions                                   **
+ ***********************************************/
 
-const CheckInto = attendanceCode => async (dispatch) => {
+const CheckInto = attendanceCode => async dispatch => {
   try {
     const response = await fetch(Config.API_URL + Config.routes.attendance.attend, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${Storage.get('token')}`,
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${Storage.get("token")}`,
       },
       body: JSON.stringify({ event: { attendanceCode } }),
     });
@@ -54,7 +54,7 @@ const CheckInto = attendanceCode => async (dispatch) => {
     }
 
     const data = await response.json();
-    if (!data) throw new Error('Empty response from server');
+    if (!data) throw new Error("Empty response from server");
     if (data.error) throw new Error(data.error.message);
 
     dispatch(State.CheckIn(null, data.event.attendancePoints));
@@ -65,25 +65,25 @@ const CheckInto = attendanceCode => async (dispatch) => {
   }
 };
 
-/** ********************************************
- ** Check In Reducer                         **
- ******************************************** */
+/***********************************************
+ ** Check In Reducer                          **
+ ***********************************************/
 
 const CheckIn = (state = defaultState, action) => {
   switch (action.type) {
     case CHECK_IN_SUCCESS:
-      return state.withMutations((val) => {
-        val.set('error', null);
-        val.set('success', true);
-        val.set('submitted', true);
-        val.set('numPoints', action.points);
+      return state.withMutations(val => {
+        val.set("error", null);
+        val.set("success", true);
+        val.set("submitted", true);
+        val.set("numPoints", action.points);
       });
 
     case CHECK_IN_ERROR:
-      return state.withMutations((val) => {
-        val.set('error', action.error);
-        val.set('success', false);
-        val.set('submitted', true);
+      return state.withMutations(val => {
+        val.set("error", action.error);
+        val.set("success", false);
+        val.set("submitted", true);
       });
 
     case CHECK_IN_RESET:
@@ -95,6 +95,5 @@ const CheckIn = (state = defaultState, action) => {
 };
 
 const ResetCheckIn = () => ({ type: CHECK_IN_RESET });
-export {
-  CheckIn, CheckInto, ResetCheckIn,
-};
+
+export { CheckIn, CheckInto, ResetCheckIn };

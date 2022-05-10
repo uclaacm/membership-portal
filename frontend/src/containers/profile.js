@@ -1,9 +1,9 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { replace } from 'react-router-redux';
+import React from "react";
+import { connect } from "react-redux";
+import { replace } from "react-router-redux";
 
-import { Action } from 'reducers';
-import ProfileComponent from 'components/Profile';
+import { Action } from "reducers";
+import ProfileComponent from "components/Profile";
 
 class Profile extends React.Component {
   constructor(props) {
@@ -51,13 +51,16 @@ class Profile extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   const profile = {
-    name: '', major: '', year: 0, points: 0,
+    name: "",
+    major: "",
+    year: 0,
+    points: 0,
   };
 
-  if (state.User.get('fetchSuccess')) {
-    const User = state.User.get('profile');
+  if (state.User.get("fetchSuccess")) {
+    const User = state.User.get("profile");
     profile.name = `${User.firstName} ${User.lastName}`;
     profile.major = User.major;
     profile.year = User.year;
@@ -66,14 +69,14 @@ const mapStateToProps = (state) => {
 
   return {
     profile,
-    activity: state.User.get('activity'),
-    fetchSuccess: state.User.get('fetchSuccess'),
-    updated: state.User.get('updated'),
-    updateSuccess: state.User.get('updateSuccess'),
-    updateError: state.User.get('error'),
-    authenticated: state.Auth.get('authenticated'),
-    isAdmin: state.Auth.get('isAdmin'),
-    activityError: state.User.get('activityError'),
+    activity: state.User.get("activity"),
+    fetchSuccess: state.User.get("fetchSuccess"),
+    updated: state.User.get("updated"),
+    updateSuccess: state.User.get("updateSuccess"),
+    updateError: state.User.get("error"),
+    authenticated: state.Auth.get("authenticated"),
+    isAdmin: state.Auth.get("isAdmin"),
+    activityError: state.User.get("activityError"),
   };
 };
 
@@ -81,11 +84,11 @@ const mapDispatchToProps = dispatch => ({
   fetchUser: () => {
     dispatch(Action.FetchUser());
   },
-  updateUser: (newprofile) => {
+  updateUser: newprofile => {
     dispatch(Action.UpdateUser(newprofile));
   },
   redirectHome: () => {
-    dispatch(replace('/'));
+    dispatch(replace("/"));
   },
   updateDone: () => {
     dispatch(Action.UserUpdateDone());

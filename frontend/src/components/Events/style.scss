@@ -2,57 +2,59 @@
 @import "./AdminEvents/style";
 @import "styles/vars";
 
-.hidden { display: none; }
+.hidden {
+  display: none;
+}
 
 .event-day-wrapper {
-    display: inline-block;
+  display: inline-block;
 }
 
 .events-dashboard {
-    margin-left: $sidebar-width;
-    box-sizing: padding-box;
-    padding: 30px;
-    overflow: visible;
-    transition: margin-left 0.125s ease-in-out;
+  margin-left: $sidebar-width;
+  box-sizing: padding-box;
+  padding: 30px;
+  overflow: visible;
+  transition: margin-left 0.125s ease-in-out;
 
-    .earlier-events-icon {
-        position: relative;
-        text-align: center;
-        cursor: pointer;
-        opacity: 0.5;
-        transition: 0.125s ease-in-out;
+  .earlier-events-icon {
+    position: relative;
+    text-align: center;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: 0.125s ease-in-out;
 
-        &:hover {
-            opacity: 1.0;
-        }
+    &:hover {
+      opacity: 1;
     }
+  }
+
+  .checkin-button {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10;
+  }
+
+  h1 {
+    margin-left: 20px;
+  }
+
+  @media (max-width: 700px) {
+    margin-left: 0px;
 
     .checkin-button {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 10;
+      top: inherit;
+      right: 30px;
+      bottom: 30px;
     }
 
-    h1 {
-        margin-left: 20px;
+    .earlier-events-icon {
+      margin-top: 50px;
     }
+  }
 
-    @media (max-width: 700px) {
-        margin-left: 0px;
-
-        .checkin-button {
-            top: inherit;
-            right: 30px;
-            bottom: 30px;
-        }
-
-        .earlier-events-icon {
-            margin-top: 50px;
-        }
-    }
-
-    @media (max-width: 425px) {
-        padding: 30px 20px;
-    }
+  @media (max-width: 425px) {
+    padding: 30px 20px;
+  }
 }

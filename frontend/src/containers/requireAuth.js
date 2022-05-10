@@ -1,6 +1,6 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { replace } from 'react-router-redux';
+import React from "react";
+import { connect } from "react-redux";
+import { replace } from "react-router-redux";
 
 export default function (ComposedComponent) {
   class Authentication extends React.Component {
@@ -22,12 +22,12 @@ export default function (ComposedComponent) {
   }
 
   const mapStateToProps = state => ({
-    authenticated: state.Auth.get('authenticated'),
+    authenticated: state.Auth.get("authenticated"),
   });
 
   const mapDispatchToProps = dispatch => ({
     redirectLogin: () => {
-      dispatch(replace('/login'));
+      dispatch(replace("/login"));
     },
   });
 

@@ -1,5 +1,4 @@
-import React from 'react';
-import Button from 'components/Button/index';
+import React from "react";
 
 export default class AdminEventCard extends React.Component {
   constructor(props) {

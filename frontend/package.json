@@ -8,7 +8,7 @@
     "test": "jest --config jest.config.json",
     "build": "NODE_ENV=production webpack -p --progress --color",
     "dev": "WEBPACK=true NODE_ENV=development webpack-dev-server --cache --progress --color --display detailed --mode development",
-    "lint": "eslint --fix --color 'src/**/*.js*' 'tests/**/*.js*' && prettier --write 'src/**/*.css' 'src/**/*.scss'"
+    "lint": "eslint --fix --color 'src/**/*.js*' 'tests/**/*.js*' && prettier --write 'src/**/*.js*' 'tests/**/*.js*' 'src/**/*.css' 'src/**/*.scss'"
   },
   "repository": {
     "type": "git",

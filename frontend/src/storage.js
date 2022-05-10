@@ -1,9 +1,8 @@
-const storageAvailable = (type) => {
+const storageAvailable = type => {
   try {
     const storage = window[type];
 
-
-    const x = '__storage_test__';
+    const x = "__storage_test__";
     storage.setItem(x, x);
     storage.removeItem(x);
     return true;
@@ -20,8 +19,8 @@ class CookieStore {
   static get(key) {
     if (!document.cookie || document.cookie.length === 0) return undefined;
     const cookies = {};
-    document.cookie.split(';').forEach((cookie) => {
-      cookies[cookie.split('=')[0].trim()] = cookie.split('=')[1].trim();
+    document.cookie.split(";").forEach(cookie => {
+      cookies[cookie.split("=")[0].trim()] = cookie.split("=")[1].trim();
     });
     return cookies[key];
   }
@@ -45,4 +44,4 @@ class LocalStore {
   }
 }
 
-export default (storageAvailable('localStorage') ? LocalStore : CookieStore);
+export default storageAvailable("localStorage") ? LocalStore : CookieStore;

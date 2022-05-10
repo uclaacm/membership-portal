@@ -1,166 +1,168 @@
 @import "styles/vars";
 
 .sidebar {
-	position: fixed;
-	top: 0;
-	left: 0;
-	bottom: 0;
-	z-index: 9;
-	overflow-y: scroll;
-	width: $sidebar-width;
-	height: auto;
-	min-height: 100%;
-	transition: left 0.125s ease-in-out;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 9;
+  overflow-y: scroll;
+  width: $sidebar-width;
+  height: auto;
+  min-height: 100%;
+  transition: left 0.125s ease-in-out;
 
-	background: $primaryblue;
-	color: $white;
+  background: $primaryblue;
+  color: $white;
 
-	.sidebar-container {
-		min-height: 680px;
-	}
+  .sidebar-container {
+    min-height: 680px; /* nit: not *needed* for admin view */
+  }
 
-	.side-tag {
-		text-align: center;
-		margin: 0px;
-		padding: 0px;
-	}
+  .side-tag {
+    text-align: center;
+    margin: 0px;
+    padding: 0px;
+  }
 
-	.profile-picture {
-		padding-top: 60px;
+  .profile-picture {
+    padding-top: 60px;
 
-		.profile-img {
-			height: 150px;
-			width: 150px;
-			margin: auto;
-			margin-bottom: 1.5 * $sidebar-vertical-spacing;
-			background-color: white;
-			border: 5px solid $white;
-			border-radius: 50%;
-			background-position: center center;
-			background-size: cover;
-		}
-	}
+    .profile-img {
+      height: 150px;
+      width: 150px;
+      margin: auto;
+      margin-bottom: 1.5 * $sidebar-vertical-spacing;
+      background-color: white;
+      border: 5px solid $white;
+      border-radius: 50%;
+      background-position: center center;
+      background-size: cover;
+    }
+  }
 
-	.org {
-		font-size: $org-fontsize;
-		color: $quaternary-color;
-	}
+  .org {
+    font-size: $org-fontsize;
+    color: $quaternary-color;
+  }
 
-	.username {
-		margin-top: 5px;
-		margin-bottom: 5px;
-		font-size: $username-fontsize;
-	}
+  .username {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-size: $username-fontsize;
+  }
 
-	.pos {
-		font-size: $pos-fontsize;
-		margin-bottom: 2*$sidebar-vertical-spacing;
-		color: $quaternary-color;
-	}
+  .pos {
+    font-size: $pos-fontsize;
+    margin-bottom: 2 * $sidebar-vertical-spacing;
+    color: $quaternary-color;
+  }
 
+  .navigation {
+    text-align: center;
 
-	.navigation {
-		text-align: center;
+    a.selected .navigation-tile {
+      background: $white;
+      box-shadow: 0 0px 0 0 #c0c0c0;
+      transform: translateY(4px);
+      .icon,
+      p {
+        color: $secondaryblue;
+      }
+    }
 
-		a.selected .navigation-tile {
-			background: $white;
-			box-shadow: 0 0px 0 0 #c0c0c0;
-			transform: translateY(4px);
-			.icon, p {
-				color: $secondaryblue;
-			}
-		}
+    .navigation-tile {
+      background: $secondaryblue;
+      width: 120.5px;
+      height: 115px;
+      border-radius: 5px;
+      background-color: $secondaryblue;
+      box-shadow: 0 4px 0 0 #2f46bc;
+      color: $white;
+      margin: 7px;
+      display: inline-block;
+      transition: 0.125s;
+      transition-timing-function: ease-in-out;
+      .icon {
+        height: 40px;
+        color: $white;
+        margin-top: 32px;
+      }
 
-		.navigation-tile {
-			background: $secondaryblue;
-			width: 120.5px;
-			height: 115px;
-			border-radius: 5px;
-			background-color: $secondaryblue;
-			box-shadow: 0 4px 0 0 #2F46BC;
-			color: $white;
-			margin: 7px;
-			display: inline-block;
-			transition: 0.125s;
-			transition-timing-function: ease-in-out;
-			.icon {
-				height: 40px;
-				color: $white;
-				margin-top: 32px;
-			}
+      &:hover {
+        background: $secondaryblue-dark;
+      }
 
-			&:hover {
-				background: $secondaryblue-dark;
-			}
+      &:active,
+      &.selected {
+        background: $white;
+        box-shadow: 0 0px 0 0 #c0c0c0;
+        transform: translateY(4px);
+        .icon,
+        p {
+          color: $secondaryblue;
+        }
+      }
+    }
+  }
 
-			&:active, &.selected {
-				background: $white;
-				box-shadow: 0 0px 0 0 #c0c0c0;
-				transform: translateY(4px);
-				.icon, p {
-					color: $secondaryblue;
-				}
-			}
-		}
-	}
+  .points-component {
+    position: fixed;
+    bottom: 0px;
+    width: $sidebar-width;
+    margin: 0 auto;
+    // padding-left: 25px;              //this is 10% of sidebar width I believe. There's some inline styling that must be accounted for too.. :(
+    background: $secondaryblue;
+    padding-top: 10px;
+    padding-bottom: 10px;
 
-	.points-component {
-		position: fixed;
-		bottom: 0px;
-		width: $sidebar-width;
-		margin: 0 auto;
-		// padding-left: 25px;              //this is 10% of sidebar width I believe. There's some inline styling that must be accounted for too.. :(
-		background: $secondaryblue;
-		padding-top: 10px;
-		padding-bottom: 10px;
+    .points-wrapper {
+      background: $secondaryblue;
+      padding-left: 25px;
+    }
 
-		.points-wrapper {
-			background: $secondaryblue;
-			padding-left: 25px;
-		}
+    .points-bar {
+      width: 250px;
+      height: 8px;
+      margin: 4px 0px;
+      position: relative;
+      border-radius: 4px;
+      background: $tertiary-color;
+    }
 
-		.points-bar {
-			width: 250px;
-			height: 8px;
-			margin: 4px 0px;
-			position: relative;
-			border-radius: 4px;
-			background: $tertiary-color;
-		}
+    .level-font {
+      font-size: 20px;
+    }
 
-		.level-font {
-			font-size: 20px;
-		}
+    .points-earned {
+      background: $white;
+      border-radius: 4px;
+      position: absolute;
+      display: inline-block;
+      height: 100%;
+      left: 0;
+    }
 
-		.points-earned {
-			background: $white;
-			border-radius: 4px;
-			position: absolute;
-			display: inline-block;
-			height: 100%;
-			left: 0;
-		}
+    .num-points {
+      display: block;
+      float: right;
+      margin-right: 25px; //this is 2*10% of sidebar width I believe
+    }
+  }
 
-		.num-points {
-			display: block;
-			float: right;
-			margin-right: 25px;             //this is 2*10% of sidebar width I believe
-		}
-	}
+  .leaderboard {
+    position: absolute;
+    bottom: 0px;
+    width: $sidebar-width;
+    border: 0px;
+    background: $secondary-color;
+    color: $white;
+    font-size: 12px;
+    height: 40px;
+    display: block;
+  }
 
-	.leaderboard {
-		position: absolute;
-		bottom: 0px;
-		width: $sidebar-width;
-		border: 0px;
-		background: $secondary-color;
-		color: $white;
-		font-size: 12px;
-		height: 40px;
-		display: block;
-	}
-
-	@media (max-width: 700px) {
-		left: -400px;
-	}
+  @media (max-width: 700px) {
+    left: -400px;
+  }
 }

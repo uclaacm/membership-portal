@@ -6,17 +6,11 @@
 
   .signout-action-button {
     margin: 6px;
-  }
-
-  .signout-action-button:first-child {
     margin-left: 0px;
   }
 
   .deleteevents-action-button {
     margin: 6px;
-  }
-
-  .deleteevents-action-button:first-child {
     margin-left: 0px;
   }
 
@@ -33,14 +27,24 @@
       }
     }
 
-    .control-panel-action-button {
-      margin: 6px;
+    .passwordResetBar {
+      display: flex;
+      align-items: center;
+      justify-content: start;
+
+      .passwordResetStatus {
+        margin-left: 18px;
+      }
     }
 
-    .control-panel-action-button:first-child {
+    .control-panel-action-button {
+      margin: 6px;
       margin-left: 0px;
     }
-    input[type="text"] {
+
+    input[type="text"],
+    input[type="password"],
+    input[type="email"] {
       display: inline-block;
       outline: none;
       border: none;
@@ -53,7 +57,8 @@
       font-size: 20px;
     }
 
-    input[type="text"]:focus {
+    input[type="text"]:focus,
+    input[type="password"]:focus {
       border-bottom: 2px solid #aaaaaa;
     }
 

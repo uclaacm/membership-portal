@@ -1,7 +1,7 @@
-import React from 'react';
-import Utils from 'utils';
-import { activityTypes } from './activity';
-import ActivitiesMonth from './activitiesMonth';
+import React from "react";
+import Utils from "utils";
+import { activityTypes } from "./activity";
+import ActivitiesMonth from "./activitiesMonth";
 
 export default class Activities extends React.Component {
   render() {
@@ -14,10 +14,11 @@ export default class Activities extends React.Component {
     while (i < activities.length) {
       const month = { date: activities[i].date, days: [] };
       while (i < activities.length && activities[i].date.month() === month.date.month()) {
-        if (month.days.length === 0 || activities[i].date.date() !== month.days[month.days.length - 1].date.date()) month.days.push({ date: activities[i].date, activities: [] });
+        if (month.days.length === 0 || activities[i].date.date() !== month.days[month.days.length - 1].date.date())
+          month.days.push({ date: activities[i].date, activities: [] });
         month.days[month.days.length - 1].activities.push(activities[i]);
 
-        if (activities[i].type !== 'MILESTONE') {
+        if (activities[i].type !== "MILESTONE") {
           totalPoints += activities[i].pointsEarned;
         } else {
           totalPoints = 0;
@@ -44,7 +45,12 @@ export default class Activities extends React.Component {
 
     return (
       <div className="activity-wrapper">
-        { months.slice().reverse().map((month, i) => <ActivitiesMonth key={month.date.toString()} month={month} />) }
+        {months
+          .slice()
+          .reverse()
+          .map((month, i) => (
+            <ActivitiesMonth key={month.date.toString()} month={month} />
+          ))}
       </div>
     );
   }

@@ -1,200 +1,202 @@
 @import "styles/vars";
 
-.hidden { display: none; }
+.hidden {
+  display: none;
+}
 
 .button-component {
-	display: inline-block;
+  display: inline-block;
 
-	button {
-		font-family: 'Lato', sans-serif;
-		box-sizing: border-box;
-		cursor: pointer;
-		display: block;
-		border: none;
-		outline: none;
+  button {
+    font-family: "Lato", sans-serif;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: block;
+    border: none;
+    outline: none;
 
-		color: $white;
-		text-align: center;
-		border-radius: $input-button-size;
-		font-size: $checkin-fontsize;
-		line-height: $input-button-size;
-		height: $input-button-size;
-		padding: 0px $sidebar-vertical-spacing+15px;
+    color: $white;
+    text-align: center;
+    border-radius: $input-button-size;
+    font-size: $checkin-fontsize;
+    line-height: $input-button-size;
+    height: $input-button-size;
+    padding: 0px $sidebar-vertical-spacing + 15px;
 
-		transition: 0.125s ease-in-out;
-	}
+    transition: 0.125s ease-in-out;
+  }
 
-	.button-inside {
-		display: flex;
-		align-items: center;
-	}
+  .button-inside {
+    display: flex;
+    align-items: center;
+  }
 
-	.button-icon {
-		display: inline-block;
-		text-align: center;
-		margin-right: 10px;
-	}
+  .button-icon {
+    display: inline-block;
+    text-align: center;
+    margin-right: 10px;
+  }
 
-	.button-custom-icon {
-		width: 18px;
-		height: 18px;
-	}
+  .button-custom-icon {
+    width: 18px;
+    height: 18px;
+  }
 
-	.small {
-		height: $input-button-size*(2/3);
-		line-height: $input-button-size*(2/3);
-		font-size: 14px;
-	}
+  .small {
+    height: $input-button-size * (2/3);
+    line-height: $input-button-size * (2/3);
+    font-size: 14px;
+  }
 
-	.small-text {
-		font-size: 14px;
-	}
+  .small-text {
+    font-size: 14px;
+  }
 
-	.blue {
-		background: $secondaryblue;
-		box-shadow: 0 4px 0 $primaryblue;
-	}
+  .blue {
+    background: $secondaryblue;
+    box-shadow: 0 4px 0 $primaryblue;
+  }
 
-	.blue-signup {
-		background: $secondaryblue;
-		box-shadow: 0 4px 0 #2E419D;
-	}
+  .blue-signup {
+    background: $secondaryblue;
+    box-shadow: 0 4px 0 #2e419d;
+  }
 
-	.green {
-		background: $light-green;
-		box-shadow: 0 4px 0 $dark-green;
-	}
+  .green {
+    background: $light-green;
+    box-shadow: 0 4px 0 $dark-green;
+  }
 
-	.red {
-		background: $light-red;
-		box-shadow: 0 4px 0 $dark-red;
-	}
+  .red {
+    background: $light-red;
+    box-shadow: 0 4px 0 $dark-red;
+  }
 
-	.gray {
-		background: $white;
-		box-shadow: 0 4px 0 $gray1;
-		color: $black;
-	}
+  .gray {
+    background: $white;
+    box-shadow: 0 4px 0 $gray1;
+    color: $black;
+  }
 
-	.disabled {
-		background: #CCCCCC;
-		color: white;
-		cursor: default;
-		-webkit-transform: translateY(4px);
-		transform: translateY(4px);
-		box-shadow: 0 0px 0 $gray1;
-	}
+  .disabled {
+    background: #cccccc;
+    color: white;
+    cursor: default;
+    -webkit-transform: translateY(4px);
+    transform: translateY(4px);
+    box-shadow: 0 0px 0 $gray1;
+  }
 
-	.blue:hover {
-		-webkit-transform: translateY(1px);
-		transform: translateY(1px);
-		box-shadow: 0 3px 0 $primaryblue;
-	}
+  .blue:hover {
+    -webkit-transform: translateY(1px);
+    transform: translateY(1px);
+    box-shadow: 0 3px 0 $primaryblue;
+  }
 
-	.blue-signup:hover {
-		-webkit-transform: translateY(1px);
-		transform: translateY(1px);
-		box-shadow: 0 3px 0 #2E419D;
-	}
+  .blue-signup:hover {
+    -webkit-transform: translateY(1px);
+    transform: translateY(1px);
+    box-shadow: 0 3px 0 #2e419d;
+  }
 
-	.green:hover {
-		-webkit-transform: translateY(1px);
-		transform: translateY(1px);
-		box-shadow: 0 3px 0 $dark-green;
-	}
+  .green:hover {
+    -webkit-transform: translateY(1px);
+    transform: translateY(1px);
+    box-shadow: 0 3px 0 $dark-green;
+  }
 
-	.red:hover {
-		-webkit-transform: translateY(1px);
-		transform: translateY(1px);
-		box-shadow: 0 3px 0 $dark-red;
-	}
+  .red:hover {
+    -webkit-transform: translateY(1px);
+    transform: translateY(1px);
+    box-shadow: 0 3px 0 $dark-red;
+  }
 
-	.gray:hover {
-		-webkit-transform: translateY(1px);
-		transform: translateY(1px);
-		box-shadow: 0 3px 0 $gray1;
-		color: $black;
-	}
+  .gray:hover {
+    -webkit-transform: translateY(1px);
+    transform: translateY(1px);
+    box-shadow: 0 3px 0 $gray1;
+    color: $black;
+  }
 
-	.blue:active {
-		-webkit-transform: translateY(4px);
-		transform: translateY(4px);
-		box-shadow: 0 0px 0 $primaryblue;
-	}
+  .blue:active {
+    -webkit-transform: translateY(4px);
+    transform: translateY(4px);
+    box-shadow: 0 0px 0 $primaryblue;
+  }
 
-	.blue-signup:active {
-		-webkit-transform: translateY(4px);
-		transform: translateY(4px);
-		box-shadow: 0 0px 0 #3167ae;
-	}
+  .blue-signup:active {
+    -webkit-transform: translateY(4px);
+    transform: translateY(4px);
+    box-shadow: 0 0px 0 #3167ae;
+  }
 
-	.green:active {
-		-webkit-transform: translateY(4px);
-		transform: translateY(4px);
-		box-shadow: 0 0px 0 $dark-green;
-	}
+  .green:active {
+    -webkit-transform: translateY(4px);
+    transform: translateY(4px);
+    box-shadow: 0 0px 0 $dark-green;
+  }
 
-	.red:active {
-		-webkit-transform: translateY(4px);
-		transform: translateY(4px);
-		box-shadow: 0 0px 0 $dark-red;
-	}
+  .red:active {
+    -webkit-transform: translateY(4px);
+    transform: translateY(4px);
+    box-shadow: 0 0px 0 $dark-red;
+  }
 
-	.gray:active {
-		-webkit-transform: translateY(4px);
-		transform: translateY(4px);
-		box-shadow: 0 0px 0 $gray1;
-		color: $black;
-	}
+  .gray:active {
+    -webkit-transform: translateY(4px);
+    transform: translateY(4px);
+    box-shadow: 0 0px 0 $gray1;
+    color: $black;
+  }
 
-	.event-button {
-		background: $secondaryblue;
-		width: $event-img-width;
-		height: 34px;
-		font-size: 14px;
-	}
+  .event-button {
+    background: $secondaryblue;
+    width: $event-img-width;
+    height: 34px;
+    font-size: 14px;
+  }
 
-	&.large-button {
-		button {
-			padding: 0 48px;
-			height: 50px;
-			line-height: 50px;
-		}
-	}
+  &.large-button {
+    button {
+      padding: 0 48px;
+      height: 50px;
+      line-height: 50px;
+    }
+  }
 
-	.collapsed {
-		width: 30px;
-		height: 35px;
-		padding: 0px;
-		min-width: 50px;
-		text-align: center;
+  .collapsed {
+    width: 30px;
+    height: 35px;
+    padding: 0px;
+    min-width: 50px;
+    text-align: center;
 
-		.button-icon {
-			margin: auto;
-			font-size: 1.3em;
-		}
+    .button-icon {
+      margin: auto;
+      font-size: 1.3em;
+    }
 
-		span {
-			display: none;
-		}
-	}
+    span {
+      display: none;
+    }
+  }
 
-	@media (max-width: 700px) {
-		.collapsible {
-			width: 50px;
-			height: 50px;
-			padding: 0px;
-			min-width: 60px;
-			text-align: center;
+  @media (max-width: 700px) {
+    .collapsible {
+      width: 50px;
+      height: 50px;
+      padding: 0px;
+      min-width: 60px;
+      text-align: center;
 
-			.button-icon {
-				margin: auto;
-				font-size: 1.3em;
-			}
+      .button-icon {
+        margin: auto;
+        font-size: 1.3em;
+      }
 
-			span {
-				display: none;
-			}
-		}
-	}
+      span {
+        display: none;
+      }
+    }
+  }
 }

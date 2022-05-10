@@ -1,6 +1,6 @@
-import React from 'react';
-import Utils from 'utils';
-import PointsBar from './pointsBar';
+import React from "react";
+import Utils from "utils";
+import PointsBar from "./pointsBar";
 
 export default class Points extends React.Component {
   render() {
@@ -11,14 +11,10 @@ export default class Points extends React.Component {
           <span className="Headline-2White">{currLevel.rank}</span>
           <PointsBar start={currLevel.startsAt} points={this.props.points} end={nextLevel ? nextLevel.startsAt : 0} />
           <span className="Body-2White">
-Lv.
+            Lv.
             {currLevelNumber + 1}
           </span>
-          <span className="num-points Body-2White">
-            {this.props.points}
-            {' '}
-points
-          </span>
+          <span className="num-points Body-2White">{this.props.points} points</span>
         </div>
       </div>
     );

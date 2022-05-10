@@ -1,6 +1,6 @@
-import Config from 'config';
+import Config from "config";
 
-const getLevel = (points) => {
+const getLevel = points => {
   // yes, this could be more efficient with binary search
   // however we wont have more than like 10 levels...
   let i = 1;
