@@ -89,7 +89,6 @@ export default class AdminAddEvent extends React.Component {
             <img
               src={this.state.event.cover}
               id="event-cover-img"
-              onError={() => (document.getElementById("event-cover-img").style.display = "none")}
             />
           </div>
           <div className="editor">
