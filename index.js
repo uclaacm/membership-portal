@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const app = require("./app");
 
 const log = app.logger;
-const server = express();
+let server = express();
 
 // enable CORS in development
 if (app.config.isDevelopment) {
@@ -56,21 +56,23 @@ server.use(app.error.notFoundHandler);
 if (cluster.isMaster) {
   // perform DB initialization once
   app.db.setup(true, app.config.isDevelopment);
+  if (app.config.isProduction) {
+    log.debug("Creating %d cluster workers...", app.config.numCPUs);
+    for (let i = 0; i < app.config.numCPUs; i++) cluster.fork();
 
-  log.debug("Creating %d cluster workers...", app.config.numCPUs);
-  for (let i = 0; i < app.config.numCPUs; i++) cluster.fork();
-
-  cluster.on("exit", (worker, code, signal) => {
-    log.info(
-      "Worker PID %s died (%s). Restarting...",
-      worker.process.pid,
-      signal
-    );
-    cluster.fork();
-  });
-} else {
+    cluster.on("exit", (worker, code, signal) => {
+      log.info(
+        "Worker PID %s died (%s). Restarting...",
+        worker.process.pid,
+        signal
+      );
+      cluster.fork();
+    });
+  }
+} 
+if (!cluster.isMaster || app.config.isDevelopment) {
   // Start the server on each worker
-  server.listen(app.config.port, app.config.host, () => {
+  server = server.listen(app.config.port, app.config.host, () => {
     log.info(
       "Started server %s on port %d, PID: %d",
       app.config.host,

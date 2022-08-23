@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index",
     "dev": "nodemon -L -e js -i node_modules -i .git -V index.js",
-    "test": "jest --config jest.config.json",
+    "test": "jest --config jest.config.json --verbose",
     "lint": "prettier --write './**/*.js*'"
   },
   "repository": {
@@ -55,6 +55,7 @@
     "husky": "^1.3.1",
     "jest": "^23.6.0",
     "lint-staged": "^7.3.0",
-    "nodemon": "^1.18.9"
+    "nodemon": "^1.18.9",
+    "supertest": "^6.2.4"
   }
 }

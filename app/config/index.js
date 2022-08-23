@@ -11,8 +11,8 @@ module.exports = {
   isProduction: env === "production",
   isDevelopment: env !== "production",
 
-  host: process.env.HOST,
-  port: process.env.PORT,
+  host: process.env.HOST || "localhost",
+  port: process.env.PORT || 8080,
 
   // determines the amount of processes to run that handle API requests
   numCPUs: process.env.NUM_WORKERS || require("os").cpus().length,
