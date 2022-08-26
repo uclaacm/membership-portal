@@ -1,13 +1,13 @@
-const Sequelize = require("sequelize");
-const cls = require("continuation-local-storage");
+const Sequelize = require('sequelize');
+const cls = require('continuation-local-storage');
 
-const logger = require("../logger");
-const config = require("../config");
-const error = require("../error");
-const devSetup = require("./dev-setup");
+const logger = require('../logger');
+const config = require('../config');
+const error = require('../error');
+const devSetup = require('./dev-setup');
 
 // The transaction namespace to use for transactions
-const transactionNamespace = cls.createNamespace("default-transaction-ns");
+const transactionNamespace = cls.createNamespace('default-transaction-ns');
 Sequelize.useCLS(transactionNamespace);
 
 // https://stackoverflow.com/questions/65417340/docker-compose-postgres-restart-after-running-scripts-in-docker-entrypoint-initd/65417566#65417566
@@ -17,18 +17,18 @@ const db = new Sequelize(
   config.database.user,
   config.database.password,
   {
-    dialect: "postgres",
+    dialect: 'postgres',
     host: config.database.host,
     logging: config.isDevelopment ? logger.debug : false, // false as a function
-  }
+  },
 );
 
 // Create schemas
-const User = require("./schema/user")(Sequelize, db);
-const Event = require("./schema/event")(Sequelize, db);
-const Activity = require("./schema/activity")(Sequelize, db);
-const Attendance = require("./schema/attendance")(Sequelize, db);
-const Secret = require("./schema/secret")(Sequelize, db);
+const User = require('./schema/user')(Sequelize, db);
+const Event = require('./schema/event')(Sequelize, db);
+const Activity = require('./schema/activity')(Sequelize, db);
+const Attendance = require('./schema/attendance')(Sequelize, db);
+const Secret = require('./schema/secret')(Sequelize, db);
 
 /**
  * DB setup function to sync tables and add admin if doesn't exist
@@ -36,29 +36,27 @@ const Secret = require("./schema/secret")(Sequelize, db);
 const setup = (force, dev) => {
   db.authenticate()
     .then(() => {
-      console.log("Connection has been established successfully.");
+      console.log('Connection has been established successfully.');
     })
     .catch((err) => {
-      console.error("Unable to connect to the database:", err);
+      console.error('Unable to connect to the database:', err);
     });
   return (
     dev
       ? db.sync({ force }).then(() => devSetup(User, Event))
       : db.sync({ force })
   ).then(() => {
-    Secret.generateHash("password").then((hash) =>
-      Secret.create({ name: "one-click", hash: hash })
-    );
+    Secret.generateHash('password').then(hash => Secret.create({ name: 'one-click', hash }));
     User.findOrCreate({
-      where: { email: "acm@g.ucla.edu" },
+      where: { email: 'acm@g.ucla.edu' },
       defaults: {
-        email: "acm@g.ucla.edu",
-        accessType: "ADMIN",
-        state: "ACTIVE",
-        firstName: "ACM",
-        lastName: "Admin",
+        email: 'acm@g.ucla.edu',
+        accessType: 'ADMIN',
+        state: 'ACTIVE',
+        firstName: 'ACM',
+        lastName: 'Admin',
         year: 4,
-        major: "Computer Science",
+        major: 'Computer Science',
       },
     });
   });
@@ -74,11 +72,13 @@ const errorHandler = (err, req, res, next) => {
   if (!err || !(err instanceof Sequelize.Error)) return next(err);
   if (err instanceof Sequelize.ValidationError) {
     const message = `Validation Error: ${err.errors
-      .map((e) => e.message)
-      .join("; ")}`;
+      .map(e => e.message)
+      .join('; ')}`;
     return next(new error.HTTPError(err.name, 422, message));
   }
   return next(new error.HTTPError(err.name, 500, err.message));
 };
 
-module.exports = { db, User, Event, Activity, Attendance, Secret, setup, errorHandler };
+module.exports = {
+  db, User, Event, Activity, Attendance, Secret, setup, errorHandler,
+};

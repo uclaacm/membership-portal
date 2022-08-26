@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index",
     "dev": "nodemon -L -e js -i node_modules -i .git -V index.js",
-    "test": "jest --config jest.config.json --verbose",
+    "test": "export TESTING=true && jest --config jest.config.json --detectOpenHandles",
     "lint": "prettier --write './**/*.js*'"
   },
   "repository": {
