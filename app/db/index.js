@@ -59,6 +59,7 @@ const setup = (force, dev) => {
         major: 'Computer Science',
       },
     });
+    return null;
   });
 };
 

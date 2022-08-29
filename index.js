@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const app = require('./app');
 
 const log = app.logger;
-let server = express();
+const server = express();
 
 // enable CORS in development
 if (app.config.isDevelopment) {
@@ -55,9 +55,9 @@ server.use(app.error.notFoundHandler);
 // perform DB initialization once
 const setup = app.db.setup(true, app.config.isDevelopment);
 
-// Create workers
-if (cluster.isMaster) {
-  if (!app.config.isTesting) {
+if (require.main == module) {
+  // Create workers
+  if (cluster.isMaster) {
     log.debug('Creating %d cluster workers...', app.config.numCPUs);
     for (let i = 0; i < app.config.numCPUs; i++) cluster.fork();
 
@@ -67,23 +67,30 @@ if (cluster.isMaster) {
         worker.process.pid,
         signal,
       );
+      console.log("FORKING");
       cluster.fork();
     });
   }
+  if (!cluster.isMaster) {
+    // Start the server on each worker
+    server.listen(app.config.port, app.config.host, async () => {
+      log.info(
+        'Started server %s on port %d, PID: %d',
+        app.config.host,
+        app.config.port,
+        process.pid,
+      );
+    });
+  }
 }
-if (!cluster.isMaster || app.config.isTesting) {
-  // Start the server on each worker
-  server = server.listen(app.config.port, app.config.host, () => {
+else {
+  let HTTPserver = server.listen(app.config.port, app.config.host, () => {
     log.info(
-      'Started server %s on port %d, PID: %d',
+      'Started TEST server %s on port %d, PID: %d',
       app.config.host,
       app.config.port,
       process.pid,
     );
   });
-}
-
-// For testing purposes
-if (app.config.isTesting) {
-  module.exports = { server, setup };
+  module.exports = { server: HTTPserver, setup };
 }
