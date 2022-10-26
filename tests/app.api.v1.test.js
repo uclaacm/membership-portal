@@ -153,6 +153,6 @@ describe('User Tests', () => {
       expect(activityResponse.statusCode).toBe(401);
     });
 
-  })
+  });
 
 });
