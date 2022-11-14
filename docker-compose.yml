@@ -1,0 +1,41 @@
+version: '3.2'
+services:
+  # https://stackoverflow.com/questions/65417340/docker-compose-postgres-restart-after-running-scripts-in-docker-entrypoint-initd/65417566#65417566
+  # https://docs.docker.com/compose/startup-order/
+  postgres:
+    image: postgres:9.6-alpine
+    ports:
+      - "5432" # 5432:5432
+    environment:
+      # POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      # POSTGRES_DB: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ../
+      dockerfile: membership-portal/dev.Dockerfile
+    volumes:
+      - ../:/var/www
+      - /var/www/membership-portal/node_modules
+    ports:
+      - "8080:8080"
+    links:
+      - postgres
+    environment:
+      - PORT=8080
+      - HOST=0.0.0.0
+      - PG_HOST=postgres
+      - PG_USER=postgres
+      - PG_PASSWORD=password
+      - PG_PORT=5432
+      - PG_DATABASE=postgres
+      - GOOGLE_API_KEY=
+      - GOOGLE_AUTH_DOMAIN=
+      - GOOGLE_CLIENT_ID=913307270840-751ad0psdu1q2a7m81np30g062osgpp5.apps.googleusercontent.com
+      - NODE_ENV=development
+    
+volumes:
+  postgres_data:

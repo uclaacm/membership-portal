@@ -1,8 +1,7 @@
 APP_NAME=membership-portal
 ECR_URL=527059199351.dkr.ecr.us-west-1.amazonaws.com
 
-default:
-	docker-compose build
+default: build
 	docker-compose up
 
 ecr-login:
@@ -17,7 +16,8 @@ ash:
 	docker run -v $(pwd):/app -p "8080:8080" $(APP_NAME) /bin/ash
 
 build:
-	docker build -t $(APP_NAME) .
+	docker-compose build
+	touch build
 
 run:
 	docker run -p "8080:8080" $(APP_NAME)

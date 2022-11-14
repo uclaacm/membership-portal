@@ -121,7 +121,7 @@ describe('User Tests', () => {
     });
 
     test('Unauthorized update User info', async () => {
-      const patchResponse = await request(server).patch(route('user')).auth;
+      const patchResponse = await request(server).patch(route('user')).auth();
       expect(patchResponse.error).toBeTruthy();
       expect(patchResponse.statusCode).toBe(401);
     });
