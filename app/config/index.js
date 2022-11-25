@@ -11,7 +11,6 @@ const env = process.env.NODE_ENV || 'development';
 module.exports = {
   isProduction: env === 'production',
   isDevelopment: env !== 'production',
-  isTesting: process.env.TESTING === 'true',
 
   host: process.env.HOST || 'localhost',
   port: process.env.PORT || 8080,

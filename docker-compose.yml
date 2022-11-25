@@ -14,9 +14,37 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   backend:
+    profiles:
+      - dev
     build:
       context: ../
       dockerfile: membership-portal/dev.Dockerfile
+    volumes:
+      - ../:/var/www
+      - /var/www/membership-portal/node_modules
+    ports:
+      - "8080:8080"
+    links:
+      - postgres
+    environment:
+      - PORT=8080
+      - HOST=0.0.0.0
+      - PG_HOST=postgres
+      - PG_USER=postgres
+      - PG_PASSWORD=password
+      - PG_PORT=5432
+      - PG_DATABASE=postgres
+      - GOOGLE_API_KEY=
+      - GOOGLE_AUTH_DOMAIN=
+      - GOOGLE_CLIENT_ID=913307270840-751ad0psdu1q2a7m81np30g062osgpp5.apps.googleusercontent.com
+      - NODE_ENV=development
+
+  test-backend:
+    profiles:
+      - test
+    build:
+      context: ../
+      dockerfile: membership-portal/test.Dockerfile
     volumes:
       - ../:/var/www
       - /var/www/membership-portal/node_modules
