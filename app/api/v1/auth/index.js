@@ -6,7 +6,6 @@ const { User, Activity } = require("../../../db");
 
 const router = express.Router();
 const { OAuth2Client } = require("google-auth-library");
-const { times } = require("underscore");
 
 const client = new OAuth2Client(config.google.clientId);
 
@@ -167,6 +166,7 @@ const authenticated = (req, res, next) => {
         req.user = user;
       })
       .then(next)
+      .catch(next);
   });
 };
 
