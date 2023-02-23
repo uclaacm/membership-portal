@@ -1,5 +1,6 @@
 import { server, setup } from '..';
 import request from 'supertest';
+import { createNewUser, createUserToken, loginFromTicket } from '../app/api/v1/auth';
 
 const { User, Activity } = require('../app/db');
 const config = require('../app/config');
@@ -48,37 +49,40 @@ describe('Auth Tests', () => {
     expect(authResponse.statusCode).toBe(500);
   });
 
+  test('Expect ticket to create new user', async () => {
+    const mockTicket = {
+      getPayload: () => {
+        return {
+          given_name: "LoginTest", 
+          family_name: "Tester", 
+          email: "fakeemail@g.ucla.edu", 
+          picture: "fakePicture", 
+          googleId: "fakeGoogleId"
+        };
+      }
+    };
+    const response = await loginFromTicket(mockTicket);
+    expect(response).toBeDefined();
+    console.log(response)
+    expect(response.error).toBeFalsy();
+    expect(response.user).toBeDefined();
+    expect(response.user.firstName).toBe("LoginTest");
+    expect(response.token).toBeDefined();
+
+    await User.findByEmail("fakeemail@g.ucla.edu").then((user) => user.destroy());
+  });
+
 });
 
 
 describe('User Tests', () => {
-
-  //TODO: This should be extracted from auth
-  const getJWTToken = async (user) => {
-    return await new Promise((res, rej) => jwt.sign(
-      {
-        uuid: user.getDataValue('uuid'),
-        admin: user.isAdmin(),
-        superAdmin: user.isSuperAdmin(),
-        registered: !user.isPending(),
-      },
-      config.session.secret,
-      { expiresIn: 3600 },
-      (err, jwt_token) => {
-        if (err) rej(err);
-        Activity.accountLoggedIn(user.uuid);
-        res(jwt_token);
-      },
-    ));
-  }
-
   let testUser;
   let testAdmin; //TODO: implement test admin user
   let testPendingUser; //TODO: implement test pending user
   let testToken;
 
   beforeEach(async () => {
-    testUser = await User.create({
+    testUser = await createNewUser({
       email: "testuser@testemail.com",
       firstName: "TEST_FIRST_NAME",
       lastName: "TEST_LAST_NAME",
@@ -87,17 +91,20 @@ describe('User Tests', () => {
       year: 5,
       major: "Undeclared",
     });
-    Activity.accountCreated(testUser.uuid)
-    testToken = await getJWTToken(testUser);
+    await Activity.accountLoggedIn(testUser.uuid);
+    testToken = await createUserToken(testUser)
+      .catch((err) => {throw err});
   });
 
   afterEach(async () => {
-    testUser.destroy();
+    await testUser.destroy();
     testToken = undefined;
   });
 
 
   test('Get User info', async () => {
+    expect(testUser).toBeDefined();
+    expect(testToken).toBeDefined();
     const userResponse = await request(server).get(route('user')).auth(testToken, { type: 'bearer' });
     expect(userResponse.error).toBeFalsy();
 
