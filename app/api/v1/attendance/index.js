@@ -66,11 +66,11 @@ router.route("/attend").post((req, res, next) => {
                     "You have already attended this event!"
                   );
 
-                // simulaneously execute three promises
+                // simultaneously execute three promises
                 return Promise.all([
                   // mark the event as attended by the user
                   Attendance.attendEvent(req.user.uuid, event.uuid),
-                  // add an antry for this attendance in the user's activity
+                  // add an entry for this attendance in the user's activity
                   Activity.attendedEvent(
                     req.user.uuid,
                     event.title,

@@ -1,42 +1,44 @@
 # membership-portal 
 
-The ACM Membership Portal
+The ACM Membership Portal repo contains the backend for the ACM Membership Portal website.
 
+### Overview
+This repo uses the following main technologies:
+* ExpressJS
+* Postgres
+* GoogleAuth
+* Docker (for development)
+* Jest (for testing)
+
+The backend source code can be found in the 'app' directory.
+The routes for the backend are found in 'app/api/v1'.
+The unit tests can be found in the 'tests' directory.
 
 ### Prerequisites
-
-You must have either Docker or Vagrant installed and the repository cloned.
-
-### Setup (Vagrant)
-
-If you don't want to use vagrant and simply want to deploy with Docker, you can skip this section.
-
-The Vagrantfile is setup to include all the system dependencies, including Docker. Simply run these commands and the virtual machine will be completely set up.
-
-```bash
-user@local:~/membership-portal$ vagrant up --provision
-user@local:~/membership-portal$ vagrant ssh
-vagrant@acm:~$ cd /vagrant
-```
-
-### Setup (App)
-
-The very first time you deploy, you need to set up the environment:
-
-```bash
-$ make setup
-```
+To run this repo for development or testing, you need to have Docker installed.
 
 ### Development
+Development mode is where you should code and test new features.
+In development mode, a docker container for the database and the backend API are created and ran.
+Any saved changes to a file will automatically recompile the server code.
 
 To run in development:
-
 ```Bash
 $ make
 ```
 
-This command will create and up the database in addition to the backend API.
+### Testing
+
+To run unit tests:
+```Bash
+$ make test
+```
+This command will create and run the database and run all the unit tests.
 
 ### Accessing the Server
 
 The server runs on port `8080`.
+
+You can test that the server is running by going to `http://localhost:8080/api/v1/health`.
+If the server is running on a computer that is not your development computer, the address will be `http:<IP ADDRESS>:8080/api/v1/health`,
+where IP ADDRESS is the address of the server.

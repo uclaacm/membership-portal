@@ -1,5 +1,6 @@
-const fs = require("fs");
-const env = process.env.NODE_ENV || "development";
+const fs = require('fs');
+
+const env = process.env.NODE_ENV || 'development';
 
 /**
  * Application configuration
@@ -8,20 +9,20 @@ const env = process.env.NODE_ENV || "development";
  * to avoid hardcoding and make changing runtimes and updating the app easy
  */
 module.exports = {
-  isProduction: env === "production",
-  isDevelopment: env !== "production",
+  isProduction: env === 'production',
+  isDevelopment: env !== 'production',
 
-  host: process.env.HOST,
-  port: process.env.PORT,
+  host: process.env.HOST || 'localhost',
+  port: process.env.PORT || 8080,
 
   // determines the amount of processes to run that handle API requests
-  numCPUs: process.env.NUM_WORKERS || require("os").cpus().length,
+  numCPUs: process.env.NUM_WORKERS || require('os').cpus().length,
 
   google: {
     apiKey: process.env.GOOGLE_API_KEY,
     authDomain: process.env.GOOGLE_AUTH_DOMAIN,
     clientId: process.env.GOOGLE_CLIENT_ID,
-    hostedDomain: "g.ucla.edu",
+    hostedDomain: 'g.ucla.edu',
   },
 
   // primary database connection information
@@ -35,11 +36,11 @@ module.exports = {
 
   // session secret for signing token (warning: assumes the file exists)
   session: {
-    secret: fs.readFileSync("app/config/SESSION_SECRET").toString().trim(),
+    secret: fs.readFileSync('app/config/SESSION_SECRET').toString().trim(),
   },
 
   // logging level
   logging: {
-    level: "info",
+    level: 'info',
   },
 };
