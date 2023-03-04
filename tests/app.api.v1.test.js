@@ -1,10 +1,9 @@
 import { server, setup } from '..';
 import request from 'supertest';
-import { createNewUser, createUserToken, loginFromTicket } from '../app/api/v1/auth';
 
+const { createNewUser, createUserToken, GoogleLogin } = require('../app/api/v1/auth/LoginManager');
 const { User, Activity } = require('../app/db');
 const config = require('../app/config');
-const jwt = require('jsonwebtoken');
 
 const API_ROUTE = '/app/api/v1/';
 const route = name => API_ROUTE + name;
@@ -50,26 +49,34 @@ describe('Auth Tests', () => {
   });
 
   test('Expect ticket to create new user', async () => {
-    const mockTicket = {
-      getPayload: () => {
-        return {
-          given_name: "LoginTest", 
-          family_name: "Tester", 
-          email: "fakeemail@g.ucla.edu", 
-          picture: "fakePicture", 
-          googleId: "fakeGoogleId"
-        };
-      }
-    };
-    const response = await loginFromTicket(mockTicket);
-    expect(response).toBeDefined();
-    console.log(response)
-    expect(response.error).toBeFalsy();
-    expect(response.user).toBeDefined();
-    expect(response.user.firstName).toBe("LoginTest");
-    expect(response.token).toBeDefined();
-
-    await User.findByEmail("fakeemail@g.ucla.edu").then((user) => user.destroy());
+    try {
+      const mockTicket = {
+        getPayload: () => {
+          return {
+            given_name: "LoginTest", 
+            family_name: "Tester", 
+            email: "fakeemail@g.ucla.edu", 
+            picture: "fakePicture", 
+            googleId: "fakeGoogleId"
+          };
+        }
+      };
+      const login = new GoogleLogin(mockTicket);
+      
+      await login.login();
+      expect(login.loginIsValid()).toBeTruthy();
+      expect(login.user).toBeDefined();
+      expect(login.user.firstName).toBe("LoginTest");
+      expect(login.jwt).toBeDefined();
+      
+      const user = await User.findByEmail("fakeemail@g.ucla.edu");
+      expect(user).toBeDefined();
+    } finally {
+      await User.findByEmail("fakeemail@g.ucla.edu").then((user) => {
+        if (user)
+          user.destroy();
+      });
+    }
   });
 
 });

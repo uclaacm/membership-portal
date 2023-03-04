@@ -77,6 +77,7 @@ router.get("/activity", (req, res, next) => {
       res.json({ error: null, activity: activity.map((a) => a.getPublic()) });
     })
     .catch(next);
+  return null;
 });
 
 /**
