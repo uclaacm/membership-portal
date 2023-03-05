@@ -64,6 +64,7 @@ services:
       - GOOGLE_AUTH_DOMAIN=
       - GOOGLE_CLIENT_ID=913307270840-751ad0psdu1q2a7m81np30g062osgpp5.apps.googleusercontent.com
       - NODE_ENV=development
+      - BLUEBIRD_WARNINGS=0
     
 volumes:
   postgres_data:
