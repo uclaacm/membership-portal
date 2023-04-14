@@ -408,3 +408,96 @@ describe('Test Get Events', () => {
     expect(event.events[0].title).toBe('Intro to React');
   });
 });
+
+
+describe('Test Post Events', () => {
+  let user;
+  let adminUser;
+  let pendingUser;
+  let userToken;
+  let pendingToken;
+  let adminToken;
+
+  beforeAll(async () => {
+    user = await createNewUser({
+      email: 'testuser@testemail.com',
+      firstName: 'USER_FIRST_NAME',
+      lastName: 'USER_LAST_NAME',
+      accessType: 'STANDARD',
+      state: 'ACTIVE',
+      year: 5,
+      major: 'Undeclared',
+    });
+    await Activity.accountLoggedIn(user.uuid);
+    userToken = await createUserToken(user)
+      .catch((err) => { throw err; });
+
+    pendingUser = await createNewUser({
+      email: 'testuserpending@testemail.com',
+      firstName: 'PENDING_FIRST_NAME',
+      lastName: 'PENDING_LAST_NAME',
+      accessType: 'STANDARD',
+      state: 'PENDING',
+      year: 5,
+      major: 'Undeclared',
+    });
+    await Activity.accountLoggedIn(pendingUser.uuid);
+    pendingToken = await createUserToken(pendingUser)
+      .catch((err) => { throw err; });
+
+    adminUser = await createNewUser({
+      email: 'testadmin@testemail.com',
+      firstName: 'ADMIN_FIRST_NAME',
+      lastName: 'ADMIN_LAST_NAME',
+      accessType: 'ADMIN',
+      state: 'ACTIVE',
+      year: 5,
+      major: 'Undeclared',
+    });
+    await Activity.accountLoggedIn(adminUser.uuid);
+    adminToken = await createUserToken(adminUser)
+      .catch((err) => { throw err; });
+  });
+
+  afterAll(async () => {
+    await user.destroy();
+    userToken = undefined;
+  });
+
+  test('Bad UUID', () => {});
+
+  test('Undefined event data', () => {});
+
+  test('Bad start date', () => {});
+
+  test('Bad end date', () => {});
+
+  test('Invalid start and end date', () => {});
+
+  test('Invalid event data', () => {});
+
+  test('Invalid event organization', () => {});
+
+  test('Invalid event thumbnail', () => {});
+
+  test('Invalid cover image', () => {});
+
+  test('Invalid title', () => {});
+
+  test('Invalid location', () => {});
+
+  test('Invalid event link', () => {});
+
+  test('Invalid event attendance code', () => {});
+
+  test('Invalid event attendance points', () => {});
+
+  test("post event as Pending User", () => {});
+
+  test('Post event as User', () => {});
+
+  test('Post event as Admin', () => {});
+
+  test('Multiple post calls', () => {});
+
+});

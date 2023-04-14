@@ -2,10 +2,10 @@ APP_NAME=membership-portal
 ECR_URL=527059199351.dkr.ecr.us-west-1.amazonaws.com
 
 default: build
-	docker compose --profile dev up
+	docker-compose --profile dev up
 
 test: build
-	docker compose --profile test up --abort-on-container-exit
+	docker-compose --profile test up --abort-on-container-exit
 
 ecr-login:
 	$(shell aws ecr get-login --no-include-email --region us-west-1)
