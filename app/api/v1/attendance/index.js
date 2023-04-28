@@ -28,6 +28,8 @@ router.route("/:uuid?").get((req, res, next) => {
   }
 });
 
+// TODO: refactor this and write test cases
+
 /**
  * Record that the user attended an event
  */

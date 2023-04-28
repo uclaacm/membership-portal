@@ -94,6 +94,7 @@ router
    */
   .post((req, res, next) => {
     // should this be "!" ?
+    // probably should remove the uuid part
     if (req.params.uuid || !req.body.event) return next(new error.BadRequest());
 
     if (
