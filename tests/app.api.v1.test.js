@@ -16,6 +16,7 @@ afterAll(() => {
   server.close();
 });
 
+// TODO: figure out a way to separate tests into different files
 
 describe('Health Tests', () => {
   test('Should respond with correct properties and status', async () => {
@@ -761,5 +762,9 @@ describe('Test Patch Events', () => {
   test('Bad event start date', async () => {});
 
   test('Bad event end date', async () => {});
+
+});
+
+describe("Test attend event", () => {
 
 });

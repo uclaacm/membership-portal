@@ -28,7 +28,7 @@ router.route("/:uuid?").get((req, res, next) => {
   }
 });
 
-// TODO: refactor this and write test cases
+// TODO: refactor? this and write test cases
 
 /**
  * Record that the user attended an event
@@ -59,7 +59,7 @@ router.route("/attend").post((req, res, next) => {
             isolationLevel:
               Sequelize.Transaction.ISOLATION_LEVELS.REPEATABLE_READ,
           },
-          (transaction) => {
+          (transaction) => { // TODO: is this even using the transaction??
             // check if the user has already attended this event
             return Attendance.userAttendedEvent(req.user.uuid, event.uuid).then(
               (attended) => {
