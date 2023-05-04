@@ -46,6 +46,7 @@ const setup = (force, dev) => {
       ? db.sync({ force }).then(() => devSetup(User, Event))
       : db.sync({ force })
   ).then(() => {
+    // TODO: Don't use 'password' as the admin password
     Secret.generateHash('password').then(hash => Secret.create({ name: 'one-click', hash }));
     User.findOrCreate({
       where: { email: 'acm@g.ucla.edu' },

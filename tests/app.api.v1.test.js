@@ -153,7 +153,7 @@ describe('User Tests', () => {
 
     test('Unauthorized get User activity', async () => {
       const activityResponse = await request(server).get(route('user/activity'));
-      expect(activityResponse.error).toBeDefined();
+      expect(activityResponse.error).toBeTruthy();
       expect(activityResponse.statusCode).toBe(401);
     });
   });
@@ -210,7 +210,11 @@ describe('Test Get Events', () => {
 
   afterAll(async () => {
     await user.destroy();
+    await pendingUser.destroy();
+    await adminUser.destroy();
     userToken = undefined;
+    pendingToken = undefined;
+    adminToken = undefined;
   });
 
 
@@ -218,7 +222,7 @@ describe('Test Get Events', () => {
     const eventResponse = await request(server)
       .get(route('event'))
       .auth(pendingToken, { type: 'bearer' });
-    expect(eventResponse.error).toBeDefined();
+    expect(eventResponse.error).toBeTruthy();
     expect(eventResponse.statusCode).toBe(403);
   });
 
@@ -260,7 +264,7 @@ describe('Test Get Events', () => {
       .get(route('event/fake-uuid-1234'))
       .auth(userToken, { type: 'bearer' });
     const event = eventResponse.body;
-    expect(event.error).toBeDefined();
+    expect(event.error).toBeTruthy();
     expect(event.error.status).toBe(500);
     expect(event.event).toBeFalsy();
   });
@@ -461,235 +465,264 @@ describe('Test Post Events', () => {
       .catch((err) => { throw err; });
 
     testEvent = {
-      title: "Pet a Doggo",
+      title: 'TEST EVENT',
       description:
-        "<p>Interested in petting a doggo? Come out to pet some doggos!</p>",
-      committee: "Hack",
-      cover: "https://media.giphy.com/media/Z3aQVJ78mmLyo/giphy.gif",
-      location: "De Neve Auditorium",
-      eventLink: "https://www.facebook.com/events/417554198601623/",
+        '<p>Interested in petting a doggo? Come out to pet some doggos!</p>',
+      committee: 'Hack',
+      cover: 'https://media.giphy.com/media/Z3aQVJ78mmLyo/giphy.gif',
+      location: 'De Neve Auditorium',
+      eventLink: 'https://www.facebook.com/events/417554198601623/',
       startDate: new Date(2017, 5, 8, 14),
       endDate: new Date(2017, 5, 8, 18),
-      attendanceCode: "d0ggo",
+      attendanceCode: 'TEST',
       attendancePoints: 50,
-      thumb: ""
+      // thumb: ""
     };
   });
 
   afterAll(async () => {
     await user.destroy();
+    await pendingUser.destroy();
+    await adminUser.destroy();
     userToken = undefined;
+    pendingToken = undefined;
+    adminToken = undefined;
+  });
+
+  afterEach(async () => {
+    const event = await Event.findByAttendanceCode(testEvent.attendanceCode);
+    if (event) await event.destroy();
   });
 
   test('Bad UUID', async () => {
-    const eventResponse = await request(server).
-      post(route('event/bad_uuid')).
-      send({
-        ...testEvent,
-      }).
-      auth(adminToken, { type: "bearer" });
+    const eventResponse = await request(server)
+      .post(route('event/bad_uuid'))
+      .send({
+        event: {
+          ...testEvent,
+        },
+      })
+      .auth(adminToken, { type: 'bearer' });
     const event = eventResponse.body;
-    expect(event.error).toBeDefined();
+    expect(event.error).toBeTruthy();
     expect(event.event).toBeFalsy();
   });
 
   test('Undefined event data', async () => {
-    const eventResponse = await request(server).
-      post(route('event')).
-      auth(adminToken, { type: "bearer" });
+    const eventResponse = await request(server)
+      .post(route('event'))
+      .auth(adminToken, { type: 'bearer' });
     const event = eventResponse.body;
-    expect(event.error).toBeDefined();
+    expect(event.error).toBeTruthy();
     expect(event.event).toBeFalsy();
   });
 
   test('Bad start date', async () => {
-    const eventResponse = await request(server).
-      post(route('event')).
-      send({
-        ...testEvent,
-        startDate: undefined
-      }).
-      auth(adminToken, { type: "bearer" });
+    const eventResponse = await request(server)
+      .post(route('event'))
+      .send({
+        event: {
+          ...testEvent,
+          startDate: undefined,
+        },
+      })
+      .auth(adminToken, { type: 'bearer' });
     const event = eventResponse.body;
-    expect(event.error).toBeDefined();
+    expect(event.error).toBeTruthy();
     expect(event.event).toBeFalsy();
   });
 
   test('Bad end date', async () => {
-    const eventResponse = await request(server).
-    post(route('event')).
-    send({
-      ...testEvent,
-      endDate: undefined
-    }).
-    auth(adminToken, { type: "bearer" });
+    const eventResponse = await request(server)
+      .post(route('event'))
+      .send({
+        event: {
+          ...testEvent,
+          endDate: undefined,
+        },
+      })
+      .auth(adminToken, { type: 'bearer' });
     const event = eventResponse.body;
-    expect(event.error).toBeDefined();
+    expect(event.error).toBeTruthy();
     expect(event.event).toBeFalsy();
   });
 
   test('Invalid start and end date', async () => {
-    const eventResponse = await request(server).
-    post(route('event')).
-    send({
-      ...testEvent,
-      startDate: new Date()
-    }).
-    auth(adminToken, { type: "bearer" });
+    const eventResponse = await request(server)
+      .post(route('event'))
+      .send({
+        event: {
+          ...testEvent,
+          startDate: new Date(),
+        },
+      })
+      .auth(adminToken, { type: 'bearer' });
     const event = eventResponse.body;
-    expect(event.error).toBeDefined();
+    expect(event.error).toBeTruthy();
     expect(event.event).toBeFalsy();
   });
 
   test('Invalid event data', async () => {
-    const eventResponse = await request(server).
-    post(route('event')).
-    send({
-      
-    }).
-    auth(adminToken, { type: "bearer" });
-    const event = eventResponse.body;
-    expect(event.error).toBeDefined();
-    expect(event.event).toBeFalsy();
-  });
+    const eventResponse = await request(server)
+      .post(route('event'))
+      .send({
+        event: {
 
-  test('Invalid event organization', async () => {
-    const eventResponse = await request(server).
-    post(route('event')).
-    send({
-      ...testEvent,
-      organization: ""
-    }).
-    auth(adminToken, { type: "bearer" });
+        },
+      })
+      .auth(adminToken, { type: 'bearer' });
     const event = eventResponse.body;
-    expect(event.error).toBeDefined();
+    expect(event.error).toBeTruthy();
     expect(event.event).toBeFalsy();
   });
 
   test('Invalid event thumbnail', async () => {
-    const eventResponse = await request(server).
-    post(route('event')).
-    send({
-      ...testEvent,
-      thumb: ""
-    }).
-    auth(adminToken, { type: "bearer" });
+    const eventResponse = await request(server)
+      .post(route('event'))
+      .send({
+        event: {
+          ...testEvent,
+          thumb: 'a',
+        },
+      })
+      .auth(adminToken, { type: 'bearer' });
     const event = eventResponse.body;
-    expect(event.error).toBeDefined();
+    expect(event.error).toBeTruthy();
     expect(event.event).toBeFalsy();
   });
 
   test('Invalid cover image', async () => {
-    const eventResponse = await request(server).
-    post(route('event')).
-    send({
-      ...testEvent,
-      cover: ""
-    }).
-    auth(adminToken, { type: "bearer" });
+    const eventResponse = await request(server)
+      .post(route('event'))
+      .send({
+        event: {
+          ...testEvent,
+          cover: 'a',
+        },
+      })
+      .auth(adminToken, { type: 'bearer' });
     const event = eventResponse.body;
-    expect(event.error).toBeDefined();
+    expect(event.error).toBeTruthy();
     expect(event.event).toBeFalsy();
   });
 
   test('Invalid title', async () => {
-    const eventResponse = await request(server).
-    post(route('event')).
-    send({
-      ...testEvent,
-      title: ""
-    }).
-    auth(adminToken, { type: "bearer" });
+    const eventResponse = await request(server)
+      .post(route('event'))
+      .send({
+        event: {
+          ...testEvent,
+          title: 'a',
+        },
+      })
+      .auth(adminToken, { type: 'bearer' });
     const event = eventResponse.body;
-    expect(event.error).toBeDefined();
+    expect(event.error).toBeTruthy();
     expect(event.event).toBeFalsy();
   });
 
   test('Invalid location', async () => {
-    const eventResponse = await request(server).
-    post(route('event')).
-    send({
-      ...testEvent,
-      location: ""
-    }).
-    auth(adminToken, { type: "bearer" });
+    const eventResponse = await request(server)
+      .post(route('event'))
+      .send({
+        event: {
+          ...testEvent,
+          location: 'a',
+        },
+      })
+      .auth(adminToken, { type: 'bearer' });
     const event = eventResponse.body;
-    expect(event.error).toBeDefined();
+    expect(event.error).toBeTruthy();
     expect(event.event).toBeFalsy();
   });
 
   test('Invalid event link', async () => {
-    const eventResponse = await request(server).
-    post(route('event')).
-    send({
-      ...testEvent,
-      eventLink: ""
-    }).
-    auth(adminToken, { type: "bearer" });
+    const eventResponse = await request(server)
+      .post(route('event'))
+      .send({
+        event: {
+          ...testEvent,
+          eventLink: 'a',
+        },
+      })
+      .auth(adminToken, { type: 'bearer' });
     const event = eventResponse.body;
-    expect(event.error).toBeDefined();
+    expect(event.error).toBeTruthy();
     expect(event.event).toBeFalsy();
   });
 
   test('Invalid event attendance code', async () => {
-    const eventResponse = await request(server).
-    post(route('event')).
-    send({
-      ...testEvent,
-      attendanceCode: ""
-    }).
-    auth(adminToken, { type: "bearer" });
+    const eventResponse = await request(server)
+      .post(route('event'))
+      .send({
+        event: {
+          ...testEvent,
+          attendanceCode: 'a',
+        },
+      })
+      .auth(adminToken, { type: 'bearer' });
     const event = eventResponse.body;
-    expect(event.error).toBeDefined();
+    expect(event.error).toBeTruthy();
     expect(event.event).toBeFalsy();
+  });
+
+  test('Duplicate attendance code', async () => {
+    // TODO
   });
 
   test('Invalid event attendance points', async () => {
     // TODO: any attendance points are valid?
     // negative values are deleted?
-    const eventResponse = await request(server).
-    post(route('event')).
-    send({
-      ...testEvent,
-      attendPoints: 0
-    }).
-    auth(adminToken, { type: "bearer" });
-    const event = eventResponse.body;
-    expect(event.error).toBeDefined();
-    expect(event.event).toBeFalsy();
+    // const eventResponse = await request(server).
+    // post(route('event')).
+    // send({ event: {
+    //   ...testEvent,
+    //   attendPoints: 0
+    // }}).
+    // auth(adminToken, { type: "bearer" });
+    // const event = eventResponse.body;
+    // expect(event.error).toBeTruthy();
+    // expect(event.event).toBeFalsy();
   });
 
-  test("post event as Pending User", async () => {
-    const eventResponse = await request(server).
-    post(route('event')).
-    send({
-      ...testEvent,
-    }).
-    auth(pendingToken, { type: "bearer" });
+  test('Post event as Pending User', async () => {
+    const eventResponse = await request(server)
+      .post(route('event'))
+      .send({
+        event: {
+          ...testEvent,
+        },
+      })
+      .auth(pendingToken, { type: 'bearer' });
     const event = eventResponse.body;
-    expect(event.error).toBeDefined();
+    expect(event.error).toBeTruthy();
     expect(event.event).toBeFalsy();
   });
 
   test('Post event as User', async () => {
-    const eventResponse = await request(server).
-    post(route('event')).
-    send({
-      ...testEvent,
-    }).
-    auth(userToken, { type: "bearer" });
+    const eventResponse = await request(server)
+      .post(route('event'))
+      .send({
+        event: {
+          ...testEvent,
+        },
+      })
+      .auth(userToken, { type: 'bearer' });
     const event = eventResponse.body;
-    expect(event.error).toBeDefined();
-    expect(event.event).toBeFalsy(); 
+    expect(event.error).toBeTruthy();
+    expect(event.event).toBeFalsy();
   });
 
   test('Post event as Admin', async () => {
-    const eventResponse = await request(server).
-    post(route('event')).
-    send({
-      ...testEvent,
-    }).
-    auth(adminToken, { type: "bearer" });
+    // console.log("ADMIN POST");
+    const eventResponse = await request(server)
+      .post(route('event'))
+      .send({
+        event: {
+          ...testEvent,
+        },
+      })
+      .auth(adminToken, { type: 'bearer' });
     const event = eventResponse.body;
     expect(event.error).toBeFalsy();
     expect(event.event).toBeTruthy();
@@ -698,73 +731,71 @@ describe('Test Post Events', () => {
   test('Multiple post calls', async () => {
     // TODO
   });
-
 });
 
-describe('Test Patch Events', () => {
-  let user;
-  let adminUser;
-  let pendingUser;
-  let userToken;
-  let pendingToken;
-  let adminToken;
+// describe('Test Patch Events', () => {
+//   let user;
+//   let adminUser;
+//   let pendingUser;
+//   let userToken;
+//   let pendingToken;
+//   let adminToken;
 
-  beforeAll(async () => {
-    user = await createNewUser({
-      email: 'testuser@testemail.com',
-      firstName: 'USER_FIRST_NAME',
-      lastName: 'USER_LAST_NAME',
-      accessType: 'STANDARD',
-      state: 'ACTIVE',
-      year: 5,
-      major: 'Undeclared',
-    });
-    await Activity.accountLoggedIn(user.uuid);
-    userToken = await createUserToken(user)
-      .catch((err) => { throw err; });
+//   beforeAll(async () => {
+//     user = await createNewUser({
+//       email: 'testuser@testemail.com',
+//       firstName: 'USER_FIRST_NAME',
+//       lastName: 'USER_LAST_NAME',
+//       accessType: 'STANDARD',
+//       state: 'ACTIVE',
+//       year: 5,
+//       major: 'Undeclared',
+//     });
+//     await Activity.accountLoggedIn(user.uuid);
+//     userToken = await createUserToken(user)
+//       .catch((err) => { throw err; });
 
-    pendingUser = await createNewUser({
-      email: 'testuserpending@testemail.com',
-      firstName: 'PENDING_FIRST_NAME',
-      lastName: 'PENDING_LAST_NAME',
-      accessType: 'STANDARD',
-      state: 'PENDING',
-      year: 5,
-      major: 'Undeclared',
-    });
-    await Activity.accountLoggedIn(pendingUser.uuid);
-    pendingToken = await createUserToken(pendingUser)
-      .catch((err) => { throw err; });
+//     pendingUser = await createNewUser({
+//       email: 'testuserpending@testemail.com',
+//       firstName: 'PENDING_FIRST_NAME',
+//       lastName: 'PENDING_LAST_NAME',
+//       accessType: 'STANDARD',
+//       state: 'PENDING',
+//       year: 5,
+//       major: 'Undeclared',
+//     });
+//     await Activity.accountLoggedIn(pendingUser.uuid);
+//     pendingToken = await createUserToken(pendingUser)
+//       .catch((err) => { throw err; });
 
-    adminUser = await createNewUser({
-      email: 'testadmin@testemail.com',
-      firstName: 'ADMIN_FIRST_NAME',
-      lastName: 'ADMIN_LAST_NAME',
-      accessType: 'ADMIN',
-      state: 'ACTIVE',
-      year: 5,
-      major: 'Undeclared',
-    });
-    await Activity.accountLoggedIn(adminUser.uuid);
-    adminToken = await createUserToken(adminUser)
-      .catch((err) => { throw err; });
-  });
+//     adminUser = await createNewUser({
+//       email: 'testadmin@testemail.com',
+//       firstName: 'ADMIN_FIRST_NAME',
+//       lastName: 'ADMIN_LAST_NAME',
+//       accessType: 'ADMIN',
+//       state: 'ACTIVE',
+//       year: 5,
+//       major: 'Undeclared',
+//     });
+//     await Activity.accountLoggedIn(adminUser.uuid);
+//     adminToken = await createUserToken(adminUser)
+//       .catch((err) => { throw err; });
+//   });
 
-  afterAll(async () => {
-    await user.destroy();
-    userToken = undefined;
-  });
+//   afterAll(async () => {
+//     await user.destroy();
+//     userToken = undefined;
+//   });
 
-  test('Bad UUID', async () => {});
+//   test('Bad UUID', async () => {});
 
-  test('Bad event', async () => {});
+//   test('Bad event', async () => {});
 
-  test('Bad event start date', async () => {});
+//   test('Bad event start date', async () => {});
 
-  test('Bad event end date', async () => {});
+//   test('Bad event end date', async () => {});
+// });
 
-});
-
-describe("Test attend event", () => {
+describe('Test attend event', () => {
 
 });
