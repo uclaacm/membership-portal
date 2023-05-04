@@ -149,42 +149,49 @@ module.exports = (Sequelize, db) => {
     },
   );
 
-  User.findByUUID = uuid => this.findOne({ where: { uuid } });
+  User.findByUUID = function (uuid) {
+    return this.findOne({ where: { uuid } });
+  };
 
-  User.findByEmail = email => this.findOne({ where: { email } });
+  User.findByEmail = function (email) {
+    return this.findOne({ where: { email } });
+  };
 
-  User.getLeaderboard = (offset, limit) => {
-    let newOffset = offset;
-    let newLimit = limit;
-
-    if (!offset || offset < 0) newOffset = 0;
-    if (!limit || limit < 0) newLimit = undefined;
+  User.getLeaderboard = function (offset, limit) {
+    if (!offset || offset < 0) offset = 0;
+    if (!limit || limit < 0) limit = undefined;
     return this.findAll({
       where: { accessType: 'STANDARD' },
-      offset: newOffset,
-      limit: newLimit,
+      offset,
+      limit,
       order: [['points', 'DESC']],
     });
   };
 
-  User.getAdmins = () => this.findAll({
-    where: {
-      accessType: {
-        [Sequelize.Op.or]: ['ADMIN', 'SUPERADMIN'],
+  User.getAdmins = function () {
+    return this.findAll({
+      where: {
+        accessType: {
+          [Sequelize.Op.or]: ['ADMIN', 'SUPERADMIN'],
+        },
       },
-    },
-  });
+    });
+  };
 
-  User.prototype.addPoints = points => this.increment({ points });
+  User.prototype.addPoints = function (points) {
+    return this.increment({ points });
+  };
 
-  User.prototype.getPublicProfile = () => ({
-    firstName: this.getDataValue('firstName'),
-    lastName: this.getDataValue('lastName'),
-    picture: this.getDataValue('picture'),
-    points: this.getDataValue('points'),
-  });
+  User.prototype.getPublicProfile = function () {
+    return {
+      firstName: this.getDataValue('firstName'),
+      lastName: this.getDataValue('lastName'),
+      picture: this.getDataValue('picture'),
+      points: this.getDataValue('points'),
+    };
+  };
 
-  User.prototype.getUserProfile = () => {
+  User.prototype.getUserProfile = function () {
     const uuid = this.getDataValue('uuid');
     return {
       uuid,
@@ -198,22 +205,36 @@ module.exports = (Sequelize, db) => {
     };
   };
 
-  User.prototype.isRestricted = () => this.getDataValue('accessType') === 'RESTRICTED';
+  User.prototype.isRestricted = function () {
+    return this.getDataValue('accessType') === 'RESTRICTED';
+  };
 
-  User.prototype.isStandard = () => this.getDataValue('accessType') === 'STANDARD';
+  User.prototype.isStandard = function () {
+    return this.getDataValue('accessType') === 'STANDARD';
+  };
 
-  User.prototype.isAdmin = () => (
-    this.getDataValue('accessType') === 'ADMIN'
+  User.prototype.isAdmin = function () {
+    return (
+      this.getDataValue('accessType') === 'ADMIN'
       || this.getDataValue('accessType') === 'SUPERADMIN'
-  );
+    );
+  };
 
-  User.prototype.isSuperAdmin = () => this.getDataValue('accessType') === 'SUPERADMIN';
+  User.prototype.isSuperAdmin = function () {
+    return this.getDataValue('accessType') === 'SUPERADMIN';
+  };
 
-  User.prototype.isPending = () => this.getDataValue('state') === 'PENDING';
+  User.prototype.isPending = function () {
+    return this.getDataValue('state') === 'PENDING';
+  };
 
-  User.prototype.isActive = () => this.getDataValue('state') === 'ACTIVE';
+  User.prototype.isActive = function () {
+    return this.getDataValue('state') === 'ACTIVE';
+  };
 
-  User.prototype.isBlocked = () => this.getDataValue('state') === 'BLOCKED';
+  User.prototype.isBlocked = function () {
+    return this.getDataValue('state') === 'BLOCKED';
+  };
 
   return User;
 };
