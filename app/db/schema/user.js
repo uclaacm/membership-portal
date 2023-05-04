@@ -1,6 +1,6 @@
 module.exports = (Sequelize, db) => {
   const User = db.define(
-    "user",
+    'user',
     {
       id: {
         type: Sequelize.INTEGER,
@@ -11,7 +11,7 @@ module.exports = (Sequelize, db) => {
       // user ID: main way of querying the user
       uuid: {
         type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4,
+        defaultValue: Sequelize.UUIDV4, // TODO: this is not cascading??
       },
 
       // email address of the user
@@ -21,10 +21,10 @@ module.exports = (Sequelize, db) => {
         unique: true,
         validate: {
           isEmail: {
-            msg: "The email you entered is not valid",
+            msg: 'The email you entered is not valid',
           },
           notEmpty: {
-            msg: "The email is a required field",
+            msg: 'The email is a required field',
           },
         },
       },
@@ -34,8 +34,8 @@ module.exports = (Sequelize, db) => {
       //   STANDARD   - a regular member
       //   ADMIN      - admin type user
       accessType: {
-        type: Sequelize.ENUM("RESTRICTED", "STANDARD", "ADMIN", "SUPERADMIN"),
-        defaultValue: "STANDARD",
+        type: Sequelize.ENUM('RESTRICTED', 'STANDARD', 'ADMIN', 'SUPERADMIN'),
+        defaultValue: 'STANDARD',
       },
 
       // account state
@@ -43,8 +43,8 @@ module.exports = (Sequelize, db) => {
       //   ACTIVE         - account activated and in good standing
       //   BLOCKED        - account is blocked, login is denied
       state: {
-        type: Sequelize.ENUM("PENDING", "ACTIVE", "BLOCKED"),
-        defaultValue: "PENDING",
+        type: Sequelize.ENUM('PENDING', 'ACTIVE', 'BLOCKED'),
+        defaultValue: 'PENDING',
       },
 
       // user's first name
@@ -54,10 +54,10 @@ module.exports = (Sequelize, db) => {
         validate: {
           len: {
             args: [2, 255],
-            msg: "Your first name must be at least 2 characters long",
+            msg: 'Your first name must be at least 2 characters long',
           },
           notEmpty: {
-            msg: "The first name is a required field",
+            msg: 'The first name is a required field',
           },
         },
       },
@@ -69,10 +69,10 @@ module.exports = (Sequelize, db) => {
         validate: {
           len: {
             args: [2, 255],
-            msg: "Your last name must be at least 2 characters long",
+            msg: 'Your last name must be at least 2 characters long',
           },
           notEmpty: {
-            msg: "The last name is a required field",
+            msg: 'The last name is a required field',
           },
         },
       },
@@ -89,10 +89,10 @@ module.exports = (Sequelize, db) => {
         validate: {
           isIn: {
             args: [[1, 2, 3, 4, 5]],
-            msg: "Your year must be one of [1, 2, 3, 4, 5]",
+            msg: 'Your year must be one of [1, 2, 3, 4, 5]',
           },
           notEmpty: {
-            msg: "The year is a required field",
+            msg: 'The year is a required field',
           },
         },
       },
@@ -104,10 +104,10 @@ module.exports = (Sequelize, db) => {
         validate: {
           len: {
             args: [2, 255],
-            msg: "Your major must be at least 2 characters long",
+            msg: 'Your major must be at least 2 characters long',
           },
           notEmpty: {
-            msg: "The major is a required field",
+            msg: 'The major is a required field',
           },
         },
       },
@@ -130,111 +130,90 @@ module.exports = (Sequelize, db) => {
         // a hash index on the uuid makes lookup by UUID O(1)
         {
           unique: true,
-          fields: ["uuid"],
+          fields: ['uuid'],
         },
 
         // a hash index on the email makes lookup by email O(1)
         {
           unique: true,
-          fields: ["email"],
+          fields: ['email'],
         },
 
         // a BTREE index on the uuid makes retrieving the leaderboard O(N)
         {
-          name: "user_points_btree_index",
-          method: "BTREE",
-          fields: ["points", { attribute: "points", order: "DESC" }],
+          name: 'user_points_btree_index',
+          method: 'BTREE',
+          fields: ['points', { attribute: 'points', order: 'DESC' }],
         },
       ],
-    }
+    },
   );
 
-  User.findByUUID = function (uuid) {
-    return this.findOne({ where: { uuid } });
-  };
+  User.findByUUID = uuid => this.findOne({ where: { uuid } });
 
-  User.findByEmail = function (email) {
-    return this.findOne({ where: { email } });
-  };
+  User.findByEmail = email => this.findOne({ where: { email } });
 
-  User.getLeaderboard = function (offset, limit) {
-    if (!offset || offset < 0) offset = 0;
-    if (!limit || limit < 0) limit = undefined;
+  User.getLeaderboard = (offset, limit) => {
+    let newOffset = offset;
+    let newLimit = limit;
+
+    if (!offset || offset < 0) newOffset = 0;
+    if (!limit || limit < 0) newLimit = undefined;
     return this.findAll({
-      where: { accessType: "STANDARD" },
-      offset,
-      limit,
-      order: [["points", "DESC"]],
+      where: { accessType: 'STANDARD' },
+      offset: newOffset,
+      limit: newLimit,
+      order: [['points', 'DESC']],
     });
   };
 
-  User.getAdmins = function () {
-    return this.findAll({
-      where: {
-        accessType: {
-          [Sequelize.Op.or]: ["ADMIN", "SUPERADMIN"],
-        },
+  User.getAdmins = () => this.findAll({
+    where: {
+      accessType: {
+        [Sequelize.Op.or]: ['ADMIN', 'SUPERADMIN'],
       },
-    });
-  };
+    },
+  });
 
-  User.prototype.addPoints = function (points) {
-    return this.increment({ points });
-  };
+  User.prototype.addPoints = points => this.increment({ points });
 
-  User.prototype.getPublicProfile = function () {
-    return {
-      firstName: this.getDataValue("firstName"),
-      lastName: this.getDataValue("lastName"),
-      picture: this.getDataValue("picture"),
-      points: this.getDataValue("points"),
-    };
-  };
+  User.prototype.getPublicProfile = () => ({
+    firstName: this.getDataValue('firstName'),
+    lastName: this.getDataValue('lastName'),
+    picture: this.getDataValue('picture'),
+    points: this.getDataValue('points'),
+  });
 
-  User.prototype.getUserProfile = function () {
-    const uuid = this.getDataValue("uuid");
+  User.prototype.getUserProfile = () => {
+    const uuid = this.getDataValue('uuid');
     return {
       uuid,
-      firstName: this.getDataValue("firstName"),
-      lastName: this.getDataValue("lastName"),
-      picture: this.getDataValue("picture"),
-      email: this.getDataValue("email"),
-      year: this.getDataValue("year"),
-      major: this.getDataValue("major"),
-      points: this.getDataValue("points"),
+      firstName: this.getDataValue('firstName'),
+      lastName: this.getDataValue('lastName'),
+      picture: this.getDataValue('picture'),
+      email: this.getDataValue('email'),
+      year: this.getDataValue('year'),
+      major: this.getDataValue('major'),
+      points: this.getDataValue('points'),
     };
   };
 
-  User.prototype.isRestricted = function () {
-    return this.getDataValue("accessType") === "RESTRICTED";
-  };
+  User.prototype.isRestricted = () => this.getDataValue('accessType') === 'RESTRICTED';
 
-  User.prototype.isStandard = function () {
-    return this.getDataValue("accessType") === "STANDARD";
-  };
+  User.prototype.isStandard = () => this.getDataValue('accessType') === 'STANDARD';
 
-  User.prototype.isAdmin = function () {
-    return (
-      this.getDataValue("accessType") === "ADMIN" ||
-      this.getDataValue("accessType") === "SUPERADMIN"
-    );
-  };
+  User.prototype.isAdmin = () => (
+    this.getDataValue('accessType') === 'ADMIN'
+      || this.getDataValue('accessType') === 'SUPERADMIN'
+  );
 
-  User.prototype.isSuperAdmin = function () {
-    return this.getDataValue("accessType") === "SUPERADMIN";
-  };
+  User.prototype.isSuperAdmin = () => this.getDataValue('accessType') === 'SUPERADMIN';
 
-  User.prototype.isPending = function () {
-    return this.getDataValue("state") === "PENDING";
-  };
+  User.prototype.isPending = () => this.getDataValue('state') === 'PENDING';
 
-  User.prototype.isActive = function () {
-    return this.getDataValue("state") === "ACTIVE";
-  };
+  User.prototype.isActive = () => this.getDataValue('state') === 'ACTIVE';
 
-  User.prototype.isBlocked = function () {
-    return this.getDataValue("state") === "BLOCKED";
-  };
+  User.prototype.isBlocked = () => this.getDataValue('state') === 'BLOCKED';
 
   return User;
 };

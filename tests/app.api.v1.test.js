@@ -2,7 +2,9 @@ import { server, setup } from '..';
 import request from 'supertest';
 
 const { createNewUser, createUserToken, GoogleLogin } = require('../app/api/v1/auth/LoginManager');
-const { User, Activity, Event } = require('../app/db');
+const {
+  User, Activity, Event, Attendance,
+} = require('../app/db');
 
 const API_ROUTE = '/app/api/v1/';
 const route = name => API_ROUTE + name;
@@ -167,7 +169,7 @@ describe('Test Get Events', () => {
   let pendingToken;
   let adminToken;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     user = await createNewUser({
       email: 'testuser@testemail.com',
       firstName: 'USER_FIRST_NAME',
@@ -208,7 +210,7 @@ describe('Test Get Events', () => {
       .catch((err) => { throw err; });
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await user.destroy();
     await pendingUser.destroy();
     await adminUser.destroy();
@@ -424,7 +426,7 @@ describe('Test Post Events', () => {
   let adminToken;
   let testEvent;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     user = await createNewUser({
       email: 'testuser@testemail.com',
       firstName: 'USER_FIRST_NAME',
@@ -480,16 +482,14 @@ describe('Test Post Events', () => {
     };
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await user.destroy();
     await pendingUser.destroy();
     await adminUser.destroy();
     userToken = undefined;
     pendingToken = undefined;
     adminToken = undefined;
-  });
 
-  afterEach(async () => {
     const event = await Event.findByAttendanceCode(testEvent.attendanceCode);
     if (event) await event.destroy();
   });
@@ -741,7 +741,7 @@ describe('Test Post Events', () => {
 //   let pendingToken;
 //   let adminToken;
 
-//   beforeAll(async () => {
+//   beforeEach(async () => {
 //     user = await createNewUser({
 //       email: 'testuser@testemail.com',
 //       firstName: 'USER_FIRST_NAME',
@@ -782,7 +782,7 @@ describe('Test Post Events', () => {
 //       .catch((err) => { throw err; });
 //   });
 
-//   afterAll(async () => {
+//   afterEach(async () => {
 //     await user.destroy();
 //     userToken = undefined;
 //   });
@@ -797,5 +797,207 @@ describe('Test Post Events', () => {
 // });
 
 describe('Test attend event', () => {
+  let user;
+  let pendingUser;
+  let userToken;
+  let pendingToken;
+  let event;
+  let code;
 
+  beforeEach(async () => {
+    user = await createNewUser({
+      email: 'testuser@testemail.com',
+      firstName: 'USER_FIRST_NAME',
+      lastName: 'USER_LAST_NAME',
+      accessType: 'STANDARD',
+      state: 'ACTIVE',
+      year: 5,
+      major: 'Undeclared',
+    });
+    await Activity.accountLoggedIn(user.uuid);
+    userToken = await createUserToken(user)
+      .catch((err) => { throw err; });
+
+    pendingUser = await createNewUser({
+      email: 'testuserpending@testemail.com',
+      firstName: 'PENDING_FIRST_NAME',
+      lastName: 'PENDING_LAST_NAME',
+      accessType: 'STANDARD',
+      state: 'PENDING',
+      year: 5,
+      major: 'Undeclared',
+    });
+    await Activity.accountLoggedIn(pendingUser.uuid);
+    pendingToken = await createUserToken(pendingUser)
+      .catch((err) => { throw err; });
+
+    const now = new Date();
+    const hourFromNow = new Date();
+    hourFromNow.setHours(hourFromNow.getHours() + 1);
+    event = await Event.create(Event.sanitize({
+      title: 'TEST EVENT',
+      description:
+        '<p>Interested in petting a doggo? Come out to pet some doggos!</p>',
+      committee: 'Hack',
+      cover: 'https://media.giphy.com/media/Z3aQVJ78mmLyo/giphy.gif',
+      location: 'De Neve Auditorium',
+      eventLink: 'https://www.facebook.com/events/417554198601623/',
+      startDate: now,
+      endDate: hourFromNow,
+      attendanceCode: 'TEST',
+      attendancePoints: 50,
+    }));
+    code = event.attendanceCode;
+  });
+
+  afterEach(async () => {
+    await user.destroy();
+    await pendingUser.destroy();
+
+    await Attendance.getAttendanceForEvent(event.uuid)
+      .then(async list => list.forEach(async obj => obj.destroy()));
+    await event.destroy();
+
+    userToken = undefined;
+    pendingToken = undefined;
+  });
+
+  test('Pending user throws error', async () => {
+    const prevPoints = user.points;
+    const attendResponse = await request(server)
+      .post(route('attendance/attend'))
+      .send({ event: { attendanceCode: code } })
+      .auth(pendingToken, { type: 'bearer' });
+    expect(attendResponse.statusCode).toBe(403);
+    const { body } = attendResponse;
+    expect(body.error).toBeTruthy();
+    expect(body.event).toBeFalsy();
+
+    await user.reload();
+    expect(user.points).toBe(prevPoints);
+  });
+
+  test('No event body throws error', async () => {
+    const prevPoints = user.points;
+    const attendResponse = await request(server)
+      .post(route('attendance/attend'))
+      .send({})
+      .auth(userToken, { type: 'bearer' });
+    expect(attendResponse.statusCode).toBe(400);
+    const { body } = attendResponse;
+    expect(body.error).toBeTruthy();
+    expect(body.event).toBeFalsy();
+
+    await user.reload();
+    expect(user.points).toBe(prevPoints);
+  });
+
+  test('No attendance code throws error', async () => {
+    const prevPoints = user.points;
+    const attendResponse = await request(server)
+      .post(route('attendance/attend'))
+      .send({ event: {} })
+      .auth(userToken, { type: 'bearer' });
+    expect(attendResponse.statusCode).toBe(400);
+    const { body } = attendResponse;
+    expect(body.error).toBeTruthy();
+    expect(body.event).toBeFalsy();
+
+    await user.reload();
+    expect(user.points).toBe(prevPoints);
+  });
+
+  test('Invalid attendance code throws error', async () => {
+    const prevPoints = user.points;
+    const attendResponse = await request(server)
+      .post(route('attendance/attend'))
+      .send({ event: { attendanceCode: 'NOTTEST' } })
+      .auth(userToken, { type: 'bearer' });
+    expect(attendResponse.statusCode).toBe(200);
+    const { body } = attendResponse;
+    expect(body.error).toBeTruthy();
+    expect(body.event).toBeFalsy();
+
+    await user.reload();
+    expect(user.points).toBe(prevPoints);
+  });
+
+  test('Using code outside event time throws error', async () => {
+    const prevPoints = user.points;
+    const attendResponse = await request(server)
+      .post(route('attendance/attend'))
+      .send({ event: { attendanceCode: 'd0ggo' } })
+      .auth(userToken, { type: 'bearer' });
+    expect(attendResponse.statusCode).toBe(200);
+    const { body } = attendResponse;
+    expect(body.error).toBeTruthy();
+    expect(body.event).toBeFalsy();
+
+    await user.reload();
+    expect(user.points).toBe(prevPoints);
+  });
+
+  test('Attending event twice throws error', async () => {
+    const prevPoints = user.points;
+    await Attendance.attendEvent(user.uuid, event.uuid);
+    const attendResponse = await request(server)
+      .post(route('attendance/attend'))
+      .send({ event: { attendanceCode: code } })
+      .auth(userToken, { type: 'bearer' });
+    expect(attendResponse.statusCode).toBe(200);
+    const { body } = attendResponse;
+    expect(body.error).toBeTruthy();
+    expect(body.event).toBeFalsy();
+
+    await user.reload();
+    expect(user.points).toBe(prevPoints);
+  });
+
+  test('Attending event updates event, activity, and user points', async () => {
+    const prevPoints = user.points;
+
+    const attendResponse = await request(server)
+      .post(route('attendance/attend'))
+      .send({ event: { attendanceCode: code } })
+      .auth(userToken, { type: 'bearer' });
+    expect(attendResponse.statusCode).toBe(200);
+    const { body } = attendResponse;
+    expect(body.error).toBeFalsy();
+    expect(body.event).toBeTruthy();
+
+    await user.reload();
+
+    expect(await Attendance.userAttendedEvent(user.uuid, event.uuid)).toBe(true);
+    const activities = await Activity.getPublicStream(user.uuid);
+    // console.log(activities);
+    expect(activities).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          description: event.title,
+          type: 'ATTEND_EVENT',
+        }),
+      ]),
+    );
+    expect(user.points).toBe(prevPoints + event.attendancePoints);
+  });
+
+  test('Spamming code only gives points once', async () => {
+    const prevPoints = user.points;
+
+    const spam = 20;
+
+    const spams = [];
+    for (let i = 0; i < spam; i++) {
+      const attendResponse = request(server)
+        .post(route('attendance/attend'))
+        .send({ event: { attendanceCode: code } })
+        .auth(userToken, { type: 'bearer' });
+      spams.push(attendResponse);
+    }
+
+    await Promise.all(spams);
+
+    await user.reload();
+    expect(user.points).toBe(prevPoints + event.attendancePoints);
+  });
 });
