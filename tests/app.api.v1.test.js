@@ -667,7 +667,45 @@ describe('Test Post Events', () => {
   });
 
   test('Duplicate attendance code', async () => {
-    // TODO
+    const testEvent2 = {
+      title: 'TEST EVENT2',
+      description:
+        '<p>Interested in petting a doggo? Come out to pet some doggos!</p>',
+      committee: 'Hack',
+      cover: 'https://media.giphy.com/media/Z3aQVJ78mmLyo/giphy.gif',
+      location: 'De Neve Auditorium',
+      eventLink: 'https://www.facebook.com/events/417554198601623/',
+      startDate: new Date(2017, 5, 8, 14),
+      endDate: new Date(2017, 5, 8, 18),
+      attendanceCode: 'TEST',
+      attendancePoints: 100,
+      // thumb: ""
+    };
+    const eventResponse = await request(server)
+      .post(route('event'))
+      .send({
+        event: {
+          ...testEvent,
+        },
+      })
+      .auth(adminToken, { type: 'bearer' });
+    const event = eventResponse.body;
+    expect(event.error).toBeFalsy();
+    expect(event.event).toBeTruthy();
+
+    const eventResponse2 = await request(server)
+      .post(route('event'))
+      .send({
+        event: {
+          ...testEvent2,
+        },
+      })
+      .auth(adminToken, { type: 'bearer' });
+    expect(eventResponse2.statusCode).toBe(422);
+    const event2 = eventResponse2.body;
+    expect(event2.error).toBeTruthy();
+    expect(event2.error.message).toBe('Validation Error: attendanceCode must be unique');
+    expect(event2.event).toBeFalsy();
   });
 
   test('Invalid event attendance points', async () => {
