@@ -1,3 +1,8 @@
+// To fix Docker error "ReferenceError: TextEncoder is not defined" when running tests
+import { TextEncoder, TextDecoder } from 'util';
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
+
 const Sequelize = require('sequelize');
 const cls = require('continuation-local-storage');
 
