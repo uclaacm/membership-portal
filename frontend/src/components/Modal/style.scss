@@ -15,12 +15,10 @@
     background-color: #f0f0f0;
     display: flex;
     flex-direction: column;
-    width: 35%;
-    height: 50%;
     justify-content: flex-start;
     border-radius: 25px;
-    min-height: 480px;
     min-width: 580px;
+    max-width: 700px;
 
     h1 {
       text-align: center;
@@ -33,12 +31,15 @@
         display: flex;
         flex-direction: row;
         justify-content: center;
+        gap: 40px;
+        width: 100%;
 
         .image-container {
           display: flex;
           align-items: center;
           justify-content: center;
-          margin-right: 40px;
+          max-width: 50%;
+          max-height: 100%;
 
           img {
             width: 190px;
@@ -52,13 +53,28 @@
         .text-container {
           display: flex;
           flex-direction: column;
-          margin-left: 40px;
-          align-items: center;
           justify-content: center;
+          overflow-wrap: break-word;
+          gap: 10px;
+          max-width: 50%;
 
           h3 {
-            white-space: pre;
+            margin: 0px;
           }
+        }
+
+        @media (max-width: 700px) {
+          .image-container, .text-container {
+            max-width: 100%;
+          }
+        }
+      }
+
+      @media (max-width: 700px) {
+        .content-container {
+          flex-direction: column; 
+          gap: 10px;
+          text-align: center;
         }
       }
 
@@ -68,6 +84,14 @@
       }
     }
   }
+
+  @media (max-width: 700px) {
+    .leaderboard-modal-container {
+      width: 90%;
+      min-width: 90%;
+      // max-width: 80%;
+    }
+}
 
   .confirmation-modal-container {
     position: relative;

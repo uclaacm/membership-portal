@@ -17,21 +17,18 @@ export default class LeaderboardModal extends React.Component {
         <div className="leaderboard-modal-container">
           <div className="padding">
             <h1>User Info</h1>
-            <br />
-            <br />
             <div className="content-container">
               <div className="image-container">
                 <img src={picture || "/assets/images/unknown.png"} />
               </div>
               <div className="text-container">
-                <h3>
-                  Name: {firstName} {lastName}
-                </h3>
+                <h2>
+                  {firstName} {lastName}
+                </h2>
                 <h3>Major: {major}</h3>
                 <h3>Year: {gradeLevel}</h3>
               </div>
             </div>
-            <br />
             <br />
             <br />
             <div className="button-container">
