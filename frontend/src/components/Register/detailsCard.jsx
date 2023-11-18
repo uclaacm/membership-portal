@@ -28,9 +28,14 @@ export default class DetailsCard extends React.Component {
             <div className="align align-input-major">
               <p className="text">
                 Major
-                <span className="info">(full name of major)</span>
+                <span className="info">(choose one)</span>
               </p>
-              <input className="input-major" name="major" onChange={this.handleChange} />
+              <select className="input-major" name="major" onChange={this.handleChange}>
+                <option value="">--</option>
+                {Config.majors.map((major) =>
+                  <option value={major}>{major}</option>
+                )}
+              </select>
             </div>
             <div className="align">
               <p className="text">

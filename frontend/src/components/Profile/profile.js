@@ -2,6 +2,7 @@ import React from "react";
 import Utils from "utils";
 import Button from "components/Button";
 import BannerMessage from "components/BannerMessage";
+import Config from "config";
 
 import Activities from "./activities";
 import YearSelector from "./yearSelector";
@@ -131,7 +132,6 @@ export default class Profile extends React.Component {
               ref={this.registerInput}
               onChange={this.handleUpdate}
               value={this.state.profile.name}
-              name="name"
             />
           </div>
           <div className="form-elem">
@@ -140,16 +140,11 @@ export default class Profile extends React.Component {
           </div>
           <div className="form-elem">
             <p className="SubheaderSecondary">majoring in</p>
-            <textarea
-              rows="1"
-              name="major"
-              type="text"
-              className="Display-2Primary"
-              ref={this.registerInput}
-              value={this.state.profile.major}
-              name="major"
-              onChange={this.handleUpdate}
-            />
+            <select className="Display-2Primary" name="major" onChange={this.handleUpdate} value={this.state.profile.major}>
+              {Config.majors.map((major) =>
+                <option value={major}>{major}</option>
+              )}
+            </select>
           </div>
           <div className="form-elem">
             <Button

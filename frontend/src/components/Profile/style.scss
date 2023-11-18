@@ -72,7 +72,12 @@
       outline: none;
       background: none;
       border-bottom: 2px dashed #dadada;
-      padding: 5px 0px;
+      padding: 5px 0px;   
+      width: 100%;
+
+      option {
+        font-size: 14px;
+      }
     }
   }
 
