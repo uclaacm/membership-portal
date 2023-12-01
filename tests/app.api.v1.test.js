@@ -1,3 +1,4 @@
+import { response } from 'express';
 import { server, setup } from '..';
 import request from 'supertest';
 
@@ -836,11 +837,15 @@ describe('Test Post Events', () => {
 
 describe('Test attend event', () => {
   let user;
+  let user2;
   let pendingUser;
   let userToken;
+  let userToken2;
   let pendingToken;
   let event;
+  let eventSameTime;
   let code;
+  let codeSameTime;
 
   beforeEach(async () => {
     user = await createNewUser({
@@ -854,6 +859,19 @@ describe('Test attend event', () => {
     });
     await Activity.accountLoggedIn(user.uuid);
     userToken = await createUserToken(user)
+      .catch((err) => { throw err; });
+
+    user2 = await createNewUser({
+      email: 'khgklghkjgkj@testemail.com',
+      firstName: 'USER_TWO_FIRST_NAME',
+      lastName: 'USER_TWO_LAST_NAME',
+      accessType: 'STANDARD',
+      state: 'ACTIVE',
+      year: 4,
+      major: 'Computer Science',
+    });
+    await Activity.accountLoggedIn(user2.uuid);
+    userToken2 = await createUserToken(user2)
       .catch((err) => { throw err; });
 
     pendingUser = await createNewUser({
@@ -886,18 +904,38 @@ describe('Test attend event', () => {
       attendancePoints: 50,
     }));
     code = event.attendanceCode;
+
+    eventSameTime = await Event.create(Event.sanitize({
+      title: 'TEST SAME TIME AS EVENT',
+      description:
+        '<p>Teaching Figma basics for developers!</p>',
+      committee: 'Teach LA',
+      cover: 'https://media.giphy.com/media/Z3aQVJ78mmLyo/giphy.gif',
+      location: 'Boelter 4685',
+      eventLink: 'https://teachla.uclaacm.com/',
+      startDate: now,
+      endDate: hourFromNow,
+      attendanceCode: 'TESTSAMETIME',
+      attendancePoints: 75,
+    }));
+    codeSameTime = eventSameTime.attendanceCode;
   });
 
   afterEach(async () => {
     await user.destroy();
+    await user2.destroy();
     await pendingUser.destroy();
 
     await Attendance.getAttendanceForEvent(event.uuid)
       .then(async list => list.forEach(async obj => obj.destroy()));
     await event.destroy();
+    await Attendance.getAttendanceForEvent(eventSameTime.uuid)
+      .then(async list => list.forEach(async obj => obj.destroy()));
+    await eventSameTime.destroy();
 
     userToken = undefined;
     pendingToken = undefined;
+    userToken2 = undefined;
   });
 
   test('Pending user throws error', async () => {
@@ -1037,5 +1075,133 @@ describe('Test attend event', () => {
 
     await user.reload();
     expect(user.points).toBe(prevPoints + event.attendancePoints);
+  });
+
+  test('Users cant attend multiple events at the same time', async () => {
+    const prevPoints = user.points;
+    const responses = [];
+
+    // event 1 and event 2 occur at the same time
+    const attendResponse = request(server)
+      .post(route('attendance/attend'))
+      .send({ event: { attendanceCode: code } })
+      .auth(userToken, { type: 'bearer' });
+    const attendResponseSameTime = request(server)
+      .post(route('attendance/attend'))
+      .send({ event: { attendanceCode: codeSameTime } })
+      .auth(userToken, { type: 'bearer' });
+
+    responses.push(
+      attendResponse,
+      attendResponseSameTime,
+    );
+
+    for (let i = 0; i < responses.length; i++) {
+      await Promise.resolve(responses[i]);
+      await user.reload();
+    }
+
+    expect(await Attendance.userAttendedEvent(user.uuid, event.uuid)).toBe(true);
+    expect(await Attendance.userAttendedEvent(user.uuid, eventSameTime.uuid)).toBe(false);
+    const activities = await Activity.getPublicStream(user.uuid);
+    // console.log(activities);
+    expect(activities).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          description: event.title,
+          type: 'ATTEND_EVENT',
+        }),
+      ]),
+    );
+    expect(activities).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          description: eventSameTime.title,
+          type: 'ATTEND_EVENT',
+        }),
+      ]),
+    );
+    expect(user.points).toBe(prevPoints + event.attendancePoints);
+  });
+
+  test('Multiple users cant attend multiple events at the same time', async () => {
+    const prevPoints1 = user.points;
+    const prevPoints2 = user2.points;
+    const responses = [];
+
+    // event 1 and event 2 occur at the same time
+    // user 1
+    const attendResponse1 = request(server)
+      .post(route('attendance/attend'))
+      .send({ event: { attendanceCode: code } })
+      .auth(userToken, { type: 'bearer' });
+    const attendResponseSameTime1 = request(server)
+      .post(route('attendance/attend'))
+      .send({ event: { attendanceCode: codeSameTime } })
+      .auth(userToken, { type: 'bearer' });
+    // user 1
+    const attendResponse2 = request(server)
+      .post(route('attendance/attend'))
+      .send({ event: { attendanceCode: codeSameTime } })
+      .auth(userToken2, { type: 'bearer' });
+    const attendResponseSameTime2 = request(server)
+      .post(route('attendance/attend'))
+      .send({ event: { attendanceCode: code } })
+      .auth(userToken2, { type: 'bearer' });
+
+    responses.push(
+      attendResponse1,
+      attendResponseSameTime1,
+      attendResponse2,
+      attendResponseSameTime2
+    );
+
+    for (let i = 0; i < responses.length; i++) {
+      await Promise.resolve(responses[i]);
+      await user.reload();
+    }
+
+    // user 1
+    expect(await Attendance.userAttendedEvent(user.uuid, event.uuid)).toBe(true);
+    expect(await Attendance.userAttendedEvent(user.uuid, eventSameTime.uuid)).toBe(false);
+    const activities1 = await Activity.getPublicStream(user.uuid);
+    expect(activities1).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          description: event.title,
+          type: 'ATTEND_EVENT',
+        }),
+      ]),
+    );
+    expect(activities1).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          description: eventSameTime.title,
+          type: 'ATTEND_EVENT',
+        }),
+      ]),
+    );
+    expect(user.points).toBe(prevPoints1 + event.attendancePoints);
+    // user 2
+    expect(await Attendance.userAttendedEvent(user2.uuid, event.uuid)).toBe(false);
+    expect(await Attendance.userAttendedEvent(user2.uuid, eventSameTime.uuid)).toBe(true);
+    const activities2 = await Activity.getPublicStream(user2.uuid);
+    expect(activities2).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          description: eventSameTime.title,
+          type: 'ATTEND_EVENT',
+        }),
+      ]),
+    );
+    expect(activities2).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          description: event.title,
+          type: 'ATTEND_EVENT',
+        }),
+      ]),
+    );
+    expect(user2.points).toBe(prevPoints2 + eventSameTime.attendancePoints);
   });
 });
