@@ -67,7 +67,7 @@ router
               const fileID = e.cover.match(/\/file\/d\/(.+?)\//)[1];
               e.cover = `https://drive.google.com/uc?id=${fileID}`;
             }
-          })
+          })  
 
           res.json({
             error: null,

@@ -156,6 +156,17 @@ module.exports = (User, Event) => {
       major: "Cognitive Science",
     }),
 
+    User.create({
+      email: "churro@g.ucla.edu",
+      accessType: "ADMIN",
+      state: "ACTIVE",
+      firstName: "Charles",
+      lastName: "Zhu",
+      points: 880,
+      year: 2,
+      major: "Computer Science",
+    }),
+
     Event.create({
       title: "Project A*: Dynamic Programming",
       description:
