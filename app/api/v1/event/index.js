@@ -65,7 +65,7 @@ router
             // reformat google drive file links
             if (e.cover && e.cover.includes('drive.google.com')) {
               const fileID = e.cover.match(/\/file\/d\/(.+?)\//)[1];
-              e.cover = `https://drive.google.com/uc?id=${fileID}`;
+              e.cover = `https://drive.google.com/thumbnail?id=${fileID}&sz=s1000`;
             }
           })  
 
