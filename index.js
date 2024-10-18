@@ -26,6 +26,12 @@ if (app.config.isDevelopment) {
   });
 }
 
+// Add Cross-Origin-Opener-Policy header
+server.use((req, res, next) => {
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+  next();
+});
+
 // Assign a unique ID to each request
 server.use((req, res, next) => {
   req.id = uuid.v4().split('-').pop();
