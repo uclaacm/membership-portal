@@ -1,5 +1,7 @@
+@use "styles/vars";
+
 .control-panel-wrapper {
-  margin-left: $sidebar-width;
+  margin-left: vars.$sidebar-width;
   padding: 60px;
   overflow: visible;
   transition: margin-left 0.125s ease-in-out;

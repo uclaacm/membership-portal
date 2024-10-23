@@ -1,16 +1,15 @@
 const os = require('os');
 const path = require('path');
 const webpack = require('webpack');
-
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
-  mode: process.env.NODE_ENV,
+  mode: process.env.NODE_ENV || 'development',
   context: path.resolve(__dirname, 'src'),
   entry: {
     main: 'main.js',
@@ -24,73 +23,64 @@ module.exports = {
     rules: [
       {
         test: /\.s?css$/,
-        use: ExtractTextPlugin.extract({
-          use: [
-            {
-              loader: 'cache-loader',
-            },
-            {
-              loader: 'css-loader',
-              options: {
-                minimize: true,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          {
+            loader: 'sass-loader',
+            options: {
+              sassOptions: {
+                indentedSyntax: false,
               },
             },
-            {
-              loader: 'sass-loader',
-            },
-          ],
-        }),
+          },
+        ],
       },
       {
         test: /\.jsx?$/,
         exclude: /(node_modules)/,
         use: [
-          {
-            loader: 'cache-loader',
-          },
+          'cache-loader',
           {
             loader: 'thread-loader',
             options: {
               workers: os.cpus().length - 1,
             },
           },
-          {
-            loader: 'source-map-loader',
-          },
-          {
-            loader: 'babel-loader',
-          },
+          'source-map-loader',
+          'babel-loader',
         ],
       },
+      {
+        test: /\.(woff|woff2|eot|ttf|otf)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[name].[ext]',
+              outputPath: 'assets/fonts',
+            },
+          },
+        ],
+      }
     ],
   },
   resolve: {
     modules: [path.resolve(__dirname, 'src'), 'node_modules'],
     extensions: ['.js', '.jsx'],
     alias: {
-      // use production bundles for JS libraries
       'chart.js': 'chart.js/dist/Chart.min.js',
       dexie: 'dexie/dist/dexie.min.js',
-      // 'react-facebook-login': 'react-facebook-login/dist/facebook-login-render-props',
     },
   },
   optimization: {
     minimizer: [
-      new UglifyJsPlugin({
-        cache: true,
-        parallel: 2,
-        uglifyOptions: {
+      new TerserPlugin({
+        parallel: true,
+        terserOptions: {
           ecma: 5,
           compress: {
             drop_console: true,
-            toplevel: true,
-            unsafe_comps: true,
-            unsafe_Function: true,
-            unsafe_math: true,
-            unsafe_proto: true,
-            unsafe_regexp: true,
-            unsafe_undefined: true,
-            passes: 2,
           },
           mangle: {
             toplevel: true,
@@ -98,16 +88,13 @@ module.exports = {
         },
       }),
     ],
-    runtimeChunk: {
-      name: 'manifest',
-    },
+    runtimeChunk: 'single',
     splitChunks: {
       cacheGroups: {
         vendors: {
           test: /[\\/]node_modules[\\/]/,
           name: 'vendor',
           chunks: 'all',
-          priority: -20,
         },
       },
     },
@@ -120,34 +107,24 @@ module.exports = {
         GOOGLE_CLIENT_ID: JSON.stringify(process.env.GOOGLE_CLIENT_ID || ''),
       },
     }),
-
-    new CleanWebpackPlugin(['lib']),
-
+    new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       template: '../pages/index.html',
+      filename: 'index.html',
       minify: {
         collapseWhitespace: true,
-        conservativeCollapse: true,
         preserveLineBreaks: true,
       },
     }),
     new ScriptExtHtmlWebpackPlugin({
-      defer: /(main)|(manifest)|(vendor)/,
+      defer: ['main', 'manifest', 'vendor'],
     }),
-
-    new webpack.HashedModuleIdsPlugin(),
-    new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.optimize.AggressiveMergingPlugin(),
-
-    // remove useless locales that moment automatically bundles
-    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-    new ExtractTextPlugin('build/[name].[chunkhash:8].css'),
-
-    // precompress files so that we don't need to gzip on the fly
+    new MiniCssExtractPlugin({
+      filename: 'build/[name].[chunkhash:8].css',
+    }),
     new CompressionPlugin({
-      filename: '[path].gz',
       algorithm: 'gzip',
-      test: /\.js$|\.css$|\.html$|\.eot?.+$|\.ttf?.+$|\.woff?.+$|\.svg?.+$/,
+      test: /\.(js|css|html|eot|ttf|woff|woff2|svg)$/,
       threshold: 10240,
       minRatio: 1.0,
     }),
@@ -159,7 +136,9 @@ module.exports = {
   },
   devtool: 'source-map',
   devServer: {
-    contentBase: [path.join(__dirname, 'pages')],
+    static: {
+      directory: path.join(__dirname, 'pages'),
+    },
     historyApiFallback: true,
     host: '0.0.0.0',
     port: 8000,

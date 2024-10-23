@@ -1,6 +1,8 @@
+@use "styles/vars";
+
 .admin-dashboard {
   .add-event-overlay {
-    background: rgba($primaryblue, 0.7);
+    background: rgba(vars.$primaryblue, 0.7);
     position: fixed;
     overflow: hidden;
     z-index: 12;
@@ -32,12 +34,12 @@
       overflow-y: scroll;
       background-color: white;
       transition: 0.25s ease-in-out;
-      box-shadow: 0px 0px 3px rgba($primaryblue, 0.7);
+      box-shadow: 0px 0px 3px rgba(vars.$primaryblue, 0.7);
 
       .cover-img {
         width: 100%;
         height: 240px;
-        background: $gray1;
+        background: vars.$gray1;
 
         img {
           height: 100%;
@@ -76,20 +78,20 @@
             font-size: 11px;
             font-family: "Lato", sans-serif;
             font-weight: bold;
-            color: $--secondaryblack;
+            color: vars.$secondaryblack;
             text-align: left;
             margin-bottom: 5px;
 
             span.info {
               font-size: 0.9em;
               font-weight: normal;
-              color: $gray2;
+              color: vars.$gray2;
             }
           }
 
           input {
             border-radius: 5px;
-            border: solid 1px $gray2;
+            border: solid 1px vars.$gray2;
             height: 16px;
             margin-bottom: 5px;
             padding: 7px;
@@ -98,7 +100,7 @@
             width: calc(100% - 14px);
 
             &:focus {
-              border: solid 1px $secondaryblue;
+              border: solid 1px vars.$secondaryblue;
             }
 
             &.error {
@@ -114,14 +116,14 @@
             outline: none;
             background: none;
             border-radius: 5px;
-            border: solid 1px $gray2;
+            border: solid 1px vars.$gray2;
             margin-bottom: 5px;
             padding: 7px;
             font-size: 14px;
             width: 100%;
 
             &:focus {
-              border: solid 1px $secondaryblue;
+              border: solid 1px vars.$secondaryblue;
             }
           }
 
@@ -133,7 +135,7 @@
             outline: none;
             background: none;
             border-radius: 5px;
-            border: solid 1px $gray2;
+            border: solid 1px vars.$gray2;
             margin-bottom: 5px;
             padding: 7px;
             font-size: 14px;
@@ -142,7 +144,7 @@
             resize: none;
 
             &:focus {
-              border: solid 1px $secondaryblue;
+              border: solid 1px vars.$secondaryblue;
             }
           }
 
@@ -264,7 +266,7 @@
       display: block;
       border-left: none;
       float: left;
-      border-right: 1px solid $--secondaryblack;
+      border-right: 1px solid vars.$secondaryblack;
       margin-right: 5px;
       padding-right: 5px;
 
@@ -301,7 +303,7 @@
   &.selected {
     .bottom {
       display: inherit;
-      border-top: 1px solid $--disabled;
+      border-top: 1px solid vars.$disabled;
     }
 
     .cover {
