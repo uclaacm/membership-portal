@@ -3,8 +3,8 @@
 # https://github.com/docker-library/php/issues/1177
 FROM alpine:3.13
 
-RUN apk add --no-cache python2 make gcc g++ nodejs yarn npm
-ENV PYTHONPATH /usr/lib/python2.7/site-packages
+RUN apk add --no-cache python3 make gcc g++ nodejs yarn npm
+ENV PYTHONPATH /usr/lib/python3.8/site-packages
 
 # create the working directory
 RUN mkdir -p /var/www/membership
