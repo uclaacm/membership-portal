@@ -4,5 +4,6 @@
   },
   "modulePaths": ["<rootDir>/src"],
   "testRegex": "tests/.*\\.tests?\\.(js|ts)$",
-  "moduleFileExtensions": ["ts", "js", "json", "node"]
+  "moduleFileExtensions": ["ts", "js", "json", "node"],
+  "setupFiles": ["<rootDir>/jest.setup.js"]
 }
