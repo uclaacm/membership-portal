@@ -36,7 +36,7 @@ services:
       - PG_DATABASE=postgres
       - GOOGLE_API_KEY=
       - GOOGLE_AUTH_DOMAIN=
-      - GOOGLE_CLIENT_ID=913307270840-751ad0psdu1q2a7m81np30g062osgpp5.apps.googleusercontent.com
+      - GOOGLE_CLIENT_ID=885057772085-en4tk48d3hjoi2vfundm2a6733ov4t7m.apps.googleusercontent.com
       - NODE_ENV=development
 
   test-backend:
@@ -62,7 +62,7 @@ services:
       - PG_DATABASE=postgres
       - GOOGLE_API_KEY=
       - GOOGLE_AUTH_DOMAIN=
-      - GOOGLE_CLIENT_ID=913307270840-751ad0psdu1q2a7m81np30g062osgpp5.apps.googleusercontent.com
+      - GOOGLE_CLIENT_ID=885057772085-en4tk48d3hjoi2vfundm2a6733ov4t7m.apps.googleusercontent.com
       - NODE_ENV=development
     
 volumes:
