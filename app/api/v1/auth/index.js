@@ -87,11 +87,7 @@ router.post("/login", (req, res, next) => {
     );
   };
 
-  client
-    .verifyIdToken({
-      idToken: req.body.tokenId,
-      audience: config.google.clientId,
-    })
+  client.verifyIdToken({ idToken: req.body.tokenId, requiredAudience: config.google.clientId })
     .then((ticket) => {
       const { email } = ticket.getPayload();
 
