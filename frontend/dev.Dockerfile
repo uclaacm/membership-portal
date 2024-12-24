@@ -1,17 +1,20 @@
 # Need a custom image here so that we can incorporate an npm build too
 # Alpine is super light
-FROM node:18-alpine
+FROM node:13.12.0-alpine
 
 # Work in the membership-portal-ui directory
 WORKDIR /var/www/membership-portal-ui
-COPY membership-portal-ui/package.json membership-portal-ui/yarn.lock ./
+COPY membership-portal-ui/package.json ./
 
-# Install Python 3, build tools, and node_modules
-RUN apk add --no-cache python3 make g++ && \
-    yarn install
+# Install Python 2 and other required dependencies
+RUN apk update && \
+    apk add python2 && \
+    apk add make && \
+    apk add g++ && \
+    yarn
 
-# Add Python 3 to the PATH environment variable
-ENV PATH="/usr/bin/python3:${PATH}"
+# Add Python 2 to the PATH environment variable
+ENV PATH="/usr/bin/python2:${PATH}"
 
 # Start the development server
-CMD ["yarn", "dev"]
+CMD ["/bin/sh", "-c", "(node -e 'require(\"node-sass\")' || npm rebuild node-sass) && yarn dev"]

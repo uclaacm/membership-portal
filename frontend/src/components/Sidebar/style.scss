@@ -1,4 +1,4 @@
-@use "styles/vars";
+@import "styles/vars";
 
 .sidebar {
   position: fixed;
@@ -7,13 +7,13 @@
   bottom: 0;
   z-index: 9;
   overflow-y: scroll;
-  width: vars.$sidebar-width;
+  width: $sidebar-width;
   height: auto;
   min-height: 100%;
   transition: left 0.125s ease-in-out;
 
-  background: vars.$primaryblue;
-  color: vars.$white;
+  background: $primaryblue;
+  color: $white;
 
   .sidebar-container {
     min-height: 680px; /* nit: not *needed* for admin view */
@@ -32,9 +32,9 @@
       height: 150px;
       width: 150px;
       margin: auto;
-      margin-bottom: 1.5 * vars.$sidebar-vertical-spacing;
+      margin-bottom: 1.5 * $sidebar-vertical-spacing;
       background-color: white;
-      border: 5px solid vars.$white;
+      border: 5px solid $white;
       border-radius: 50%;
       background-position: center center;
       background-size: cover;
@@ -42,65 +42,65 @@
   }
 
   .org {
-    font-size: vars.$org-fontsize;
-    color: vars.$quaternary-color;
+    font-size: $org-fontsize;
+    color: $quaternary-color;
   }
 
   .username {
     margin-top: 5px;
     margin-bottom: 5px;
-    font-size: vars.$username-fontsize;
+    font-size: $username-fontsize;
   }
 
   .pos {
-    font-size: vars.$pos-fontsize;
-    margin-bottom: 2 * vars.$sidebar-vertical-spacing;
-    color: vars.$quaternary-color;
+    font-size: $pos-fontsize;
+    margin-bottom: 2 * $sidebar-vertical-spacing;
+    color: $quaternary-color;
   }
 
   .navigation {
     text-align: center;
 
     a.selected .navigation-tile {
-      background: vars.$white;
+      background: $white;
       box-shadow: 0 0px 0 0 #c0c0c0;
       transform: translateY(4px);
       .icon,
       p {
-        color: vars.$secondaryblue;
+        color: $secondaryblue;
       }
     }
 
     .navigation-tile {
-      background: vars.$secondaryblue;
+      background: $secondaryblue;
       width: 120.5px;
       height: 115px;
       border-radius: 5px;
-      background-color: vars.$secondaryblue;
+      background-color: $secondaryblue;
       box-shadow: 0 4px 0 0 #2f46bc;
-      color: vars.$white;
+      color: $white;
       margin: 7px;
       display: inline-block;
       transition: 0.125s;
       transition-timing-function: ease-in-out;
       .icon {
         height: 40px;
-        color: vars.$white;
+        color: $white;
         margin-top: 32px;
       }
 
       &:hover {
-        background: vars.$secondaryblue-dark;
+        background: $secondaryblue-dark;
       }
 
       &:active,
       &.selected {
-        background: vars.$white;
+        background: $white;
         box-shadow: 0 0px 0 0 #c0c0c0;
         transform: translateY(4px);
         .icon,
         p {
-          color: vars.$secondaryblue;
+          color: $secondaryblue;
         }
       }
     }
@@ -109,15 +109,15 @@
   .points-component {
     position: fixed;
     bottom: 0px;
-    width: vars.$sidebar-width;
+    width: $sidebar-width;
     margin: 0 auto;
     // padding-left: 25px;              //this is 10% of sidebar width I believe. There's some inline styling that must be accounted for too.. :(
-    background: vars.$secondaryblue;
+    background: $secondaryblue;
     padding-top: 10px;
     padding-bottom: 10px;
 
     .points-wrapper {
-      background: vars.$secondaryblue;
+      background: $secondaryblue;
       padding-left: 25px;
     }
 
@@ -127,7 +127,7 @@
       margin: 4px 0px;
       position: relative;
       border-radius: 4px;
-      background: vars.$tertiary-color;
+      background: $tertiary-color;
     }
 
     .level-font {
@@ -135,7 +135,7 @@
     }
 
     .points-earned {
-      background: vars.$white;
+      background: $white;
       border-radius: 4px;
       position: absolute;
       display: inline-block;
@@ -153,10 +153,10 @@
   .leaderboard {
     position: absolute;
     bottom: 0px;
-    width: vars.$sidebar-width;
+    width: $sidebar-width;
     border: 0px;
-    background: vars.$secondary-color;
-    color: vars.$white;
+    background: $secondary-color;
+    color: $white;
     font-size: 12px;
     height: 40px;
     display: block;

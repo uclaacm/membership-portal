@@ -1,21 +1,22 @@
-@use "components/Topbar/style" as topbarStyle;
-@use "components/Sidebar/style" as sidebarStyle;
-@use "components/Button/style" as buttonStyle;
-@use "components/Loader/style" as loaderStyle;
-@use "components/OverlayPopup/style" as overlayPopupStyle;
-@use "components/BannerMessage/style" as bannerMessageStyle;
-@use "components/ControlPanel/style" as controlPanelStyle;
-@use "components/Login/style" as loginStyle;
-@use "components/Register/style" as registerStyle;
+@import "components/Topbar/style";
+@import "components/Sidebar/style";
+@import "components/Button/style";
+@import "components/Loader/style";
+@import "components/OverlayPopup/style";
+@import "components/BannerMessage/style";
+@import "components/ControlPanel/style";
+@import "components/Login/style";
+@import "components/Register/style";
 
-@use "components/Events/style" as eventsStyle;
-@use "components/Profile/style" as profileStyle;
-@use "components/Resources/style" as resourcesStyle;
-@use "components/Leaderboard/style" as leaderboardStyle;
-@use "components/Modal/style" as modalStyle;
+@import "components/Events/style";
+@import "components/Profile/style";
+@import "components/Resources/style";
+@import "components/Leaderboard/style";
+@import "components/ControlPanel/style";
+@import "components/Modal/style";
 
-@use "./styles/vars";
-@use "./styles/fonts";
+@import "./styles/vars";
+@import "./styles/fonts";
 
 html,
 body {

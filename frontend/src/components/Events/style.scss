@@ -1,6 +1,6 @@
-@use "./UserEvents/style" as userEventsStyle;
-@use "./AdminEvents/style" as adminEventsStyle;
-@use "styles/vars";
+@import "./UserEvents/style";
+@import "./AdminEvents/style";
+@import "styles/vars";
 
 .hidden {
   display: none;
@@ -11,7 +11,7 @@
 }
 
 .events-dashboard {
-  margin-left: vars.$sidebar-width;
+  margin-left: $sidebar-width;
   box-sizing: padding-box;
   padding: 30px;
   overflow: visible;

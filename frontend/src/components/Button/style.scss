@@ -1,6 +1,4 @@
-@use "sass:math";
-
-@use "styles/vars";
+@import "styles/vars";
 
 .hidden {
   display: none;
@@ -17,13 +15,13 @@
     border: none;
     outline: none;
 
-    color: vars.$white;
+    color: $white;
     text-align: center;
-    border-radius: vars.$input-button-size;
-    font-size: vars.$checkin-fontsize;
-    line-height: vars.$input-button-size;
-    height: vars.$input-button-size;
-    padding: 0px vars.$sidebar-vertical-spacing + 15px;
+    border-radius: $input-button-size;
+    font-size: $checkin-fontsize;
+    line-height: $input-button-size;
+    height: $input-button-size;
+    padding: 0px $sidebar-vertical-spacing + 15px;
 
     transition: 0.125s ease-in-out;
   }
@@ -45,8 +43,8 @@
   }
 
   .small {
-    height: vars.$input-button-size * math.div(2, 3);
-    line-height: vars.$input-button-size * math.div(2, 3);
+    height: $input-button-size * (2/3);
+    line-height: $input-button-size * (2/3);
     font-size: 14px;
   }
 
@@ -55,29 +53,29 @@
   }
 
   .blue {
-    background: vars.$secondaryblue;
-    box-shadow: 0 4px 0 vars.$primaryblue;
+    background: $secondaryblue;
+    box-shadow: 0 4px 0 $primaryblue;
   }
 
   .blue-signup {
-    background: vars.$secondaryblue;
+    background: $secondaryblue;
     box-shadow: 0 4px 0 #2e419d;
   }
 
   .green {
-    background: vars.$light-green;
-    box-shadow: 0 4px 0 vars.$dark-green;
+    background: $light-green;
+    box-shadow: 0 4px 0 $dark-green;
   }
 
   .red {
-    background: vars.$light-red;
-    box-shadow: 0 4px 0 vars.$dark-red;
+    background: $light-red;
+    box-shadow: 0 4px 0 $dark-red;
   }
 
   .gray {
-    background: vars.$white;
-    box-shadow: 0 4px 0 vars.$gray1;
-    color: vars.$black;
+    background: $white;
+    box-shadow: 0 4px 0 $gray1;
+    color: $black;
   }
 
   .disabled {
@@ -86,13 +84,13 @@
     cursor: default;
     -webkit-transform: translateY(4px);
     transform: translateY(4px);
-    box-shadow: 0 0px 0 vars.$gray1;
+    box-shadow: 0 0px 0 $gray1;
   }
 
   .blue:hover {
     -webkit-transform: translateY(1px);
     transform: translateY(1px);
-    box-shadow: 0 3px 0 vars.$primaryblue;
+    box-shadow: 0 3px 0 $primaryblue;
   }
 
   .blue-signup:hover {
@@ -104,26 +102,26 @@
   .green:hover {
     -webkit-transform: translateY(1px);
     transform: translateY(1px);
-    box-shadow: 0 3px 0 vars.$dark-green;
+    box-shadow: 0 3px 0 $dark-green;
   }
 
   .red:hover {
     -webkit-transform: translateY(1px);
     transform: translateY(1px);
-    box-shadow: 0 3px 0 vars.$dark-red;
+    box-shadow: 0 3px 0 $dark-red;
   }
 
   .gray:hover {
     -webkit-transform: translateY(1px);
     transform: translateY(1px);
-    box-shadow: 0 3px 0 vars.$gray1;
-    color: vars.$black;
+    box-shadow: 0 3px 0 $gray1;
+    color: $black;
   }
 
   .blue:active {
     -webkit-transform: translateY(4px);
     transform: translateY(4px);
-    box-shadow: 0 0px 0 vars.$primaryblue;
+    box-shadow: 0 0px 0 $primaryblue;
   }
 
   .blue-signup:active {
@@ -135,25 +133,25 @@
   .green:active {
     -webkit-transform: translateY(4px);
     transform: translateY(4px);
-    box-shadow: 0 0px 0 vars.$dark-green;
+    box-shadow: 0 0px 0 $dark-green;
   }
 
   .red:active {
     -webkit-transform: translateY(4px);
     transform: translateY(4px);
-    box-shadow: 0 0px 0 vars.$dark-red;
+    box-shadow: 0 0px 0 $dark-red;
   }
 
   .gray:active {
     -webkit-transform: translateY(4px);
     transform: translateY(4px);
-    box-shadow: 0 0px 0 vars.$gray1;
-    color: vars.$black;
+    box-shadow: 0 0px 0 $gray1;
+    color: $black;
   }
 
   .event-button {
-    background: vars.$secondaryblue;
-    width: vars.$event-img-width;
+    background: $secondaryblue;
+    width: $event-img-width;
     height: 34px;
     font-size: 14px;
   }

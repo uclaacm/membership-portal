@@ -1,5 +1,3 @@
-@use "./vars";
-
 /*
 	Import font files
 */
@@ -98,7 +96,7 @@
   font-size: 64px;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.2);
-  color: vars.$disabled;
+  color: $--disabled;
 }
 
 .Mega-2Secondary {
@@ -106,7 +104,7 @@
   font-size: 64px;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.6);
-  color: vars.$secondaryblack;
+  color: $--secondaryblack;
 }
 
 .Mega-2Primary {
@@ -127,7 +125,7 @@
   font-family: Lato;
   font-size: 64px;
   color: rgba(0, 0, 0, 0.2);
-  color: vars.$disabled;
+  color: $--disabled;
 }
 
 .MegaAccented {
@@ -152,7 +150,7 @@
   font-family: Lato;
   font-size: 64px;
   color: rgba(0, 0, 0, 0.6);
-  color: vars.$secondaryblack;
+  color: $--secondaryblack;
 }
 
 .Large-2White {
@@ -174,7 +172,7 @@
   font-size: 48px;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.2);
-  color: vars.$disabled;
+  color: $--disabled;
 }
 
 .Large-2Secondary {
@@ -182,7 +180,7 @@
   font-size: 48px;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.6);
-  color: vars.$secondaryblack;
+  color: $--secondaryblack;
 }
 
 .Large-2Accented {
@@ -202,7 +200,7 @@
   font-family: Lato;
   font-size: 48px;
   color: rgba(0, 0, 0, 0.6);
-  color: vars.$secondaryblack;
+  color: $--secondaryblack;
 }
 
 .LargeAccented {
@@ -221,7 +219,7 @@
   font-family: Lato;
   font-size: 48px;
   color: rgba(0, 0, 0, 0.2);
-  color: vars.$disabled;
+  color: $--disabled;
 }
 
 .Display-2Disabled {
@@ -229,7 +227,7 @@
   font-size: 36px;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.2);
-  color: vars.$disabled;
+  color: $--disabled;
 }
 
 .Display-2Accented {
@@ -258,7 +256,7 @@
   font-size: 36px;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.6);
-  color: vars.$secondaryblack;
+  color: $--secondaryblack;
 }
 
 .DisplayAccented {
@@ -277,7 +275,7 @@
   font-family: Lato;
   font-size: 36px;
   color: rgba(0, 0, 0, 0.2);
-  color: vars.$disabled;
+  color: $--disabled;
 }
 
 .DisplayPrimary {
@@ -290,7 +288,7 @@
   font-family: Lato;
   font-size: 36px;
   color: rgba(0, 0, 0, 0.6);
-  color: vars.$secondaryblack;
+  color: $--secondaryblack;
 }
 
 .Headline-2Accented {
@@ -305,7 +303,7 @@
   font-size: 24px;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.6);
-  color: vars.$secondaryblack;
+  color: $--secondaryblack;
 }
 
 .Headline-2Primary {
@@ -327,7 +325,7 @@
   font-size: 24px;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.2);
-  color: vars.$disabled;
+  color: $--disabled;
 }
 
 .HeadlineAccented {
@@ -340,7 +338,7 @@
   font-family: Lato;
   font-size: 24px;
   color: rgba(0, 0, 0, 0.6);
-  color: vars.$secondaryblack;
+  color: $--secondaryblack;
 }
 
 .HeadlinePrimary {
@@ -359,7 +357,7 @@
   font-family: Lato;
   font-size: 24px;
   color: rgba(0, 0, 0, 0.2);
-  color: vars.$disabled;
+  color: $--disabled;
 }
 
 .Title-2Accented {
@@ -374,7 +372,7 @@
   font-size: 20px;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.2);
-  color: vars.$disabled;
+  color: $--disabled;
 }
 
 .Title-2Secondary {
@@ -382,7 +380,7 @@
   font-size: 20px;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.6);
-  color: vars.$secondaryblack;
+  color: $--secondaryblack;
 }
 
 .Title-2Primary {
@@ -421,14 +419,14 @@
   font-family: Lato;
   font-size: 20px;
   color: rgba(0, 0, 0, 0.6);
-  color: vars.$secondaryblack;
+  color: $--secondaryblack;
 }
 
 .TitleDisabled {
   font-family: Lato;
   font-size: 20px;
   color: rgba(0, 0, 0, 0.2);
-  color: vars.$disabled;
+  color: $--disabled;
 }
 
 .Body-2White {
@@ -443,7 +441,7 @@
   font-size: 14px;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.6);
-  color: vars.$secondaryblack;
+  color: $--secondaryblack;
 }
 
 .Subheader-2Primary {
@@ -458,7 +456,7 @@
   font-size: 14px;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.2);
-  color: vars.$disabled;
+  color: $--disabled;
 }
 
 .Body-2Accented {
@@ -473,7 +471,7 @@
   font-size: 14px;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.2);
-  color: vars.$disabled;
+  color: $--disabled;
 }
 
 .Subheader-2White {
@@ -495,7 +493,7 @@
   font-size: 14px;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.6);
-  color: vars.$secondaryblack;
+  color: $--secondaryblack;
 }
 
 .Subheader-2Accented {
@@ -521,7 +519,7 @@
   font-family: Lato;
   font-size: 14px;
   color: rgba(0, 0, 0, 0.2);
-  color: vars.$disabled;
+  color: $--disabled;
 }
 
 .BodyAccented {
@@ -533,7 +531,7 @@
 .BodySecondary {
   font-family: Lato;
   font-size: 14px;
-  color: vars.$secondaryblack;
+  color: $--secondaryblack;
 }
 
 .SubheaderPrimary {
@@ -546,7 +544,7 @@
   font-family: Lato;
   font-size: 14px;
   color: rgba(0, 0, 0, 0.6);
-  color: vars.$secondaryblack;
+  color: $--secondaryblack;
 }
 
 .BodyWhite {
@@ -565,7 +563,7 @@
   font-family: Lato;
   font-size: 14px;
   color: rgba(0, 0, 0, 0.2);
-  color: vars.$disabled;
+  color: $--disabled;
 }
 
 .Caption-2Disabled {
@@ -573,7 +571,7 @@
   font-size: 11px;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.2);
-  color: vars.$disabled;
+  color: $--disabled;
 }
 
 .Caption-2Secondary {
@@ -581,7 +579,7 @@
   font-size: 11px;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.6);
-  color: vars.$secondaryblack;
+  color: $--secondaryblack;
 }
 
 .Caption-2White {
@@ -602,7 +600,7 @@
   font-family: Lato;
   font-size: 11px;
   color: rgba(0, 0, 0, 0.6);
-  color: vars.$secondaryblack;
+  color: $--secondaryblack;
 }
 
 .CaptionAccented {
@@ -633,7 +631,7 @@
   font-family: Lato;
   font-size: 11px;
   color: rgba(0, 0, 0, 0.2);
-  color: vars.$disabled;
+  color: $--disabled;
 }
 
 .Small-2Accented {
@@ -648,7 +646,7 @@
   font-size: 9px;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.6);
-  color: vars.$secondaryblack;
+  color: $--secondaryblack;
 }
 
 .Small-2Disabled {
@@ -656,7 +654,7 @@
   font-size: 9px;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.2);
-  color: vars.$disabled;
+  color: $--disabled;
 }
 
 .Small-2White {
@@ -683,14 +681,14 @@
   font-family: Lato;
   font-size: 9px;
   color: rgba(0, 0, 0, 0.2);
-  color: vars.$disabled;
+  color: $--disabled;
 }
 
 .SmallSecondary {
   font-family: Lato;
   font-size: 9px;
   color: rgba(0, 0, 0, 0.6);
-  color: vars.$secondaryblack;
+  color: $--secondaryblack;
 }
 
 .SmallPrimary {
