@@ -8,6 +8,7 @@ const jwt = require('jsonwebtoken');
 const API_ROUTE = '/app/api/v1/';
 const route = name => API_ROUTE + name;
 
+
 beforeAll(async () => {
   await setup;
 });
@@ -16,7 +17,9 @@ afterAll(() => {
   server.close();
 });
 
+
 describe('Health Tests', () => {
+
   test('Should respond with correct properties and status', async () => {
     const response = await request(server).get(route('health'));
     expect(response.statusCode).toBe(200);
@@ -24,9 +27,12 @@ describe('Health Tests', () => {
     expect(response.body).toHaveProperty('memory');
     expect(response.body).toHaveProperty('uptime');
   });
+
 });
 
+
 describe('Auth Tests', () => {
+
   test('Expect error on no OAuth token', async () => {
     const authResponse = await request(server).post(route('auth/login'));
     expect(authResponse.statusCode).toBe(400);
@@ -41,51 +47,55 @@ describe('Auth Tests', () => {
     expect(authResponse.error).toBeTruthy();
     expect(authResponse.statusCode).toBe(500);
   });
+
 });
 
+
 describe('User Tests', () => {
-  // TODO: This should be extracted from auth
-  const getJWTToken = user => new Promise((res, rej) => jwt.sign(
-    {
-      uuid: user.getDataValue('uuid'),
-      admin: user.isAdmin(),
-      superAdmin: user.isSuperAdmin(),
-      registered: !user.isPending(),
-    },
-    config.session.secret,
-    { expiresIn: 3600 },
-    (err, jwtToken) => {
-      if (err) rej(err);
-      Activity.accountLoggedIn(user.uuid);
-      res(jwtToken);
-    },
-  ));
+
+  //TODO: This should be extracted from auth
+  const getJWTToken = async (user) => {
+    return await new Promise((res, rej) => jwt.sign(
+      {
+        uuid: user.getDataValue('uuid'),
+        admin: user.isAdmin(),
+        superAdmin: user.isSuperAdmin(),
+        registered: !user.isPending(),
+      },
+      config.session.secret,
+      { expiresIn: 3600 },
+      (err, jwt_token) => {
+        if (err) rej(err);
+        Activity.accountLoggedIn(user.uuid);
+        res(jwt_token);
+      },
+    ));
+  }
 
   let testUser;
-  // let testAdmin; // TODO: implement test admin user
-  // let testPendingUser; // TODO: implement test pending user
+  let testAdmin; //TODO: implement test admin user
+  let testPendingUser; //TODO: implement test pending user
   let testToken;
 
-  // Generate unique user before each test
   beforeEach(async () => {
-    const uniqueEmail = `testuser${Date.now()}@testemail.com`; // Unique email
     testUser = await User.create({
-      email: uniqueEmail, // Use unique email here
-      firstName: 'TEST_FIRST_NAME',
-      lastName: 'TEST_LAST_NAME',
-      accessType: 'STANDARD',
-      state: 'ACTIVE',
+      email: "testuser@testemail.com",
+      firstName: "TEST_FIRST_NAME",
+      lastName: "TEST_LAST_NAME",
+      accessType: "STANDARD",
+      state: "ACTIVE",
       year: 5,
-      major: 'Undeclared',
+      major: "Undeclared",
     });
-    Activity.accountCreated(testUser.uuid);
+    Activity.accountCreated(testUser.uuid)
     testToken = await getJWTToken(testUser);
   });
 
   afterEach(async () => {
-    await testUser.destroy();
+    testUser.destroy();
     testToken = undefined;
   });
+
 
   test('Get User info', async () => {
     const userResponse = await request(server).get(route('user')).auth(testToken, { type: 'bearer' });
@@ -101,9 +111,11 @@ describe('User Tests', () => {
     expect(userResponse.statusCode).toBe(401);
   });
 
+
   describe('Test update User', () => {
+    
     test('Invalid update body', async () => {
-      const patchResponse = await request(server).patch(route('user')).auth(testToken, { type: 'bearer' });
+      const patchResponse = await request(server).patch(route('user')).auth(testToken, { type: 'bearer'});
       expect(patchResponse.error).toBeTruthy();
       expect(patchResponse.statusCode).toBe(400);
     });
@@ -114,28 +126,33 @@ describe('User Tests', () => {
       expect(patchResponse.statusCode).toBe(401);
     });
 
-    test('Unauthorized pending User', async () => {
+    test("Unauthorized pending User", async () => {
       // TODO: implement tests
     });
+
   });
 
+
   describe('Test User activities', () => {
+
     test('Has ACCOUNT_CREATE activity', async () => {
       const activityResponse = await request(server).get(route('user/activity')).auth(testToken, { type: 'bearer' });
       expect(activityResponse.error).toBeFalsy();
       expect(activityResponse.body.activity).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            type: 'ACCOUNT_CREATE',
-          }),
-        ]),
-      );
+            type: "ACCOUNT_CREATE"
+          })
+        ])
+      )
     });
-
+  
     test('Unauthorized get User activity', async () => {
       const activityResponse = await request(server).get(route('user/activity'));
       expect(activityResponse.error).toBeDefined();
       expect(activityResponse.statusCode).toBe(401);
     });
+
   });
+
 });
