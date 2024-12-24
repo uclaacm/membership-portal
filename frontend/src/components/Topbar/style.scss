@@ -1,4 +1,4 @@
-@import "styles/vars";
+@use "styles/vars";
 
 .topbar {
   position: fixed;
@@ -7,8 +7,8 @@
   top: -80px;
   left: 0;
   z-index: 9;
-  background: $primaryblue;
-  color: $white;
+  background: vars.$primaryblue;
+  color: vars.$white;
   transition: top 0.125s ease-in-out;
 
   @media (max-width: 700px) {
@@ -21,8 +21,8 @@
   }
 
   a.selected .navigation-item {
-    color: $secondaryblue;
-    background-color: $white;
+    color: vars.$secondaryblue;
+    background-color: vars.$white;
   }
 
   .navigation-item {
@@ -38,8 +38,8 @@
     transition: 0.125s ease-in-out;
 
     &:hover {
-      color: $secondaryblue;
-      background-color: $white;
+      color: vars.$secondaryblue;
+      background-color: vars.$white;
       cursor: pointer;
     }
   }

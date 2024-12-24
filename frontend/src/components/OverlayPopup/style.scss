@@ -1,3 +1,5 @@
+@use "styles/vars";
+
 .overlay {
   position: fixed;
   top: 0;
@@ -5,7 +7,7 @@
   height: 100%;
   width: 100%;
   z-index: 11;
-  background: $primaryblue-alpha;
+  background: vars.$primaryblue-alpha;
 }
 
 .overlay-popup {
@@ -29,13 +31,13 @@
   h2 {
     text-align: center;
     padding: 40px 20px 0px 20px;
-    color: $primaryblack;
+    color: vars.$primaryblack;
   }
 
   h3 {
     text-align: center;
     padding-top: 10px;
-    color: $primaryblack;
+    color: vars.$primaryblack;
   }
 
   .points {
@@ -50,10 +52,10 @@
 
     input[type="text"],
     input[type="password"] {
-      border: 1px solid $gray2;
+      border: 1px solid vars.$gray2;
       border-radius: 5px;
       box-sizing: border-box;
-      width: $sidebar-input-width;
+      width: vars.$sidebar-input-width;
       height: 30px;
       padding: 5px;
       margin-top: 5px;
@@ -61,7 +63,7 @@
     }
 
     span.error {
-      color: $light-red;
+      color: vars.$light-red;
       display: inline-block;
       margin-bottom: 10px;
     }

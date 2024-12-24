@@ -1,3 +1,5 @@
+@use "styles/vars";
+
 .banner-message {
   position: fixed;
   left: 0px;
@@ -16,14 +18,14 @@
 
   &.success {
     color: white;
-    background: $light-green;
-    // border-bottom: 1px solid $dark-green;
+    background: vars.$light-green;
+    // border-bottom: 1px solid vars.$dark-green;
   }
 
   &.error {
     color: white;
-    background: $light-red;
-    // border-bottom: 1px solid $dark-red;
+    background: vars.$light-red;
+    // border-bottom: 1px solid vars.$dark-red;
   }
 
   &.showing {

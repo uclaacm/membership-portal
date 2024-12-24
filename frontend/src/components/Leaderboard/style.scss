@@ -1,11 +1,11 @@
-@import "styles/vars";
+@use "styles/vars";
 
 .hidden {
   display: none;
 }
 
 .leaderboard-wrapper {
-  margin-left: $sidebar-width;
+  margin-left: vars.$sidebar-width;
   padding: 30px;
   overflow: visible;
   transition: margin-left 0.125s ease-in-out;
@@ -66,7 +66,7 @@
       .rank {
         font-size: 1.2em;
         font-weight: bold;
-        color: $secondaryblue;
+        color: vars.$secondaryblue;
       }
 
       .name {
@@ -180,7 +180,7 @@
       font-weight: bold;
       font-size: 1.05em;
       color: white;
-      background: $secondaryblue;
+      background: vars.$secondaryblue;
       // font-size: 1.1em;
 
       &.name div img {
