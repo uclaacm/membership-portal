@@ -112,6 +112,7 @@ export default class Profile extends React.Component {
       );
 
     const { currLevel, nextLevel } = Utils.getLevel(this.props.profile.points);
+    const { adminView, toggleAdminView, isAdmin } = this.props
     return (
       <div>
         <BannerMessage
@@ -185,6 +186,12 @@ export default class Profile extends React.Component {
           <div className="divider" />
           <div className="form-elem">
             <Button className="profile-action-button" style="red" text="Sign Out" onClick={this.props.logout} />
+            {isAdmin && <Button
+            className="control-panel-action-button"
+            color="blue"
+            text={adminView ? "Switch to Member View" : "Switch to Admin View"}
+            onClick={toggleAdminView}
+          /> }
           </div>
 
           <div className="divider" />

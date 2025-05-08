@@ -9,7 +9,12 @@ export default class LeaderboardComponent extends React.Component {
       <div className="leaderboard">
         <Topbar />
         <Sidebar />
-        <Leaderboard leaderboard={this.props.leaderboard} user={this.props.user} error={this.props.error} />
+        <Leaderboard 
+          leaderboard={this.props.leaderboard} 
+          user={this.props.user} 
+          error={this.props.error}
+          isAdmin={this.props.isAdmin}
+        />
       </div>
     );
   }

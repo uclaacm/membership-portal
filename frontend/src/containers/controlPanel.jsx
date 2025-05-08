@@ -50,6 +50,8 @@ class ControlPanel extends React.Component {
       oneClickUpdated,
       oneClickUpdateSuccess,
       oneClickError,
+      adminView,
+      toggleAdminView,
     } = this.props;
     return (
       <ControlPanelComponent
@@ -66,6 +68,8 @@ class ControlPanel extends React.Component {
         oneClickUpdated={oneClickUpdated}
         oneClickUpdateSuccess={oneClickUpdateSuccess}
         oneClickError={oneClickError}
+        adminView={adminView}
+        toggleAdminView={toggleAdminView}
       />
     );
   }
@@ -81,6 +85,7 @@ const mapStateToProps = state => ({
   oneClickUpdated: state.OneClick.get("updated"),
   oneClickUpdateSuccess: state.OneClick.get("updateSuccess"),
   oneClickError: state.OneClick.get("error"),
+  adminView: state.Auth.get("adminView"),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -123,6 +128,10 @@ const mapDispatchToProps = dispatch => ({
   updateDone: () => {
     dispatch(Action.ChangeOneClickPasswordDone());
   },
+
+  toggleAdminView: () => {
+    dispatch(Action.ToggleAdminView());
+  },
 });
 
 ControlPanel.propTypes = {
@@ -141,6 +150,8 @@ ControlPanel.propTypes = {
   oneClickUpdated: PropTypes.bool.isRequired,
   oneClickUpdateSuccess: PropTypes.bool.isRequired,
   oneClickError: PropTypes.string.isRequired,
+  adminView: PropTypes.bool.isRequired,
+  toggleAdminView: PropTypes.func.isRequired,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ControlPanel);

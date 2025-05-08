@@ -5,7 +5,7 @@ import thunk from "redux-thunk";
 
 import { User, FetchUser, UpdateUser, UserUpdateDone, FetchActivity } from "./user";
 import { Admins, FetchAdmins, AddAdmin, DeleteAdmin, ChangeSuperAdmin } from "./admins";
-import { Auth, LoginUser, LogoutUser, RefreshToken } from "./auth";
+import { Auth, LoginUser, LogoutUser, RefreshToken, ToggleAdminView } from "./auth";
 import { OneClick, ChangeOneClickPassword, ChangeOneClickPasswordDone } from "./oneclick";
 import {
   Events,
@@ -43,6 +43,7 @@ const Action = {
   LoginUser,
   LogoutUser,
   RefreshToken,
+  ToggleAdminView,
   ChangeOneClickPassword,
   ChangeOneClickPasswordDone,
   FetchUser,

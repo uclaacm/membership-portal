@@ -21,6 +21,8 @@ export default class ControlPanelComponent extends React.Component {
       oneClickUpdated,
       oneClickUpdateSuccess,
       oneClickError,
+      adminView,
+      toggleAdminView,
     } = this.props;
     return (
       <div className="controlpanel">
@@ -40,6 +42,8 @@ export default class ControlPanelComponent extends React.Component {
           oneClickUpdated={oneClickUpdated}
           oneClickUpdateSuccess={oneClickUpdateSuccess}
           oneClickError={oneClickError}
+          adminView={adminView}
+          toggleAdminView={toggleAdminView}
         />
       </div>
     );
@@ -60,4 +64,6 @@ ControlPanelComponent.propTypes = {
   oneClickUpdated: PropTypes.bool.isRequired,
   oneClickUpdateSuccess: PropTypes.bool.isRequired,
   oneClickError: PropTypes.string.isRequired,
+  adminView: PropTypes.bool.isRequired,
+  toggleAdminView: PropTypes.func.isRequired,
 };

@@ -9,16 +9,27 @@ import ProfilePicture from "./profilePicture";
 
 export default class Sidebar extends React.Component {
   render() {
+    const { isAdmin, isSuperAdmin, adminView } = this.props;
+    
+    // If an admin is in member view, show them the member sidebar
+    const showAdminView = isAdmin && adminView;
+    
     return (
       <div className="sidebar">
         <div className="sidebar-container">
-          <ProfilePicture picture={this.props.isAdmin ? Config.organization.logo : this.props.picture} />
+          <ProfilePicture picture={showAdminView ? Config.organization.logo : this.props.picture} />
           <Organization org={Config.organization.shortName} />
           <Username
-            username={this.props.isSuperAdmin ? "Super Admin" : this.props.isAdmin ? "Admin" : this.props.username}
+            username={
+              isSuperAdmin && showAdminView
+                ? "Super Admin"
+                : showAdminView
+                ? "Admin"
+                : this.props.username
+            }
           />
-          <Navigation isAdmin={this.props.isAdmin} />
-          {!this.props.isAdmin && <Points points={this.props.points} />}
+          <Navigation isAdmin={showAdminView} />
+          {!showAdminView && <Points points={this.props.points} />}
         </div>
       </div>
     );
