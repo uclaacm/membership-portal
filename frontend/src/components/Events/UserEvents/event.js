@@ -20,11 +20,10 @@ export default class EventCard extends React.Component {
     const { event } = this.props;
     const className = `event-card user-card${this.state.selected ? ' selected' : ''}`;
     return (
-      <div className={className} onClick={this.handleClick}>
-        <div className="cover" style={{ backgroundImage: `url(${event.cover})` }}>
+      <div className="event-card" onClick={this.handleClick}>
+        <div className="cover" style={{ backgroundImage: `linear-gradient(to bottom, #cce5ff, #005bea), url(${event.cover})` }}>
           <div className="points-container">
-            <div className="points Headline-2Secondary">{event.attendancePoints}</div>
-            <div className="label SubheaderSecondary">pts</div>
+            <span className="points">{event.attendancePoints} PTS</span>
           </div>
           {this.props.event.checkedIn && (
             <div className="attended-container">

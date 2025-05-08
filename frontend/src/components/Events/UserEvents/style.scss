@@ -23,23 +23,22 @@
 }
 
 .user-dashboard .event-card {
-  display: inline-block;
-  vertical-align: top;
+  /* Remove inline-block and set flex properties here */
+  display: flex;
+  flex-direction: column;
   text-align: left;
-  width: 320px;
   margin: 20px;
   border-radius: 4px;
   box-shadow: 0px 0px 3px #d2d2d2;
   background-color: white;
   transition: 0.125s ease-in-out;
-  // border: 3px solid vars.$light-green;
 
   @media (max-width: 690px) {
     margin: 20px 0px;
   }
 
   @media (max-width: 340px) {
-    width: 300px;
+    width: 100%;
   }
 
   &:hover {
@@ -171,5 +170,88 @@
     .location {
       padding-bottom: 0px;
     }
+  }
+}
+
+.event-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px; /* Spacing between cards */
+  justify-content: flex-start;
+  padding: 20px 0;
+}
+
+.event-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s;
+}
+
+.event-card:hover {
+  transform: translateY(-4px);
+}
+
+.cover {
+  height: 140px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.points-container {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.attended-container {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  background: rgba(0, 128, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+}
+
+.content {
+  padding: 12px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.event-card h2 {
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 0 0 5px;
+}
+
+.event-card .location,
+.event-card .committee {
+  font-size: 0.85rem;
+  color: #555;
+  margin: 0;
+}
+
+.event-link {
+  margin-top: 10px;
+  align-self: flex-start;
+}
+
+
+@media (max-width: 600px) {
+  .event-grid {
+    justify-content: center;
   }
 }
