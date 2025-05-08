@@ -1,11 +1,11 @@
-import React from "react";
-import { connect } from "react-redux";
+import React from 'react';
+import { connect } from 'react-redux';
 
-import { Action } from "reducers";
-import Topbar from "containers/topbar";
-import Sidebar from "containers/sidebar";
-import UserEvents from "components/Events/UserEvents";
-import AdminEvents from "components/Events/AdminEvents";
+import { Action } from 'reducers';
+import Topbar from 'containers/topbar';
+import Sidebar from 'containers/sidebar';
+import UserEvents from 'components/Events/UserEvents';
+import AdminEvents from 'components/Events/AdminEvents';
 
 class Events extends React.Component {
   componentWillMount() {
@@ -81,7 +81,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(Action.GetCurrentEvents());
   },
 
-  checkIn: id => {
+  checkIn: (id) => {
     dispatch(Action.CheckInto(id));
   },
 
@@ -89,11 +89,11 @@ const mapDispatchToProps = dispatch => ({
     dispatch(Action.ResetCheckIn());
   },
 
-  addEvent: event => {
+  addEvent: (event) => {
     dispatch(Action.PostNewEvent(event));
   },
 
-  updateEvent: event => {
+  updateEvent: (event) => {
     dispatch(Action.UpdateEvent(event));
   },
 

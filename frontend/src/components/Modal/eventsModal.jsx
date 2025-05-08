@@ -1,10 +1,12 @@
-import React from "react";
-import PropTypes from "prop-types";
-import Button from "components/Button";
+import React from 'react';
+import PropTypes from 'prop-types';
+import Button from 'components/Button';
 
 export default class EventsModal extends React.Component {
   render() {
-    const { events, onDelete, onClose, opened } = this.props;
+    const {
+      events, onDelete, onClose, opened,
+    } = this.props;
 
     return opened ? (
       <div className="modal-wrapper">
@@ -26,7 +28,7 @@ export default class EventsModal extends React.Component {
                     <tr key={event.uuid}>
                       <td>{event.title}</td>
                       <td>{event.committee}</td>
-                      <td>{event.startDate.format("dddd, MMMM D YYYY")}</td>
+                      <td>{event.startDate.format('dddd, MMMM D YYYY')}</td>
                       <td className="center">
                         <Button color="red" text="Delete" onClick={() => onDelete(event.uuid)} />
                       </td>

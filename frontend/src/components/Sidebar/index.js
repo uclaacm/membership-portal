@@ -1,11 +1,11 @@
-import React from "react";
+import React from 'react';
 
-import Config from "config";
-import Points from "./points";
-import Username from "./username";
-import Navigation from "./navigation";
-import Organization from "./organization";
-import ProfilePicture from "./profilePicture";
+import Config from 'config';
+import Points from './points';
+import Username from './username';
+import Navigation from './navigation';
+import Organization from './organization';
+import ProfilePicture from './profilePicture';
 
 export default class Sidebar extends React.Component {
   render() {

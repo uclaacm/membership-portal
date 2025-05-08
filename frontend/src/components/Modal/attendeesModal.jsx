@@ -1,10 +1,12 @@
-import React from "react";
-import PropTypes from "prop-types";
-import Button from "components/Button";
+import React from 'react';
+import PropTypes from 'prop-types';
+import Button from 'components/Button';
 
 export default class AttendeesModal extends React.Component {
   render() {
-    const { title, onChange, opened, attendees } = this.props;
+    const {
+      title, onChange, opened, attendees,
+    } = this.props;
     return opened ? (
       <div className="modal-wrapper">
         <div className="attendees-modal-container">
@@ -28,7 +30,9 @@ export default class AttendeesModal extends React.Component {
                         <img src={member.picture} alt="Attendee" />
                       </td>
                       <td>
-                        {member.firstName} {member.lastName}
+                        {member.firstName}
+                        {' '}
+                        {member.lastName}
                       </td>
                       <td>{member.year}</td>
                       <td>{member.major}</td>

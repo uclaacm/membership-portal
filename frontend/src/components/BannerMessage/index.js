@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 export default class BannerMessage extends React.Component {
   constructor(props) {
@@ -19,12 +19,12 @@ export default class BannerMessage extends React.Component {
   }
 
   showBanner(message, success, duration = 3000) {
-    this.setState(prev => {
+    this.setState((prev) => {
       if (prev.timeout) clearTimeout(prev.timeout);
       return {
         showing: true,
         success,
-        message: message ? message.toString() : success ? "Success" : "Error",
+        message: message ? message.toString() : success ? 'Success' : 'Error',
         timeout: setTimeout(this.hideBanner, duration),
       };
     });
@@ -43,8 +43,8 @@ export default class BannerMessage extends React.Component {
   render() {
     return (
       <div
-        className={`banner-message ${this.state.success ? " success" : " error"}${
-          this.state.showing ? " showing" : ""
+        className={`banner-message ${this.state.success ? ' success' : ' error'}${
+          this.state.showing ? ' showing' : ''
         }`}
       >
         <p>{this.state.message}</p>

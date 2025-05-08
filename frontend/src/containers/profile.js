@@ -1,9 +1,9 @@
-import React from "react";
-import { connect } from "react-redux";
-import { replace } from "react-router-redux";
+import React from 'react';
+import { connect } from 'react-redux';
+import { replace } from 'react-router-redux';
 
-import { Action } from "reducers";
-import ProfileComponent from "components/Profile";
+import { Action } from 'reducers';
+import ProfileComponent from 'components/Profile';
 
 class Profile extends React.Component {
   constructor(props) {
@@ -58,16 +58,16 @@ class Profile extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   const profile = {
-    name: "",
-    major: "",
+    name: '',
+    major: '',
     year: 0,
     points: 0,
   };
 
-  if (state.User.get("fetchSuccess")) {
-    const User = state.User.get("profile");
+  if (state.User.get('fetchSuccess')) {
+    const User = state.User.get('profile');
     profile.name = `${User.firstName} ${User.lastName}`;
     profile.major = User.major;
     profile.year = User.year;
@@ -92,11 +92,11 @@ const mapDispatchToProps = dispatch => ({
   fetchUser: () => {
     dispatch(Action.FetchUser());
   },
-  updateUser: newprofile => {
+  updateUser: (newprofile) => {
     dispatch(Action.UpdateUser(newprofile));
   },
   redirectHome: () => {
-    dispatch(replace("/"));
+    dispatch(replace('/'));
   },
   updateDone: () => {
     dispatch(Action.UserUpdateDone());

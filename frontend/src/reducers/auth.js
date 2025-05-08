@@ -1,12 +1,12 @@
-import Config from "config";
-import Immutable from "immutable";
-import Storage from "storage";
+import Config from 'config';
+import Immutable from 'immutable';
+import Storage from 'storage';
 
-import { replace } from "react-router-redux";
+import { replace } from 'react-router-redux';
 
-/***********************************************
+/** *********************************************
  ** Constants                                 **
- ***********************************************/
+ ********************************************** */
 
 const AUTH_USER = Symbol();
 const UNAUTH_USER = Symbol();
@@ -14,7 +14,7 @@ const AUTH_ERROR = Symbol();
 const TOGGLE_ADMIN_VIEW = Symbol();
 
 const initState = () => {
-  const token = Storage.get("token");
+  const token = Storage.get('token');
   return Immutable.fromJS({
     error: null,
     timestamp: null,
@@ -26,31 +26,31 @@ const initState = () => {
   });
 };
 
-/***********************************************
+/** *********************************************
  ** Helper Functions                          **
- ***********************************************/
+ ********************************************** */
 
 // Get claims from JSON Web Token (JWT)
 // JWT is signed on backend, sent with every request, and verified on backend
-const tokenGetClaims = token => {
+const tokenGetClaims = (token) => {
   if (!token) {
     return {};
   }
-  const tokenArray = token.split(".");
+  const tokenArray = token.split('.');
   if (tokenArray.length !== 3) {
     return {};
   }
 
-  return JSON.parse(window.atob(tokenArray[1].replace("-", "+").replace("_", "/")));
+  return JSON.parse(window.atob(tokenArray[1].replace('-', '+').replace('_', '/')));
 };
 
 const tokenIsAdmin = token => !!tokenGetClaims(token).admin;
 const tokenIsSuperAdmin = token => !!tokenGetClaims(token).superAdmin;
 const tokenIsRegistered = token => !!tokenGetClaims(token).registered;
 
-/***********************************************
+/** *********************************************
  ** Auth States                               **
- ***********************************************/
+ ********************************************** */
 
 class State {
   static Auth(error, token) {
@@ -70,41 +70,41 @@ class State {
   }
 }
 
-/***********************************************
+/** *********************************************
  ** Actions                                   **
- ***********************************************/
+ ********************************************** */
 
-const LoginUser = tokenId => async dispatch => {
+const LoginUser = tokenId => async (dispatch) => {
   try {
     const response = await fetch(Config.API_URL + Config.routes.auth.login, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ tokenId: tokenId }),
+      body: JSON.stringify({ tokenId }),
     });
 
     const data = await response.json();
 
-    if (!data) throw new Error("Empty response from server");
+    if (!data) throw new Error('Empty response from server');
     if (data.error) throw new Error(data.error.message);
 
-    Storage.set("token", data.token);
+    Storage.set('token', data.token);
     dispatch(State.Auth(null, data.token));
   } catch (err) {
     dispatch(State.Auth(err.message));
   }
 };
 
-const LogoutUser = error => async dispatch => {
+const LogoutUser = error => async (dispatch) => {
   dispatch(State.UnAuth());
-  Storage.remove("token");
-  dispatch(replace("/login"));
+  Storage.remove('token');
+  dispatch(replace('/login'));
 };
 
-const RefreshToken = token => async dispatch => {
-  Storage.set("token", token);
+const RefreshToken = token => async (dispatch) => {
+  Storage.set('token', token);
   dispatch(State.Auth(null, token));
 };
 
@@ -114,7 +114,7 @@ const ToggleAdminView = () => ({
 
 /***********************************************
  ** Auth Reducer                              **
- ***********************************************/
+ ********************************************** */
 
 const Auth = (state = initState(), action) => {
   switch (action.type) {
@@ -139,9 +139,9 @@ const Auth = (state = initState(), action) => {
       });
 
     case AUTH_ERROR:
-      return state.withMutations(val => {
-        val.set("error", action.error);
-        val.set("timestamp", Date.now());
+      return state.withMutations((val) => {
+        val.set('error', action.error);
+        val.set('timestamp', Date.now());
       });
 
     case TOGGLE_ADMIN_VIEW:

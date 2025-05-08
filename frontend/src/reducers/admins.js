@@ -1,12 +1,12 @@
-import Config from "config";
-import Immutable from "immutable";
-import Storage from "storage";
+import Config from 'config';
+import Immutable from 'immutable';
+import Storage from 'storage';
 
-import { LogoutUser } from "./auth";
+import { LogoutUser } from './auth';
 
-/***********************************************
+/** *********************************************
  ** Constants                                 **
- ***********************************************/
+ ********************************************** */
 
 const FETCH_ADMINS_SUCCESS = Symbol();
 const FETCH_ADMINS_ERROR = Symbol();
@@ -31,9 +31,9 @@ const defaultState = Immutable.fromJS({
   adminPromoteSuccess: false,
 });
 
-/***********************************************
+/** *********************************************
  ** Admins States                             **
- ***********************************************/
+ ********************************************** */
 
 class State {
   static FetchAdmins(error, admins) {
@@ -66,18 +66,18 @@ class State {
   }
 }
 
-/***********************************************
+/** *********************************************
  ** Actions                                   **
- ***********************************************/
+ ********************************************** */
 
-const FetchAdmins = () => async dispatch => {
+const FetchAdmins = () => async (dispatch) => {
   try {
     const response = await fetch(Config.API_URL + Config.routes.user.admins, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${Storage.get("token")}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${Storage.get('token')}`,
       },
     });
 
@@ -87,14 +87,12 @@ const FetchAdmins = () => async dispatch => {
     }
 
     const data = await response.json();
-    if (!data) throw new Error("Empty response from server");
+    if (!data) throw new Error('Empty response from server');
     if (data.error) throw new Error(data.error.message);
 
     // Put superadmins first for admins modal
-    const order = ["SUPERADMIN", "ADMIN"];
-    const admins = data.admins.sort(function (a, b) {
-      return order.indexOf(a.accessType) - order.indexOf(b.accessType);
-    });
+    const order = ['SUPERADMIN', 'ADMIN'];
+    const admins = data.admins.sort((a, b) => order.indexOf(a.accessType) - order.indexOf(b.accessType));
 
     dispatch(State.FetchAdmins(null, admins));
   } catch (err) {
@@ -102,20 +100,20 @@ const FetchAdmins = () => async dispatch => {
   }
 };
 
-const AddAdmin = email => async dispatch => {
+const AddAdmin = email => async (dispatch) => {
   try {
     const response = await fetch(Config.API_URL + Config.routes.user.admins, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${Storage.get("token")}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${Storage.get('token')}`,
       },
       body: JSON.stringify({ email }),
     });
 
     const data = await response.json();
-    if (!data) throw new Error("Empty response from server");
+    if (!data) throw new Error('Empty response from server');
     if (data.error) throw new Error(data.error.message);
 
     dispatch(State.AddAdmin());
@@ -125,20 +123,20 @@ const AddAdmin = email => async dispatch => {
   }
 };
 
-const DeleteAdmin = email => async dispatch => {
+const DeleteAdmin = email => async (dispatch) => {
   try {
     const response = await fetch(Config.API_URL + Config.routes.user.admins, {
-      method: "DELETE",
+      method: 'DELETE',
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${Storage.get("token")}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${Storage.get('token')}`,
       },
       body: JSON.stringify({ email }),
     });
 
     const data = await response.json();
-    if (!data) throw new Error("Empty response from server");
+    if (!data) throw new Error('Empty response from server');
     if (data.error) throw new Error(data.error.message);
 
     dispatch(State.DeleteAdmin());
@@ -148,20 +146,20 @@ const DeleteAdmin = email => async dispatch => {
   }
 };
 
-const ChangeSuperAdmin = email => async dispatch => {
+const ChangeSuperAdmin = email => async (dispatch) => {
   try {
     const response = await fetch(Config.API_URL + Config.routes.user.admins, {
-      method: "PATCH",
+      method: 'PATCH',
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${Storage.get("token")}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${Storage.get('token')}`,
       },
       body: JSON.stringify({ email }),
     });
 
     const data = await response.json();
-    if (!data) throw new Error("Empty response from server");
+    if (!data) throw new Error('Empty response from server');
     if (data.error) throw new Error(data.error.message);
 
     dispatch(State.PromoteAdmin());
@@ -171,64 +169,64 @@ const ChangeSuperAdmin = email => async dispatch => {
   }
 };
 
-/***********************************************
+/** *********************************************
  ** Admins Reducer                            **
- ***********************************************/
+ ********************************************** */
 
 const Admins = (state = defaultState, action) => {
   switch (action.type) {
     case FETCH_ADMINS_SUCCESS:
-      return state.withMutations(val => {
-        val.set("error", null);
-        val.set("admins", action.admins);
+      return state.withMutations((val) => {
+        val.set('error', null);
+        val.set('admins', action.admins);
       });
 
     case FETCH_ADMINS_ERROR:
-      return state.withMutations(val => {
-        val.set("error", action.error);
-        val.set("admins", []);
+      return state.withMutations((val) => {
+        val.set('error', action.error);
+        val.set('admins', []);
       });
 
     case DELETE_ADMIN_SUCCESS:
-      return state.withMutations(val => {
-        val.set("error", null);
-        val.set("adminDeleted", true);
-        val.set("adminDeleteSuccess", true);
+      return state.withMutations((val) => {
+        val.set('error', null);
+        val.set('adminDeleted', true);
+        val.set('adminDeleteSuccess', true);
       });
 
     case DELETE_ADMIN_ERROR:
-      return state.withMutations(val => {
-        val.set("error", action.error);
-        val.set("adminDeleted", true);
-        val.set("adminDeleteSuccess", false);
+      return state.withMutations((val) => {
+        val.set('error', action.error);
+        val.set('adminDeleted', true);
+        val.set('adminDeleteSuccess', false);
       });
 
     case ADD_ADMIN_SUCCESS:
-      return state.withMutations(val => {
-        val.set("error", null);
-        val.set("adminAdded", true);
-        val.set("adminAddSuccess", true);
+      return state.withMutations((val) => {
+        val.set('error', null);
+        val.set('adminAdded', true);
+        val.set('adminAddSuccess', true);
       });
 
     case ADD_ADMIN_ERROR:
-      return state.withMutations(val => {
-        val.set("error", action.error);
-        val.set("adminAdded", true);
-        val.set("adminAddSuccess", false);
+      return state.withMutations((val) => {
+        val.set('error', action.error);
+        val.set('adminAdded', true);
+        val.set('adminAddSuccess', false);
       });
 
     case PROMOTE_ADMIN_SUCCESS:
-      return state.withMutations(val => {
-        val.set("error", null);
-        val.set("adminPromoted", true);
-        val.set("adminPromoteSuccess", true);
+      return state.withMutations((val) => {
+        val.set('error', null);
+        val.set('adminPromoted', true);
+        val.set('adminPromoteSuccess', true);
       });
 
     case PROMOTE_ADMIN_ERROR:
-      return state.withMutations(val => {
-        val.set("error", action.error);
-        val.set("adminPromoted", true);
-        val.set("adminPromoteSuccess", false);
+      return state.withMutations((val) => {
+        val.set('error', action.error);
+        val.set('adminPromoted', true);
+        val.set('adminPromoteSuccess', false);
       });
 
     default:
@@ -236,4 +234,6 @@ const Admins = (state = defaultState, action) => {
   }
 };
 
-export { Admins, FetchAdmins, AddAdmin, DeleteAdmin, ChangeSuperAdmin };
+export {
+  Admins, FetchAdmins, AddAdmin, DeleteAdmin, ChangeSuperAdmin,
+};

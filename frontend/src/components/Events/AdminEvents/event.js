@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 export default class AdminEventCard extends React.Component {
   constructor(props) {
@@ -11,7 +11,7 @@ export default class AdminEventCard extends React.Component {
   }
 
   render() {
-    const event = this.props.event;
+    const { event } = this.props;
     return (
       <div className="admin-event-tile" onClick={this.editEvent}>
         <div className="top">

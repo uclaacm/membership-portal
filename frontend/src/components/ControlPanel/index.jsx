@@ -1,9 +1,9 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React from 'react';
+import PropTypes from 'prop-types';
 
-import Topbar from "containers/topbar";
-import Sidebar from "containers/sidebar";
-import ControlPanel from "./controlPanel";
+import Topbar from 'containers/topbar';
+import Sidebar from 'containers/sidebar';
+import ControlPanel from './controlPanel';
 
 export default class ControlPanelComponent extends React.Component {
   render() {

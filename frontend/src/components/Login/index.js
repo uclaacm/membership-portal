@@ -1,6 +1,6 @@
-import React from "react";
-import Config from "config";
-import LoginSidebar from "./loginSidebar";
+import React from 'react';
+import Config from 'config';
+import LoginSidebar from './loginSidebar';
 
 export default class LoginComponent extends React.Component {
   render() {

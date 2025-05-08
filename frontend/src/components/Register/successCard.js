@@ -1,8 +1,8 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
-import Config from "config";
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+import Config from 'config';
 
-import Button from "components/Button";
+import Button from 'components/Button';
 
 export default class SuccessCard extends React.Component {
   render() {
@@ -15,7 +15,9 @@ export default class SuccessCard extends React.Component {
         </NavLink>
         <p className="info">
           You're a member of
-          {Config.organization.shortName} now!
+          {Config.organization.shortName}
+          {' '}
+          now!
         </p>
       </div>
     );

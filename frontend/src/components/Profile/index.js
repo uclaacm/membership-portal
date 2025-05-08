@@ -1,8 +1,8 @@
-import React from "react";
+import React from 'react';
 
-import Topbar from "containers/topbar";
-import Sidebar from "containers/sidebar";
-import Profile from "./profile";
+import Topbar from 'containers/topbar';
+import Sidebar from 'containers/sidebar';
+import Profile from './profile';
 
 export default class ProfileComponent extends React.Component {
   render() {

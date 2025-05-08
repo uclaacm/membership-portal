@@ -1,15 +1,17 @@
-import React from "react";
-import PropTypes from "prop-types";
-import Button from "../Button";
+import React from 'react';
+import PropTypes from 'prop-types';
+import Button from '../Button';
 
 export default class LeaderboardModal extends React.Component {
   constructor() {
     super();
-    this.yearMap = ["Freshman", "Sophomore", "Junior", "Senior", "Post-Senior"];
+    this.yearMap = ['Freshman', 'Sophomore', 'Junior', 'Senior', 'Post-Senior'];
   }
 
   render() {
-    const { firstName, lastName, picture, major, year, opened, onChange } = this.props;
+    const {
+      firstName, lastName, picture, major, year, opened, onChange,
+    } = this.props;
     const gradeLevel = this.yearMap[year - 1];
 
     return opened ? (
@@ -19,14 +21,22 @@ export default class LeaderboardModal extends React.Component {
             <h1>User Info</h1>
             <div className="content-container">
               <div className="image-container">
-                <img src={picture || "/assets/images/unknown.png"} />
+                <img src={picture || '/assets/images/unknown.png'} />
               </div>
               <div className="text-container">
                 <h2>
-                  {firstName} {lastName}
+                  {firstName}
+                  {' '}
+                  {lastName}
                 </h2>
-                <h3>Major: {major}</h3>
-                <h3>Year: {gradeLevel}</h3>
+                <h3>
+                  Major:
+                  {major}
+                </h3>
+                <h3>
+                  Year:
+                  {gradeLevel}
+                </h3>
               </div>
             </div>
             <br />

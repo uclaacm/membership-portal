@@ -1,11 +1,11 @@
-import React from "react";
-import moment from "moment";
+import React from 'react';
+import moment from 'moment';
 
-import InputElement from "react-input-mask";
-import DatePicker from "react-datepicker";
-import Button from "components/Button/index";
+import InputElement from 'react-input-mask';
+import DatePicker from 'react-datepicker';
+import Button from 'components/Button/index';
 
-import "react-datepicker/dist/react-datepicker.css";
+import 'react-datepicker/dist/react-datepicker.css';
 
 export default class AdminAddEvent extends React.Component {
   constructor(props) {
@@ -20,12 +20,12 @@ export default class AdminAddEvent extends React.Component {
   }
 
   resizeTextArea(e) {
-    e.target.style.height = "5px";
+    e.target.style.height = '5px';
     e.target.style.height = `${e.target.scrollHeight}px`;
   }
 
   handleChangeStartDate(date) {
-    this.setState(prev => {
+    this.setState((prev) => {
       const newState = Object.assign({}, prev);
       newState.event.startDate = date;
       return newState;
@@ -33,7 +33,7 @@ export default class AdminAddEvent extends React.Component {
   }
 
   handleChangeEndDate(date) {
-    this.setState(prev => {
+    this.setState((prev) => {
       const newState = Object.assign({}, prev);
       newState.event.endDate = date;
       return newState;
@@ -41,9 +41,9 @@ export default class AdminAddEvent extends React.Component {
   }
 
   handleChange(e) {
-    const name = e.target.name;
-    const value = e.target.value;
-    this.setState(prev => {
+    const { name } = e.target;
+    const { value } = e.target;
+    this.setState((prev) => {
       const newState = Object.assign({}, prev);
       newState.event[name] = value;
       return newState;
@@ -56,10 +56,10 @@ export default class AdminAddEvent extends React.Component {
   }
 
   handleChangeTime(e) {
-    const name = e.target.name.split("Time")[0];
+    const name = e.target.name.split('Time')[0];
     const hh = (parseInt(e.target.value[0]) || 0) * 10 + (parseInt(e.target.value[1]) || 0);
     const mm = (parseInt(e.target.value[3]) || 0) * 10 + (parseInt(e.target.value[4]) || 0);
-    this.setState(prev => {
+    this.setState((prev) => {
       const newState = Object.assign({}, prev);
       newState[`${name}TimeError`] = isNaN(hh) || hh > 23 || isNaN(mm) || mm > 60;
       if (!newState[`${name}TimeError`]) {
@@ -73,17 +73,17 @@ export default class AdminAddEvent extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState(prev => {
+    this.setState((prev) => {
       const newState = Object.assign({}, prev);
       newState.event = nextProps.event;
-      if (newState.event) newState.event.attendanceCode = nextProps.event.attendanceCode || "";
+      if (newState.event) newState.event.attendanceCode = nextProps.event.attendanceCode || '';
       return newState;
     });
   }
 
   render() {
     return (
-      <div className={`add-event-overlay${this.props.showing ? " showing" : ""}`} onClick={this.props.onClickCancel}>
+      <div className={`add-event-overlay${this.props.showing ? ' showing' : ''}`} onClick={this.props.onClickCancel}>
         <div className="event-sidebar" onClick={e => e.stopPropagation()}>
           <div className="cover-img">
             <img
@@ -147,11 +147,11 @@ export default class AdminAddEvent extends React.Component {
               <div className="input-field three-fourth-width">
                 <p>Start Time</p>
                 <InputElement
-                  className={this.state.startTimeError ? "error" : ""}
+                  className={this.state.startTimeError ? 'error' : ''}
                   onChange={this.handleChangeTime}
                   mask="99:99"
                   name="startTime"
-                  value={this.state.event.startDate ? this.state.event.startDate.format("HH:mm") : ""}
+                  value={this.state.event.startDate ? this.state.event.startDate.format('HH:mm') : ''}
                 />
               </div>
             </div>
@@ -167,11 +167,11 @@ export default class AdminAddEvent extends React.Component {
               <div className="input-field three-fourth-width">
                 <p>End Time</p>
                 <InputElement
-                  className={this.state.endTimeError ? "error" : ""}
+                  className={this.state.endTimeError ? 'error' : ''}
                   onChange={this.handleChangeTime}
                   mask="99:99"
                   name="endTime"
-                  value={this.state.event.endDate ? this.state.event.endDate.format("HH:mm") : ""}
+                  value={this.state.event.endDate ? this.state.event.endDate.format('HH:mm') : ''}
                 />
               </div>
             </div>
@@ -193,7 +193,7 @@ export default class AdminAddEvent extends React.Component {
               </div>
             </div>
             <div className="button-area">
-              <Button onClick={this.handleSubmit} style="green" text={this.props.isEdit ? "Update" : "Add"} icon="" />
+              <Button onClick={this.handleSubmit} style="green" text={this.props.isEdit ? 'Update' : 'Add'} icon="" />
               <Button onClick={this.props.onClickCancel} style="red" text="Cancel" icon="" />
             </div>
           </div>

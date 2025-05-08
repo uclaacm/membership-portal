@@ -1,8 +1,8 @@
-import React from "react";
-import { connect } from "react-redux";
+import React from 'react';
+import { connect } from 'react-redux';
 
-import { Action } from "reducers";
-import Topbar from "components/Topbar";
+import { Action } from 'reducers';
+import Topbar from 'components/Topbar';
 
 class TopbarContainer extends React.Component {
   componentWillMount() {

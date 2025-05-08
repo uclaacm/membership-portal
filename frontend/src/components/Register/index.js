@@ -1,12 +1,12 @@
-import React from "react";
-import Config from "config";
-import BannerMessage from "components/BannerMessage";
+import React from 'react';
+import Config from 'config';
+import BannerMessage from 'components/BannerMessage';
 
-import DetailsCard from "./detailsCard";
-import SuccessCard from "./successCard";
+import DetailsCard from './detailsCard';
+import SuccessCard from './successCard';
 
-const PAGE_DETAILS_CARD = Symbol("Details Card");
-const PAGE_SUCCESS_CARD = Symbol("Success Card");
+const PAGE_DETAILS_CARD = Symbol('Details Card');
+const PAGE_SUCCESS_CARD = Symbol('Success Card');
 
 export default class RegisterComponent extends React.Component {
   constructor(props) {
@@ -16,7 +16,7 @@ export default class RegisterComponent extends React.Component {
       disableForm: false,
       profile: {
         year: 0,
-        major: "",
+        major: '',
       },
     };
 
@@ -28,7 +28,7 @@ export default class RegisterComponent extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.created && nextProps.createSuccess) {
-      this.setState(prev => {
+      this.setState((prev) => {
         const newState = Object.assign({}, prev);
         newState.currentPage = PAGE_SUCCESS_CARD;
         newState.disableForm = false;
@@ -40,7 +40,7 @@ export default class RegisterComponent extends React.Component {
   }
 
   handleProfileChange(name, value) {
-    this.setState(prev => {
+    this.setState((prev) => {
       const newState = Object.assign({}, prev);
       newState.profile[name] = value;
       return newState;

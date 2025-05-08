@@ -1,9 +1,9 @@
-import React from "react";
-import { connect } from "react-redux";
-import { replace } from "react-router-redux";
+import React from 'react';
+import { connect } from 'react-redux';
+import { replace } from 'react-router-redux';
 
-import { Action } from "reducers";
-import LoginComponent from "components/Login";
+import { Action } from 'reducers';
+import LoginComponent from 'components/Login';
 
 class Login extends React.Component {
   handleLogin(token) {
@@ -32,21 +32,21 @@ class Login extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  isAdmin: state.Auth.get("isAdmin"),
-  isRegistered: state.Auth.get("isRegistered"),
-  timestamp: state.Auth.get("timestamp"),
-  authenticated: state.Auth.get("authenticated"),
+  isAdmin: state.Auth.get('isAdmin'),
+  isRegistered: state.Auth.get('isRegistered'),
+  timestamp: state.Auth.get('timestamp'),
+  authenticated: state.Auth.get('authenticated'),
 });
 
 const mapDispatchToProps = dispatch => ({
-  login: token => {
+  login: (token) => {
     dispatch(Action.LoginUser(token));
   },
   redirectHome: () => {
-    dispatch(replace("/"));
+    dispatch(replace('/'));
   },
   redirectRegister: () => {
-    dispatch(replace("/register"));
+    dispatch(replace('/register'));
   },
 });
 

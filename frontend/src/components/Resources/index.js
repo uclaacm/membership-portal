@@ -1,7 +1,7 @@
-import React from "react";
-import Topbar from "containers/topbar";
-import Sidebar from "containers/sidebar";
-import Resources from "./resources";
+import React from 'react';
+import Topbar from 'containers/topbar';
+import Sidebar from 'containers/sidebar';
+import Resources from './resources';
 
 export default class ResourcesComponent extends React.Component {
   render() {

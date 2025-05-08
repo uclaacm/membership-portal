@@ -1,6 +1,6 @@
-import React from "react";
-import PropTypes from "prop-types";
-import Loader from "components/Loader";
+import React from 'react';
+import PropTypes from 'prop-types';
+import Loader from 'components/Loader';
 
 class Button extends React.Component {
   constructor(props) {
@@ -16,7 +16,9 @@ class Button extends React.Component {
   }
 
   render() {
-    const { className, color, icon, customIcon, loading, style, text, type } = this.props;
+    const {
+      className, color, icon, customIcon, loading, style, text, type,
+    } = this.props;
     const buttonClass = `button-component ${className}`;
     const buttonIcon = icon ? <i className={`fa ${icon} button-icon`} aria-hidden="true" /> : null;
     const buttonCustomIcon = customIcon ? <img src={customIcon} className="button-icon button-custom-icon" /> : null;
@@ -41,7 +43,7 @@ Button.propTypes = {
   onClick: PropTypes.func,
   style: PropTypes.string,
   text: PropTypes.string.isRequired,
-  type: PropTypes.oneOf(["button", "submit"]),
+  type: PropTypes.oneOf(['button', 'submit']),
 };
 
 Button.defaultProps = {
@@ -51,7 +53,7 @@ Button.defaultProps = {
   loading: false,
   onClick: () => {},
   style: null,
-  type: "button",
+  type: 'button',
 };
 
 export default Button;

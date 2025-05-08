@@ -1,9 +1,9 @@
-import React from "react";
+import React from 'react';
 
 export default class ProfilePicture extends React.Component {
   render() {
     const profilePictureAsBackground = {
-      backgroundImage: `url(${this.props.picture}` || "/assets/images/unknown.png" + ")",
+      backgroundImage: `url(${this.props.picture}` || '/assets/images/unknown.png' + ')',
     };
 
     return (

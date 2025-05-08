@@ -1,12 +1,12 @@
-import React from "react";
-import Utils from "utils";
-import Button from "components/Button";
-import BannerMessage from "components/BannerMessage";
-import Config from "config";
+import React from 'react';
+import Utils from 'utils';
+import Button from 'components/Button';
+import BannerMessage from 'components/BannerMessage';
+import Config from 'config';
 
-import Activities from "./activities";
-import YearSelector from "./yearSelector";
-import MobileProfile from "./mobileProfile";
+import Activities from './activities';
+import YearSelector from './yearSelector';
+import MobileProfile from './mobileProfile';
 
 export default class Profile extends React.Component {
   constructor(props) {
@@ -30,16 +30,16 @@ export default class Profile extends React.Component {
 
   resizeTextAreas() {
     for (const input in this.inputs) {
-      this.inputs[input].style.height = "auto";
+      this.inputs[input].style.height = 'auto';
       this.inputs[input].style.height = `${this.inputs[input].scrollHeight}px`;
     }
   }
 
   handleUpdate(e) {
     this.resizeTextAreas();
-    const name = e.target.name;
-    const value = e.target.value;
-    this.setState(prev => {
+    const { name } = e.target;
+    const { value } = e.target;
+    this.setState((prev) => {
       const newState = Object.assign({}, prev);
       newState.profile[name] = value;
       return newState;
@@ -48,31 +48,31 @@ export default class Profile extends React.Component {
 
   profileUpdated() {
     return (
-      parseInt(this.state.profile.year) !== parseInt(this.state.originalProfile.year) ||
-      this.state.profile.name !== this.state.originalProfile.name ||
-      this.state.profile.major !== this.state.originalProfile.major
+      parseInt(this.state.profile.year) !== parseInt(this.state.originalProfile.year)
+      || this.state.profile.name !== this.state.originalProfile.name
+      || this.state.profile.major !== this.state.originalProfile.major
     );
   }
 
   saveProfile(e) {
     const nameArray = this.state.profile.name
       .trim()
-      .replace(/\s{2,}/g, " ")
-      .split(" ");
+      .replace(/\s{2,}/g, ' ')
+      .split(' ');
     if (nameArray.length !== 2) {
-      this.refs.banner.showBanner("Please enter a valid first and last name", false);
+      this.refs.banner.showBanner('Please enter a valid first and last name', false);
       return;
     }
 
     if (parseInt(this.state.profile.year) === NaN) {
-      this.refs.banner.showBanner("Please select a valid year", false);
+      this.refs.banner.showBanner('Please select a valid year', false);
       return;
     }
 
-    const firstName = nameArray[0].replace(/\n/g, "");
-    const lastName = nameArray[1].replace(/\n/g, "");
-    const year = this.state.profile.year;
-    const major = this.state.profile.major.replace(/\n/g, "");
+    const firstName = nameArray[0].replace(/\n/g, '');
+    const lastName = nameArray[1].replace(/\n/g, '');
+    const { year } = this.state.profile;
+    const major = this.state.profile.major.replace(/\n/g, '');
 
     this.props.saveChanges({
       firstName,
@@ -87,11 +87,11 @@ export default class Profile extends React.Component {
   }
 
   componentDidMount() {
-    window.addEventListener("resize", this.resizeTextAreas);
+    window.addEventListener('resize', this.resizeTextAreas);
   }
 
   componentWillUnmount() {
-    window.removeEventListener("resize", this.resizeTextAreas);
+    window.removeEventListener('resize', this.resizeTextAreas);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -104,12 +104,13 @@ export default class Profile extends React.Component {
   }
 
   render() {
-    if (this.props.error)
+    if (this.props.error) {
       return (
         <div className="profile-wrapper">
           <h1>{this.props.error}</h1>
         </div>
       );
+    }
 
     const { currLevel, nextLevel } = Utils.getLevel(this.props.profile.points);
     const { adminView, toggleAdminView, isAdmin } = this.props
@@ -119,7 +120,7 @@ export default class Profile extends React.Component {
           ref="banner"
           showing={this.props.updated}
           success={this.props.updateSuccess}
-          message={this.props.updateSuccess ? "Profile successfully updated." : this.props.updateError}
+          message={this.props.updateSuccess ? 'Profile successfully updated.' : this.props.updateError}
         />
         {/* <MobileProfile profile={this.props.profile} /> */}
         <div className="profile-wrapper">
@@ -142,21 +143,19 @@ export default class Profile extends React.Component {
           <div className="form-elem">
             <p className="SubheaderSecondary">majoring in</p>
             <select className="Display-2Primary" name="major" onChange={this.handleUpdate} value={this.state.profile.major}>
-              {Config.majors.map((major) =>
-                <option value={major}>{major}</option>
-              )}
+              {Config.majors.map(major => <option value={major}>{major}</option>)}
             </select>
           </div>
           <div className="form-elem">
             <Button
               className="profile-action-button"
-              style={this.profileUpdated() ? "green" : "disabled"}
+              style={this.profileUpdated() ? 'green' : 'disabled'}
               onClick={this.profileUpdated() ? this.saveProfile : null}
               text="Save"
             />
             <Button
               className="profile-action-button"
-              style={this.profileUpdated() ? "red" : "disabled"}
+              style={this.profileUpdated() ? 'red' : 'disabled'}
               onClick={this.profileUpdated() ? () => location.reload() : null}
               text="Discard"
             />
@@ -172,7 +171,9 @@ export default class Profile extends React.Component {
             <div className="form-elem">
               <p className="SubheaderSecondary">
                 You have
-                <span className="Subheader-2Primary">{nextLevel.startsAt - this.props.profile.points}</span> more
+                <span className="Subheader-2Primary">{nextLevel.startsAt - this.props.profile.points}</span>
+                {' '}
+                more
                 point(s) until you become a
               </p>
               <span className="Display-2Primary">{nextLevel.rank}</span>

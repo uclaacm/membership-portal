@@ -1,6 +1,6 @@
-import React from "react";
-import { sanitize } from "dompurify";
-import Button from "components/Button/index";
+import React from 'react';
+import { sanitize } from 'dompurify';
+import Button from 'components/Button/index';
 
 export default class EventCard extends React.Component {
   constructor(props) {
@@ -17,8 +17,8 @@ export default class EventCard extends React.Component {
   }
 
   render() {
-    const event = this.props.event;
-    const className = `event-card user-card${this.state.selected ? " selected" : ""}`;
+    const { event } = this.props;
+    const className = `event-card user-card${this.state.selected ? ' selected' : ''}`;
     return (
       <div className={className} onClick={this.handleClick}>
         <div className="cover" style={{ backgroundImage: `url(${event.cover})` }}>
@@ -39,14 +39,17 @@ export default class EventCard extends React.Component {
           <div className="midcontent">
             <div className="description" dangerouslySetInnerHTML={{ __html: sanitize(event.description) }} />
             <p>
-              <a target="_BLANK" href={event.eventLink}>
+              <a target="_BLANK" href={event.eventLink} rel="noreferrer">
                 Go to the event page
               </a>
             </p>
           </div>
           <div className="subcontent">
             <span className="time">
-              {event.startDate.format("h:mm a")} &mdash; {event.endDate.format("h:mm a")}
+              {event.startDate.format('h:mm a')}
+              {' '}
+              &mdash;
+              {event.endDate.format('h:mm a')}
             </span>
             <p className="location">{event.location}</p>
           </div>

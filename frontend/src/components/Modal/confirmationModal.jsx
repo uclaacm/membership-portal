@@ -1,10 +1,12 @@
-import React from "react";
-import PropTypes from "prop-types";
-import Button from "components/Button";
+import React from 'react';
+import PropTypes from 'prop-types';
+import Button from 'components/Button';
 
 export default class ConfirmationModal extends React.Component {
   render() {
-    const { title, message, submit, cancel, opened } = this.props;
+    const {
+      title, message, submit, cancel, opened,
+    } = this.props;
     return opened ? (
       <div className="modal-wrapper">
         <div className="confirmation-modal-container">

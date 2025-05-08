@@ -1,8 +1,8 @@
-import React from "react";
-import { connect } from "react-redux";
-import { replace } from "react-router-redux";
-import RegisterComponent from "components/Register";
-import { Action } from "reducers";
+import React from 'react';
+import { connect } from 'react-redux';
+import { replace } from 'react-router-redux';
+import RegisterComponent from 'components/Register';
+import { Action } from 'reducers';
 
 class Register extends React.Component {
   constructor(props) {
@@ -41,23 +41,23 @@ class Register extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  user: state.Registration.get("user"),
-  error: state.Registration.get("error"),
-  registered: state.Registration.get("registered"),
-  registerSuccess: state.Registration.get("registerSuccess"),
-  tokenIsAuthenticated: state.Auth.get("authenticated"),
-  tokenIsRegistered: state.Auth.get("isRegistered"),
+  user: state.Registration.get('user'),
+  error: state.Registration.get('error'),
+  registered: state.Registration.get('registered'),
+  registerSuccess: state.Registration.get('registerSuccess'),
+  tokenIsAuthenticated: state.Auth.get('authenticated'),
+  tokenIsRegistered: state.Auth.get('isRegistered'),
 });
 
 const mapDispatchToProps = dispatch => ({
-  registerUser: info => {
+  registerUser: (info) => {
     dispatch(Action.RegisterUser(info));
   },
   registerDone: () => {
     dispatch(Action.registerDone());
   },
   redirectHome: () => {
-    dispatch(replace("/"));
+    dispatch(replace('/'));
   },
 });
 

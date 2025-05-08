@@ -1,11 +1,13 @@
-import React from "react";
+import React from 'react';
 
 export default class ResourceCard extends React.Component {
   render() {
-    const { type, title, subtitle, link, description } = this.props.resource;
+    const {
+      type, title, subtitle, link, description,
+    } = this.props.resource;
     const backgroundImage = `url('/assets/images/resource_types/${type}.png')`;
     return (
-      <a className="no-style" target="_BLANK" href={link}>
+      <a className="no-style" target="_BLANK" href={link} rel="noreferrer">
         <div className="resource-card">
           <div className="cover" style={{ backgroundImage }} />
           <div className="content">

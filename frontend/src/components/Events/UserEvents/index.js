@@ -1,10 +1,10 @@
-import React from "react";
+import React from 'react';
 
-import Button from "components/Button/index";
-import OverlayPopup from "components/OverlayPopup";
+import Button from 'components/Button/index';
+import OverlayPopup from 'components/OverlayPopup';
 
-import EarlierEventsIcon from "components/Events/earlierEventsIcon";
-import EventDay from "./eventDay";
+import EarlierEventsIcon from 'components/Events/earlierEventsIcon';
+import EventDay from './eventDay';
 
 export default class UserEvents extends React.Component {
   constructor(props) {
@@ -95,7 +95,11 @@ export default class UserEvents extends React.Component {
         <h2>
           Awesome! You got
           <br />
-          <span className="points">{this.props.checkInPoints} points</span>
+          <span className="points">
+            {this.props.checkInPoints}
+            {' '}
+            points
+          </span>
           <br />
           for checking in.
         </h2>
@@ -118,17 +122,17 @@ export default class UserEvents extends React.Component {
   }
 
   render() {
-    if (this.props.error)
+    if (this.props.error) {
       return (
         <div className="events-dashboard user-dashboard">
           <h1>{this.props.error}</h1>
         </div>
       );
+    }
 
     const days = [];
     for (const event of this.props.events) {
-      if (days.length === 0 || event.startDate.date() !== days[days.length - 1].date.date())
-        days.push({ date: event.startDate, events: [event] });
+      if (days.length === 0 || event.startDate.date() !== days[days.length - 1].date.date()) days.push({ date: event.startDate, events: [event] });
       else days[days.length - 1].events.push(event);
     }
 
@@ -143,10 +147,10 @@ export default class UserEvents extends React.Component {
         {this.renderCheckInSuccess()}
         {this.renderCheckInFailure()}
         {!this.state.showEarlierEvents && <EarlierEventsIcon onClick={this.showEarlierEvents} />}
-        {this.state.showEarlierEvents &&
-          pastDays.map((day, i) => <EventDay day={day} key={day.date.toString()} admin={false} />)}
+        {this.state.showEarlierEvents
+          && pastDays.map((day, i) => <EventDay day={day} key={day.date.toString()} admin={false} />)}
         <Button
-          className={`checkin-button${this.state.showCheckIn ? " hidden" : ""}`}
+          className={`checkin-button${this.state.showCheckIn ? ' hidden' : ''}`}
           style="blue collapsible"
           icon="fa-calendar-check-o"
           text="Check In"

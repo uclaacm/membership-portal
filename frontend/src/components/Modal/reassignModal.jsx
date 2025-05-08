@@ -1,10 +1,12 @@
-import React from "react";
-import PropTypes from "prop-types";
-import Button from "components/Button";
+import React from 'react';
+import PropTypes from 'prop-types';
+import Button from 'components/Button';
 
 export default class ReassignModal extends React.Component {
   render() {
-    const { onReassign, onClose, opened, admins } = this.props;
+    const {
+      onReassign, onClose, opened, admins,
+    } = this.props;
 
     return opened ? (
       <div className="modal-wrapper">
@@ -25,13 +27,12 @@ export default class ReassignModal extends React.Component {
               color="red"
               text="Reassign"
               onClick={() => {
-                const input = document.getElementById("reassignAdminEmailField");
+                const input = document.getElementById('reassignAdminEmailField');
                 if (
-                  input.value !== "" &&
-                  input.checkValidity() &&
-                  admins.map(({ email }) => email).includes(input.value)
-                )
-                  onReassign(input.value);
+                  input.value !== ''
+                  && input.checkValidity()
+                  && admins.map(({ email }) => email).includes(input.value)
+                ) onReassign(input.value);
               }}
             />
             <br />

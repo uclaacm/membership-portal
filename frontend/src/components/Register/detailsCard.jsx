@@ -1,7 +1,7 @@
-import React from "react";
-import Config from "config";
-import PropTypes from "prop-types";
-import Button from "components/Button";
+import React from 'react';
+import Config from 'config';
+import PropTypes from 'prop-types';
+import Button from 'components/Button';
 
 export default class DetailsCard extends React.Component {
   constructor(props) {
@@ -19,7 +19,7 @@ export default class DetailsCard extends React.Component {
   render() {
     const { disableForm, onSubmit, profileValid } = this.props;
     return (
-      <div className={`card details-card${profileValid() ? " confirm-details" : ""}`}>
+      <div className={`card details-card${profileValid() ? ' confirm-details' : ''}`}>
         <img src={Config.organization.logo} alt="ACM logo" />
         <div className="inner">
           <form onSubmit={onSubmit} autoComplete="off">
@@ -32,9 +32,7 @@ export default class DetailsCard extends React.Component {
               </p>
               <select className="input-major" name="major" onChange={this.handleChange}>
                 <option value="">--</option>
-                {Config.majors.map((major) =>
-                  <option value={major}>{major}</option>
-                )}
+                {Config.majors.map(major => <option value={major}>{major}</option>)}
               </select>
             </div>
             <div className="align">
@@ -55,7 +53,7 @@ export default class DetailsCard extends React.Component {
             <Button
               className="btn"
               loading={disableForm}
-              style={profileValid() ? "green" : "disabled"}
+              style={profileValid() ? 'green' : 'disabled'}
               text="Finish"
               onClick={onSubmit}
             />

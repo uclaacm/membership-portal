@@ -1,10 +1,12 @@
-import React from "react";
-import PropTypes from "prop-types";
-import Button from "components/Button";
+import React from 'react';
+import PropTypes from 'prop-types';
+import Button from 'components/Button';
 
 export default class AdminsModal extends React.Component {
   render() {
-    const { admins, userEmail, onAdd, onRemove, onReassign, onClose, opened } = this.props;
+    const {
+      admins, userEmail, onAdd, onRemove, onReassign, onClose, opened,
+    } = this.props;
 
     return opened ? (
       <div className="modal-wrapper">
@@ -22,7 +24,7 @@ export default class AdminsModal extends React.Component {
                 </thead>
                 <tbody>
                   <tr>
-                    <td></td>
+                    <td />
                     <td>
                       <div className="form-elem table-form-elem">
                         <input
@@ -40,18 +42,18 @@ export default class AdminsModal extends React.Component {
                         color="blue"
                         text="Add"
                         onClick={() => {
-                          const input = document.getElementById("addAdminEmailField");
-                          if (input.value !== "" && input.checkValidity()) onAdd(input.value);
+                          const input = document.getElementById('addAdminEmailField');
+                          if (input.value !== '' && input.checkValidity()) onAdd(input.value);
                         }}
                       />
                     </td>
                   </tr>
                   {admins.map(admin => (
                     <tr key={admin.email}>
-                      <td>{admin.firstName + " " + admin.lastName}</td>
+                      <td>{`${admin.firstName} ${admin.lastName}`}</td>
                       <td>{admin.email}</td>
                       <td className="center">
-                        {admin.accessType !== "SUPERADMIN" ? (
+                        {admin.accessType !== 'SUPERADMIN' ? (
                           <Button color="red" text="Remove" onClick={() => onRemove(admin.email)} />
                         ) : admin.email === userEmail ? (
                           <Button color="red" text="Reassign" onClick={() => onReassign(admins)} />
