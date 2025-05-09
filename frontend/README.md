@@ -12,9 +12,6 @@ $ yarn
 
 ## Development
 
-```bash
-$ cd ../membership-portal-deployments
-$ make
-```
+To start membership portal, follow the README on the [deployment repo](https://github.com/uclaacm/membership-portal-deployment)
 
 You can access the site from `http://localhost:8000` and the app will communicate with the backend directly on port `8080`.
