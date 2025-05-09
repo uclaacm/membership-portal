@@ -69,17 +69,62 @@ export default class UserEvents extends React.Component {
 
   handleSearchChange(searchQuery) {
     this.setState({ searchQuery });
-    //connect to backend
   }
   
   handleCommitteeChange(committee) {
     this.setState({ committee });
-    //connect to backend
   }
   
   handleTimeRangeChange(timeRange) {
     this.setState({ timeRange });
-    //connect to backend
+  }
+
+  filterEvents(events) {
+    const { searchQuery, committee, timeRange } = this.state;
+    
+    return events.filter(event => {
+      // Filter by search query (title)
+      const matchesSearch = searchQuery === "" || 
+        event.title.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      // Filter by committee
+      const matchesCommittee = committee === "All Committees" || 
+        event.committee === committee;
+      
+      // Filter by time range
+      let matchesTimeRange = true;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      switch(timeRange) {
+        case "Today":
+          matchesTimeRange = event.startDate.isSame(today, 'day');
+          break;
+        case "This Week":
+          const weekStart = new Date(today);
+          weekStart.setDate(today.getDate() - today.getDay());
+          const weekEnd = new Date(weekStart);
+          weekEnd.setDate(weekStart.getDate() + 6);
+          matchesTimeRange = event.startDate.isBetween(weekStart, weekEnd, 'day', '[]');
+          break;
+        case "This Month":
+          matchesTimeRange = event.startDate.isSame(today, 'month');
+          break;
+        case "This Quarter":
+          const quarter = Math.floor(today.getMonth() / 3);
+          const quarterStart = new Date(today.getFullYear(), quarter * 3, 1);
+          const quarterEnd = new Date(today.getFullYear(), (quarter + 1) * 3, 0);
+          matchesTimeRange = event.startDate.isBetween(quarterStart, quarterEnd, 'day', '[]');
+          break;
+        case "This Year":
+          matchesTimeRange = event.startDate.isSame(today, 'year');
+          break;
+        default:
+          matchesTimeRange = true;
+      }
+      
+      return matchesSearch && matchesCommittee && matchesTimeRange;
+    });
   }
 
   renderAttendanceForm() {
@@ -160,10 +205,16 @@ export default class UserEvents extends React.Component {
     const committees = ["AI", "Cyber", "Design", "Hack", "ICPC", "Studio", "TeachLA", "W"];
     const timeRanges = ["Today", "This Week", "This Month", "This Quarter", "This Year"];
 
+    // Filter events based on search criteria
+    const filteredEvents = this.filterEvents(this.props.events);
+
     const days = [];
-    for (const event of this.props.events) {
-      if (days.length === 0 || event.startDate.date() !== days[days.length - 1].date.date()) days.push({ date: event.startDate, events: [event] });
-      else days[days.length - 1].events.push(event);
+    for (const event of filteredEvents) {
+      if (days.length === 0 || !event.startDate.isSame(days[days.length - 1].date, 'day')) {
+        days.push({ date: event.startDate, events: [event] });
+      } else {
+        days[days.length - 1].events.push(event);
+      }
     }
 
     const today = new Date();
@@ -178,8 +229,9 @@ export default class UserEvents extends React.Component {
         {this.renderCheckInFailure()}
         
         <div style={{ padding: "0 20px" }}>
+          { !this.state.showEarlierEvents && <EarlierEventsIcon onClick={this.showEarlierEvents} /> }
+          { this.state.showEarlierEvents && pastDays.map((day, i) => <EventDay day={day} key={day.date.toString()} admin={false} />) }
           <h1 style={{ marginBottom: "20px" }}>Events</h1>
-          
           <div style={{ marginBottom: "24px" }}>
             <EventFilterBar
               committees={committees}
@@ -190,10 +242,6 @@ export default class UserEvents extends React.Component {
             />
           </div>
         </div>
-        
-        {!this.state.showEarlierEvents && <EarlierEventsIcon onClick={this.showEarlierEvents} />}
-        {this.state.showEarlierEvents
-          && pastDays.map((day, i) => <EventDay day={day} key={day.date.toString()} admin={false} />)}
         <Button
           className={`checkin-button${this.state.showCheckIn ? ' hidden' : ''}`}
           style="blue collapsible"
