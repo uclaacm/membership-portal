@@ -1,6 +1,6 @@
 const express = require("express");
-const auth = require("./auth").authenticated;
 const rateLimit = require("express-rate-limit");
+const auth = require("./auth").authenticated;
 let router = express.Router();
 
 const apiLimiter = rateLimit({
@@ -16,6 +16,7 @@ router.use("/user", auth, require("./user").router);
 router.use("/event", auth, require("./event").router);
 router.use("/attendance", auth, require("./attendance").router);
 router.use("/leaderboard", auth, require("./leaderboard").router);
+router.use("/rsvp", auth, require("./rsvp").router);
 
 // Public API
 router.use("/auth", require("./auth").router);
