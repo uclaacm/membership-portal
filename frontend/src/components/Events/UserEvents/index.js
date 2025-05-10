@@ -6,6 +6,7 @@ import OverlayPopup from 'components/OverlayPopup';
 import EarlierEventsIcon from "components/Events/earlierEventsIcon";
 import EventDay from "./eventDay";
 import EventFilterBar from "../EventFilterBar";
+import Config from "../../../config"
 
 
 export default class UserEvents extends React.Component {
@@ -202,7 +203,7 @@ export default class UserEvents extends React.Component {
     }
 
     // Sample data for committees and time ranges
-    const committees = ["AI", "Cyber", "Design", "Hack", "ICPC", "Studio", "TeachLA", "W"];
+    const committees = Config.committees
     const timeRanges = ["Today", "This Week", "This Month", "This Quarter", "This Year"];
 
     // Filter events based on search criteria

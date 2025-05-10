@@ -319,4 +319,25 @@ export default {
     'Undeclared Social Sciences',
     'World Arts and Cultures',
   ],
+  committees: [
+    'AI',
+    'Cyber',
+    'Design',
+    'Hack',
+    'ICPC',
+    'Studio',
+    'TeachLA',
+    'W'
+  ],
+  committeeColors: [
+    ['ACM', '#1d6bff'],
+    ['AI', '#28b2fd'],
+    ['Cyber', '#ffba43'],
+    ['Design', '#fe833d'],
+    ['Hack', '#c95ffd'],
+    ['ICPC', '#ff6b6b'],
+    ['Studio', '#ed3267'],
+    ['TeachLA', '#5fda10'],
+    ['W', '#01d4cb']
+  ],
 };

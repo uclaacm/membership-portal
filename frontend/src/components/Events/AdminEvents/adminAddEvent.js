@@ -4,6 +4,7 @@ import moment from 'moment';
 import InputElement from 'react-input-mask';
 import DatePicker from 'react-datepicker';
 import Button from 'components/Button/index';
+import Config from '../../../config'
 
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -82,6 +83,8 @@ export default class AdminAddEvent extends React.Component {
   }
 
   render() {
+    const committeeColorMap = Object.fromEntries(Config.committeeColors);
+
     return (
       <div className={`add-event-overlay${this.props.showing ? ' showing' : ''}`} onClick={this.props.onClickCancel}>
         <div className="event-sidebar" onClick={e => e.stopPropagation()}>
@@ -111,7 +114,20 @@ export default class AdminAddEvent extends React.Component {
             <div className="input-row">
               <div className="input-field">
                 <p>Committee</p>
-                <input type="text" value={this.state.event.committee} name="committee" onChange={this.handleChange} />
+                <select 
+                  value={this.state.event.committee} 
+                  name="committee" 
+                  onChange={this.handleChange}
+                  className="committee-select"
+                  style={{ color: committeeColorMap[this.state.event.committee] }}
+                >
+                  <option value="ACM">ACM</option>
+                  {Config.committees.map((committee, index) => (
+                    <option key={index} value={committee}>
+                      {committee}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
             <div className="input-row">
