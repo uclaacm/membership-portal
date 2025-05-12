@@ -7,6 +7,8 @@ import ReassignModal from "components/Modal/reassignModal";
 import OneClickPasswordModal from "components/Modal/oneClickPasswordModal";
 import ConfirmationModal from "components/Modal/confirmationModal";
 import PropTypes from "prop-types";
+import ChangeToAdmin from '../Profile/ChangeToAdmin';
+
 
 class ControlPanel extends React.Component {
   constructor() {
@@ -169,6 +171,8 @@ class ControlPanel extends React.Component {
             text={adminView ? "Switch to Member View" : "Switch to Admin View"}
             onClick={toggleAdminView}
           />
+
+          <ChangeToAdmin />
           <br />
 
           {isSuperAdmin ? (

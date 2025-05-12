@@ -7,6 +7,7 @@ import Config from 'config';
 import Activities from './activities';
 import YearSelector from './yearSelector';
 import MobileProfile from './mobileProfile';
+import ChangeToAdmin from './ChangeToAdmin';
 
 export default class Profile extends React.Component {
   constructor(props) {
@@ -192,7 +193,8 @@ export default class Profile extends React.Component {
             color="blue"
             text={adminView ? "Switch to Member View" : "Switch to Admin View"}
             onClick={toggleAdminView}
-          /> }
+            /> }
+            <ChangeToAdmin />
           </div>
 
           <div className="divider" />
