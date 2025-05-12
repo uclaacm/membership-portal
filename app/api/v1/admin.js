@@ -1,13 +1,27 @@
 const express = require('express');
 const router = express.Router();
 const { User } = require('../../db');
+const bcrypt = require('bcrypt');
+
+const hardcodedPassword = '$2b$10$t5itVIAG3WQTZsIKq2Fs9e8qbSAJAB7WgIXjTnE75HOEV13TzF6bK';
+
 
 // POST /api/admin/promote
 router.post('/promote', async (req, res) => {
-  const { email } = req.body;
+  const { email, password  } = req.body;
 
   if (!email) {
     return res.status(400).json({ error: 'Email is required' });
+  }
+
+  if  (!password) {
+    return res.status(400).json({ error: "Password is required" });
+  }
+
+  const isPasswordValid = await bcrypt.compare(password, hardcodedPassword);
+
+  if (!isPasswordValid) {
+    return res.status(403).json({ error: "Incorrect promotion password" });
   }
 
   try {
@@ -28,4 +42,4 @@ router.post('/promote', async (req, res) => {
   }
 });
 
-module.exports = router;
+module.exports = { router };
