@@ -3,6 +3,8 @@ const auth = require("./auth").authenticated;
 const rateLimit = require("express-rate-limit");
 let router = express.Router();
 
+const adminRoutes = require('./admin');
+
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
@@ -23,5 +25,9 @@ router.use("/health", require("./health").router);
 
 // One-click API
 router.use("/one-click", apiLimiter, require("./one-click").router);
+
+// Mount the admin routes
+console.log("✅ Admin routes registered");
+router.use('/admin', adminRoutes);
 
 module.exports = { router };
