@@ -14,7 +14,7 @@ router.route('/:uuid?').get((req, res, next) => {
   if (req.user.isPending()) return next(new error.Forbidden());
 
   // store successful response function
-  let callback = (rsvps) => res.json({ error: null, rsvps: rsvps.map((r) => r.getPublic()) });
+  const callback = rsvps => res.json({ error: null, rsvps: rsvps.map(r => r.getPublic()) });
 
   if (req.params.uuid) {
     // If an event UUID is provided, find all RSVP records for THAT EVENT
@@ -44,7 +44,7 @@ router.route('/add').post((req, res, next) => {
     .then((event) => {
       if (!event) { throw new error.UserError('Event not found'); }
 
-      let now = new Date();
+      const now = new Date();
       if (now > event.startDate) throw new error.UserError('Cannot RSVP to an event that has already started');
 
       // Check if the user has already RSVPed to this event
@@ -70,17 +70,17 @@ router.route('/add').post((req, res, next) => {
 /**
  * Cancel a user's RSVP to an event
  */
-router.route('/cancel').post((req, res, next) => {
+router.route('/:uuid').delete((req, res, next) => {
   if (req.user.isPending()) return next(new error.Forbidden());
 
   // The user must specify the event UUID
-  if (!req.body.event || !req.body.event.uuid) { return next(new error.BadRequest('Event UUID is required')); }
+  if (!req.params.uuid) { return next(new error.BadRequest('Event UUID is required')); }
 
-  Event.findByUUID(req.body.event.uuid)
+  Event.findByUUID(req.params.uuid)
     .then((event) => {
       if (!event) { throw new error.UserError('Event not found'); }
 
-      let now = new Date();
+      const now = new Date();
       if (now > event.startDate) throw new error.UserError('Cannot cancel RSVP to an event that has already started');
 
       // Check if the user has RSVPed to this event
