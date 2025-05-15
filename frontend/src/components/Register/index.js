@@ -1,8 +1,8 @@
 import React from 'react';
 import Config from 'config';
 import BannerMessage from 'components/BannerMessage';
-
-import DetailsCard from './detailsCard';
+import Banner from '../Login/banner';
+import RegisterSidebar from './registerSidebar';
 import SuccessCard from './successCard';
 
 const PAGE_DETAILS_CARD = Symbol('Details Card');
@@ -70,7 +70,7 @@ export default class RegisterComponent extends React.Component {
     switch (page) {
       case PAGE_DETAILS_CARD:
         return (
-          <DetailsCard
+          <RegisterSidebar
             profile={profile}
             onChange={this.handleProfileChange}
             onSubmit={this.handleProfileSubmit}
@@ -88,12 +88,16 @@ export default class RegisterComponent extends React.Component {
   render() {
     const { currentPage } = this.state;
     const { created, createSuccess, createError } = this.props;
+    
+    // Use the new login-style layout for all pages
     return (
       <div>
         <BannerMessage showing={created && !createSuccess} success={false} message={createError} />
-        <div className="register-component">
+        <div className="login">
           {this.renderComponentForPage(currentPage)}
-          <img src={Config.organization.logoLight} alt="logo light" className="corner-logo" />
+          <div className="login-tile">
+            <Banner decorative={false} />
+          </div>
         </div>
       </div>
     );
