@@ -9,8 +9,7 @@ export default class EventMonth extends React.Component {
     return (
       <div className="event-month">
         <h1 className="Display-2Primary date-month">
-          Events in
-          {month.date.format('MMMM')}
+          Events in {month.date.format('MMMM')}
         </h1>
         {month.days.map((day, i) => (
           <EventDay key={day.date.toString()} day={day} handleEditClick={handleEditClick} />

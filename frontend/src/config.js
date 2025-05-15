@@ -327,7 +327,8 @@ export default {
     'ICPC',
     'Studio',
     'TeachLA',
-    'W'
+    'W',
+    'Cloud',
   ],
   committeeColors: [
     ['ACM', '#1d6bff'],
@@ -338,6 +339,7 @@ export default {
     ['ICPC', '#ff6b6b'],
     ['Studio', '#ed3267'],
     ['TeachLA', '#5fda10'],
-    ['W', '#01d4cb']
+    ['W', '#01d4cb'],
+    ['Cloud', '#9f97ff'],
   ],
 };

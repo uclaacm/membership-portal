@@ -35,7 +35,7 @@ export default class EventFilterBarExample extends React.Component {
   
   render() {
     // Sample data for committees and time ranges
-    const committees = ["AI", "Cyber", "Design", "Hack", "ICPC", "Studio", "TeachLA", "W"];
+    const committees = ["AI", "Cyber", "Design", "Hack", "ICPC", "Studio", "TeachLA", "W", "Cloud"];
     const timeRanges = ["Today", "This Week", "This Month", "This Quarter", "This Year"];
     
     return (

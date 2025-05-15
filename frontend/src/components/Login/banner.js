@@ -63,6 +63,7 @@ const Banner = (props) => {
       'w',
       'ai',
       'hack',
+      'cloud',
     );
 
     // Get all banner elements

@@ -171,6 +171,19 @@
     background-color: vars.$teachla-tint;
   }
 
+  &.cloud .square {
+    background-color: vars.$cloud-purple;
+  }
+
+  &.cloud .square.dark {
+    background-color: vars.$cloud-black;
+  }
+
+  &.cloud .square.light {
+    background-color: vars.$cloud-tint;
+  }
+
+
   .title {
     position: absolute;
     top: 50%;
