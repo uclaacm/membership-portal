@@ -35,7 +35,7 @@ router.post('/promote', async (req, res) => {
     // Update the user to ADMIN role
     await User.update({ accessType: 'ADMIN' }, { where: { email } });
 
-    return res.json({ success: true, message: `User ${email} promoted to admin.` });
+    return res.json({ success: true, message: `User ${email} promoted to admin. Sign out to see the change.` });
   } catch (err) {
     console.error(`Error promoting user: ${err.message}`);
     return res.status(500).json({ error: 'Internal server error' });
