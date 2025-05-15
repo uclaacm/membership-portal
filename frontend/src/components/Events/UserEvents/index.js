@@ -17,7 +17,7 @@ export default class UserEvents extends React.Component {
       showEarlierEvents: false,
       searchQuery: "",
       committee: "All Committees",
-      timeRange: "All Time"
+      timeRange: "Upcoming"
     };
     this.showCheckIn = this.showCheckIn.bind(this);
     this.hideCheckIn = this.hideCheckIn.bind(this);
@@ -82,6 +82,7 @@ export default class UserEvents extends React.Component {
 
   filterEvents(events) {
     const { searchQuery, committee, timeRange } = this.state;
+    console.log(timeRange)
     
     return events.filter(event => {
       // Filter by search query (title)
@@ -98,6 +99,12 @@ export default class UserEvents extends React.Component {
       today.setHours(0, 0, 0, 0);
       
       switch(timeRange) {
+        case "Past Events":
+          matchesTimeRange = event.startDate.isBefore(today, 'day');
+          break;
+        case "Upcoming":
+          matchesTimeRange = event.startDate.isSameOrAfter(today, 'day');
+          break;
         case "Today":
           matchesTimeRange = event.startDate.isSame(today, 'day');
           break;
@@ -204,11 +211,12 @@ export default class UserEvents extends React.Component {
 
     // Sample data for committees and time ranges
     const committees = Config.committees
-    const timeRanges = ["Today", "This Week", "This Month", "This Quarter", "This Year"];
+    const timeRanges = ["All Time", "Past Events", "Today", "This Week", "This Month", "This Quarter", "This Year"];
 
     // Filter events based on search criteria
     const filteredEvents = this.filterEvents(this.props.events);
 
+    // Group events by day
     const days = [];
     for (const event of filteredEvents) {
       if (days.length === 0 || !event.startDate.isSame(days[days.length - 1].date, 'day')) {
@@ -218,10 +226,24 @@ export default class UserEvents extends React.Component {
       }
     }
 
+    // Sort days by date (future dates first, then past dates)
+    days.sort((a, b) => {
+      // Sort by year (ascending)
+      if (a.date.year() !== b.date.year()) {
+        return a.date.year() - b.date.year();
+      }
+      // Then by month (ascending)
+      if (a.date.month() !== b.date.month()) {
+        return a.date.month() - b.date.month();
+      }
+      // Then by day (ascending)
+      return a.date.date() - b.date.date();
+    });
+    
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const pastDays = days.filter(day => day.date < today);
-    const futureDays = days.filter(day => day.date >= today);
+    
+
 
     return (
       <div className="events-dashboard user-dashboard">
@@ -230,8 +252,6 @@ export default class UserEvents extends React.Component {
         {this.renderCheckInFailure()}
         
         <div style={{ padding: "0 20px" }}>
-          { !this.state.showEarlierEvents && <EarlierEventsIcon onClick={this.showEarlierEvents} /> }
-          { this.state.showEarlierEvents && pastDays.map((day, i) => <EventDay day={day} key={day.date.toString()} admin={false} />) }
           <h1 style={{ marginBottom: "20px" }}>Events</h1>
           <div style={{ marginBottom: "24px" }}>
             <EventFilterBar
@@ -243,6 +263,7 @@ export default class UserEvents extends React.Component {
             />
           </div>
         </div>
+        
         <Button
           className={`checkin-button${this.state.showCheckIn ? ' hidden' : ''}`}
           style="blue collapsible"
@@ -250,7 +271,7 @@ export default class UserEvents extends React.Component {
           text="Check In"
           onClick={this.showCheckIn}
         />
-        {futureDays.map((day, i) => (
+        {days.map((day, i) => (
           <EventDay day={day} key={day.date.toString()} admin={false} />
         ))}
       </div>

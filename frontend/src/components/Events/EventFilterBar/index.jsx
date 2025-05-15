@@ -7,7 +7,7 @@ export default class EventFilterBar extends React.Component {
     this.state = {
       searchQuery: "",
       committee: "All Committees",
-      timeRange: "All Time"
+      timeRange: "Upcoming"
     };
     
     this.handleSearchChange = this.handleSearchChange.bind(this);
@@ -82,7 +82,7 @@ export default class EventFilterBar extends React.Component {
               onChange={this.handleTimeRangeChange}
               className="filter-select"
             >
-              <option value="All Time">All Time</option>
+              <option value="Upcoming">Upcoming</option>
               {timeRanges.map((range, index) => (
                 <option key={index} value={range}>
                   {range}
