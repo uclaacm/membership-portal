@@ -8,7 +8,6 @@ export default class LeaderboardComponent extends React.Component {
     return (
       <div className="leaderboard">
         <Topbar />
-        <Sidebar />
         <Leaderboard 
           leaderboard={this.props.leaderboard} 
           user={this.props.user} 

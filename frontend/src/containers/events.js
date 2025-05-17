@@ -30,7 +30,7 @@ class Events extends React.Component {
     return (
       <div>
         <Topbar />
-        <Sidebar />
+        {/* <Sidebar /> */}
         {!showAdminView ? (
           <UserEvents
             events={this.props.events}

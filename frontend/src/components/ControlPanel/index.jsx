@@ -27,7 +27,7 @@ export default class ControlPanelComponent extends React.Component {
     return (
       <div className="controlpanel">
         <Topbar />
-        <Sidebar />
+        {/*<Sidebar />*/}
         <ControlPanel
           logout={logout}
           userEmail={userEmail}

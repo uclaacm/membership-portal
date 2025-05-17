@@ -23,7 +23,8 @@
 }
 
 .profile-wrapper {
-  margin-left: vars.$sidebar-width;
+  margin-top: vars.$topbar-height;
+  margin-left: 0px;
   padding: 60px;
   overflow: visible;
   transition: margin-left 0.125s ease-in-out;

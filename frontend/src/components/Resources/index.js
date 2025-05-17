@@ -8,7 +8,7 @@ export default class ResourcesComponent extends React.Component {
     return (
       <div className="resources">
         <Topbar />
-        <Sidebar />
+        {/*<Sidebar />*/}
         <Resources />
       </div>
     );

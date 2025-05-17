@@ -44,7 +44,7 @@
 }
 
 .events-dashboard {
-  margin-left: vars.$sidebar-width;
+  margin-top: vars.$topbar-height;
   box-sizing: padding-box;
   padding: 30px;
   overflow: visible;
@@ -64,7 +64,7 @@
 
   .checkin-button {
     position: fixed;
-    top: 20px;
+    top: 80px; 
     right: 20px;
     z-index: 10;
   }

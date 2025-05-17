@@ -9,7 +9,7 @@ export default class ProfileComponent extends React.Component {
     return (
       <div className="profile">
         <Topbar />
-        <Sidebar />
+        {/*<Sidebar />*/}
         <Profile
           updated={this.props.updated}
           updateSuccess={this.props.updateSuccess}
