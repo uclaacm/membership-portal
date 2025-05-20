@@ -216,29 +216,7 @@ export default class UserEvents extends React.Component {
     // Filter events based on search criteria
     const filteredEvents = this.filterEvents(this.props.events);
 
-    // Group events by day
-    const days = [];
-    for (const event of filteredEvents) {
-      if (days.length === 0 || !event.startDate.isSame(days[days.length - 1].date, 'day')) {
-        days.push({ date: event.startDate, events: [event] });
-      } else {
-        days[days.length - 1].events.push(event);
-      }
-    }
-
-    // Sort days by date (future dates first, then past dates)
-    days.sort((a, b) => {
-      // Sort by year (ascending)
-      if (a.date.year() !== b.date.year()) {
-        return a.date.year() - b.date.year();
-      }
-      // Then by month (ascending)
-      if (a.date.month() !== b.date.month()) {
-        return a.date.month() - b.date.month();
-      }
-      // Then by day (ascending)
-      return a.date.date() - b.date.date();
-    });
+   
     
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -271,9 +249,7 @@ export default class UserEvents extends React.Component {
           text="Check In"
           onClick={this.showCheckIn}
         />
-        {days.map((day, i) => (
-          <EventDay day={day} key={day.date.toString()} admin={false} />
-        ))}
+          <EventDay events={filteredEvents} admin={false} />
       </div>
     );
   }
