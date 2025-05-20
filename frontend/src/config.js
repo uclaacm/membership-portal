@@ -28,6 +28,11 @@ export default {
       fetch: '/api/v1/attendance',
       attend: '/api/v1/attendance/attend',
     },
+    rsvp: {
+      get: '/api/v1/rsvp',
+      create: '/api/v1/rsvp/add',
+      cancel: '/api/v1/rsvp',
+    },
     leaderboard: '/api/v1/leaderboard',
   },
   organization: {

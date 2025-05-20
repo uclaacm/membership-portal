@@ -5,10 +5,19 @@ import { createBrowserHistory } from 'history';
 import { routerReducer, routerMiddleware } from 'react-router-redux';
 import thunk from 'redux-thunk';
 
-import { User, FetchUser, UpdateUser, UserUpdateDone, FetchActivity } from "./user";
-import { Admins, FetchAdmins, AddAdmin, DeleteAdmin, ChangeSuperAdmin } from "./admins";
-import { Auth, LoginUser, LogoutUser, RefreshToken, ToggleAdminView } from "./auth";
-import { OneClick, ChangeOneClickPassword, ChangeOneClickPasswordDone } from "./oneclick";
+import {
+  User, FetchUser, UpdateUser, UserUpdateDone, FetchActivity,
+} from './user';
+import {
+  Admins, FetchAdmins, AddAdmin, DeleteAdmin, ChangeSuperAdmin,
+} from './admins';
+import {
+  Auth, LoginUser, LogoutUser, RefreshToken, ToggleAdminView,
+} from './auth';
+import { OneClick, ChangeOneClickPassword, ChangeOneClickPasswordDone } from './oneclick';
+import {
+  RSVP, CreateRSVP, CancelRSVP, FetchUserRSVPs,
+} from './rsvp';
 
 import {
   Events,
@@ -34,6 +43,7 @@ const store = createStore(
     Events,
     User,
     Admins,
+    RSVP,
     Leaderboard,
     CheckIn,
     Registration,
@@ -69,6 +79,9 @@ const Action = {
   registerDone,
   CheckInto,
   ResetCheckIn,
+  CreateRSVP,
+  CancelRSVP,
+  FetchUserRSVPs,
 };
 
 export { store, history, Action };

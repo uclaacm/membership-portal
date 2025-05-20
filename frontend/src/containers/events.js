@@ -11,6 +11,7 @@ class Events extends React.Component {
   componentWillMount() {
     if (this.props.authenticated) {
       this.props.fetchEvents();
+      this.props.fetchUserRSVPs();
     }
   }
 
@@ -26,7 +27,7 @@ class Events extends React.Component {
   render() {
     // Only show admin view if user is admin AND adminView is true
     const showAdminView = this.props.isAdmin && this.props.adminView;
-    
+
     return (
       <div>
         <Topbar />
@@ -41,6 +42,10 @@ class Events extends React.Component {
             checkInError={this.props.checkInError}
             checkInPoints={this.props.checkInPoints}
             resetCheckIn={this.props.resetCheckIn}
+            userRsvps={this.props.userRsvps}
+            rsvpError={this.props.rsvpError}
+            createRSVP={this.props.createRSVP}
+            cancelRSVP={this.props.cancelRSVP}
           />
         ) : (
           <AdminEvents
@@ -61,19 +66,21 @@ class Events extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  events: state.Events.get("events"),
-  error: state.Events.get("error"),
-  eventCreated: state.Events.get("posted"),
-  eventCreateSuccess: state.Events.get("postSuccess"),
-  eventUpdated: state.Events.get("updated"),
-  eventUpdateSuccess: state.Events.get("updateSuccess"),
-  authenticated: state.Auth.get("authenticated"),
-  isAdmin: state.Auth.get("isAdmin"),
-  adminView: state.Auth.get("adminView"),
-  checkInSubmitted: state.CheckIn.get("submitted"),
-  checkInPoints: state.CheckIn.get("numPoints"),
-  checkInSuccess: state.CheckIn.get("success"),
-  checkInError: state.CheckIn.get("error"),
+  events: state.Events.get('events'),
+  error: state.Events.get('error'),
+  eventCreated: state.Events.get('posted'),
+  eventCreateSuccess: state.Events.get('postSuccess'),
+  eventUpdated: state.Events.get('updated'),
+  eventUpdateSuccess: state.Events.get('updateSuccess'),
+  authenticated: state.Auth.get('authenticated'),
+  isAdmin: state.Auth.get('isAdmin'),
+  adminView: state.Auth.get('adminView'),
+  checkInSubmitted: state.CheckIn.get('submitted'),
+  checkInPoints: state.CheckIn.get('numPoints'),
+  checkInSuccess: state.CheckIn.get('success'),
+  checkInError: state.CheckIn.get('error'),
+  userRsvps: state.RSVP.get('userRsvps'),
+  rsvpError: state.RSVP.get('error'),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -103,6 +110,18 @@ const mapDispatchToProps = dispatch => ({
 
   createDone: () => {
     dispatch(Action.CreateEventDone());
+  },
+
+  fetchUserRSVPs: () => {
+    dispatch(Action.FetchUserRSVPs());
+  },
+
+  createRSVP: (eventUuid) => {
+    dispatch(Action.CreateRSVP(eventUuid));
+  },
+
+  cancelRSVP: (eventUuid) => {
+    dispatch(Action.CancelRSVP(eventUuid));
   },
 });
 
