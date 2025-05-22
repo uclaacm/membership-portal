@@ -1,7 +1,7 @@
 # load the alpine base image
 # `make: /bin/sh: Operation not permitted` encountered with alpine:3.15
 # https://github.com/docker-library/php/issues/1177
-FROM alpine:3.13
+FROM node:18-alpine
 
 RUN apk add --no-cache python3 make gcc g++ nodejs yarn npm
 ENV PYTHONPATH /usr/lib/python3.8/site-packages
