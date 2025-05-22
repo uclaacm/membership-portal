@@ -1,0 +1,162 @@
+.welcome-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start; /* align items at the top line */
+  background-color: #1e2a38;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  color: #ffffff;
+  padding: 2rem;
+  border: 1px solid #ccc;
+  border-radius: 18pt;
+  box-shadow: -2px 3px rgba(0, 0, 0, 0.1);
+}
+
+.welcome-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* spread heading and footer apart */
+  height: 100%;
+
+  h1 {
+    margin: 0;
+    font-size: 2rem;
+    line-height: 1.2;
+  }
+
+  .footer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-top: 1rem;
+
+    .subheading {
+      margin: 0;
+      font-size: 1rem;
+      opacity: 0.8;
+      white-space: nowrap;
+    }
+
+    .branding-badge {
+      width: 180px;
+      height: auto;
+    }
+  }
+}
+
+.profile-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.profile-picture {
+  width: 200px;          /* increased size */
+  height: 200px;
+  background-color: #ffffff33; /* translucent placeholder */
+  border: 2px solid #fff;
+  border-radius: 50%;
+}
+
+.chapter {
+  text-align: center;
+  font-size: 1.2rem;
+  opacity: 0.8;
+}
+
+.name {
+  margin: 0;
+  text-align: center;
+  font-size: 2.8rem;
+  font-weight: 600;
+}
+
+.neural-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.banner-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+// tablet screens
+@media (max-height: 901px) {
+  .main-section{
+    .welcome-banner{
+      padding: 1.5rem;
+    }
+  }
+  .profile-picture {
+  width: 175px;
+  height: 175px;
+  }
+
+  .name {
+    font-size: 2.0rem;
+  }
+}
+
+// tablet screens
+@media (max-height: 769px) {
+  .main-section{
+    .welcome-banner{
+      padding: 1rem;
+    }
+  }
+
+  .profile-picture {
+  width: 150px;
+  height: 150px;
+  }
+
+  .name {
+    font-size: 1.5rem;
+  }
+}
+
+// Mobile View
+@media (max-width: 768px) {
+  .welcome-text {
+    h1 {
+      font-size: 1.2rem;
+    }
+
+    .footer {
+      .subheading {
+        font-size: 0.7rem;
+      }
+
+      .branding-badge {
+        width: 150px;
+        height: auto;
+      }
+    }
+  }
+
+  .profile-picture {
+    width: 125px;
+    height: 125px;
+  }
+
+  .chapter {
+    font-size: 0.7rem;
+  }
+
+  .name {
+    font-size: 1.2rem;
+  }
+}

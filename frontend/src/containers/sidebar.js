@@ -1,3 +1,6 @@
+// DEPRECATED: This file is deprecated and will be removed in the future. The new landing page sidebar is now located in
+// src/components/home/home.js.
+
 import React from 'react';
 import { connect } from 'react-redux';
 
@@ -35,9 +38,9 @@ const mapStateToProps = (state) => {
       picture: profile.picture,
       username: `${profile.firstName} ${profile.lastName}`,
       points: profile.points,
-      isAdmin: state.Auth.get("isAdmin"),
-      isSuperAdmin: state.Auth.get("isSuperAdmin"),
-      adminView: state.Auth.get("adminView"),
+      isAdmin: state.Auth.get('isAdmin'),
+      isSuperAdmin: state.Auth.get('isSuperAdmin'),
+      adminView: state.Auth.get('adminView'),
     };
   }
   return {

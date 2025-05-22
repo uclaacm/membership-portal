@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from 'react-redux';
 import { Action } from '../../../reducers';
-import styles from './styles.scss';
+import './style.scss';
 import moment from "moment";
 
 /* 
