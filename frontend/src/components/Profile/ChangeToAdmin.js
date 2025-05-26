@@ -1,6 +1,7 @@
 // src/components/ChangeToAdmin.jsx
 import React, { useState } from 'react';
 import Button from 'components/Button';
+import Config from 'config';
 import './ChangeToAdmin.scss';
 
 const ChangeToAdmin = () => {
@@ -16,7 +17,7 @@ const ChangeToAdmin = () => {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch('http://localhost:8080/app/api/v1/admin/promote', {
+      const response = await fetch(Config.API_URL + Config.routes.admin.promote, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

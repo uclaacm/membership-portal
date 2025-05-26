@@ -8,11 +8,14 @@ const CANCEL_RSVP_SUCCESS = Symbol('CANCEL_RSVP_SUCCESS');
 const CANCEL_RSVP_ERROR = Symbol('CANCEL_RSVP_ERROR');
 const FETCH_USER_RSVPS_SUCCESS = Symbol('FETCH_USER_RSVPS_SUCCESS');
 const FETCH_USER_RSVPS_ERROR = Symbol('FETCH_USER_RSVPS_ERROR');
+const FETCH_EVENT_RSVPS_SUCCESS = Symbol('FETCH_EVENT_RSVPS_SUCCESS');
+const FETCH_EVENT_RSVPS_ERROR = Symbol('FETCH_EVENT_RSVPS_ERROR');
 
 // Initial state
 const State = Immutable.Map({
   error: '',
   userRsvps: Immutable.List(),
+  eventRsvps: Immutable.List(),
   loading: false,
 });
 
@@ -37,6 +40,14 @@ class RSVPActions {
   static FetchUserRSVPs(error, rsvps) {
     return {
       type: error ? FETCH_USER_RSVPS_ERROR : FETCH_USER_RSVPS_SUCCESS,
+      rsvps,
+      error,
+    };
+  }
+
+  static FetchEventRSVPs(error, rsvps) {
+    return {
+      type: error ? FETCH_EVENT_RSVPS_ERROR : FETCH_EVENT_RSVPS_SUCCESS,
       rsvps,
       error,
     };
@@ -124,6 +135,31 @@ const FetchUserRSVPs = () => async (dispatch) => {
   }
 };
 
+const FetchEventRSVPs = eventUuid => async (dispatch) => {
+  try {
+    const response = await global.fetch(`${Config.API_URL}${Config.routes.rsvp.get}/${eventUuid}`, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${global.localStorage.getItem('token')}`,
+      }
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to fetch RSVPs');
+    }
+
+    dispatch(RSVPActions.FetchEventRSVPs(null, data.rsvps));
+    return { success: true, rsvps: data.rsvps };
+    
+  } catch (err) {
+      dispatch(RSVPActions.FetchEventRSVPs(err.message || 'Failed to fetch RSVPs'));
+    return { success: false, error: err };
+  }
+};
+
 // Reducer
 const RSVP = (state = State, action) => {
   switch (action.type) {
@@ -149,6 +185,16 @@ const RSVP = (state = State, action) => {
         .set('error', action.error)
         .set('userRsvps', Immutable.List());
 
+    case FETCH_EVENT_RSVPS_SUCCESS:
+      return state
+        .set('error', '')
+        .set('eventRsvps', Immutable.fromJS(action.rsvps));
+
+    case FETCH_EVENT_RSVPS_ERROR:
+      return state
+        .set('error', action.error)
+        .set('eventRsvps', Immutable.List());
+
     default:
       return state;
   }
@@ -159,4 +205,5 @@ export {
   CreateRSVP,
   CancelRSVP,
   FetchUserRSVPs,
+  FetchEventRSVPs,
 };

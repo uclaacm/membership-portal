@@ -34,6 +34,9 @@ export default {
       cancel: '/api/v1/rsvp',
     },
     leaderboard: '/api/v1/leaderboard',
+    admin: {
+      promote: '/api/v1/admin/promote',
+    },
   },
   organization: {
     logo: '/assets/images/logo.png',

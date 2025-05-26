@@ -16,7 +16,7 @@ import {
 } from './auth';
 import { OneClick, ChangeOneClickPassword, ChangeOneClickPasswordDone } from './oneclick';
 import {
-  RSVP, CreateRSVP, CancelRSVP, FetchUserRSVPs,
+  RSVP, CreateRSVP, CancelRSVP, FetchUserRSVPs, FetchEventRSVPs,
 } from './rsvp';
 
 import {
@@ -82,6 +82,7 @@ const Action = {
   CreateRSVP,
   CancelRSVP,
   FetchUserRSVPs,
+  FetchEventRSVPs,
 };
 
 export { store, history, Action };

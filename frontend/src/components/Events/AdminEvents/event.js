@@ -1,9 +1,24 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { Action } from '../../../reducers';
 
-export default class AdminEventCard extends React.Component {
+class AdminEventCard extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      loading: false
+    };
     this.editEvent = this.editEvent.bind(this);
+  }
+
+  async componentDidMount() {
+    // Fetch RSVPs when component mounts
+    if (this.props.event && this.props.event.uuid) {
+      const response = await this.props.fetchEventRSVPs(this.props.event.uuid);
+      if (response.success && response.rsvps) {
+        this.setState({ rsvps: response.rsvps.length });
+      }
+    }
   }
 
   editEvent(e) {
@@ -12,6 +27,8 @@ export default class AdminEventCard extends React.Component {
 
   render() {
     const { event } = this.props;
+    const { rsvps } = this.state;
+
     return (
       <div className="admin-event-tile" onClick={this.editEvent}>
         <div className="top">
@@ -22,7 +39,20 @@ export default class AdminEventCard extends React.Component {
             <span className="event-committee Title-2Secondary">{event.committee}</span>
           </div>
         </div>
+        <div className="rsvp-count">
+          RSVPs: {rsvps|| 0}
+        </div>
       </div>
     );
   }
 }
+
+const mapStateToProps = state => ({
+  eventRsvps: state.RSVP.get('eventRsvps')
+});
+
+const mapDispatchToProps = dispatch => ({
+  fetchEventRSVPs: (eventUuid) => dispatch(Action.FetchEventRSVPs(eventUuid))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(AdminEventCard);

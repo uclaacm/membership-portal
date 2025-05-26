@@ -58,6 +58,8 @@ class Events extends React.Component {
             updateSuccess={this.props.eventUpdateSuccess}
             addEvent={this.props.addEvent}
             updateEvent={this.props.updateEvent}
+            fetchEventRSVPs={this.props.fetchEventRSVPs}
+            rsvpError={this.props.rsvpError}
           />
         )}
       </div>
@@ -122,6 +124,10 @@ const mapDispatchToProps = dispatch => ({
 
   cancelRSVP: (eventUuid) => {
     dispatch(Action.CancelRSVP(eventUuid));
+  },
+
+  fetchEventRSVPs: (eventUuid) => {
+    dispatch(Action.FetchEventRSVPs(eventUuid));
   },
 });
 
