@@ -16,16 +16,24 @@
     display: block;
     border: none;
     outline: none;
-
+    width: auto;
     color: vars.$white;
     text-align: center;
     border-radius: vars.$input-button-size;
     font-size: vars.$checkin-fontsize;
-    line-height: vars.$input-button-size;
     height: vars.$input-button-size;
-    padding: 0px vars.$sidebar-vertical-spacing + 15px;
-
     transition: 0.125s ease-in-out;
+    padding: 0 12px;
+    text-wrap: wrap;
+
+    span{
+      height: 100%;
+      width: 100%;
+      text-wrap: nowrap;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 
   .button-inside {

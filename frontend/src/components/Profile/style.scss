@@ -38,6 +38,8 @@
   }
 
   .form-elem {
+    display: flex;
+    flex-wrap: wrap;
     padding-bottom: 30px;
 
     p {

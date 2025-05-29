@@ -1,7 +1,6 @@
 @use "styles/vars";
 
 .control-panel-wrapper {
-  margin-left: vars.$sidebar-width;
   padding: 60px;
   overflow: visible;
   transition: 0.125s ease-in-out;
@@ -17,7 +16,9 @@
   }
 
   .form-elem {
-    padding-bottom: 30px;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
 
     p {
       padding: 2px 0px;
@@ -74,10 +75,5 @@
       border-bottom: 2px dashed #dadada;
       padding: 5px 0px;
     }
-  }
-
-  @media (max-width: 700px) {
-    margin-left: 0px;
-    margin-top: 30px;
   }
 }

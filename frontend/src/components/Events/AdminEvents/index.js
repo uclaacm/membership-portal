@@ -143,7 +143,7 @@ export default class AdminEvents extends React.Component {
         {!this.state.showAddEvent && (
           <Button
             className="checkin-button"
-            style="blue collapsible"
+            style="blue"
             icon="fa-plus"
             text="Add Event"
             onClick={this.showAddEvent}
