@@ -256,43 +256,40 @@
   border-radius: 18px;
   padding: 1.5rem;
   max-height: 400px;
-  overflow-y: auto;
+  height: 100%;
+  overflow-y: hidden;
+
+  @media (max-width: 768px) {
+    overflow-y: scroll;
+  }
 }
 
 .title-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.title-container h1{
   font-size: 1.5em;
   font-weight: 700;
-  width: 100%;
   margin-bottom: 0.5rem;
 }
 
+.title-container a{
+  font-size: 1em;
+  font-weight: 400;
+  font-family: "Lato", sans-serif;
+  text-decoration: underline;
+}
+
 .events-container {
-  display: grid;
-  gap: auto;
-  justify-content: space-between;
-  grid-template-columns: repeat(4, 245px) !important;
-  margin: 0 1.5rem 1.5rem 1.5rem;
-}
-
-/* ≥769px and ≤1200px: 3 tiles, hide the 4th */
-@media (max-width: 1600px) and (min-width: 769px) {
-  .events-container {
-    grid-template-columns: repeat(3, 245px) !important;
-    margin: 0 .5rem .5rem .5rem;
-  }
-  .events-container > .event-container:nth-child(n+4) {
-    display: none !important;
-  }
-}
-
-/* ≥769px and ≤992px: 2 tiles, hide the 3rd+ */
-@media (max-width: 1200px) and (min-width: 769px) {
-  .events-container {
-    grid-template-columns: repeat(2, 245px) !important;
-  }
-  .events-container > .event-container:nth-child(n+3) {
-    display: none !important;
-  }
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+  height: 90%;
+  overflow: scroll;
 }
 
 /* Mobile: stack everything */
@@ -331,29 +328,6 @@
   .event-checkin,
   .featured-events {
     width: 100%;
-  }
-
-  /* Make the events list scroll horizontally */
-  .main-section .featured-events {
-    overflow: visible !important;    /* no scroll here */
-    max-height: none !important;     
-    padding-bottom: 0;               /* remove any extra bottom padding */
-  }
-
-  /* 2) Move the horizontal‐scroll behavior down to the cards container */
-  .main-section .featured-events .events-container {
-    display: flex !important;
-    flex-wrap: nowrap !important;
-    gap: 1rem !important;
-    overflow-x: auto;                /* scroll horizontally */
-    overflow-y: hidden;              
-    padding-bottom: 1rem;            /* breathing room under cards */
-  }
-
-  /* 3) Fix each card’s sizing */
-  .main-section .featured-events .events-container .event-card {
-    flex: 0 0 auto !important;
-    min-width: 245px;
   }
 }
 

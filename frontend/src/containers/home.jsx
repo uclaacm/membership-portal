@@ -58,6 +58,7 @@ class Home extends React.Component {
       username,
       points,
       leaderboard,
+      events,
     } = this.props;
 
     return (
@@ -75,6 +76,7 @@ class Home extends React.Component {
           checkInError={checkInError}
           points={points}
           leaderboard={leaderboard}
+          events={events}
         />
       </div>
     );

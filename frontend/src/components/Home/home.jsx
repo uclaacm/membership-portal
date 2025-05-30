@@ -2,12 +2,26 @@ import React from 'react';
 import WelcomeBanner from 'components/Home/WelcomeBanner';
 import PropTypes from 'prop-types';
 import Points from './points';
+import moment from 'moment';
 
 import './styles.scss';
 import FeaturedEvents from './featuredEvents';
 import EventCard from '../Events/UserEvents/eventCard';
 
 const NUMBER_LEADERBOARD_USERS = 10;
+const NUMBER_FEATURED_EVENTS = 5;
+
+const getRecentEvents = (events) => {
+  if (!events || !Array.isArray(events)) return [];
+  
+  return events
+    // Filter out past events
+    .filter(event => moment(event.startDate).isSameOrAfter(moment(), 'day'))
+    // Sort by start date (ascending)
+    .sort((a, b) => moment(a.startDate).diff(moment(b.startDate)))
+    // Take first 5
+    .slice(0, NUMBER_FEATURED_EVENTS);
+};
 
 const Home = ({
   isAdmin,
@@ -21,29 +35,18 @@ const Home = ({
   checkInError,
   points,
   leaderboard,
+  events,
 }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     checkIn(e.target.attendanceCode.value);
   };
 
-  /* HARD CODED FOR TESTING PURPOSES */
-  const event = (
-    <EventCard event={{
-      attendancePoints: '50',
-      committee: 'ICPC',
-      cover: '',
-      description: 'description',
-      endDate: null, // endTime
-      eventLink: '',
-      location: 'Boelter 1293',
-      startDate: null, // startTime
-      title: 'Very fun event',
-      startTime: '6:00 PM',
-    }}
-    />
-  );
-  const eventArray = [event, event, event, event];
+  const recentEvents = getRecentEvents(events);
+  console.log(recentEvents);
+  const eventCards = recentEvents.map(event => (
+    <EventCard key={event.uuid} event={event} />
+  ));
 
   return (
     <div className="home-dashboard">
@@ -117,8 +120,7 @@ const Home = ({
           picture={picture}
           username={username}
         />
-        <FeaturedEvents title="Featured Events" events={eventArray} />
-
+        <FeaturedEvents title="Featured Events" events={eventCards} />
       </main>
     </div>
   );
@@ -143,6 +145,11 @@ Home.propTypes = {
       points: PropTypes.number.isRequired,
     }).isRequired,
   ).isRequired,
+  events: PropTypes.array,
+};
+
+Home.defaultProps = {
+  events: [],
 };
 
 export default Home;
