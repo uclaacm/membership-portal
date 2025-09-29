@@ -236,4 +236,43 @@
   &.teachla .title h1 {
     color: vars.$teachla-green;
   }
+
+  .square.logo-bg {
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: var(--logo-url);
+      background-size: 125%;
+      background-position: center;
+      border-radius: 14px;
+
+      opacity: 0;
+      transform: scale(0.95) rotate(-45deg);
+      animation: fadeInOut 4s ease-in-out infinite;
+    }
+  }
+
+  @keyframes fadeInOut {
+    0% {
+      opacity: 0;
+      transform: scale(0.95) rotate(-45deg);
+    }
+    25% {
+      opacity: 1;
+      transform: scale(1) rotate(-45deg);
+    }
+    85% {
+      opacity: 1;
+      transform: scale(1) rotate(-45deg);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(0.95) rotate(-45deg);
+    }
+  }
+
 }

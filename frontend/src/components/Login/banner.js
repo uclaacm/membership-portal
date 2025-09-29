@@ -9,7 +9,7 @@ const mapUpToSum = (num, fn) => {
 };
 
 // Helper function to generate a mask around the title area
-const generateCols = (n, m, centerX, centerY, maskRadius = 2, randomize = false) => {
+const generateCols = (n, m, centerX, centerY, maskRadius = 2, randomize = false, committee) => {
   return mapUpToSum(n, (i) => (
     <div className="square-col" key={i}>
       {mapUpToSum(m, (j) => {
@@ -33,8 +33,19 @@ const generateCols = (n, m, centerX, centerY, maskRadius = 2, randomize = false)
           classNames.push('white');
         } else if (randomize) {
           const r = Math.random();
-          if (r < 0.08) classNames.push('white');
-          else if (r < 0.4) classNames.push('light');
+          // 3% chance: render logo image
+          if (r < 0.03) {
+            classNames.push('logo-bg');
+            return (
+              <div
+                className={classNames.join(' ')}
+                key={j}
+                style={{ '--logo-url': `url(/assets/images/committees/interior/${committee}.png)` }}
+              />
+            );
+          } 
+          else if (r < 0.11) classNames.push('white'); //%11- %3 chance to get empty
+          else if (r < 0.43) classNames.push('light'); //%43 - %11 chance to get light
         }
 
         return <div className={classNames.join(' ')} key={j} />;
@@ -46,25 +57,24 @@ const generateCols = (n, m, centerX, centerY, maskRadius = 2, randomize = false)
 const Banner = (props) => {
   const [randomize, setRandomize] = useState(false);
   const [color, setColor] = useState(0);
-  let timer;
+  const [currentCommittee, setCurrentCommittee] = useState('acm');
+
+  const committees = React.useMemo(() => {
+    const base = [
+      'studio', 'icpc', 'design', 'cyber', 'teachla',
+      'w', 'ai', 'hack', 'cloud'
+    ];
+    // Shuffle base:
+    for (let i = base.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [base[i], base[j]] = [base[j], base[i]];
+    }
+    return ['acm', ...base];
+  }, []);
 
   useEffect(() => {
     // Initialize randomize state
     setRandomize(true);
-
-    // Define committee colors to cycle through
-    const committees = ['acm'];
-    committees.push(
-      'studio',
-      'icpc',
-      'design',
-      'cyber',
-      'teachla',
-      'w',
-      'ai',
-      'hack',
-      'cloud',
-    );
 
     // Get all banner elements
     const elements = document.querySelectorAll('.banner');
@@ -72,16 +82,14 @@ const Banner = (props) => {
     // Set up color cycling interval
     const id = setInterval(() => {
       setColor((prev) => {
-        // Remove the previous class from all banners
-        elements.forEach(el => {
-          el.classList.remove(committees[prev]);
-        });
-
         // Calculate next color index
         const next = (prev + 1) % committees.length;
+        setCurrentCommittee(committees[next]);
 
+        // Remove the previous class from all banners
         // Add the new class to all banners
         elements.forEach(el => {
+          el.classList.remove(committees[prev]);
           el.classList.add(committees[next]);
         });
 
@@ -91,7 +99,7 @@ const Banner = (props) => {
 
     // Clean up interval on unmount
     return () => clearInterval(id);
-  }, [props.decorative]);
+  }, [props.decorative, committees]);
   // Get dimensions of login-tile element if it exists
   const hypotenuse = Math.sqrt(0.6 * window.innerWidth * 0.6 * window.innerWidth + window.innerHeight * window.innerHeight);
   
@@ -114,10 +122,10 @@ const Banner = (props) => {
   const centerY = Math.floor(height / 2);
 
   return (
-    <div className={`banner ${decorative ? 'decorative' : ''}`}>
+    <div className={`banner ${decorative ? 'decorative' : ''} ${currentCommittee}`}>
       <div className="square-col-container">
-        {!decorative && generateCols(sideCols, height, centerX, centerY, 2, randomize)}
-        {decorative && generateCols(8, 4, undefined, undefined, 2, randomize)}
+        {!decorative && generateCols(sideCols, height, centerX, centerY, 2, randomize, currentCommittee)}
+        {decorative && generateCols(8, 4, undefined, undefined, 2, randomize, currentCommittee)}
       </div>
       {!decorative && (
         <div className="title">
