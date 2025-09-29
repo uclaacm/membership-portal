@@ -212,6 +212,7 @@
   flex-direction: column;
   gap: 2rem;
   height: 100%; /* fill vertical space */
+  min-width: 0;
 }
 
 /* Expanding Welcome Banner */
@@ -287,13 +288,20 @@
 .events-container {
   display: flex;
   gap: .5rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   height: 90%;
-  overflow: scroll;
+  overflow-x: auto;
+  overflow-y: hidden;
+  min-width: 0;
 }
 
 /* Mobile: stack everything */
 @media (max-width: 768px) {
+  .events-container {
+    flex-wrap: wrap;
+    overflow-x: unset;
+    overflow-y: auto;
+  }
   /* Turn the dashboard into a vertical flex container with no gaps */
   .home-dashboard {
     display: flex;
