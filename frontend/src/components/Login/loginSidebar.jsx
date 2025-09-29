@@ -40,6 +40,9 @@ export default class LoginSidebar extends React.Component {
             <p className="login-description">
              Access exclusive resources, event registrations, and connect with the largest Computer Science community at UCLA.
             </p>
+            <p className="login-description" style={{marginBottom: '5px'}}>
+              Please use your UCLA email to sign in.
+            </p>
 
             <div className="sign-in">
               <GoogleLogin
