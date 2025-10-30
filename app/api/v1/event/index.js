@@ -49,7 +49,6 @@ router
   .route("/:uuid?")
   .get((req, res, next) => {
     if (req.user.isPending()) return next(new error.Forbidden());
-
     // CASE: no UUID is present, should return all elements
     if (!req.params.uuid || !req.params.uuid.trim()) {
       const offset = parseInt(req.query.offset, 10);
@@ -62,6 +61,14 @@ router
         : Event.getAll(offset, limit);
       getEvents
         .then((events) => {
+          events.forEach(e => {
+            // reformat google drive file links
+            if (e.cover && e.cover.includes('drive.google.com')) {
+              const fileID = e.cover.match(/\/file\/d\/(.+?)\//)[1];
+              e.cover = `https://drive.google.com/thumbnail?id=${fileID}&sz=s1000`;
+            }
+          })  
+
           res.json({
             error: null,
             events: events.map((e) => e.getPublic(req.user.isAdmin())),
