@@ -1,4 +1,4 @@
-const logger = require("../logger");
+const logger = require('../logger');
 
 /**
  * This file defines error classes based on their semantic meaning. It abstracts away
@@ -24,7 +24,7 @@ class HTTPError extends Error {
 
     super(message);
 
-    this.name = name ? name : this.constructor.name;
+    this.name = name || this.constructor.name;
     this.status = status;
     this.message = message;
   }
@@ -32,37 +32,37 @@ class HTTPError extends Error {
 
 class UserError extends HTTPError {
   constructor(message) {
-    super(200, message || "User Error");
+    super(200, message || 'User Error');
   }
 }
 
 class BadRequest extends HTTPError {
   constructor(message) {
-    super(400, message || "Bad Request");
+    super(400, message || 'Bad Request');
   }
 }
 
 class Unauthorized extends HTTPError {
   constructor(message) {
-    super(401, message || "Unauthorized");
+    super(401, message || 'Unauthorized');
   }
 }
 
 class Forbidden extends HTTPError {
   constructor(message) {
-    super(403, message || "Permission denied");
+    super(403, message || 'Permission denied');
   }
 }
 
 class NotFound extends HTTPError {
   constructor(message) {
-    super(404, message || "Resource not found");
+    super(404, message || 'Resource not found');
   }
 }
 
 class Unprocessable extends HTTPError {
   constructor(message) {
-    super(422, message || "Unprocessable request");
+    super(422, message || 'Unprocessable request');
   }
 }
 
@@ -74,13 +74,13 @@ class TooManyRequests extends HTTPError {
 
 class InternalServerError extends HTTPError {
   constructor(message) {
-    super(500, message || "Internal server error");
+    super(500, message || 'Internal server error');
   }
 }
 
 class NotImplemented extends HTTPError {
   constructor(message) {
-    super(501, message || "Not Implemented");
+    super(501, message || 'Not Implemented');
   }
 }
 
@@ -95,20 +95,20 @@ class NotAvailable extends HTTPError {
  * an error ends up here and all errors are handled uniformly.
  */
 const errorHandler = (err, req, res, next) => {
-  if (!err) err = new InternalServerError("An unknown error occurred");
+  if (!err) err = new InternalServerError('An unknown error occurred');
   if (!err.status) err = new InternalServerError(err.message);
 
   if (err.status < 500) {
     logger.warn(
-      "%s [Flow %s]: %s [%d]: %s",
+      '%s [Flow %s]: %s [%d]: %s',
       new Date(),
       req.id,
       err.name,
       err.status,
-      err.message
+      err.message,
     );
   } else {
-    logger.error("%s [Flow %s]: \n%s", new Date(), req.id, err.stack);
+    logger.error('%s [Flow %s]: \n%s', new Date(), req.id, err.stack);
   }
 
   res.status(err.status).json({
@@ -124,14 +124,14 @@ const errorHandler = (err, req, res, next) => {
  * for requests that don't hit a route.
  */
 const notFoundHandler = (req, res, next) => {
-  const err = new NotFound("The resource " + req.url + " was not found");
+  const err = new NotFound(`The resource ${req.url} was not found`);
   logger.warn(
-    "%s [Flow %s]: %s [%d]: %s",
+    '%s [Flow %s]: %s [%d]: %s',
     new Date(),
     req.id,
     err.name,
     err.status,
-    err.message
+    err.message,
   );
   res.status(err.status).json({
     error: {

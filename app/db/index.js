@@ -47,12 +47,10 @@ const setup = (force, dev) => {
       ? db.sync({ force }).then(() => devSetup(User, Event))
       : db.sync({ force })
   ).then(() => {
-    Secret.generateHash('password').then(hash => {
-      return Secret.findOrCreate({
-        where: { name: 'one-click' },
-        defaults: { hash }
-      });
-    }).catch(err => {
+    Secret.generateHash('password').then(hash => Secret.findOrCreate({
+      where: { name: 'one-click' },
+      defaults: { hash },
+    })).catch((err) => {
       console.error('Error creating secret:', err);
     });
     User.findOrCreate({

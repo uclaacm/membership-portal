@@ -1,9 +1,10 @@
-const bcrypt = require("bcryptjs");
+const bcrypt = require('bcryptjs');
+
 const HASH_ROUNDS = 10;
 
 module.exports = (Sequelize, db) => {
   const Secret = db.define(
-    "secret",
+    'secret',
     {
       id: {
         type: Sequelize.INTEGER,
@@ -20,7 +21,7 @@ module.exports = (Sequelize, db) => {
         allowNull: false,
         validate: {
           notEmpty: {
-            msg: "The password cannot be empty",
+            msg: 'The password cannot be empty',
           },
         },
       },
@@ -31,10 +32,10 @@ module.exports = (Sequelize, db) => {
         // a hash index on the name makes lookup by name O(1)
         {
           unique: true,
-          fields: ["name"],
+          fields: ['name'],
         },
       ],
-    }
+    },
   );
 
   Secret.findByName = function (name) {
@@ -46,7 +47,7 @@ module.exports = (Sequelize, db) => {
   };
 
   Secret.prototype.verifyPassword = function (password) {
-    return bcrypt.compare(password, this.getDataValue("hash"));
+    return bcrypt.compare(password, this.getDataValue('hash'));
   };
 
   return Secret;

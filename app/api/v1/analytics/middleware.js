@@ -1,25 +1,24 @@
-const error = require("../../../error");
+const error = require('../../../error');
 
 const parseFilters = (req, res, next) => {
   const filters = {};
 
   if (req.query.committee) {
     const committees = [
-      "hack",
-      "ai",
-      "icpc",
-      "cyber",
-      "studio",
-      "w",
-      "design",
-      "teachla",
-      "cloud",
+      'hack',
+      'ai',
+      'icpc',
+      'cyber',
+      'studio',
+      'w',
+      'design',
+      'teachla',
+      'cloud',
     ];
     if (committees.indexOf(req.query.committee) < 0) {
-      return next(new error.BadRequest("Invalid committee"));
-    } else {
-      filters.committee = req.query.committee;
+      return next(new error.BadRequest('Invalid committee'));
     }
+    filters.committee = req.query.committee;
   }
 
   if (!isNaN(Date.parse(req.query.startDate))) {

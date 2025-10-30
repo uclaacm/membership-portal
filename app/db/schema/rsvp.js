@@ -102,7 +102,7 @@ module.exports = (Sequelize, db) => {
   };
 
   RSVP.userRSVPedEvent = function userRSVPedEvent(user, event) {
-    return this.count({ where: { user, event } }).then((c) => c !== 0);
+    return this.count({ where: { user, event } }).then(c => c !== 0);
   };
 
   RSVP.rsvpToEvent = function rsvpToEvent(user, event) {

@@ -1,6 +1,7 @@
-const express = require("express");
-const error = require("../../../error");
-const { User } = require("../../../db");
+const express = require('express');
+const error = require('../../../error');
+const { User } = require('../../../db');
+
 const router = express.Router();
 
 /**
@@ -9,7 +10,7 @@ const router = express.Router();
  * It returns an ordered list of public user profiles by descending number of points.
  * It also supports pagination using 'offset' and 'limit' query parameters
  */
-router.route("/").get((req, res, next) => {
+router.route('/').get((req, res, next) => {
   if (req.user.isPending()) return next(new error.Forbidden());
 
   const offset = parseInt(req.query.offset);

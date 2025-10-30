@@ -1,8 +1,8 @@
-const _ = require("underscore");
+const _ = require('underscore');
 
 module.exports = (Sequelize, db) => {
   const Event = db.define(
-    "event",
+    'event',
     {
       id: {
         type: Sequelize.INTEGER,
@@ -19,11 +19,11 @@ module.exports = (Sequelize, db) => {
       // currently unused, but the organization that the event is for
       organization: {
         type: Sequelize.STRING,
-        defaultValue: "ACM",
+        defaultValue: 'ACM',
         validate: {
           len: {
             args: [2, 255],
-            msg: "The organization name must be between 2 and 255 characters long",
+            msg: 'The organization name must be between 2 and 255 characters long',
           },
         },
       },
@@ -31,7 +31,7 @@ module.exports = (Sequelize, db) => {
       // committee that is hosting the event (empty signifies general event)
       committee: {
         type: Sequelize.STRING,
-        defaultValue: "ACM",
+        defaultValue: 'ACM',
       },
 
       // currently unused, but a thumbnail image (square-ish) URL
@@ -40,7 +40,7 @@ module.exports = (Sequelize, db) => {
         validate: {
           len: {
             args: [3, 2048],
-            msg: "If specified, the thumbnail URL must be between 3 and 2048 characters long",
+            msg: 'If specified, the thumbnail URL must be between 3 and 2048 characters long',
           },
         },
       },
@@ -51,7 +51,7 @@ module.exports = (Sequelize, db) => {
         validate: {
           len: {
             args: [3, 2048],
-            msg: "The cover image URL must be between 3 and 2048 characters long",
+            msg: 'The cover image URL must be between 3 and 2048 characters long',
           },
         },
       },
@@ -63,10 +63,10 @@ module.exports = (Sequelize, db) => {
         validate: {
           len: {
             args: [3, 255],
-            msg: "The title must be between 3 and 255 characters long",
+            msg: 'The title must be between 3 and 255 characters long',
           },
           notEmpty: {
-            msg: "The title field is required",
+            msg: 'The title field is required',
           },
         },
       },
@@ -77,7 +77,7 @@ module.exports = (Sequelize, db) => {
         allowNull: false,
         validate: {
           notEmpty: {
-            msg: "The description field is required",
+            msg: 'The description field is required',
           },
         },
       },
@@ -88,7 +88,7 @@ module.exports = (Sequelize, db) => {
         validate: {
           len: {
             args: [3, 255],
-            msg: "The location must be between 3 and 255 characters long",
+            msg: 'The location must be between 3 and 255 characters long',
           },
         },
       },
@@ -99,7 +99,7 @@ module.exports = (Sequelize, db) => {
         validate: {
           len: {
             args: [3, 2048],
-            msg: "The event link must be between 3 and 2048 characters long",
+            msg: 'The event link must be between 3 and 2048 characters long',
           },
         },
       },
@@ -110,10 +110,10 @@ module.exports = (Sequelize, db) => {
         allowNull: false,
         validate: {
           isDate: {
-            msg: "The start date must be a date",
+            msg: 'The start date must be a date',
           },
           notEmpty: {
-            msg: "The start date is a required field",
+            msg: 'The start date is a required field',
           },
         },
       },
@@ -124,10 +124,10 @@ module.exports = (Sequelize, db) => {
         allowNull: false,
         validate: {
           isDate: {
-            msg: "The end date must be a date",
+            msg: 'The end date must be a date',
           },
           notEmpty: {
-            msg: "The end date is a required field",
+            msg: 'The end date is a required field',
           },
         },
       },
@@ -140,7 +140,7 @@ module.exports = (Sequelize, db) => {
         validate: {
           len: {
             args: [3, 255],
-            msg: "The attendance code must be between 3 and 255 characters long",
+            msg: 'The attendance code must be between 3 and 255 characters long',
           },
         },
       },
@@ -151,7 +151,7 @@ module.exports = (Sequelize, db) => {
         allowNull: false,
         validate: {
           notEmpty: {
-            msg: "The attendance points must be at least 0",
+            msg: 'The attendance points must be at least 0',
           },
         },
       },
@@ -170,35 +170,35 @@ module.exports = (Sequelize, db) => {
         // a hash index on the uuid makes lookup by UUID O(1)
         {
           unique: true,
-          fields: ["uuid"],
+          fields: ['uuid'],
         },
 
         // a BTREE index on the start date makes retrieving all events in chronological order O(N)
         {
-          name: "event_start_date_index",
-          method: "BTREE",
-          fields: ["startDate", { attribute: "startDate", order: "DESC" }],
+          name: 'event_start_date_index',
+          method: 'BTREE',
+          fields: ['startDate', { attribute: 'startDate', order: 'DESC' }],
         },
 
         // a BTREE index on the end date makes retrieving all events in chronological order O(N)
         {
-          name: "event_end_date_index",
-          method: "BTREE",
-          fields: ["endDate", { attribute: "endDate", order: "DESC" }],
+          name: 'event_end_date_index',
+          method: 'BTREE',
+          fields: ['endDate', { attribute: 'endDate', order: 'DESC' }],
         },
         {
-          name: "committee_index",
-          method: "BTREE",
-          fields: ["committee"],
+          name: 'committee_index',
+          method: 'BTREE',
+          fields: ['committee'],
         },
       ],
-    }
+    },
   );
 
   Event.getAll = function (offset, limit) {
     if (!offset || offset < 0) offset = 0;
     if (!limit || limit < 0) limit = undefined;
-    return this.findAll({ offset, limit, order: [["startDate", "ASC"]] });
+    return this.findAll({ offset, limit, order: [['startDate', 'ASC']] });
   };
 
   Event.findByUUID = function (uuid) {
@@ -210,7 +210,7 @@ module.exports = (Sequelize, db) => {
   };
 
   Event.eventExists = function (uuid) {
-    return this.count({ where: { uuid } }).then((c) => c !== 0);
+    return this.count({ where: { uuid } }).then(c => c !== 0);
   };
 
   Event.destroyByUUID = function (uuid) {
@@ -229,7 +229,7 @@ module.exports = (Sequelize, db) => {
     const now = new Date();
     return this.findAll({
       where: { startDate: { $lt: now } },
-      order: [["startDate", "ASC"]],
+      order: [['startDate', 'ASC']],
       offset,
       limit,
     });
@@ -241,7 +241,7 @@ module.exports = (Sequelize, db) => {
     const now = new Date();
     return this.findAll({
       where: { startDate: { $gte: now } },
-      order: [["startDate", "ASC"]],
+      order: [['startDate', 'ASC']],
       offset,
       limit,
     });
@@ -249,23 +249,22 @@ module.exports = (Sequelize, db) => {
 
   Event.sanitize = function (event) {
     event = _.pick(event, [
-      "committee",
-      "cover",
-      "thumb",
-      "title",
-      "description",
-      "location",
-      "eventLink",
-      "startDate",
-      "endDate",
-      "attendanceCode",
-      "attendancePoints",
+      'committee',
+      'cover',
+      'thumb',
+      'title',
+      'description',
+      'location',
+      'eventLink',
+      'startDate',
+      'endDate',
+      'attendanceCode',
+      'attendancePoints',
     ]);
-    if (event.committee !== undefined && event.committee.length === 0)
-      delete event.committee;
+    if (event.committee !== undefined && event.committee.length === 0) delete event.committee;
     if (
-      event.attendanceCode !== undefined &&
-      event.attendanceCode.length === 0
+      event.attendanceCode !== undefined
+      && event.attendanceCode.length === 0
     ) {
       delete event.attendanceCode;
     }
@@ -280,18 +279,18 @@ module.exports = (Sequelize, db) => {
 
   Event.prototype.getPublic = function (admin) {
     return {
-      uuid: this.getDataValue("uuid"),
-      organization: this.getDataValue("organization"),
-      committee: this.getDataValue("committee"),
-      cover: this.getDataValue("cover"),
-      title: this.getDataValue("title"),
-      description: this.getDataValue("description"),
-      location: this.getDataValue("location"),
-      eventLink: this.getDataValue("eventLink"),
-      startDate: this.getDataValue("startDate"),
-      endDate: this.getDataValue("endDate"),
-      attendanceCode: admin ? this.getDataValue("attendanceCode") : undefined,
-      attendancePoints: this.getDataValue("attendancePoints"),
+      uuid: this.getDataValue('uuid'),
+      organization: this.getDataValue('organization'),
+      committee: this.getDataValue('committee'),
+      cover: this.getDataValue('cover'),
+      title: this.getDataValue('title'),
+      description: this.getDataValue('description'),
+      location: this.getDataValue('location'),
+      eventLink: this.getDataValue('eventLink'),
+      startDate: this.getDataValue('startDate'),
+      endDate: this.getDataValue('endDate'),
+      attendanceCode: admin ? this.getDataValue('attendanceCode') : undefined,
+      attendancePoints: this.getDataValue('attendancePoints'),
     };
   };
 
