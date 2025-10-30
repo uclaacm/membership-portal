@@ -29,6 +29,7 @@ const Event = require('./schema/event')(Sequelize, db);
 const Activity = require('./schema/activity')(Sequelize, db);
 const Attendance = require('./schema/attendance')(Sequelize, db);
 const Secret = require('./schema/secret')(Sequelize, db);
+const RSVP = require('./schema/rsvp')(Sequelize, db);
 
 /**
  * DB setup function to sync tables and add admin if doesn't exist
@@ -46,7 +47,14 @@ const setup = (force, dev) => {
       ? db.sync({ force }).then(() => devSetup(User, Event))
       : db.sync({ force })
   ).then(() => {
-    Secret.generateHash('password').then(hash => Secret.create({ name: 'one-click', hash }));
+    Secret.generateHash('password').then(hash => {
+      return Secret.findOrCreate({
+        where: { name: 'one-click' },
+        defaults: { hash }
+      });
+    }).catch(err => {
+      console.error('Error creating secret:', err);
+    });
     User.findOrCreate({
       where: { email: 'acm@g.ucla.edu' },
       defaults: {
@@ -62,6 +70,7 @@ const setup = (force, dev) => {
     return null;
   });
 };
+
 
 /**
  * Handles database errors (separate from the general error handler and the 404 error handler)
@@ -81,5 +90,5 @@ const errorHandler = (err, req, res, next) => {
 };
 
 module.exports = {
-  db, User, Event, Activity, Attendance, Secret, setup, errorHandler,
+  db, User, Event, Activity, Attendance, Secret, RSVP, setup, errorHandler,
 };

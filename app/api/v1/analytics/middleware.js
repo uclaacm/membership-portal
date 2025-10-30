@@ -13,6 +13,7 @@ const parseFilters = (req, res, next) => {
       "w",
       "design",
       "teachla",
+      "cloud",
     ];
     if (committees.indexOf(req.query.committee) < 0) {
       return next(new error.BadRequest("Invalid committee"));

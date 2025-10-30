@@ -52,11 +52,10 @@ server.use(app.db.errorHandler);
 server.use(app.error.errorHandler);
 server.use(app.error.notFoundHandler);
 
-// perform DB initialization once
-const setup = app.db.setup(true, app.config.isDevelopment);
 
-if (require.main == module) {
-  // Create workers
+async function startServer() {
+  await app.db.setup(false, app.config.isDevelopment);
+
   if (cluster.isMaster) {
     log.debug('Creating %d cluster workers...', app.config.numCPUs);
     for (let i = 0; i < app.config.numCPUs; i++) cluster.fork();
@@ -72,7 +71,6 @@ if (require.main == module) {
     });
   }
   if (!cluster.isMaster) {
-    // Start the server on each worker
     server.listen(app.config.port, app.config.host, async () => {
       log.info(
         'Started server %s on port %d, PID: %d',
@@ -83,7 +81,10 @@ if (require.main == module) {
     });
   }
 }
-else {
+
+if (require.main == module) {
+  startServer();
+} else {
   let HTTPserver = server.listen(app.config.port, app.config.host, () => {
     log.info(
       'Started TEST server %s on port %d, PID: %d',
@@ -92,5 +93,5 @@ else {
       process.pid,
     );
   });
-  module.exports = { server: HTTPserver, setup };
+  module.exports = { server: HTTPserver, setup: app.db.setup };
 }
