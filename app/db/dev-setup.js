@@ -1,5 +1,3 @@
-const { NotImplemented } = require('../error');
-
 module.exports = (User, Event) => {
   Promise.all([
     User.findOrCreate({

@@ -158,12 +158,12 @@ module.exports = (Sequelize, db) => {
   };
 
   User.getLeaderboard = function (offset, limit) {
-    if (!offset || offset < 0) offset = 0;
-    if (!limit || limit < 0) limit = undefined;
+    const safeOffset = (!offset || offset < 0) ? 0 : offset;
+    const safeLimit = (!limit || limit < 0) ? undefined : limit;
     return this.findAll({
       where: { accessType: 'STANDARD' },
-      offset,
-      limit,
+      offset: safeOffset,
+      limit: safeLimit,
       order: [['points', 'DESC']],
     });
   };

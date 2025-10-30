@@ -12,5 +12,6 @@ module.exports = {
   },
   rules: {
     'no-plusplus': 'off',
+    'func-names': 'off',
   },
 };

@@ -196,9 +196,11 @@ module.exports = (Sequelize, db) => {
   );
 
   Event.getAll = function (offset, limit) {
-    if (!offset || offset < 0) offset = 0;
-    if (!limit || limit < 0) limit = undefined;
-    return this.findAll({ offset, limit, order: [['startDate', 'ASC']] });
+    let safeOffset = offset;
+    let safeLimit = limit;
+    if (!safeOffset || safeOffset < 0) safeOffset = 0;
+    if (!safeLimit || safeLimit < 0) safeLimit = undefined;
+    return this.findAll({ offset: safeOffset, limit: safeLimit, order: [['startDate', 'ASC']] });
   };
 
   Event.findByUUID = function (uuid) {
@@ -218,37 +220,43 @@ module.exports = (Sequelize, db) => {
   };
 
   Event.getCommitteeEvents = function (committee, offset, limit) {
-    if (!offset || offset < 0) offset = 0;
-    if (!limit || limit < 0) limit = undefined;
-    return this.findAll({ where: { committee }, offset, limit });
+    let safeOffset = offset;
+    let safeLimit = limit;
+    if (!safeOffset || safeOffset < 0) safeOffset = 0;
+    if (!safeLimit || safeLimit < 0) safeLimit = undefined;
+    return this.findAll({ where: { committee }, offset: safeOffset, limit: safeLimit });
   };
 
   Event.getPastEvents = function (offset, limit) {
-    if (!offset || offset < 0) offset = 0;
-    if (!limit || limit < 0) limit = undefined;
+    let safeOffset = offset;
+    let safeLimit = limit;
+    if (!safeOffset || safeOffset < 0) safeOffset = 0;
+    if (!safeLimit || safeLimit < 0) safeLimit = undefined;
     const now = new Date();
     return this.findAll({
       where: { startDate: { $lt: now } },
       order: [['startDate', 'ASC']],
-      offset,
-      limit,
+      offset: safeOffset,
+      limit: safeLimit,
     });
   };
 
   Event.getFutureEvents = function (offset, limit) {
-    if (!offset || offset < 0) offset = 0;
-    if (!limit || limit < 0) limit = undefined;
+    let safeOffset = offset;
+    let safeLimit = limit;
+    if (!safeOffset || safeOffset < 0) safeOffset = 0;
+    if (!safeLimit || safeLimit < 0) safeLimit = undefined;
     const now = new Date();
     return this.findAll({
       where: { startDate: { $gte: now } },
       order: [['startDate', 'ASC']],
-      offset,
-      limit,
+      offset: safeOffset,
+      limit: safeLimit,
     });
   };
 
   Event.sanitize = function (event) {
-    event = _.pick(event, [
+    const sanitizedEvent = _.pick(event, [
       'committee',
       'cover',
       'thumb',
@@ -261,20 +269,20 @@ module.exports = (Sequelize, db) => {
       'attendanceCode',
       'attendancePoints',
     ]);
-    if (event.committee !== undefined && event.committee.length === 0) delete event.committee;
+    if (sanitizedEvent.committee !== undefined && sanitizedEvent.committee.length === 0) delete sanitizedEvent.committee;
     if (
-      event.attendanceCode !== undefined
-      && event.attendanceCode.length === 0
+      sanitizedEvent.attendanceCode !== undefined
+      && sanitizedEvent.attendanceCode.length === 0
     ) {
-      delete event.attendanceCode;
+      delete sanitizedEvent.attendanceCode;
     }
 
-    if (event.attendancePoints !== undefined) {
-      const points = parseInt(event.attendancePoints, 10);
-      if (points === NaN || points < 0) delete event.attendancePoints;
+    if (sanitizedEvent.attendancePoints !== undefined) {
+      const points = parseInt(sanitizedEvent.attendancePoints, 10);
+      if (Number.isNaN(points) || points < 0) delete sanitizedEvent.attendancePoints;
     }
 
-    return event;
+    return sanitizedEvent;
   };
 
   Event.prototype.getPublic = function (admin) {

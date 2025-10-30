@@ -26,7 +26,7 @@ router.get('/setup', (req, res, next) => {
       new error.Forbidden('This route cannot be accessed in production'),
     );
   }
-  db.setup(true, true).then(v => res.json(v));
+  return db.setup(true, true).then(v => res.json(v));
 });
 
 module.exports = { router };

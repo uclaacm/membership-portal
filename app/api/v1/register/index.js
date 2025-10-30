@@ -19,6 +19,9 @@ router.post('/', (req, res, next) => {
 
   if (!req.body.info) return next(new error.BadRequest('Year and major must be provided'));
 
+  // construct new, sanitized object of update information
+  const updatedInfo = {};
+
   const createUserToken = (user) => {
     // create a token with the user's ID and privilege level
     jwt.sign(
@@ -49,10 +52,8 @@ router.post('/', (req, res, next) => {
         );
       },
     );
+    return null;
   };
-
-  // construct new, sanitized object of update information
-  const updatedInfo = {};
 
   if (
     req.body.info.major
@@ -60,17 +61,18 @@ router.post('/', (req, res, next) => {
     && req.body.info.major !== req.user.major
   ) updatedInfo.major = req.body.info.major;
 
+  const yearInt = parseInt(req.body.info.year, 10);
   if (
     req.body.info.year
-    && parseInt(req.body.info.year) !== NaN
-    && parseInt(req.body.info.year) > 0
-    && parseInt(req.body.info.year) <= 5
+    && !Number.isNaN(yearInt)
+    && yearInt > 0
+    && yearInt <= 5
     && req.body.info.year !== req.user.year
-  ) updatedInfo.year = parseInt(req.body.info.year);
+  ) updatedInfo.year = yearInt;
 
   updatedInfo.state = 'ACTIVE';
 
-  req.user
+  return req.user
     .update(updatedInfo)
     .then(user => createUserToken(user))
     .catch(next);

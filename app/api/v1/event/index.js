@@ -15,9 +15,10 @@ router.route('/past').get((req, res, next) => {
 
   const offset = parseInt(req.query.offset, 10);
   const limit = parseInt(req.query.limit, 10);
-  Event.getPastEvents(offset, limit)
+  return Event.getPastEvents(offset, limit)
     .then((events) => {
       res.json({ error: null, events: events.map(e => e.getPublic()) });
+      return null;
     })
     .catch(next);
 });
@@ -33,9 +34,10 @@ router.route('/future').get((req, res, next) => {
 
   const offset = parseInt(req.query.offset, 10);
   const limit = parseInt(req.query.limit, 10);
-  Event.getFutureEvents(offset, limit)
+  return Event.getFutureEvents(offset, limit)
     .then((events) => {
       res.json({ error: null, events: events.map(e => e.getPublic()) });
+      return null;
     })
     .catch(next);
 });
@@ -59,7 +61,7 @@ router
       const getEvents = committee
         ? Event.getCommitteeEvents(committee, offset, limit)
         : Event.getAll(offset, limit);
-      getEvents
+      return getEvents
         .then((events) => {
           events.forEach(e => {
             // reformat google drive file links
@@ -73,22 +75,23 @@ router
             error: null,
             events: events.map(e => e.getPublic(req.user.isAdmin())),
           });
+          return null;
         })
         .catch(next);
 
       // CASE: UUID is present, should return matching event
-    } else {
-      Event.findByUUID(req.params.uuid)
-        .then((event) => {
-          // return the public event object (or admin version, if user is admin) if
-          // an event was found. otherwise, return null
-          res.json({
-            error: null,
-            event: event ? event.getPublic(req.user.isAdmin()) : null,
-          });
-        })
-        .catch(next);
     }
+    return Event.findByUUID(req.params.uuid)
+      .then((event) => {
+        // return the public event object (or admin version, if user is admin) if
+        // an event was found. otherwise, return null
+        res.json({
+          error: null,
+          event: event ? event.getPublic(req.user.isAdmin()) : null,
+        });
+        return null;
+      })
+      .catch(next);
   })
   /**
    * For all further requests on this route, the user needs to be an admin
@@ -111,9 +114,10 @@ router
       && new Date(req.body.event.startDate) > new Date(req.body.event.endDate)
     ) return next(new error.BadRequest('Start date must be before end date'));
 
-    Event.create(Event.sanitize(req.body.event))
+    return Event.create(Event.sanitize(req.body.event))
       .then((event) => {
         res.json({ error: null, event: event.getPublic() });
+        return null;
       })
       .catch(next);
   })
@@ -135,7 +139,7 @@ router
     ) return next(new error.BadRequest('Start date must be before end date'));
 
     // find the existing event by the given UUID
-    Event.findByUUID(req.params.uuid)
+    return Event.findByUUID(req.params.uuid)
       .then((event) => {
         if (!event) throw new error.BadRequest('No such event found');
         // update the event with the new information after sanitizing the input
@@ -143,6 +147,7 @@ router
       })
       .then((event) => {
         res.json({ error: null, event: event.getPublic() });
+        return null;
       })
       .catch(next);
   })
@@ -153,9 +158,10 @@ router
    */
   .delete((req, res, next) => {
     if (!req.params.uuid) return next(new error.BadRequest());
-    Event.destroyByUUID(req.params.uuid)
+    return Event.destroyByUUID(req.params.uuid)
       .then((numDeleted) => {
         res.json({ error: null, numDeleted });
+        return null;
       })
       .catch(next);
   });

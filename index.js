@@ -66,7 +66,7 @@ async function startServer() {
         worker.process.pid,
         signal,
       );
-      console.log('FORKING');
+      log.info('FORKING');
       cluster.fork();
     });
   }
@@ -82,7 +82,7 @@ async function startServer() {
   }
 }
 
-if (require.main == module) {
+if (require.main === module) {
   startServer();
 } else {
   const HTTPserver = server.listen(app.config.port, app.config.host, () => {

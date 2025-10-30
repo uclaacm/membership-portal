@@ -21,7 +21,6 @@ router.use('/leaderboard', auth, require('./leaderboard').router);
 router.use('/rsvp', auth, require('./rsvp').router);
 
 // Mount the admin routes
-console.log('✅ Admin routes registered');
 router.use('/admin', require('./admin').router);
 
 // Public API

@@ -10,7 +10,7 @@ router
     if (!req.body.password || req.body.password.length < 1) return next(new error.BadRequest('Password must be provided'));
 
     // password verification
-    Secret.findByName('one-click').then(secret => secret.verifyPassword(req.body.password).then((verified) => {
+    return Secret.findByName('one-click').then(secret => secret.verifyPassword(req.body.password).then((verified) => {
       if (!verified) return next(new error.UserError('Invalid password'));
 
       if (!req.body.event) return next(new error.BadRequest());
@@ -24,9 +24,10 @@ router
         );
       }
 
-      Event.create(Event.sanitize(req.body.event))
+      return Event.create(Event.sanitize(req.body.event))
         .then((event) => {
           res.json({ error: null, event: event.getPublic() });
+          return null;
         })
         .catch(next);
     }));
@@ -43,12 +44,15 @@ router
       );
     }
 
-    Secret.findByName('one-click').then(secret => secret.verifyPassword(req.body.oldPassword).then((verified) => {
+    return Secret.findByName('one-click').then(secret => secret.verifyPassword(req.body.oldPassword).then((verified) => {
       if (!verified) return next(new error.UserError('Invalid password'));
 
-      Secret.generateHash(req.body.newPassword).then(hash => secret.update({ hash })).then(() => {
-        res.json({ error: null });
-      })
+      return Secret.generateHash(req.body.newPassword)
+        .then(hash => secret.update({ hash }))
+        .then(() => {
+          res.json({ error: null });
+          return null;
+        })
         .catch(next);
     }));
   });

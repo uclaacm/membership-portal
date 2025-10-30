@@ -38,7 +38,6 @@ router.post('/promote', async (req, res) => {
 
     return res.json({ success: true, message: `User ${email} promoted to admin. Sign out to see the change.` });
   } catch (err) {
-    console.error(`Error promoting user: ${err.message}`);
     return res.status(500).json({ error: 'Internal server error' });
   }
 });

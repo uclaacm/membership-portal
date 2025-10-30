@@ -16,18 +16,22 @@ router.route('/:uuid?').get((req, res, next) => {
 
   // store successful response function
   //   map each attendance record in the db to its public version (see app/db/schema/attendance.js)
-  const callback = attendance => res.json({ error: null, attendance: attendance.map(a => a.getPublic()) });
+  const callback = attendance => res.json({
+    error: null,
+    attendance: attendance.map(a => a.getPublic()),
+  });
   if (req.params.uuid) {
     // if an event UUID is provided, find all attendance records for that event
     //   essentially will return all the users that attended an event
-    Attendance.getAttendanceForEvent(req.params.uuid)
+    return Attendance.getAttendanceForEvent(req.params.uuid)
       .then(callback)
       .catch(next);
-  } else {
-    // otherwise, just get all the attendance records for the user
-    //   essentially will return all the events this user attended
-    Attendance.getAttendanceForUser(req.user.uuid).then(callback).catch(next);
   }
+  // otherwise, just get all the attendance records for the user
+  //   essentially will return all the events this user attended
+  return Attendance.getAttendanceForUser(req.user.uuid)
+    .then(callback)
+    .catch(next);
 });
 
 /**
@@ -53,42 +57,26 @@ router.route('/attend').post((req, res, next) => {
       // use a database transaction around the critical section
       // this makes sure that a user cannot get duplicate points by ensuring
       // the invariant "user has not attended event"
-      return db
-        .transaction(
-          {
-            // disallow dirty read and varying repeated read
-            isolationLevel:
-              Sequelize.Transaction.ISOLATION_LEVELS.REPEATABLE_READ,
-          },
-          transaction =>
-            // check if the user has already attended this event
-            Attendance.userAttendedEvent(req.user.uuid, event.uuid).then(
-              (attended) => {
-                if (attended) {
-                  throw new error.UserError(
-                    'You have already attended this event!',
-                  );
-                }
-
-                // simultaneously execute three promises
-                return Promise.all([
-                  // mark the event as attended by the user
-                  Attendance.attendEvent(req.user.uuid, event.uuid),
-                  // add an entry for this attendance in the user's activity
-                  Activity.attendedEvent(
-                    req.user.uuid,
-                    event.title,
-                    event.attendancePoints,
-                  ),
-                  // add the points for the event
-                  req.user.addPoints(event.attendancePoints),
-                ]);
-              },
-            ),
-
-        )
+      return db.transaction({
+        // disallow dirty read and varying repeated read
+        isolationLevel: Sequelize.Transaction.ISOLATION_LEVELS.REPEATABLE_READ,
+      }, () => Attendance.userAttendedEvent(req.user.uuid, event.uuid).then((attended) => {
+        if (attended) {
+          return Promise.reject(new error.UserError('You have already attended this event!'));
+        }
+        return Promise.all([
+          Attendance.attendEvent(req.user.uuid, event.uuid),
+          Activity.attendedEvent(
+            req.user.uuid,
+            event.title,
+            event.attendancePoints,
+          ),
+          req.user.addPoints(event.attendancePoints),
+        ]);
+      }))
         .then(() => {
           res.json({ error: null, event: event.getPublic() });
+          return null;
         });
     })
     .catch(next);
