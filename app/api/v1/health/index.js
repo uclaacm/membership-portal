@@ -8,7 +8,7 @@ const router = express.Router();
 /**
  * Get some health statistics about the application for monitoring purposes.
  */
-router.get('/', (req, res, next) => {
+router.get('/', (req, res) => {
   res.json({
     cpu: process.cpuUsage(),
     memory: process.memoryUsage(),

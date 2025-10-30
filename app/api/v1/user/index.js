@@ -11,7 +11,7 @@ router
   .route('/')
   .get((req, res, next) => {
     if (req.user.isPending()) return next(new error.Forbidden());
-    res.json({ error: null, user: req.user.getUserProfile() });
+    return res.json({ error: null, user: req.user.getUserProfile() });
   })
   /**
    * Update user information given a 'user' object with fields to update and updated information
@@ -42,24 +42,29 @@ router
     ) updatedInfo.major = req.body.user.major;
     if (
       req.body.user.year
-      && parseInt(req.body.user.year) !== NaN
-      && parseInt(req.body.user.year) > 0
-      && parseInt(req.body.user.year) <= 5
+      && Number.isNaN(Number.parseInt(req.body.user.year, 10)) === false
+      && Number.parseInt(req.body.user.year, 10) > 0
+      && Number.parseInt(req.body.user.year, 10) <= 5
       && req.body.user.year !== req.user.year
-    ) updatedInfo.year = parseInt(req.body.user.year);
+    ) updatedInfo.year = Number.parseInt(req.body.user.year, 10);
 
     // CASE:
-    // update the user information normally (with the given information, without any password changes)
-    req.user
+    // update the user information normally (with the given information,
+    // without any password changes)
+    return req.user
       .update(updatedInfo)
       .then((user) => {
         // respond with the newly updated user profile
-        res.json({ error: null, user: user.getUserProfile() });
+        res.json({
+          error: null,
+          user: user.getUserProfile(),
+        });
         // record that the user changed some account information, and what info was changed
         Activity.accountUpdatedInfo(
           user.uuid,
           Object.keys(updatedInfo).join(', '),
         );
+        return null;
       })
       .catch(next);
   });
@@ -69,9 +74,13 @@ router
  */
 router.get('/activity', (req, res, next) => {
   if (req.user.isPending()) return next(new error.Forbidden());
-  Activity.getPublicStream(req.user.uuid)
+  return Activity.getPublicStream(req.user.uuid)
     .then((activity) => {
-      res.json({ error: null, activity: activity.map(a => a.getPublic()) });
+      res.json({
+        error: null,
+        activity: activity.map(a => a.getPublic()),
+      });
+      return null;
     })
     .catch(next);
 });
@@ -81,7 +90,7 @@ router.get('/activity', (req, res, next) => {
  */
 router
   .route('/milestone')
-  .all((req, res, next) => {
+  .all((req, next) => {
     if (!req.user.isAdmin()) return next(new error.Forbidden());
     return next();
   })
@@ -92,7 +101,7 @@ router
       || typeof req.body.milestone.name !== 'string'
     ) return next(new error.BadRequest('Invalid request format'));
 
-    User.findAll({})
+    return User.findAll({})
       .then((users) => {
         users.forEach((user) => {
           Activity.createMilestone(
@@ -104,6 +113,7 @@ router
             user.update({ points: 0 });
           }
         });
+        return null;
       })
       .then(() => res.json({ error: null }))
       .catch(next);
@@ -115,18 +125,17 @@ router
     if (!req.user.isSuperAdmin()) return next(new error.Forbidden());
     return next();
   })
-  .get((req, res, next) => {
-    User.getAdmins().then(admins => res.json({ error: null, admins }));
-  })
+  .get((req, res) => User.getAdmins().then(admins => res.json({ error: null, admins })))
   .post((req, res, next) => {
     // add admins
     if (!req.body.email || typeof req.body.email !== 'string') return next(new error.BadRequest('Invalid email'));
 
-    User.findByEmail(req.body.email)
+    return User.findByEmail(req.body.email)
       .then((user) => {
         if (!user) return next(new error.BadRequest('User not found'));
         if (user.accessType === 'SUPERADMIN') return next(new error.Forbidden());
         user.update({ accessType: 'ADMIN' });
+        return null;
       })
       .then(() => res.json({ error: null }))
       .catch(next);
@@ -136,11 +145,12 @@ router
   .delete((req, res, next) => {
     if (!req.body.email || typeof req.body.email !== 'string') return next(new error.BadRequest('Invalid email'));
 
-    User.findByEmail(req.body.email)
+    return User.findByEmail(req.body.email)
       .then((user) => {
         if (!user) return next(new error.BadRequest('User not found'));
         if (user.accessType === 'SUPERADMIN') return next(new error.Forbidden());
         user.update({ accessType: 'STANDARD' });
+        return null;
       })
       .then(() => res.json({ error: null }))
       .catch(next);
@@ -148,12 +158,13 @@ router
   .patch((req, res, next) => {
     if (!req.body.email || typeof req.body.email !== 'string') return next(new error.BadRequest('Invalid email'));
 
-    User.findByEmail(req.body.email)
+    return User.findByEmail(req.body.email)
       .then((user) => {
         if (!user) return next(new error.BadRequest('User not found'));
         if (user.accessType !== 'ADMIN') return next(new error.Forbidden('Superadmin must be an admin first'));
         req.user.update({ accessType: 'ADMIN' });
         user.update({ accessType: 'SUPERADMIN' });
+        return null;
       })
       .then(() => res.json({ error: null }))
       .catch(next);

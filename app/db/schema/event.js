@@ -269,7 +269,9 @@ module.exports = (Sequelize, db) => {
       'attendanceCode',
       'attendancePoints',
     ]);
-    if (sanitizedEvent.committee !== undefined && sanitizedEvent.committee.length === 0) delete sanitizedEvent.committee;
+    if (sanitizedEvent.committee !== undefined && sanitizedEvent.committee.length === 0) {
+      delete sanitizedEvent.committee;
+    }
     if (
       sanitizedEvent.attendanceCode !== undefined
       && sanitizedEvent.attendanceCode.length === 0

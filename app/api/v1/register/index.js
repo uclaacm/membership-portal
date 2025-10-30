@@ -50,6 +50,7 @@ router.post('/', (req, res, next) => {
           user.uuid,
           Object.keys(updatedInfo).join(', '),
         );
+        return null;
       },
     );
     return null;

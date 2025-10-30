@@ -80,6 +80,7 @@ router.route('/attend').post((req, res, next) => {
         });
     })
     .catch(next);
+  return null;
 });
 
 module.exports = { router };

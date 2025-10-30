@@ -1,4 +1,5 @@
 const fs = require('fs');
+const os = require('os');
 
 const env = process.env.NODE_ENV || 'development';
 
@@ -16,7 +17,7 @@ module.exports = {
   port: process.env.PORT || 8080,
 
   // determines the amount of processes to run that handle API requests
-  numCPUs: process.env.NUM_WORKERS || require('os').cpus().length,
+  numCPUs: process.env.NUM_WORKERS || os.cpus().length,
 
   google: {
     apiKey: process.env.GOOGLE_API_KEY,

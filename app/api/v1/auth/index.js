@@ -46,7 +46,9 @@ const authenticated = (req, res, next) => {
         return next();
       })
       .catch(next);
+    return null;
   });
+  return null;
 };
 
 /**
@@ -54,7 +56,8 @@ const authenticated = (req, res, next) => {
  *
  * Expects a Google ID token
  *
- * On success, this route will return the user's public profile and a user token containing user's ID and privilege levels
+ * On success, this route will return the user's public profile and a user token containing user's
+ * ID and privilege levels
  */
 router.post('/login', (req, res, next) => {
   if (!req.body.tokenId || req.body.tokenId.length < 1) return next(new error.BadRequest('Invalid token.'));
@@ -93,12 +96,20 @@ router.post('/login', (req, res, next) => {
     .then((ticket) => {
       const { email } = ticket.getPayload();
 
-      if (!email.toLowerCase().endsWith(config.google.hostedDomain)) return next(new error.Unauthorized('Unauthorized email'));
+      if (!email.toLowerCase().endsWith(config.google.hostedDomain)) {
+        return next(
+          new error.Unauthorized('Unauthorized email'),
+        );
+      }
 
       User.findByEmail(email.toLowerCase())
         .then((userObj) => {
           const {
-            given_name: givenName, family_name: familyName, email: userEmail, picture, googleId,
+            given_name: givenName,
+            family_name: familyName,
+            email: userEmail,
+            picture,
+            googleId,
           } = ticket.getPayload();
 
           if (!userObj) {
@@ -117,18 +128,24 @@ router.post('/login', (req, res, next) => {
 
             return User.create(userModel)
               .then((createdUser) => {
-                if (createdUser && createdUser.isBlocked()) return next(new error.Forbidden('Your account has been blocked'));
+                if (createdUser && createdUser.isBlocked()) {
+                  return next(new error.Forbidden('Your account has been blocked'));
+                }
                 Activity.accountCreated(createdUser.uuid);
                 return createUserToken(createdUser);
               })
               .catch(next);
           }
-          if (userObj && userObj.isBlocked()) return next(new error.Forbidden('Your account has been blocked'));
+          if (userObj && userObj.isBlocked()) {
+            return next(new error.Forbidden('Your account has been blocked'));
+          }
           return createUserToken(userObj);
         })
         .catch(next);
+      return null;
     })
     .catch(next);
+  return null;
 });
 
 module.exports = { router, authenticated };

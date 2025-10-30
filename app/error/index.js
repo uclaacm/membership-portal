@@ -97,7 +97,7 @@ class NotAvailable extends HTTPError {
  * General error handler middleware. Attaches to express so that throwing or calling next() with
  * an error ends up here and all errors are handled uniformly.
  */
-const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, req, res) => {
   let localErr = err;
   if (!localErr) localErr = new InternalServerError('An unknown error occurred');
   if (!localErr.status) localErr = new InternalServerError(localErr.message);
@@ -127,7 +127,7 @@ const errorHandler = (err, req, res, next) => {
  * 404 errors aren't triggered by an error object, so this is a catch-all middleware
  * for requests that don't hit a route.
  */
-const notFoundHandler = (req, res, next) => {
+const notFoundHandler = (req, res) => {
   const notFoundErr = new NotFound(`The resource ${req.url} was not found`);
   logger.warn(
     '%s [Flow %s]: %s [%d]: %s',
