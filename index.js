@@ -72,7 +72,7 @@ async function startServer() {
         worker.process.pid,
         signal,
       );
-      console.log("FORKING");
+      log.info('FORKING');
       cluster.fork();
     });
   }
@@ -88,10 +88,10 @@ async function startServer() {
   }
 }
 
-if (require.main == module) {
+if (require.main === module) {
   startServer();
 } else {
-  let HTTPserver = server.listen(app.config.port, app.config.host, () => {
+  const HTTPserver = server.listen(app.config.port, app.config.host, () => {
     log.info(
       'Started TEST server %s on port %d, PID: %d',
       app.config.host,

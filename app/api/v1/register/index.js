@@ -1,8 +1,8 @@
-const express = require("express");
-const jwt = require("jsonwebtoken");
-const config = require("../../../config");
-const error = require("../../../error");
-const { Activity } = require("../../../db");
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const config = require('../../../config');
+const error = require('../../../error');
+const { Activity } = require('../../../db');
 
 const router = express.Router();
 
@@ -14,17 +14,19 @@ const TOKEN_EXPIRES = 86400; // 1 day in seconds
  * Add year and major to complete sign up process
  *
  */
-router.post("/", (req, res, next) => {
+router.post('/', (req, res, next) => {
   if (req.user.isActive()) return next(new error.Forbidden());
 
-  if (!req.body.info)
-    return next(new error.BadRequest("Year and major must be provided"));
+  if (!req.body.info) return next(new error.BadRequest('Year and major must be provided'));
+
+  // construct new, sanitized object of update information
+  const updatedInfo = {};
 
   const createUserToken = (user) => {
     // create a token with the user's ID and privilege level
     jwt.sign(
       {
-        uuid: user.getDataValue("uuid"),
+        uuid: user.getDataValue('uuid'),
         admin: user.isAdmin(),
         registered: !user.isPending(),
       },
@@ -42,40 +44,38 @@ router.post("/", (req, res, next) => {
         // record that the user changed some account information, and what info was changed
         Activity.accountActivated(
           user.uuid,
-          "Registered - added year and major"
+          'Registered - added year and major',
         );
         Activity.accountUpdatedInfo(
           user.uuid,
-          Object.keys(updatedInfo).join(", ")
+          Object.keys(updatedInfo).join(', '),
         );
-      }
+        return null;
+      },
     );
+    return null;
   };
 
-  // construct new, sanitized object of update information
-  const updatedInfo = {};
-
   if (
-    req.body.info.major &&
-    req.body.info.major.length > 0 &&
-    req.body.info.major !== req.user.major
-  )
-    updatedInfo.major = req.body.info.major;
+    req.body.info.major
+    && req.body.info.major.length > 0
+    && req.body.info.major !== req.user.major
+  ) updatedInfo.major = req.body.info.major;
 
+  const yearInt = parseInt(req.body.info.year, 10);
   if (
-    req.body.info.year &&
-    parseInt(req.body.info.year) !== NaN &&
-    parseInt(req.body.info.year) > 0 &&
-    parseInt(req.body.info.year) <= 5 &&
-    req.body.info.year !== req.user.year
-  )
-    updatedInfo.year = parseInt(req.body.info.year);
+    req.body.info.year
+    && !Number.isNaN(yearInt)
+    && yearInt > 0
+    && yearInt <= 5
+    && req.body.info.year !== req.user.year
+  ) updatedInfo.year = yearInt;
 
-  updatedInfo.state = "ACTIVE";
+  updatedInfo.state = 'ACTIVE';
 
-  req.user
+  return req.user
     .update(updatedInfo)
-    .then((user) => createUserToken(user))
+    .then(user => createUserToken(user))
     .catch(next);
 });
 

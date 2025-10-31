@@ -1,9 +1,9 @@
-import { server, setup } from '..';
 import request from 'supertest';
+import { server, setup } from '..';
 
+const jwt = require('jsonwebtoken');
 const { User, Activity } = require('../app/db');
 const config = require('../app/config');
-const jwt = require('jsonwebtoken');
 
 const API_ROUTE = '/app/api/v1/';
 const route = name => API_ROUTE + name;

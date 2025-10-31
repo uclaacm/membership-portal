@@ -4,7 +4,7 @@ module.exports = (Sequelize, db) => {
    * Activity object represents one action of a specified type
    */
   const Activity = db.define(
-    "activity",
+    'activity',
     {
       id: {
         type: Sequelize.INTEGER,
@@ -25,10 +25,10 @@ module.exports = (Sequelize, db) => {
         validate: {
           isUUID: {
             args: 4,
-            msg: "Invalid value for user UUID",
+            msg: 'Invalid value for user UUID',
           },
           notEmpty: {
-            msg: "The user UUID is a required field",
+            msg: 'The user UUID is a required field',
           },
         },
       },
@@ -42,12 +42,12 @@ module.exports = (Sequelize, db) => {
       //   MILESTONE                  - a custom event (milestone)
       type: {
         type: Sequelize.ENUM(
-          "ACCOUNT_CREATE",
-          "ACCOUNT_ACTIVATE",
-          "ACCOUNT_UPDATE_INFO",
-          "ACCOUNT_LOGIN",
-          "ATTEND_EVENT",
-          "MILESTONE"
+          'ACCOUNT_CREATE',
+          'ACCOUNT_ACTIVATE',
+          'ACCOUNT_UPDATE_INFO',
+          'ACCOUNT_LOGIN',
+          'ATTEND_EVENT',
+          'MILESTONE',
         ),
         allowNull: false,
       },
@@ -80,54 +80,54 @@ module.exports = (Sequelize, db) => {
     },
     {
       // set the table name in the database
-      tableName: "activity",
+      tableName: 'activity',
 
       // creating indices on frequently accessed fields improves efficiency
       indexes: [
         // a hash index on the uuid makes lookup by UUID O(1)
         {
           unique: true,
-          fields: ["uuid"],
+          fields: ['uuid'],
         },
 
         // a BTREE index on the type makes retrieving activities by type O(N)
         {
-          name: "activity_type_btree_index",
-          method: "BTREE",
-          fields: ["type", { attribute: "type", order: "ASC" }],
+          name: 'activity_type_btree_index',
+          method: 'BTREE',
+          fields: ['type', { attribute: 'type', order: 'ASC' }],
         },
 
         // a BTREE index on public makes retrieving public activities O(N), where N is
         // the number of public activities
         {
-          name: "activity_public_btree_index",
-          method: "BTREE",
-          fields: ["public", { attribute: "public", order: "ASC" }],
+          name: 'activity_public_btree_index',
+          method: 'BTREE',
+          fields: ['public', { attribute: 'public', order: 'ASC' }],
         },
 
         // a BTREE index on the date makes retrieving all events in chronological order O(N)
         {
-          name: "activity_date_btree_index",
-          method: "BTREE",
-          fields: ["date", { attribute: "date", order: "ASC" }],
+          name: 'activity_date_btree_index',
+          method: 'BTREE',
+          fields: ['date', { attribute: 'date', order: 'ASC' }],
         },
 
         // a BTREE index on the user makes retrieving all events for a user O(N), where N
         // is the number of activities for the user
         {
-          name: "activity_user_btree_index",
-          method: "BTREE",
-          fields: ["user", { attribute: "user", order: "ASC" }],
+          name: 'activity_user_btree_index',
+          method: 'BTREE',
+          fields: ['user', { attribute: 'user', order: 'ASC' }],
         },
       ],
-    }
+    },
   );
 
   Activity.accountCreated = function (user, description) {
     return this.create({
       user,
       description,
-      type: "ACCOUNT_CREATE",
+      type: 'ACCOUNT_CREATE',
       public: true,
     });
   };
@@ -136,7 +136,7 @@ module.exports = (Sequelize, db) => {
     return this.create({
       user,
       description,
-      type: "ACCOUNT_ACTIVATE",
+      type: 'ACCOUNT_ACTIVATE',
     });
   };
 
@@ -144,7 +144,7 @@ module.exports = (Sequelize, db) => {
     return this.create({
       user,
       description,
-      type: "ACCOUNT_UPDATE_INFO",
+      type: 'ACCOUNT_UPDATE_INFO',
     });
   };
 
@@ -152,7 +152,7 @@ module.exports = (Sequelize, db) => {
     return this.create({
       user,
       description,
-      type: "ACCOUNT_LOGIN",
+      type: 'ACCOUNT_LOGIN',
     });
   };
 
@@ -161,7 +161,7 @@ module.exports = (Sequelize, db) => {
       user,
       description,
       pointsEarned,
-      type: "ATTEND_EVENT",
+      type: 'ATTEND_EVENT',
       public: true,
     });
   };
@@ -171,7 +171,7 @@ module.exports = (Sequelize, db) => {
       user,
       description,
       pointsEarned,
-      type: "MILESTONE",
+      type: 'MILESTONE',
       public: true,
     });
   };
@@ -179,18 +179,18 @@ module.exports = (Sequelize, db) => {
   Activity.getPublicStream = function (user) {
     return this.findAll({
       where: { user, public: true },
-      order: [["date", "ASC"]],
+      order: [['date', 'ASC']],
     });
   };
 
   Activity.prototype.getPublic = function () {
     return {
-      uuid: this.getDataValue("uuid"),
-      user: this.getDataValue("user"),
-      type: this.getDataValue("type"),
-      date: this.getDataValue("date"),
-      description: this.getDataValue("description"),
-      pointsEarned: this.getDataValue("pointsEarned"),
+      uuid: this.getDataValue('uuid'),
+      user: this.getDataValue('user'),
+      type: this.getDataValue('type'),
+      date: this.getDataValue('date'),
+      description: this.getDataValue('description'),
+      pointsEarned: this.getDataValue('pointsEarned'),
     };
   };
 

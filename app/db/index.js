@@ -37,23 +37,21 @@ const RSVP = require('./schema/rsvp')(Sequelize, db);
 const setup = (force, dev) => {
   db.authenticate()
     .then(() => {
-      console.log('Connection has been established successfully.');
+      logger.info('Connection has been established successfully.');
     })
     .catch((err) => {
-      console.error('Unable to connect to the database:', err);
+      logger.error('Unable to connect to the database:', err);
     });
   return (
     dev
       ? db.sync({ force }).then(() => devSetup(User, Event))
       : db.sync({ force })
   ).then(() => {
-    Secret.generateHash('password').then(hash => {
-      return Secret.findOrCreate({
-        where: { name: 'one-click' },
-        defaults: { hash }
-      });
-    }).catch(err => {
-      console.error('Error creating secret:', err);
+    Secret.generateHash('password').then(hash => Secret.findOrCreate({
+      where: { name: 'one-click' },
+      defaults: { hash },
+    })).catch((err) => {
+      logger.error('Error creating secret:', err);
     });
     User.findOrCreate({
       where: { email: 'acm@g.ucla.edu' },

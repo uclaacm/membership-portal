@@ -1,4 +1,4 @@
-const logger = require("../logger");
+const logger = require('../logger');
 
 /**
  * This file defines error classes based on their semantic meaning. It abstracts away
@@ -16,55 +16,58 @@ const logger = require("../logger");
  */
 class HTTPError extends Error {
   constructor(name, status, message) {
-    if (message === undefined) {
-      message = status;
-      status = name;
-      name = undefined;
+    let localName = name;
+    let localStatus = status;
+    let localMessage = message;
+    if (localMessage === undefined) {
+      localMessage = localStatus;
+      localStatus = localName;
+      localName = undefined;
     }
 
-    super(message);
+    super(localMessage);
 
-    this.name = name ? name : this.constructor.name;
-    this.status = status;
-    this.message = message;
+    this.name = localName || this.constructor.name;
+    this.status = localStatus;
+    this.message = localMessage;
   }
 }
 
 class UserError extends HTTPError {
   constructor(message) {
-    super(200, message || "User Error");
+    super(200, message || 'User Error');
   }
 }
 
 class BadRequest extends HTTPError {
   constructor(message) {
-    super(400, message || "Bad Request");
+    super(400, message || 'Bad Request');
   }
 }
 
 class Unauthorized extends HTTPError {
   constructor(message) {
-    super(401, message || "Unauthorized");
+    super(401, message || 'Unauthorized');
   }
 }
 
 class Forbidden extends HTTPError {
   constructor(message) {
-    super(403, message || "Permission denied");
+    super(403, message || 'Permission denied');
   }
 }
 
 class NotFound extends HTTPError {
   constructor(message) {
-    super(404, message || "Resource not found");
+    super(404, message || 'Resource not found');
   }
 }
 
-class Unprocessable extends HTTPError {
-  constructor(message) {
-    super(422, message || "Unprocessable request");
-  }
-}
+// class Unprocessable extends HTTPError {
+//   constructor(message) {
+//     super(422, message || 'Unprocessable request');
+//   }
+// }
 
 class TooManyRequests extends HTTPError {
   constructor(message) {
@@ -74,13 +77,13 @@ class TooManyRequests extends HTTPError {
 
 class InternalServerError extends HTTPError {
   constructor(message) {
-    super(500, message || "Internal server error");
+    super(500, message || 'Internal server error');
   }
 }
 
 class NotImplemented extends HTTPError {
   constructor(message) {
-    super(501, message || "Not Implemented");
+    super(501, message || 'Not Implemented');
   }
 }
 
@@ -94,27 +97,28 @@ class NotAvailable extends HTTPError {
  * General error handler middleware. Attaches to express so that throwing or calling next() with
  * an error ends up here and all errors are handled uniformly.
  */
-const errorHandler = (err, req, res, next) => {
-  if (!err) err = new InternalServerError("An unknown error occurred");
-  if (!err.status) err = new InternalServerError(err.message);
+const errorHandler = (err, req, res) => {
+  let localErr = err;
+  if (!localErr) localErr = new InternalServerError('An unknown error occurred');
+  if (!localErr.status) localErr = new InternalServerError(localErr.message);
 
-  if (err.status < 500) {
+  if (localErr.status < 500) {
     logger.warn(
-      "%s [Flow %s]: %s [%d]: %s",
+      '%s [Flow %s]: %s [%d]: %s',
       new Date(),
       req.id,
-      err.name,
-      err.status,
-      err.message
+      localErr.name,
+      localErr.status,
+      localErr.message,
     );
   } else {
-    logger.error("%s [Flow %s]: \n%s", new Date(), req.id, err.stack);
+    logger.error('%s [Flow %s]: \n%s', new Date(), req.id, localErr.stack);
   }
 
-  res.status(err.status).json({
+  res.status(localErr.status).json({
     error: {
-      status: err.status,
-      message: err.message,
+      status: localErr.status,
+      message: localErr.message,
     },
   });
 };
@@ -123,20 +127,20 @@ const errorHandler = (err, req, res, next) => {
  * 404 errors aren't triggered by an error object, so this is a catch-all middleware
  * for requests that don't hit a route.
  */
-const notFoundHandler = (req, res, next) => {
-  const err = new NotFound("The resource " + req.url + " was not found");
+const notFoundHandler = (req, res) => {
+  const notFoundErr = new NotFound(`The resource ${req.url} was not found`);
   logger.warn(
-    "%s [Flow %s]: %s [%d]: %s",
+    '%s [Flow %s]: %s [%d]: %s',
     new Date(),
     req.id,
-    err.name,
-    err.status,
-    err.message
+    notFoundErr.name,
+    notFoundErr.status,
+    notFoundErr.message,
   );
-  res.status(err.status).json({
+  res.status(notFoundErr.status).json({
     error: {
-      status: err.status,
-      message: err.message,
+      status: notFoundErr.status,
+      message: notFoundErr.message,
     },
   });
 };
