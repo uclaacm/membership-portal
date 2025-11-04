@@ -36,6 +36,7 @@
     "handlebars": "^4.0.10",
     "jsonwebtoken": "^7.3.0",
     "morgan": "^1.7.0",
+    "multer": "^2.0.2",
     "node-gyp": "^4.0.0",
     "node-pre-gyp": "^0.13.0",
     "pg": "^8.0.3",
