@@ -18,6 +18,7 @@ router.use("/event", auth, require("./event").router);
 router.use("/attendance", auth, require("./attendance").router);
 router.use("/leaderboard", auth, require("./leaderboard").router);
 router.use("/rsvp", auth, require("./rsvp").router);
+router.use('/sheets', auth, require('./sheets').router);
 
 // Mount the admin routes
 console.log("✅ Admin routes registered");
