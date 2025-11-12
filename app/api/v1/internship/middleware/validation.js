@@ -1,13 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
-import { validationResult, query, body, param } from 'express-validator';
-import { MIN_GRADUATION_YEAR, MAX_PAGINATION_LIMIT } from '../config/constants';
+const {
+  validationResult, query, body, param,
+} = require('express-validator');
+const { MIN_GRADUATION_YEAR, MAX_PAGINATION_LIMIT } = require('../config/constants');
 
 // Validation error handler
-export const handleValidationErrors = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
+const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     res.status(400).json({
@@ -21,7 +18,7 @@ export const handleValidationErrors = (
 };
 
 // Validate application creation
-export const validateCreateApplication = [
+const validateCreateApplication = [
   body('userId').optional().trim(),
   body('firstName').trim().notEmpty().withMessage('First name is required'),
   body('lastName').trim().notEmpty().withMessage('Last name is required'),
@@ -33,7 +30,8 @@ export const validateCreateApplication = [
     .isInt({ min: MIN_GRADUATION_YEAR })
     .withMessage(`Graduation year must be ${MIN_GRADUATION_YEAR} or later`),
   body('committee').trim().notEmpty().withMessage('Committee is required'),
-  body('resumeUrl').optional().trim().isURL().withMessage('Resume URL must be a valid URL'),
+  body('resumeUrl').optional().trim().isURL()
+    .withMessage('Resume URL must be a valid URL'),
   body('coverLetter').optional().trim(),
   body('responses').optional().isArray().withMessage('Responses must be an array'),
   body('responses.*.questionKey').trim().notEmpty().withMessage('Question key is required'),
@@ -43,26 +41,36 @@ export const validateCreateApplication = [
 ];
 
 // Validate application update
-export const validateUpdateApplication = [
+const validateUpdateApplication = [
   param('id').isMongoId().withMessage('Invalid application ID'),
   body('userId').optional().trim(),
-  body('firstName').optional().trim().notEmpty().withMessage('First name cannot be empty'),
-  body('lastName').optional().trim().notEmpty().withMessage('Last name cannot be empty'),
-  body('email').optional().trim().isEmail().withMessage('Valid email is required'),
+  body('firstName').optional().trim().notEmpty()
+    .withMessage('First name cannot be empty'),
+  body('lastName').optional().trim().notEmpty()
+    .withMessage('Last name cannot be empty'),
+  body('email').optional().trim().isEmail()
+    .withMessage('Valid email is required'),
   body('phone').optional().trim(),
-  body('university').optional().trim().notEmpty().withMessage('University cannot be empty'),
-  body('major').optional().trim().notEmpty().withMessage('Major cannot be empty'),
+  body('university').optional().trim().notEmpty()
+    .withMessage('University cannot be empty'),
+  body('major').optional().trim().notEmpty()
+    .withMessage('Major cannot be empty'),
   body('graduationYear')
     .optional()
     .isInt({ min: MIN_GRADUATION_YEAR })
     .withMessage(`Graduation year must be ${MIN_GRADUATION_YEAR} or later`),
-  body('committee').optional().trim().notEmpty().withMessage('Committee cannot be empty'),
-  body('resumeUrl').optional().trim().isURL().withMessage('Resume URL must be a valid URL'),
+  body('committee').optional().trim().notEmpty()
+    .withMessage('Committee cannot be empty'),
+  body('resumeUrl').optional().trim().isURL()
+    .withMessage('Resume URL must be a valid URL'),
   body('coverLetter').optional().trim(),
   body('responses').optional().isArray().withMessage('Responses must be an array'),
-  body('responses.*.questionKey').optional().trim().notEmpty().withMessage('Question key is required'),
-  body('responses.*.question').optional().trim().notEmpty().withMessage('Question text is required'),
-  body('responses.*.answer').optional().trim().notEmpty().withMessage('Answer is required'),
+  body('responses.*.questionKey').optional().trim().notEmpty()
+    .withMessage('Question key is required'),
+  body('responses.*.question').optional().trim().notEmpty()
+    .withMessage('Question text is required'),
+  body('responses.*.answer').optional().trim().notEmpty()
+    .withMessage('Answer is required'),
   body('status')
     .optional()
     .isIn(['pending', 'reviewing', 'accepted', 'rejected'])
@@ -71,7 +79,7 @@ export const validateUpdateApplication = [
 ];
 
 // Validate get all applications query
-export const validateGetApplications = [
+const validateGetApplications = [
   query('status')
     .optional()
     .isIn(['pending', 'reviewing', 'accepted', 'rejected'])
@@ -87,7 +95,15 @@ export const validateGetApplications = [
 ];
 
 // Validate MongoDB ID
-export const validateMongoId = [
+const validateMongoId = [
   param('id').isMongoId().withMessage('Invalid ID format'),
   handleValidationErrors,
 ];
+
+module.exports = {
+  handleValidationErrors,
+  validateCreateApplication,
+  validateUpdateApplication,
+  validateGetApplications,
+  validateMongoId,
+};

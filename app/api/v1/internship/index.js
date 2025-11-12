@@ -1,23 +1,27 @@
 const express = require('express');
+const {
+  createApplication,
+  getAllApplications,
+  getApplicationById,
+  updateApplication,
+  deleteApplication,
+} = require('./controllers/applicationController');
 
 const router = express.Router();
 
-// Controller imports (implement these in your controllers directory)
-const applicationController = require('./controllers/applicationController.ts');
-
 // GET all applications
-router.get('/applications', applicationController.getAllApplications);
+router.get('/applications', getAllApplications);
 
 // POST a new application
-router.post('/applications', applicationController.createApplication);
+router.post('/applications', createApplication);
 
 // GET a single application by ID
-router.get('/applications/:id', applicationController.getApplicationById);
+router.get('/applications/:id', getApplicationById);
 
 // PUT (update) an application by ID
-router.put('/applications/:id', applicationController.updateApplicationById);
+router.put('/applications/:id', updateApplication);
 
 // DELETE an application by ID
-router.delete('/applications/:id', applicationController.deleteApplicationById);
+router.delete('/applications/:id', deleteApplication);
 
 module.exports = { router };

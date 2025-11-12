@@ -11,26 +11,32 @@ const router = express.Router();
  * Gets the attendance for a single event or for the user
  * Returns a list of attendance objects
  */
-router.route('/:uuid?').get((req, res, next) => {
+
+// Get attendance for the current user (no UUID)
+router.route('/').get((req, res, next) => {
   if (req.user.isPending()) return next(new error.Forbidden());
 
-  // store successful response function
-  //   map each attendance record in the db to its public version (see app/db/schema/attendance.js)
-  const callback = (attendance) => res.json({
-    error: null,
-    attendance: attendance.map((a) => a.getPublic()),
-  });
-  if (req.params.uuid) {
-    // if an event UUID is provided, find all attendance records for that event
-    //   essentially will return all the users that attended an event
-    return Attendance.getAttendanceForEvent(req.params.uuid)
-      .then(callback)
-      .catch(next);
-  }
-  // otherwise, just get all the attendance records for the user
-  //   essentially will return all the events this user attended
+  // Get all the attendance records for the user
+  // Essentially will return all the events this user attended
   return Attendance.getAttendanceForUser(req.user.uuid)
-    .then(callback)
+    .then((attendance) => res.json({
+      error: null,
+      attendance: attendance.map((a) => a.getPublic()),
+    }))
+    .catch(next);
+});
+
+// Get attendance for a specific event (with UUID)
+router.route('/:uuid').get((req, res, next) => {
+  if (req.user.isPending()) return next(new error.Forbidden());
+
+  // Find all attendance records for that event
+  // Essentially will return all the users that attended an event
+  return Attendance.getAttendanceForEvent(req.params.uuid)
+    .then((attendance) => res.json({
+      error: null,
+      attendance: attendance.map((a) => a.getPublic()),
+    }))
     .catch(next);
 });
 

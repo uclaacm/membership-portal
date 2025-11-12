@@ -4,7 +4,7 @@ const morgan = require('morgan');
 const uuid = require('uuid');
 const bodyParser = require('body-parser');
 const app = require('./app');
-const connectDB = require('./app/api/v1/internship/config/database.ts'); // TODO: update path as needed
+const { connectDB } = require('./app/api/v1/internship/config/database');
 
 const log = app.logger;
 const server = express();

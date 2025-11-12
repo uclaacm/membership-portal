@@ -1,41 +1,9 @@
-import mongoose, { Document, Schema } from 'mongoose';
-import { MIN_GRADUATION_YEAR } from '../config/constants';
+const mongoose = require('mongoose');
+const { MIN_GRADUATION_YEAR } = require('../config/constants');
 
-// Interface for individual question responses
-export interface IQuestionResponse {
-  questionKey: string;
-  question: string;
-  answer: string;
-}
+const { Schema } = mongoose;
 
-export interface IInternshipApplication extends Document {
-  // User identification (to key with existing member portal)
-  userId?: string; // UUID from member portal
-  
-  // Basic information
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone?: string;
-  university: string;
-  major: string;
-  graduationYear: number;
-  
-  // Application details
-  committee: string; // Committee applying to
-  resumeUrl?: string;
-  coverLetter?: string;
-  
-  // Application responses to prompts
-  responses: IQuestionResponse[];
-  
-  // Status tracking
-  status: 'pending' | 'reviewing' | 'accepted' | 'rejected';
-  appliedAt: Date;
-  updatedAt: Date;
-}
-
-const InternshipApplicationSchema = new Schema<IInternshipApplication>(
+const InternshipApplicationSchema = new Schema(
   {
     userId: {
       type: String,
@@ -122,7 +90,7 @@ const InternshipApplicationSchema = new Schema<IInternshipApplication>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Create indexes
@@ -130,9 +98,12 @@ InternshipApplicationSchema.index({ userId: 1 });
 InternshipApplicationSchema.index({ committee: 1 });
 InternshipApplicationSchema.index({ status: 1 });
 InternshipApplicationSchema.index({ appliedAt: -1 });
-InternshipApplicationSchema.index({ userId: 1, committee: 1 }); // Compound index for user+committee queries
+InternshipApplicationSchema.index({ userId: 1, committee: 1 });
+// Compound index for user+committee queries
 
-export const InternshipApplication = mongoose.model<IInternshipApplication>(
+const InternshipApplication = mongoose.model(
   'InternshipApplication',
-  InternshipApplicationSchema
+  InternshipApplicationSchema,
 );
+
+module.exports = { InternshipApplication };

@@ -5,10 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node index",
-    "dev": "nodemon -L -e js,ts -i node_modules -i .git -V index.js",
+    "dev": "nodemon -L -e js -i node_modules -i .git -V index.js",
     "test": "export TESTING=true && jest --config jest.config.json",
-    "lint": "prettier --write './**/*.js*'",
-    "build": "tsc"
+    "lint": "prettier --write './**/*.js*'"
   },
   "repository": {
     "type": "git",
@@ -53,9 +52,6 @@
   },
   "false": {},
   "devDependencies": {
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.5",
-    "@types/node": "^24.10.0",
     "babel-core": "^6.26.3",
     "babel-jest": "^23.6.0",
     "babel-preset-env": "^1.7.0",
@@ -67,8 +63,6 @@
     "jest": "^23.6.0",
     "lint-staged": "^7.3.0",
     "nodemon": "^3.1.7",
-    "supertest": "^6.2.4",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "supertest": "^6.2.4"
   }
 }
