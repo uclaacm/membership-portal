@@ -1,6 +1,6 @@
 const express = require('express');
-const error = require('../../../error');
-const { User, Activity } = require('../../../db');
+const error = require('../../../../error');
+const { User, Activity } = require('../../../../db');
 
 const router = express.Router();
 
@@ -78,7 +78,7 @@ router.get('/activity', (req, res, next) => {
     .then((activity) => {
       res.json({
         error: null,
-        activity: activity.map(a => a.getPublic()),
+        activity: activity.map((a) => a.getPublic()),
       });
       return null;
     })
@@ -125,7 +125,7 @@ router
     if (!req.user.isSuperAdmin()) return next(new error.Forbidden());
     return next();
   })
-  .get((req, res) => User.getAdmins().then(admins => res.json({ error: null, admins })))
+  .get((req, res) => User.getAdmins().then((admins) => res.json({ error: null, admins })))
   .post((req, res, next) => {
     // add admins
     if (!req.body.email || typeof req.body.email !== 'string') return next(new error.BadRequest('Invalid email'));

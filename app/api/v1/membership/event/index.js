@@ -1,6 +1,6 @@
 const express = require('express');
-const error = require('../../../error');
-const { Event } = require('../../../db');
+const error = require('../../../../error');
+const { Event } = require('../../../../db');
 
 const router = express.Router();
 
@@ -17,7 +17,7 @@ router.route('/past').get((req, res, next) => {
   const limit = parseInt(req.query.limit, 10);
   return Event.getPastEvents(offset, limit)
     .then((events) => {
-      res.json({ error: null, events: events.map(e => e.getPublic()) });
+      res.json({ error: null, events: events.map((e) => e.getPublic()) });
       return null;
     })
     .catch(next);
@@ -36,7 +36,7 @@ router.route('/future').get((req, res, next) => {
   const limit = parseInt(req.query.limit, 10);
   return Event.getFutureEvents(offset, limit)
     .then((events) => {
-      res.json({ error: null, events: events.map(e => e.getPublic()) });
+      res.json({ error: null, events: events.map((e) => e.getPublic()) });
       return null;
     })
     .catch(next);
@@ -63,17 +63,17 @@ router
         : Event.getAll(offset, limit);
       return getEvents
         .then((events) => {
-          events.forEach(e => {
+          events.forEach((e) => {
             // reformat google drive file links
             if (e.cover && e.cover.includes('drive.google.com')) {
               const fileID = e.cover.match(/\/file\/d\/(.+?)\//)[1];
               e.cover = `https://drive.google.com/thumbnail?id=${fileID}&sz=s1000`;
             }
-          })  
+          });
 
           res.json({
             error: null,
-            events: events.map(e => e.getPublic(req.user.isAdmin())),
+            events: events.map((e) => e.getPublic(req.user.isAdmin())),
           });
           return null;
         })

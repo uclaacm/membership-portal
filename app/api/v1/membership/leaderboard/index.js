@@ -1,6 +1,6 @@
 const express = require('express');
-const error = require('../../../error');
-const { User } = require('../../../db');
+const error = require('../../../../error');
+const { User } = require('../../../../db');
 
 const router = express.Router();
 

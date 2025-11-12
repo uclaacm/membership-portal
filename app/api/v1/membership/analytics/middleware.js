@@ -1,4 +1,4 @@
-const error = require('../../../error');
+const error = require('../../../../error');
 
 const parseFilters = (req, res, next) => {
   const filters = {};

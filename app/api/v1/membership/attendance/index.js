@@ -1,9 +1,9 @@
 const Sequelize = require('sequelize');
 const express = require('express');
-const error = require('../../../error');
+const error = require('../../../../error');
 const {
   Event, Activity, Attendance, db,
-} = require('../../../db');
+} = require('../../../../db');
 
 const router = express.Router();
 
@@ -16,9 +16,9 @@ router.route('/:uuid?').get((req, res, next) => {
 
   // store successful response function
   //   map each attendance record in the db to its public version (see app/db/schema/attendance.js)
-  const callback = attendance => res.json({
+  const callback = (attendance) => res.json({
     error: null,
-    attendance: attendance.map(a => a.getPublic()),
+    attendance: attendance.map((a) => a.getPublic()),
   });
   if (req.params.uuid) {
     // if an event UUID is provided, find all attendance records for that event

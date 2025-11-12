@@ -1,8 +1,8 @@
 const express = require('express');
-const error = require('../../../error');
+const error = require('../../../../error');
 const {
   Event, RSVP,
-} = require('../../../db');
+} = require('../../../../db');
 
 const router = express.Router();
 
@@ -14,7 +14,7 @@ router.route('/:uuid?').get((req, res, next) => {
   if (req.user.isPending()) return next(new error.Forbidden());
 
   // store successful response function
-  const callback = rsvps => res.json({ error: null, rsvps: rsvps.map(r => r.getPublic()) });
+  const callback = (rsvps) => res.json({ error: null, rsvps: rsvps.map((r) => r.getPublic()) });
 
   if (req.params.uuid) {
     // If an event UUID is provided, find all RSVP records for THAT EVENT

@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const uuid = require('uuid');
 const bodyParser = require('body-parser');
 const app = require('./app');
+const connectDB = require('./app/api/v1/internship/config/database.ts'); // TODO: update path as needed
 
 const log = app.logger;
 const server = express();
@@ -58,33 +59,43 @@ server.use(app.db.errorHandler);
 server.use(app.error.errorHandler);
 server.use(app.error.notFoundHandler);
 
-
 async function startServer() {
-  await app.db.setup(false, app.config.isDevelopment);
+  try {
+    // Connect to MongoDB
+    await connectDB();
 
-  if (cluster.isMaster) {
-    log.debug('Creating %d cluster workers...', app.config.numCPUs);
-    for (let i = 0; i < app.config.numCPUs; i++) cluster.fork();
+    // Setup Postgres (or other DB)
+    await app.db.setup(false, app.config.isDevelopment);
 
-    cluster.on('exit', (worker, code, signal) => {
-      log.info(
-        'Worker PID %s died (%s). Restarting...',
-        worker.process.pid,
-        signal,
-      );
-      log.info('FORKING');
-      cluster.fork();
-    });
-  }
-  if (!cluster.isMaster) {
-    server.listen(app.config.port, app.config.host, async () => {
-      log.info(
-        'Started server %s on port %d, PID: %d',
-        app.config.host,
-        app.config.port,
-        process.pid,
-      );
-    });
+    if (cluster.isMaster) {
+      log.debug('Creating %d cluster workers...', app.config.numCPUs);
+      for (let i = 0; i < app.config.numCPUs; i++) cluster.fork();
+
+      cluster.on('exit', (worker, code, signal) => {
+        log.info(
+          'Worker PID %s died (%s). Restarting...',
+          worker.process.pid,
+          signal,
+        );
+        log.info('FORKING');
+        cluster.fork();
+      });
+    }
+    if (!cluster.isMaster) {
+      server.listen(app.config.port, app.config.host, async () => {
+        log.info(
+          'Started server %s on port %d, PID: %d',
+          app.config.host,
+          app.config.port,
+          process.pid,
+        );
+        log.log(`Server is running on port ${app.config.port}`);
+        log.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+      });
+    }
+  } catch (error) {
+    log.error('Failed to start server:', error);
+    process.exit(1);
   }
 }
 

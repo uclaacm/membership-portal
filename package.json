@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "node index",
-    "dev": "nodemon -L -e js -i node_modules -i .git -V index.js",
+    "dev": "nodemon -L -e js,ts -i node_modules -i .git -V index.js",
     "test": "export TESTING=true && jest --config jest.config.json",
-    "lint": "prettier --write './**/*.js*'"
+    "lint": "prettier --write './**/*.js*'",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
@@ -30,12 +31,17 @@
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.15.2",
     "continuation-local-storage": "^3.2.0",
-    "express": "^4.14.0",
-    "express-rate-limit": "^6.2.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.2.1",
+    "express-validator": "^7.3.0",
     "google-auth-library": "^7.9.2",
     "handlebars": "^4.0.10",
     "jsonwebtoken": "^7.3.0",
+    "mongoose": "^8.19.3",
     "morgan": "^1.7.0",
+    "multer": "^2.0.2",
     "node-gyp": "^4.0.0",
     "node-pre-gyp": "^0.13.0",
     "pg": "^8.0.3",
@@ -47,6 +53,9 @@
   },
   "false": {},
   "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.5",
+    "@types/node": "^24.10.0",
     "babel-core": "^6.26.3",
     "babel-jest": "^23.6.0",
     "babel-preset-env": "^1.7.0",
@@ -58,6 +67,8 @@
     "jest": "^23.6.0",
     "lint-staged": "^7.3.0",
     "nodemon": "^3.1.7",
-    "supertest": "^6.2.4"
+    "supertest": "^6.2.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   }
 }
