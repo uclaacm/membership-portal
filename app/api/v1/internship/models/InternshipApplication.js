@@ -152,12 +152,12 @@ InternshipApplicationSchema.pre('save', function (next) {
   // Linter wants a return, but not needed because we call next()
 });
 
-// Create indexes
+// Create indices
 InternshipApplicationSchema.index({ userId: 1 });
-InternshipApplicationSchema.index({ committee: 1 });
-InternshipApplicationSchema.index({ status: 1 });
+InternshipApplicationSchema.index({ firstChoice: 1 });
+InternshipApplicationSchema.index({ firstChoiceStatus: 1 });
 InternshipApplicationSchema.index({ appliedAt: -1 });
-InternshipApplicationSchema.index({ userId: 1, committee: 1 });
+InternshipApplicationSchema.index({ userId: 1, firstChoice: 1 });
 // Compound index for user+committee queries
 
 const InternshipApplication = mongoose.model(
