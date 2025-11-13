@@ -1,16 +1,17 @@
 module.exports = {
-  extends: "airbnb/base",
+  extends: 'airbnb/base',
   env: {
     jest: true,
   },
   settings: {
-    "import/resolver": {
+    'import/resolver': {
       node: {
-        paths: ["."],
+        paths: ['.'],
       },
     },
   },
   rules: {
-    "no-plusplus": "off",
+    'no-plusplus': 'off',
+    'func-names': 'off',
   },
 };

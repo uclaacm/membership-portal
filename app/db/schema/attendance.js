@@ -4,7 +4,7 @@ module.exports = (Sequelize, db) => {
    * one event.
    */
   const Attendance = db.define(
-    "attendance",
+    'attendance',
     {
       id: {
         type: Sequelize.INTEGER,
@@ -25,10 +25,10 @@ module.exports = (Sequelize, db) => {
         validate: {
           isUUID: {
             args: 4,
-            msg: "Invalid value for user UUID",
+            msg: 'Invalid value for user UUID',
           },
           notEmpty: {
-            msg: "The user UUID is a required field",
+            msg: 'The user UUID is a required field',
           },
         },
       },
@@ -40,10 +40,10 @@ module.exports = (Sequelize, db) => {
         validate: {
           isUUID: {
             args: 4,
-            msg: "Invalid value for user UUID",
+            msg: 'Invalid value for user UUID',
           },
           notEmpty: {
-            msg: "The user UUID is a required field",
+            msg: 'The user UUID is a required field',
           },
         },
       },
@@ -60,50 +60,50 @@ module.exports = (Sequelize, db) => {
         // a hash index on the uuid makes lookup by UUID O(1)
         {
           unique: true,
-          fields: ["uuid"],
+          fields: ['uuid'],
         },
 
         // a hash index on the user makes lookup by user O(1)
         {
           unique: false,
-          fields: ["user"],
+          fields: ['user'],
         },
 
         // a hash index on the event makes lookup by event O(1)
         {
           unique: false,
-          fields: ["event"],
+          fields: ['event'],
         },
 
         // a BTREE index on the date makes retrieving attendance in chronological order O(N),
         // where N is the number of attendance records
         {
-          name: "attendance_date_btree_index",
-          method: "BTREE",
-          fields: ["date", { attribute: "date", order: "ASC" }],
+          name: 'attendance_date_btree_index',
+          method: 'BTREE',
+          fields: ['date', { attribute: 'date', order: 'ASC' }],
         },
 
         // a BTREE index on the user makes retrieving all attendance for a user O(N), where
         // N is the number of attendances for this user
         {
-          name: "attendance_user_btree_index",
-          method: "BTREE",
-          fields: ["user", { attribute: "user", order: "ASC" }],
+          name: 'attendance_user_btree_index',
+          method: 'BTREE',
+          fields: ['user', { attribute: 'user', order: 'ASC' }],
         },
 
         // a BTREE index on the event makes retrieving all attendance for a event O(N), where
         // N is the number of attendances for this event
         {
-          name: "attendance_event_btree_index",
-          method: "BTREE",
-          fields: ["event", { attribute: "event", order: "ASC" }],
+          name: 'attendance_event_btree_index',
+          method: 'BTREE',
+          fields: ['event', { attribute: 'event', order: 'ASC' }],
         },
       ],
-    }
+    },
   );
 
   Attendance.getAttendanceForUser = function (user) {
-    return this.findAll({ where: { user }, order: [["date", "ASC"]] });
+    return this.findAll({ where: { user }, order: [['date', 'ASC']] });
   };
 
   Attendance.getAttendanceForEvent = function (event) {
@@ -111,7 +111,7 @@ module.exports = (Sequelize, db) => {
   };
 
   Attendance.userAttendedEvent = function (user, event) {
-    return this.count({ where: { user, event } }).then((c) => c !== 0);
+    return this.count({ where: { user, event } }).then(c => c !== 0);
   };
 
   Attendance.attendEvent = function (user, event) {
@@ -120,10 +120,10 @@ module.exports = (Sequelize, db) => {
 
   Attendance.prototype.getPublic = function () {
     return {
-      uuid: this.getDataValue("uuid"),
-      user: this.getDataValue("user"),
-      event: this.getDataValue("event"),
-      date: this.getDataValue("date"),
+      uuid: this.getDataValue('uuid'),
+      user: this.getDataValue('user'),
+      event: this.getDataValue('event'),
+      date: this.getDataValue('date'),
     };
   };
 

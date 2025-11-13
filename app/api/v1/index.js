@@ -1,8 +1,8 @@
-const express = require("express");
-const rateLimit = require("express-rate-limit");
-const auth = require("./auth").authenticated;
-let router = express.Router();
+const express = require('express');
+const rateLimit = require('express-rate-limit');
+const auth = require('./auth').authenticated;
 
+const router = express.Router();
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -21,16 +21,14 @@ router.use("/rsvp", auth, require("./rsvp").router);
 router.use('/sheets', auth, require('./sheets').router);
 
 // Mount the admin routes
-console.log("✅ Admin routes registered");
 router.use('/admin', require('./admin').router);
 
 // Public API
-router.use("/auth", require("./auth").router);
-router.use("/health", require("./health").router);
+router.use('/auth', require('./auth').router);
+router.use('/health', require('./health').router);
 
 // One-click API
-router.use("/one-click", apiLimiter, require("./one-click").router);
-
+router.use('/one-click', apiLimiter, require('./one-click').router);
 
 
 module.exports = { router };

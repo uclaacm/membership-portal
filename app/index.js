@@ -1,7 +1,13 @@
+const db = require('./db');
+const api = require('./api');
+const error = require('./error');
+const config = require('./config');
+const logger = require('./logger');
+
 module.exports = {
-  db: require("./db"),
-  api: require("./api"),
-  error: require("./error"),
-  config: require("./config"),
-  logger: require("./logger"),
+  db,
+  api,
+  error,
+  config,
+  logger,
 };

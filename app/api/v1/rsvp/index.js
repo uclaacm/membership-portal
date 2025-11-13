@@ -1,7 +1,7 @@
 const express = require('express');
 const error = require('../../../error');
 const {
-  Event, Activity, RSVP, db,
+  Event, RSVP,
 } = require('../../../db');
 
 const router = express.Router();
@@ -19,16 +19,15 @@ router.route('/:uuid?').get((req, res, next) => {
   if (req.params.uuid) {
     // If an event UUID is provided, find all RSVP records for THAT EVENT
     // Will return all users who RSVPed to an event
-    RSVP.getRSVPsForEvent(req.params.uuid)
-      .then(callback)
-      .catch(next);
-  } else {
-    // Otherwise, get all RSVP records for the CURRENT USER
-    // Will return all events this user RSVPed to
-    RSVP.getRSVPsForUser(req.user.uuid)
+    return RSVP.getRSVPsForEvent(req.params.uuid)
       .then(callback)
       .catch(next);
   }
+  // Otherwise, get all RSVP records for the CURRENT USER
+  // Will return all events this user RSVPed to
+  return RSVP.getRSVPsForUser(req.user.uuid)
+    .then(callback)
+    .catch(next);
 });
 
 /**
@@ -38,11 +37,15 @@ router.route('/add').post((req, res, next) => {
   if (req.user.isPending()) return next(new error.Forbidden());
 
   // The user must specify the event UUID
-  if (!req.body.event || !req.body.event.uuid) { return next(new error.BadRequest('Event UUID is required')); }
+  if (!req.body.event || !req.body.event.uuid) {
+    return next(new error.BadRequest('Event UUID is required'));
+  }
 
-  Event.findByUUID(req.body.event.uuid)
+  return Event.findByUUID(req.body.event.uuid)
     .then((event) => {
-      if (!event) { throw new error.UserError('Event not found'); }
+      if (!event) {
+        throw new error.UserError('Event not found');
+      }
 
       const now = new Date();
       if (now > event.startDate) throw new error.UserError('Cannot RSVP to an event that has already started');
@@ -74,11 +77,15 @@ router.route('/:uuid').delete((req, res, next) => {
   if (req.user.isPending()) return next(new error.Forbidden());
 
   // The user must specify the event UUID
-  if (!req.params.uuid) { return next(new error.BadRequest('Event UUID is required')); }
+  if (!req.params.uuid) {
+    return next(new error.BadRequest('Event UUID is required'));
+  }
 
-  Event.findByUUID(req.params.uuid)
+  return Event.findByUUID(req.params.uuid)
     .then((event) => {
-      if (!event) { throw new error.UserError('Event not found'); }
+      if (!event) {
+        throw new error.UserError('Event not found');
+      }
 
       const now = new Date();
       if (now > event.startDate) throw new error.UserError('Cannot cancel RSVP to an event that has already started');
