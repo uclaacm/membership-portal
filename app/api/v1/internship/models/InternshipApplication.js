@@ -55,6 +55,7 @@ const InternshipApplicationSchema = new Schema(
     },
 
     // Committee Choices (ranked preference)
+    // TODO: deal with subcommittee cases
     firstChoice: {
       type: Schema.Types.ObjectId,
       ref: 'Committee',
@@ -80,6 +81,8 @@ const InternshipApplicationSchema = new Schema(
       trim: true,
     },
 
+    // TODO:
+    // change this to be an array of response objects..
     responses: [{
       questionKey: {
         type: String,
@@ -152,13 +155,21 @@ InternshipApplicationSchema.pre('save', function (next) {
   // Linter wants a return, but not needed because we call next()
 });
 
+// TODO:
+// Validate no blank responses
+InternshipApplicationSchema.pre('save', function(next) {
+  // Ensure no blank responses..
+  next();
+});
+
 // Create indices
 InternshipApplicationSchema.index({ userId: 1 });
 InternshipApplicationSchema.index({ firstChoice: 1 });
 InternshipApplicationSchema.index({ firstChoiceStatus: 1 });
 InternshipApplicationSchema.index({ appliedAt: -1 });
 InternshipApplicationSchema.index({ userId: 1, firstChoice: 1 });
-// Compound index for user+committee queries
+InternshipApplicationSchema.index({ userId: 1, appliedAt: -1});
+InternshipApplicationSchema.index({ firstChoice: 1, firstChoiceStatus: 1 });
 
 const InternshipApplication = mongoose.model(
   'InternshipApplication',
