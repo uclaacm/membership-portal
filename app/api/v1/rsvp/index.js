@@ -1,7 +1,7 @@
 const express = require('express');
 const error = require('../../../error');
 const {
-  Event, RSVP,
+  Event, RSVP, User,
 } = require('../../../db');
 
 const router = express.Router();
@@ -13,12 +13,41 @@ const router = express.Router();
 router.route('/:uuid?').get((req, res, next) => {
   if (req.user.isPending()) return next(new error.Forbidden());
 
-  // store successful response function
-  const callback = rsvps => res.json({ error: null, rsvps: rsvps.map(r => r.getPublic()) });
+  // If an event UUID is provided, only admins can access this endpoint
+  if (req.params.uuid && !req.user.isAdmin()) {
+    return next(new error.Forbidden());
+  }
+
+  // Callback function to enrich RSVPs with user profile data
+  const callback = (rsvps) => {
+    // If querying for a specific event (admin only), fetch user profiles
+    if (req.params.uuid) {
+      // Extract all user UUIDs from RSVPs
+      const userPromises = rsvps.map(rsvp => User.findByUUID(rsvp.getDataValue('user')));
+
+      // Fetch all users in parallel
+      return Promise.all(userPromises)
+        .then((users) => {
+          // Combine RSVP data with user profile data
+          const enrichedRsvps = rsvps.map((rsvp, index) => ({
+            uuid: rsvp.getDataValue('uuid'),
+            user: users[index] ? users[index].getUserProfile() : null,
+            event: rsvp.getDataValue('event'),
+            date: rsvp.getDataValue('date'),
+          }));
+
+          return res.json({ error: null, rsvps: enrichedRsvps });
+        })
+        .catch(next);
+    }
+
+    // For user's own RSVPs, return basic RSVP data without user profiles
+    return res.json({ error: null, rsvps: rsvps.map(r => r.getPublic()) });
+  };
 
   if (req.params.uuid) {
     // If an event UUID is provided, find all RSVP records for THAT EVENT
-    // Will return all users who RSVPed to an event
+    // Will return all users who RSVPed to an event (admin only)
     return RSVP.getRSVPsForEvent(req.params.uuid)
       .then(callback)
       .catch(next);
