@@ -1,13 +1,16 @@
+// IMPORT COMMITTEE SCHEMA for committee choices
+
 const mongoose = require('mongoose');
 const { MIN_GRADUATION_YEAR } = require('../config/constants');
 
 const { Schema } = mongoose;
 
+// design doc https://www.notion.so/Demo-design-doc-2a91b79eef7280539239e6bddd279459
 const InternshipApplicationSchema = new Schema(
   {
     userId: {
-      type: String,
-      trim: true,
+      type: String, // UUID from PostgreSQL
+      required: true,
       index: true,
     },
     firstName: {
@@ -26,17 +29,20 @@ const InternshipApplicationSchema = new Schema(
       unique: true,
       lowercase: true,
       trim: true,
-      match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email address'],
+      // Must use @g.ucla.edu email
+      match: [/^\S+@g.ucla.edu$/, 'Please provide a valid UCLA-affiliated email address'],
     },
+    // Phone numbers not currently being asked for, but will keep for future addition
     phone: {
       type: String,
       trim: true,
     },
-    university: {
-      type: String,
-      required: [true, 'University is required'],
-      trim: true,
-    },
+    // We don't need a University property?
+    // university: {
+    //   type: String,
+    //   required: [true, 'University is required'],
+    //   trim: true,
+    // },
     major: {
       type: String,
       required: [true, 'Major is required'],
@@ -47,12 +53,24 @@ const InternshipApplicationSchema = new Schema(
       required: [true, 'Graduation year is required'],
       min: [MIN_GRADUATION_YEAR, `Graduation year must be ${MIN_GRADUATION_YEAR} or later`],
     },
-    committee: {
-      type: String,
-      required: [true, 'Committee is required'],
-      trim: true,
-      index: true,
+
+    // Committee Choices (ranked preference)
+    firstChoice: {
+      type: Schema.Types.ObjectId,
+      ref: 'Committee',
+      required: true,
     },
+    // optional
+    secondChoice: {
+      type: Schema.Types.ObjectId,
+      ref: 'Committee',
+    },
+    // optional
+    thirdChoice: {
+      type: Schema.Types.ObjectId,
+      ref: 'Committee',
+    },
+
     resumeUrl: {
       type: String,
       trim: true,
@@ -61,6 +79,7 @@ const InternshipApplicationSchema = new Schema(
       type: String,
       trim: true,
     },
+
     responses: [{
       questionKey: {
         type: String,
@@ -78,12 +97,37 @@ const InternshipApplicationSchema = new Schema(
         trim: true,
       },
     }],
-    status: {
+
+    // Status from each of the committee choices
+    /*
+    Key:
+      Pending: Application submitted, but not looked at.
+      Reviewing: Deciding yes/no to an interview.
+      Interviewing: Set to interview/interviewing/has interviewed, but no final decision.
+      Accepted: Committee says yes, but DOES NOT MEAN ACCEPTANCE EMAIL AUTO SENT OUT
+      Rejected: Not offered position.
+    */
+    firstChoiceStatus: {
       type: String,
-      enum: ['pending', 'reviewing', 'accepted', 'rejected'],
+      enum: ['pending', 'reviewing', 'interviewing', 'accepted', 'rejected', 'withdrawn'],
       default: 'pending',
     },
+    secondChoiceStatus: {
+      type: String,
+      enum: ['pending', 'reviewing', 'interviewing', 'accepted', 'rejected', 'withdrawn'],
+      default: 'pending',
+    },
+    thirdChoiceStatus: {
+      type: String,
+      enum: ['pending', 'reviewing', 'interviewing', 'accepted', 'rejected', 'withdrawn'],
+      default: 'pending',
+    },
+
     appliedAt: {
+      type: Date,
+      default: Date.now,
+    },
+    lastModifiedAt: {
       type: Date,
       default: Date.now,
     },
@@ -92,6 +136,21 @@ const InternshipApplicationSchema = new Schema(
     timestamps: true,
   },
 );
+
+// Duplicate committee choice validator
+InternshipApplicationSchema.pre('save', function (next) {
+  // Ensure no duplicate committees
+  const committees = [this.firstChoice, this.secondChoice, this.thirdChoice].filter(Boolean);
+  const uniqueCommittees = new Set(committees.map((c) => c.toString()));
+
+  if (committees.length !== uniqueCommittees.size) {
+    return next(new Error('Cannot select the same committee multiple times'));
+  }
+
+  this.lastModifiedAt = Date.now();
+  next();
+  // Linter wants a return, but not needed because we call next()
+});
 
 // Create indexes
 InternshipApplicationSchema.index({ userId: 1 });
