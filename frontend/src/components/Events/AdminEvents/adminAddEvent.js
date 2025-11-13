@@ -1,18 +1,21 @@
-import React from 'react';
+import React, { createRef } from 'react';
 import moment from 'moment';
 
 import InputElement from 'react-input-mask';
 import DatePicker from 'react-datepicker';
 import Button from 'components/Button/index';
-import Config from '../../../config'
+import Config from '../../../config';
+import Storage from 'storage';
 
 import 'react-datepicker/dist/react-datepicker.css';
 
 export default class AdminAddEvent extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { event: this.props.event, startTimeError: false, endTimeError: false };
+    this.state = { event: this.props.event, startTimeError: false, endTimeError: false, coverImageFile: null };
+    this.coverUploadRef = createRef();
     this.resizeTextArea = this.resizeTextArea.bind(this);
+    this.handleChangeCover = this.handleChangeCover.bind(this);
     this.handleChangeStartDate = this.handleChangeStartDate.bind(this);
     this.handleChangeEndDate = this.handleChangeEndDate.bind(this);
     this.handleChangeTime = this.handleChangeTime.bind(this);
@@ -53,7 +56,33 @@ export default class AdminAddEvent extends React.Component {
 
   handleSubmit() {
     if (this.state.endTimeError || this.state.startTimeError) return;
-    if (this.props.onClickAdd) this.props.onClickAdd(this.state.event);
+
+    const callback = () => { if (this.props.onClickAdd) this.props.onClickAdd(this.state.event); };
+
+    if (this.state.coverImageFile) {
+      const formData = new FormData();
+      formData.append('image', this.state.coverImageFile);
+
+      let oldImageCreateUuid = this.props.imageCreateUuid;
+      let retries = 0;
+      let interval;
+      this.props.createImage(formData)
+
+      interval = setInterval(() => {
+        if (retries > 5 || this.props.imageCreateUuid !== oldImageCreateUuid) {
+          clearInterval(interval);
+          this.setState((prev) => {
+            const newState = Object.assign({}, prev);
+            newState.event.cover = `${Config.API_URL + Config.routes.image.specific}/${this.props.imageCreateUuid}`;
+            return newState;
+          }, callback);
+        } else {
+          retries += 1;
+        }
+      }, 500);
+    } else {
+      callback();
+    }
   }
 
   handleChangeTime(e) {
@@ -71,6 +100,40 @@ export default class AdminAddEvent extends React.Component {
       }
       return newState;
     });
+  }
+
+  handleChangeCover(e) {
+    e.persist();
+
+    const file = e.target.files?.[0];
+
+    if (!file) {
+      this.setState((prev) => {
+        const newState = Object.assign({}, prev);
+        newState.event.cover = e.target.value;
+        newState.coverImageFile = null;
+        return newState;
+      });
+    } else {
+      if (file.size > 3 * 1024 * 1024) {
+        alert('File size exceeds 3 MB');
+        e.target.value = '';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+
+        this.setState((prev) => {
+          const newState = Object.assign({}, prev);
+          newState.event.cover = reader.result;       // don't freak out, this is temporary/local-only until handleSubmit
+          newState.coverImageFile = file;
+          return newState;
+        });
+
+      };
+      reader.readAsDataURL(file);
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -97,8 +160,12 @@ export default class AdminAddEvent extends React.Component {
           <div className="editor">
             <div className="input-row">
               <div className="input-field half-width">
-                <p>Image URL</p>
-                <input type="text" value={this.state.event.cover} name="cover" onChange={this.handleChange} />
+                <p>Image URL or Upload</p>
+                <input type="text" value={this.state.event.cover} name="cover" onChange={this.handleChangeCover} />
+              </div>
+              <div className="input-field one-fourth-width file-upload">
+                <input type="file" value={''} name="cover" ref={this.coverUploadRef} id="coverInput" accept="image/*" onChange={this.handleChangeCover} onClick={(event) => { event.target.value = null }} />
+                <Button onClick={(event) => { event.target.value = null; this.coverUploadRef.current?.click(); }} style="blue" text="📁" icon="" />
               </div>
               <div className="input-field half-width">
                 <p>Event URL</p>

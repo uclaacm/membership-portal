@@ -138,6 +138,8 @@ export default class AdminEvents extends React.Component {
           onClickCancel={this.cancelAddEventParent}
           isEdit={this.state.isEditEvent}
           showing={this.state.showAddEvent}
+          createImage={this.props.createImage}
+          imageCreateUuid={this.props.imageCreateUuid}
         />
 
         {!this.state.showAddEvent && (

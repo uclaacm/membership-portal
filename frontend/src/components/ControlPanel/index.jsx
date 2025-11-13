@@ -12,6 +12,8 @@ export default class ControlPanelComponent extends React.Component {
       userEmail,
       events,
       deleteEvent,
+      images,
+      deleteImage,
       admins,
       removeAdmin,
       addAdmin,
@@ -33,6 +35,8 @@ export default class ControlPanelComponent extends React.Component {
           userEmail={userEmail}
           events={events}
           deleteEvent={deleteEvent}
+          images={images}
+          deleteImage={deleteImage}
           admins={admins}
           removeAdmin={removeAdmin}
           addAdmin={addAdmin}
@@ -55,6 +59,8 @@ ControlPanelComponent.propTypes = {
   userEmail: PropTypes.string.isRequired,
   events: PropTypes.arrayOf(PropTypes.object).isRequired,
   deleteEvent: PropTypes.func.isRequired,
+  images: PropTypes.arrayOf(PropTypes.object).isRequired,
+  deleteImage: PropTypes.func.isRequired,
   admins: PropTypes.arrayOf(PropTypes.object).isRequired,
   removeAdmin: PropTypes.func.isRequired,
   addAdmin: PropTypes.func.isRequired,

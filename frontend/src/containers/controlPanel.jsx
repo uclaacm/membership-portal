@@ -17,6 +17,7 @@ class ControlPanel extends React.Component {
     // note: previously left out when only events were needed to be fetched for control panel
     // this led to bug where admin had to navigate to events page first to load events in control panel modal
     this.props.fetchEvents();
+    this.props.fetchImages();
 
     if (isSuperAdmin) {
       this.props.fetchAdmins();
@@ -41,6 +42,8 @@ class ControlPanel extends React.Component {
       events,
       userEmail,
       deleteEvent,
+      images,
+      deleteImage,
       admins,
       removeAdmin,
       addAdmin,
@@ -59,6 +62,8 @@ class ControlPanel extends React.Component {
         userEmail={userEmail}
         events={events.reverse()}
         deleteEvent={deleteEvent}
+        images={images.reverse()}     // recent first
+        deleteImage={deleteImage}
         admins={admins}
         removeAdmin={removeAdmin}
         reassignAdmin={reassignAdmin}
@@ -81,6 +86,7 @@ const mapStateToProps = state => ({
   isAdmin: state.Auth.get("isAdmin"),
   isSuperAdmin: state.Auth.get("isSuperAdmin"),
   events: state.Events.get("events"),
+  images: state.Images.get("images"),
   admins: state.Admins.get("admins"),
   oneClickUpdated: state.OneClick.get("updated"),
   oneClickUpdateSuccess: state.OneClick.get("updateSuccess"),
@@ -101,6 +107,10 @@ const mapDispatchToProps = dispatch => ({
     dispatch(Action.DeleteEvent(uuid));
   },
 
+  deleteImage: (uuid) => {
+    dispatch(Action.DeleteImage(uuid));
+  },
+
   removeAdmin: (email) => {
     dispatch(Action.DeleteAdmin(email));
   },
@@ -115,6 +125,10 @@ const mapDispatchToProps = dispatch => ({
 
   fetchEvents: () => {
     dispatch(Action.GetCurrentEvents());
+  },
+
+  fetchImages: () => {
+    dispatch(Action.GetAllImages());
   },
 
   fetchAdmins: () => {
@@ -140,6 +154,7 @@ ControlPanel.propTypes = {
   userEmail: PropTypes.string.isRequired,
   logout: PropTypes.func.isRequired,
   events: PropTypes.arrayOf(PropTypes.object).isRequired,
+  images: PropTypes.arrayOf(PropTypes.object).isRequired,
   deleteEvent: PropTypes.func.isRequired,
   admins: PropTypes.arrayOf(PropTypes.object).isRequired,
   removeAdmin: PropTypes.func.isRequired,

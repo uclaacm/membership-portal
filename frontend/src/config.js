@@ -37,6 +37,11 @@ export default {
     admin: {
       promote: '/api/v1/admin/promote',
     },
+    image: {
+      upload: '/api/v1/image',
+      specific: '/api/v1/image/raw',
+      all: '/api/v1/image',
+    }
   },
   organization: {
     logo: '/assets/images/logo.png',

@@ -2,6 +2,7 @@ import React from "react";
 import Button from "components/Button";
 import BannerMessage from "components/BannerMessage";
 import EventsModal from "components/Modal/eventsModal";
+import ImagesModal from "components/Modal/imagesModal";
 import AdminsModal from "components/Modal/adminsModal";
 import ReassignModal from "components/Modal/reassignModal";
 import OneClickPasswordModal from "components/Modal/oneClickPasswordModal";
@@ -18,6 +19,11 @@ class ControlPanel extends React.Component {
       showEventsModal: false,
       showEventsConfirmationModal: false,
       deleteUUID: null,
+
+      // Delete images
+      showImagesModal: false,
+      showImagesConfirmationModal: false,
+      deleteImageUUID: null,
 
       // Manage admins
       showAdminsModal: false,
@@ -45,6 +51,22 @@ class ControlPanel extends React.Component {
 
   closeEventsConfirmationModal = () => {
     this.setState(prev => ({ showEventsConfirmationModal: false }));
+  };
+
+  openImagesModal = () => {
+    this.setState(prev => ({ showImagesModal: true }));
+  };
+
+  closeImagesModal = () => {
+    this.setState(prev => ({ showImagesModal: false }));
+  };
+
+  openImagesConfirmationModal = uuid => {
+    this.setState(prev => ({ showImagesConfirmationModal: true, deleteImageUUID: uuid }));
+  };
+
+  closeImagesConfirmationModal = () => {
+    this.setState(prev => ({ showImagesConfirmationModal: false }));
   };
 
   openAdminsModal = () => {
@@ -94,6 +116,13 @@ class ControlPanel extends React.Component {
     this.closeEventsConfirmationModal();
   };
 
+  triggerDeleteImage = () => {
+    const { deleteImage } = this.props;
+    const { deleteImageUUID } = this.state;
+    deleteImage(deleteImageUUID);
+    this.closeImagesConfirmationModal();
+  };
+
   triggerRemoveAdmin = () => {
     const { removeAdmin } = this.props;
     const { removeEmail } = this.state;
@@ -125,10 +154,13 @@ class ControlPanel extends React.Component {
   }
 
   render() {
-    const { logout, events, admins, isSuperAdmin, userEmail, adminView, toggleAdminView } = this.props;
+    const { logout, events, admins, images, isSuperAdmin, userEmail, adminView, toggleAdminView } = this.props;
     const {
       showEventsModal,
       showEventsConfirmationModal,
+
+      showImagesModal,
+      showImagesConfirmationModal,
 
       showAdminsModal,
       showReassignModal,
@@ -154,6 +186,14 @@ class ControlPanel extends React.Component {
             color="red"
             text="Delete Events"
             onClick={this.openEventsModal}
+          />
+          <br />
+
+          <Button
+            className="manageimages-action-button"
+            color="red"
+            text="Manage Images"
+            onClick={this.openImagesModal}
           />
           <br />
 
@@ -228,12 +268,27 @@ class ControlPanel extends React.Component {
           onClose={this.closeEventsModal}
         />
 
+        <ImagesModal
+          opened={showImagesModal}
+          images={images}
+          onDelete={this.openImagesConfirmationModal}
+          onClose={this.closeImagesModal}
+        />
+
         <ConfirmationModal
           title="Delete Event"
           message="Are you sure you want to delete this event? This can't be undone!"
           opened={showEventsConfirmationModal}
           cancel={this.closeEventsConfirmationModal}
           submit={this.triggerDeleteEvent}
+        />
+
+        <ConfirmationModal
+          title="Delete Image"
+          message="Are you sure you want to delete this image? This can't be undone!"
+          opened={showImagesConfirmationModal}
+          cancel={this.closeImagesConfirmationModal}
+          submit={this.triggerDeleteImage}
         />
 
         {isSuperAdmin ? (
@@ -293,6 +348,7 @@ ControlPanel.propTypes = {
   addAdmin: PropTypes.func.isRequired,
   events: PropTypes.arrayOf(PropTypes.object).isRequired,
   admins: PropTypes.arrayOf(PropTypes.object).isRequired,
+  images: PropTypes.arrayOf(PropTypes.object).isRequired,
   isSuperAdmin: PropTypes.bool.isRequired,
   userEmail: PropTypes.string.isRequired,
   changeOneClickPassword: PropTypes.func.isRequired,

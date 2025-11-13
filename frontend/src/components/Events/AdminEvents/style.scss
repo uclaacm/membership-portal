@@ -61,6 +61,10 @@
 
         .input-row {
           margin-bottom: 5px;
+          display: flex;
+          flex-direction: row;
+          justify-items: start;
+          align-items: center;
         }
 
         .divider {
@@ -89,7 +93,7 @@
             }
           }
 
-          input {
+          input:not([type="file"]) {
             border-radius: 5px;
             border: solid 1px vars.$gray2;
             height: 16px;
@@ -107,6 +111,36 @@
               border: solid 1px red;
             }
           }
+
+          input[type="file"] {
+            position: absolute;
+            margin: -1px;
+            padding: 0;
+            width: 1px;
+            height: 1px;
+            border: 0;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+          }
+
+          /*
+          input[type="file"] {
+            height: 16px;
+            margin-bottom: 5px;
+            padding-bottom: 7px;
+            font-size: 14px;
+            outline: none;
+            width: calc(100% - 14px);
+
+            &:focus {
+              border: solid 1px vars.$secondaryblue;
+            }
+
+            &.error {
+              border: solid 1px red;
+            }
+          }
+          */
 
           select {
             -webkit-appearance: none;

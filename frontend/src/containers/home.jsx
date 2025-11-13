@@ -13,6 +13,7 @@ class Home extends React.Component {
     const {
       authenticated,
       fetchEvents,
+      fetchImages,
       fetchUser,
       fetchTime,
       fetchLeaderboard,
@@ -21,6 +22,7 @@ class Home extends React.Component {
     if (!authenticated) return;
 
     fetchEvents();
+    fetchImages();
     fetchUser();
     if (Date.now() - fetchTime > REFRESH_INTERVAL) {
       fetchLeaderboard();
@@ -105,6 +107,7 @@ Home.propTypes = {
     }).isRequired,
   ).isRequired,
   fetchTime: PropTypes.number.isRequired,
+  fetchImages: PropTypes.func.isRequired,
   fetchEvents: PropTypes.func.isRequired,
   fetchUser: PropTypes.func.isRequired,
   checkIn: PropTypes.func.isRequired,
@@ -141,6 +144,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = dispatch => ({
   fetchEvents: () => dispatch(Action.GetCurrentEvents()),
+  fetchImages: () => dispatch(Action.GetAllImages()),
   fetchUser: () => dispatch(Action.FetchUser()),
   checkIn: id => dispatch(Action.CheckInto(id)),
   resetCheckIn: () => dispatch(Action.ResetCheckIn()),

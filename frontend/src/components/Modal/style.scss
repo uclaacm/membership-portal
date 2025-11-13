@@ -161,6 +161,11 @@
       }
 
       img {
+        height: 150px;
+        vertical-align: middle;
+      }
+
+      img.rounded {
         margin-right: 15px;
         margin-left: 5px;
         height: 30px;
