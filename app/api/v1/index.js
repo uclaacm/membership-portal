@@ -20,6 +20,9 @@ router.use('/attendance', auth, require('./attendance').router);
 router.use('/leaderboard', auth, require('./leaderboard').router);
 router.use('/rsvp', auth, require('./rsvp').router);
 
+// Can't authenticate CSS url(), so cannot force auth route-wide
+router.use('/image', require('./image').router);
+
 // Mount the admin routes
 router.use('/admin', require('./admin').router);
 
