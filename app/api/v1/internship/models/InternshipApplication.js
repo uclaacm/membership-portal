@@ -37,12 +37,11 @@ const InternshipApplicationSchema = new Schema(
       type: String,
       trim: true,
     },
-    // We don't need a University property?
-    // university: {
-    //   type: String,
-    //   required: [true, 'University is required'],
-    //   trim: true,
-    // },
+    university: {
+      type: String,
+      required: [true, 'University is required'],
+      trim: true,
+    },
     major: {
       type: String,
       required: [true, 'Major is required'],
