@@ -32,7 +32,8 @@ const validateCreateApplication = [
   body('firstChoice').trim().notEmpty().withMessage('First Choice Committee is required'),
   body('secondChoice').optional().trim(),
   body('thirdChoice').optional().trim(),
-  body('resumeUrl').optional().trim().isURL().withMessage('Resume URL must be a valid URL'),
+  body('resumeUrl').optional().trim().isURL()
+    .withMessage('Resume URL must be a valid URL'),
   body('coverLetter').optional().trim(),
   // body('responses').optional().isArray().withMessage('Responses must be an array'),
   // body('responses.*.questionKey').trim().notEmpty().withMessage('Question key is required'),
@@ -45,20 +46,27 @@ const validateCreateApplication = [
 const validateUpdateApplication = [
   param('id').isMongoId().withMessage('Invalid application ID'),
   body('userId').optional().trim(),
-  body('firstName').optional().trim().notEmpty().withMessage('First name cannot be empty'),
-  body('lastName').optional().trim().notEmpty().withMessage('Last name cannot be empty'),
-  body('email').optional().trim().isEmail().withMessage('Valid email is required'),
+  body('firstName').optional().trim().notEmpty()
+    .withMessage('First name cannot be empty'),
+  body('lastName').optional().trim().notEmpty()
+    .withMessage('Last name cannot be empty'),
+  body('email').optional().trim().isEmail()
+    .withMessage('Valid email is required'),
   body('phone').optional().trim(),
-  body('university').optional().trim().notEmpty().withMessage('University cannot be empty'),
-  body('major').optional().trim().notEmpty().withMessage('Major cannot be empty'),
+  body('university').optional().trim().notEmpty()
+    .withMessage('University cannot be empty'),
+  body('major').optional().trim().notEmpty()
+    .withMessage('Major cannot be empty'),
   body('graduationYear')
     .optional()
     .isInt({ min: MIN_GRADUATION_YEAR })
     .withMessage(`Graduation year must be ${MIN_GRADUATION_YEAR} or later`),
-  body('firstChoice').optional().trim().notEmpty().withMessage('First Choice Committee is required'),
+  body('firstChoice').optional().trim().notEmpty()
+    .withMessage('First Choice Committee is required'),
   body('secondChoice').optional().trim(),
   body('thirdChoice').optional().trim(),
-  body('resumeUrl').optional().trim().isURL().withMessage('Resume URL must be a valid URL'),
+  body('resumeUrl').optional().trim().isURL()
+    .withMessage('Resume URL must be a valid URL'),
   body('coverLetter').optional().trim(),
   // body('responses').optional().isArray().withMessage('Responses must be an array'),
   // body('responses.*.questionKey').optional().trim().notEmpty().withMessage('Question key is required'),

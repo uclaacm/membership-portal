@@ -37,18 +37,18 @@ async function createApplication(req, res) {
 async function getAllApplications(req, res) {
   try {
     const {
-      status, committee, userId, page = 1, limit = 10,
+      firstChoiceStatus, firstChoice, userId, page = 1, limit = 10,
     } = req.query;
 
     // Build query object with validated parameters
     const query = {};
     // Status is already validated by express-validator to be one of the allowed values
-    if (status && typeof status === 'string') {
-      query.status = status;
+    if (firstChoiceStatus && typeof firstChoiceStatus === 'string') {
+      query.firstChoiceStatus = firstChoiceStatus;
     }
     // Filter by committee
-    if (committee && typeof committee === 'string') {
-      query.committee = committee;
+    if (firstChoice && typeof firstChoice === 'string') {
+      query.firstChoice = firstChoice;
     }
     // Filter by userId (for member portal integration)
     if (userId && typeof userId === 'string') {
@@ -117,19 +117,25 @@ async function updateApplication(req, res) {
   try {
     // Extract and validate allowed fields from req.body
     const allowedFields = [
-      'userId',
-      'firstName',
-      'lastName',
-      'email',
-      'phone',
-      'university',
-      'major',
-      'graduationYear',
-      'committee',
-      'resumeUrl',
-      'coverLetter',
-      'responses',
-      'status',
+        'userId',
+        'firstName',
+        'lastName',
+        'email',
+        'phone',
+        'university',
+        'major',
+        'graduationYear',
+        'firstChoice',
+        'secondChoice',
+        'thirdChoice',
+        'resumeUrl',
+        'coverLetter',
+        'firstChoiceResponses',
+        'secondChoiceResponses',
+        'thirdChoiceResponses',
+        'firstChoiceStatus',
+        'secondChoiceStatus',
+        'thirdChoiceStatus',
     ];
 
     // Build update object with only allowed fields
