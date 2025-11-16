@@ -112,6 +112,94 @@ module.exports = (Sequelize, db) => {
         },
       },
 
+      // user's biography
+      bio: {
+        type: Sequelize.TEXT,
+        validate: {
+          // added limit to bio length
+          len: {
+            args: [0, 1000],
+            msg: 'Your bio must be at most 1000 characters long',
+          },
+        },
+      },
+
+      // user's social links
+      linkedinUrl: {
+        type: Sequelize.STRING,
+        validate: {
+          isUrl: {
+            msg: 'The LinkedIn URL must be a valid URL',
+          },
+        },
+      },
+
+      githubUrl: {
+        type: Sequelize.STRING,
+        validate: {
+          isUrl: {
+            msg: 'The GitHub URL must be a valid URL',
+          },
+        },
+      },
+
+      portfolioUrl: {
+        type: Sequelize.STRING,
+        validate: {
+          isUrl: {
+            msg: 'The portfolio URL must be a valid URL',
+          },
+        },
+      },
+
+      personalWebsite: {
+        type: Sequelize.STRING,
+        validate: {
+          isUrl: {
+            msg: 'The personal website URL must be a valid URL',
+          },
+        },
+      },
+
+      resumeUrl: {
+        type: Sequelize.STRING,
+        validate: {
+          isUrl: {
+            msg: 'The resume URL must be a valid URL',
+          },
+        },
+      },
+
+      // user's skills
+      skills: {
+        type: Sequelize.JSONB,
+        defaultValue: [],
+        validate: {
+          len: {
+            args: [0, 20],
+            msg: 'Skills array must not contain more than 20 items',
+          },
+          isStringArray() {
+            if (!Array.isArray(this)) {
+              throw new Error('Skills must be an array');
+            } else if (this.some((skill) => typeof skill !== 'string')) {
+              throw new Error('Each skill must be a string');
+            }
+          },
+        },
+      },
+
+      // whether the user's profile is public
+      isProfilePublic: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+      },
+
+      // user's pronouns
+      pronouns: {
+        type: Sequelize.STRING,
+      },
+
       // amount of points the user has
       points: {
         type: Sequelize.INTEGER,
@@ -144,6 +232,11 @@ module.exports = (Sequelize, db) => {
           name: 'user_points_btree_index',
           method: 'BTREE',
           fields: ['points', { attribute: 'points', order: 'DESC' }],
+        },
+
+        // For efficient directory queries
+        {
+          fields: ['isProfilePublic'],
         },
       ],
     },
