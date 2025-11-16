@@ -1,4 +1,4 @@
-version: '3.2'
+# version: '3.2'
 services:
   # https://stackoverflow.com/questions/65417340/docker-compose-postgres-restart-after-running-scripts-in-docker-entrypoint-initd/65417566#65417566
   # https://docs.docker.com/compose/startup-order/

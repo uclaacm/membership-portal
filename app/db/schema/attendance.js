@@ -111,7 +111,7 @@ module.exports = (Sequelize, db) => {
   };
 
   Attendance.userAttendedEvent = function (user, event) {
-    return this.count({ where: { user, event } }).then(c => c !== 0);
+    return this.count({ where: { user, event } }).then((c) => c !== 0);
   };
 
   Attendance.attendEvent = function (user, event) {

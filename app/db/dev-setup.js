@@ -205,9 +205,9 @@ module.exports = (User, Event) => {
           "<p>React is high-demand front-end Javascript library first created by Facebook. React powers the front-end of several major companies ranging from Facebook, AirBnb, Uber, and much more. We'll be hosting an introduction to React led by a Codesmith instructor to give you the tools necessary to work on your very first React project. Bring your laptop!</p><p>This session is designed for beginners to intermediates. React is perfect for beginners with basic HTML/CSS/Javascript knowledge looking to turn their static websites into full-fledged interactive web-apps. If you are already familiar with Javascript libraries like jQuery, learning React is a powerful alternative. Furthermore, React can be used to build mobile apps through Facebook's React Native library.</p>",
         committee: 'Hack',
         cover:
-          "https://drive.google.com/file/d/1W3Fu5sQ3dQzac1XCZkZo0iZyZhO4HPqE/view?usp=sharing",
-        location: "Blackstone LaunchPad at UCLA",
-        eventLink: "https://www.facebook.com/events/174847826374758/",
+          'https://drive.google.com/file/d/1W3Fu5sQ3dQzac1XCZkZo0iZyZhO4HPqE/view?usp=sharing',
+        location: 'Blackstone LaunchPad at UCLA',
+        eventLink: 'https://www.facebook.com/events/174847826374758/',
         startDate: new Date(2029, 5, 7, 19),
         endDate: new Date(2029, 5, 7, 21),
         attendancePoints: 20,

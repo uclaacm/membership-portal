@@ -1,8 +1,8 @@
 const express = require('express');
-const error = require('../../../error');
+const error = require('../../../../error');
 const {
   Event, RSVP,
-} = require('../../../db');
+} = require('../../../../db');
 
 const router = express.Router();
 
@@ -10,23 +10,26 @@ const router = express.Router();
  * Gets all RSVPs for a single event or for the user
  * Returns a list of RSVP objects
  */
-router.route('/:uuid?').get((req, res, next) => {
+
+// Get RSVPs for the current user (no UUID)
+router.route('/').get((req, res, next) => {
   if (req.user.isPending()) return next(new error.Forbidden());
 
-  // store successful response function
-  const callback = rsvps => res.json({ error: null, rsvps: rsvps.map(r => r.getPublic()) });
-
-  if (req.params.uuid) {
-    // If an event UUID is provided, find all RSVP records for THAT EVENT
-    // Will return all users who RSVPed to an event
-    return RSVP.getRSVPsForEvent(req.params.uuid)
-      .then(callback)
-      .catch(next);
-  }
-  // Otherwise, get all RSVP records for the CURRENT USER
+  // Get all RSVP records for the CURRENT USER
   // Will return all events this user RSVPed to
   return RSVP.getRSVPsForUser(req.user.uuid)
-    .then(callback)
+    .then((rsvps) => res.json({ error: null, rsvps: rsvps.map((r) => r.getPublic()) }))
+    .catch(next);
+});
+
+// Get RSVPs for a specific event (with UUID)
+router.route('/:uuid').get((req, res, next) => {
+  if (req.user.isPending()) return next(new error.Forbidden());
+
+  // Find all RSVP records for THAT EVENT
+  // Will return all users who RSVPed to an event
+  return RSVP.getRSVPsForEvent(req.params.uuid)
+    .then((rsvps) => res.json({ error: null, rsvps: rsvps.map((r) => r.getPublic()) }))
     .catch(next);
 });
 
