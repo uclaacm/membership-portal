@@ -1,21 +1,6 @@
-const {
-  validationResult, query, body, param,
-} = require('express-validator');
+const { query, body, param } = require('express-validator');
+const { handleValidationErrors } = require('../../validation');
 const { MIN_GRADUATION_YEAR, MAX_PAGINATION_LIMIT } = require('../config/constants');
-
-// Validation error handler
-const handleValidationErrors = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    res.status(400).json({
-      success: false,
-      message: 'Validation errors',
-      errors: errors.array(),
-    });
-    return;
-  }
-  next();
-};
 
 // Validate application creation
 const validateCreateApplication = [
