@@ -38,7 +38,7 @@
     "google-auth-library": "^7.9.2",
     "handlebars": "^4.0.10",
     "jsonwebtoken": "^7.3.0",
-    "mongoose": "^8.19.4",
+    "mongoose": "^8.19.3",
     "morgan": "^1.7.0",
     "multer": "^2.0.2",
     "node-gyp": "^4.0.0",
