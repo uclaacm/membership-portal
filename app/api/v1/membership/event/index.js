@@ -1,6 +1,6 @@
 const express = require('express');
-const error = require('../../../error');
-const { Event } = require('../../../db');
+const error = require('../../../../error');
+const { Event } = require('../../../../db');
 
 const router = express.Router();
 
@@ -17,7 +17,7 @@ router.route('/past').get((req, res, next) => {
   const limit = parseInt(req.query.limit, 10);
   return Event.getPastEvents(offset, limit)
     .then((events) => {
-      res.json({ error: null, events: events.map(e => e.getPublic()) });
+      res.json({ error: null, events: events.map((e) => e.getPublic()) });
       return null;
     })
     .catch(next);
@@ -36,58 +36,46 @@ router.route('/future').get((req, res, next) => {
   const limit = parseInt(req.query.limit, 10);
   return Event.getFutureEvents(offset, limit)
     .then((events) => {
-      res.json({ error: null, events: events.map(e => e.getPublic()) });
+      res.json({ error: null, events: events.map((e) => e.getPublic()) });
       return null;
     })
     .catch(next);
 });
 
 /**
- * Get all events, all events by committe, a single event, based on whether a UUID is specified
+ * Get all events or all events by committee
  *
- * Supports pagination with 'offset' and 'limit' query parameters for listing all events
+ * Supports pagination with 'offset' and 'limit' query parameters
+ * Supports filtering by committee with 'committee' query parameter
  */
 router
-  .route('/:uuid?')
+  .route('/')
   .get((req, res, next) => {
     if (req.user.isPending()) return next(new error.Forbidden());
-    // CASE: no UUID is present, should return all elements
-    if (!req.params.uuid || !req.params.uuid.trim()) {
-      const offset = parseInt(req.query.offset, 10);
-      const limit = parseInt(req.query.limit, 10);
-      const { committee } = req.query;
-      // CASE: committee is present, return all events for committee
-      // CASE: no committee in query, return all events
-      const getEvents = committee
-        ? Event.getCommitteeEvents(committee, offset, limit)
-        : Event.getAll(offset, limit);
-      return getEvents
-        .then((events) => {
-          events.forEach(e => {
-            // reformat google drive file links
-            if (e.cover && e.cover.includes('drive.google.com')) {
-              const fileID = e.cover.match(/\/file\/d\/(.+?)\//)[1];
-              e.cover = `https://drive.google.com/thumbnail?id=${fileID}&sz=s1000`;
-            }
-          })  
 
-          res.json({
-            error: null,
-            events: events.map(e => e.getPublic(req.user.isAdmin())),
-          });
-          return null;
-        })
-        .catch(next);
+    const offset = parseInt(req.query.offset, 10);
+    const limit = parseInt(req.query.limit, 10);
+    const { committee } = req.query;
 
-      // CASE: UUID is present, should return matching event
-    }
-    return Event.findByUUID(req.params.uuid)
-      .then((event) => {
-        // return the public event object (or admin version, if user is admin) if
-        // an event was found. otherwise, return null
+    // CASE: committee is present, return all events for committee
+    // CASE: no committee in query, return all events
+    const getEvents = committee
+      ? Event.getCommitteeEvents(committee, offset, limit)
+      : Event.getAll(offset, limit);
+
+    return getEvents
+      .then((events) => {
+        events.forEach((e) => {
+          // reformat google drive file links
+          if (e.cover && e.cover.includes('drive.google.com')) {
+            const fileID = e.cover.match(/\/file\/d\/(.+?)\//)[1];
+            e.cover = `https://drive.google.com/thumbnail?id=${fileID}&sz=s1000`;
+          }
+        });
+
         res.json({
           error: null,
-          event: event ? event.getPublic(req.user.isAdmin()) : null,
+          events: events.map((e) => e.getPublic(req.user.isAdmin())),
         });
         return null;
       })
@@ -105,8 +93,7 @@ router
    * Returns the newly created event upon success
    */
   .post((req, res, next) => {
-    // should this be "!" ?
-    if (req.params.uuid || !req.body.event) return next(new error.BadRequest());
+    if (!req.body.event) return next(new error.BadRequest());
 
     if (
       req.body.event.startDate
@@ -120,6 +107,33 @@ router
         return null;
       })
       .catch(next);
+  });
+
+/**
+ * Get a single event by UUID
+ */
+router
+  .route('/:uuid')
+  .get((req, res, next) => {
+    if (req.user.isPending()) return next(new error.Forbidden());
+
+    return Event.findByUUID(req.params.uuid)
+      .then((event) => {
+        // return the public event object (or admin version, if user is admin)
+        res.json({
+          error: null,
+          event: event ? event.getPublic(req.user.isAdmin()) : null,
+        });
+        return null;
+      })
+      .catch(next);
+  })
+  /**
+   * For all further requests on this route, the user needs to be an admin
+   */
+  .all((req, res, next) => {
+    if (!req.user.isAdmin()) return next(new error.Forbidden());
+    return next();
   })
   /**
    * Updates an event given an event UUID and the partial object with updates
@@ -128,7 +142,7 @@ router
    * with updated fields.
    */
   .patch((req, res, next) => {
-    if (!req.params.uuid || !req.params.uuid.trim() || !req.body.event) {
+    if (!req.body.event) {
       return next(new error.BadRequest());
     }
 
@@ -156,14 +170,11 @@ router
    *
    * Returns the number of events deleted (1 if successful, 0 if event not found)
    */
-  .delete((req, res, next) => {
-    if (!req.params.uuid) return next(new error.BadRequest());
-    return Event.destroyByUUID(req.params.uuid)
-      .then((numDeleted) => {
-        res.json({ error: null, numDeleted });
-        return null;
-      })
-      .catch(next);
-  });
+  .delete((req, res, next) => Event.destroyByUUID(req.params.uuid)
+    .then((numDeleted) => {
+      res.json({ error: null, numDeleted });
+      return null;
+    })
+    .catch(next));
 
 module.exports = { router };

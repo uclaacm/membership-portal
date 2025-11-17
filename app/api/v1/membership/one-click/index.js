@@ -1,6 +1,6 @@
 const express = require('express');
-const error = require('../../../error');
-const { Event, Secret } = require('../../../db');
+const error = require('../../../../error');
+const { Event, Secret } = require('../../../../db');
 
 const router = express.Router();
 
@@ -10,7 +10,7 @@ router
     if (!req.body.password || req.body.password.length < 1) return next(new error.BadRequest('Password must be provided'));
 
     // password verification
-    return Secret.findByName('one-click').then(secret => secret.verifyPassword(req.body.password).then((verified) => {
+    return Secret.findByName('one-click').then((secret) => secret.verifyPassword(req.body.password).then((verified) => {
       if (!verified) return next(new error.UserError('Invalid password'));
 
       if (!req.body.event) return next(new error.BadRequest());
@@ -44,11 +44,11 @@ router
       );
     }
 
-    return Secret.findByName('one-click').then(secret => secret.verifyPassword(req.body.oldPassword).then((verified) => {
+    return Secret.findByName('one-click').then((secret) => secret.verifyPassword(req.body.oldPassword).then((verified) => {
       if (!verified) return next(new error.UserError('Invalid password'));
 
       return Secret.generateHash(req.body.newPassword)
-        .then(hash => secret.update({ hash }))
+        .then((hash) => secret.update({ hash }))
         .then(() => {
           res.json({ error: null });
           return null;

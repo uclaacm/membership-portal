@@ -1,8 +1,8 @@
 const express = require('express');
 const multer = require('multer');
-const error = require('../../../error');
-const auth = require('../auth').authenticated;
-const { Image } = require('../../../db');
+const error = require('../../../../error');
+const auth = require('../../auth').authenticated;
+const { Image } = require('../../../../db');
 
 const router = express.Router();
 
