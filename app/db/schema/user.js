@@ -175,15 +175,16 @@ module.exports = (Sequelize, db) => {
         type: Sequelize.JSONB,
         defaultValue: [],
         validate: {
-          len: {
-            args: [0, 20],
-            msg: 'Skills array must not contain more than 20 items',
-          },
-          isStringArray() {
-            if (!Array.isArray(this)) {
-              throw new Error('Skills must be an array');
-            } else if (this.some((skill) => typeof skill !== 'string')) {
-              throw new Error('Each skill must be a string');
+          isShortStringArray(arr) {
+            if (!Array.isArray(arr)) {
+              throw new Error(`Skills must be an array; got ${typeof arr} instead.`);
+            }
+            if (arr.length > 20) {
+              throw new Error(`Skills array may not have more than 20 items; got ${arr.length}.`);
+            }
+            const badVal = arr.find((skill) => typeof skill !== 'string');
+            if (badVal !== undefined) {
+              throw new Error(`Each skill must be a string; encountered ${typeof badVal} instead.`);
             }
           },
         },
