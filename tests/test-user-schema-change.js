@@ -2,29 +2,32 @@
 
 const { setup: setupDB, User, db: Sequelize } = require('../app/db');
 
-let failCount = 0;
+let passCount = 0;
+let testCount = 0;
 const urlFields = ['linkedinUrl', 'githubUrl', 'portfolioUrl', 'personalWebsite'];
 
 async function testFail(test, message) {
+  testCount++;
   try {
     await test();
     console.error(`FAIL: ${message}`);
-    failCount++;
     return false;
   } catch (error) {
     console.log(`PASS: ${error.message}`);
+    passCount++;
     return true;
   }
 }
 
 async function testSuccess(test, message) {
+  testCount++;
   try {
     await test();
     console.log('PASS: User successfully created');
+    passCount++;
     return true;
   } catch (error) {
     console.error(`FAIL: ${message} - ${error.message}`);
-    failCount++;
     return false;
   }
 }
@@ -114,7 +117,13 @@ async function main() {
     });
   }, 'User creation with valid data failed');
 
-  process.exit(failCount > 0 ? 1 : 0);
+  if (passCount === testCount) {
+    console.log('\nAll tests passed!');
+    process.exit(0);
+  } else {
+    console.error(`\nOnly ${passCount} out of ${testCount} tests passed.`);
+    process.exit(1);
+  }
 }
 
 main();
