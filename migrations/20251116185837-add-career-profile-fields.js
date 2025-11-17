@@ -1,80 +1,84 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    // Adding new columns to the users table
-    await queryInterface.addColumn('user', 'bio', {
-      type: Sequelize.TEXT,
-      validate: {
-        len: [0, 1000],
-      },
-    });
+    await queryInterface.sequelize.transaction(async (transaction) => {
+      // Adding new columns to the users table
+      await queryInterface.addColumn('users', 'bio', {
+        type: Sequelize.TEXT,
+        validate: {
+          len: [0, 1000],
+        },
+      }, { transaction });
 
-    await queryInterface.addColumn('user', 'linkedinUrl', {
-      type: Sequelize.STRING,
-      validate: {
-        isUrl: true,
-      },
-    });
+      await queryInterface.addColumn('users', 'linkedinUrl', {
+        type: Sequelize.STRING,
+        validate: {
+          isUrl: true,
+        },
+      }, { transaction });
 
-    await queryInterface.addColumn('user', 'githubUrl', {
-      type: Sequelize.STRING,
-      validate: {
-        isUrl: true,
-      },
-    });
+      await queryInterface.addColumn('users', 'githubUrl', {
+        type: Sequelize.STRING,
+        validate: {
+          isUrl: true,
+        },
+      }, { transaction });
 
-    await queryInterface.addColumn('user', 'portfolioUrl', {
-      type: Sequelize.STRING,
-      validate: {
-        isUrl: true,
-      },
-    });
+      await queryInterface.addColumn('users', 'portfolioUrl', {
+        type: Sequelize.STRING,
+        validate: {
+          isUrl: true,
+        },
+      }, { transaction });
 
-    await queryInterface.addColumn('user', 'personalWebsite', {
-      type: Sequelize.STRING,
-      validate: {
-        isUrl: true,
-      },
-    });
+      await queryInterface.addColumn('users', 'personalWebsite', {
+        type: Sequelize.STRING,
+        validate: {
+          isUrl: true,
+        },
+      }, { transaction });
 
-    await queryInterface.addColumn('user', 'resumeUrl', {
-      type: Sequelize.STRING,
-      validate: {
-        isUrl: true,
-      },
-    });
+      await queryInterface.addColumn('users', 'resumeUrl', {
+        type: Sequelize.STRING,
+        validate: {
+          isUrl: true,
+        },
+      }, { transaction });
 
-    await queryInterface.addColumn('user', 'skills', {
-      type: Sequelize.JSONB,
-      defaultValue: [],
-    });
+      await queryInterface.addColumn('users', 'skills', {
+        type: Sequelize.JSONB,
+        defaultValue: [],
+      }, { transaction });
 
-    await queryInterface.addColumn('user', 'isProfilePublic', {
-      type: Sequelize.BOOLEAN,
-      defaultValue: false,
-    });
+      await queryInterface.addColumn('users', 'isProfilePublic', {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+      }, { transaction });
 
-    await queryInterface.addColumn('user', 'pronouns', {
-      type: Sequelize.STRING,
-    });
+      await queryInterface.addColumn('users', 'pronouns', {
+        type: Sequelize.STRING,
+      }, { transaction });
 
-    // Adding an index for isProfilePublic
-    await queryInterface.addIndex('user', ['isProfilePublic']);
+      // Adding an index for isProfilePublic
+      await queryInterface.addIndex('users', ['isProfilePublic'], { transaction });
+    });
   },
 
   async down(queryInterface) {
-    // Removing the added columns
-    await queryInterface.removeColumn('user', 'bio');
-    await queryInterface.removeColumn('user', 'linkedinUrl');
-    await queryInterface.removeColumn('user', 'githubUrl');
-    await queryInterface.removeColumn('user', 'portfolioUrl');
-    await queryInterface.removeColumn('user', 'personalWebsite');
-    await queryInterface.removeColumn('user', 'resumeUrl');
-    await queryInterface.removeColumn('user', 'skills');
-    await queryInterface.removeColumn('user', 'isProfilePublic');
-    await queryInterface.removeColumn('user', 'pronouns');
+    await queryInterface.sequelize.transaction(async (transaction) => {
+      // Removing the added columns
+      await queryInterface.removeColumn('users', 'bio', { transaction });
+      await queryInterface.removeColumn('users', 'linkedinUrl', { transaction });
+      await queryInterface.removeColumn('users', 'githubUrl', { transaction });
+      await queryInterface.removeColumn('users', 'portfolioUrl', { transaction });
+      await queryInterface.removeColumn('users', 'personalWebsite', { transaction });
+      await queryInterface.removeColumn('users', 'resumeUrl', { transaction });
+      await queryInterface.removeColumn('users', 'skills', { transaction });
+      await queryInterface.removeColumn('users', 'isProfilePublic', { transaction });
+      await queryInterface.removeColumn('users', 'pronouns', { transaction });
 
-    // Removing the index for isProfilePublic
-    await queryInterface.removeIndex('user', ['isProfilePublic']);
+      // Removing the index for isProfilePublic
+      await queryInterface.removeIndex('users', ['isProfilePublic'], { transaction });
+    });
   },
 };
