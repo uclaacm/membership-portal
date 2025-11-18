@@ -8,14 +8,31 @@ function getUnequalKeys(obj1, obj2, keys) {
   return keys.filter((key) => obj1[key] !== obj2[key]);
 }
 
-async function testGetPublicProfile(user) {
-  const publicProfile = user.getPublicProfile();
-  const expectedProfile = {
+async function testGetBaseProfile(user) {
+  const baseProfile = user.getBaseProfile();
+  const expectedBaseProfile = {
     firstName: user.firstName,
     lastName: user.lastName,
     picture: undefined,
     points: 0,
     pronouns: undefined,
+  };
+
+  const baseKeys = Object.keys(expectedBaseProfile);
+  const unequalBaseKeys = getUnequalKeys(baseProfile, expectedBaseProfile, baseKeys);
+  if (unequalBaseKeys.length === 0) {
+    log.info('PASS: getBaseProfile works as expected');
+    passCount++;
+  } else {
+    unequalBaseKeys.forEach((key) => {
+      log.error(`FAIL: getBaseProfile - Key: ${key}, Expected: ${expectedBaseProfile[key]}, Actual: ${baseProfile[key]}`);
+    });
+  }
+}
+
+async function testGetPublicProfile(user) {
+  const publicProfile = user.getPublicProfile();
+  const expectedPublicProfile = {
     bio: user.bio,
     skills: user.skills,
     careerInterests: user.careerInterests,
@@ -25,14 +42,14 @@ async function testGetPublicProfile(user) {
     personalWebsite: user.personalWebsite,
   };
 
-  const keys = Object.keys(expectedProfile);
-  const unequalKeys = getUnequalKeys(publicProfile, expectedProfile, keys);
-  if (unequalKeys.length === 0) {
+  const publicKeys = Object.keys(expectedPublicProfile);
+  const unequalPublicKeys = getUnequalKeys(publicProfile, expectedPublicProfile, publicKeys);
+  if (unequalPublicKeys.length === 0) {
     log.info('PASS: getPublicProfile works as expected');
     passCount++;
   } else {
-    unequalKeys.forEach((key) => {
-      log.error(`FAIL: getPublicProfile - Key: ${key}, Expected: ${expectedProfile[key]}, Actual: ${publicProfile[key]}`);
+    unequalPublicKeys.forEach((key) => {
+      log.error(`FAIL: getPublicProfile - Key: ${key}, Expected: ${expectedPublicProfile[key]}, Actual: ${publicProfile[key]}`);
     });
   }
 }
@@ -42,24 +59,13 @@ async function testGetPublicProfilePrivate(user) {
     ...user.get(),
     isProfilePublic: false,
   });
-  const publicProfile = privateUser.getPublicProfile();
-  const expectedProfile = {
-    firstName: privateUser.firstName,
-    lastName: privateUser.lastName,
-    picture: undefined,
-    points: 0,
-    pronouns: undefined,
-  };
 
-  const keys = Object.keys(expectedProfile);
-  const unequalKeys = getUnequalKeys(publicProfile, expectedProfile, keys);
-  if (unequalKeys.length === 0) {
-    log.info('PASS: getPublicProfile (private) works as expected');
+  const publicProfile = privateUser.getPublicProfile();
+  if (publicProfile === null) {
+    log.info('PASS: getPublicProfile (private) correctly returns null');
     passCount++;
   } else {
-    unequalKeys.forEach((key) => {
-      log.error(`FAIL: getPublicProfile (private) - Key: ${key}, Expected: ${expectedProfile[key]}, Actual: ${publicProfile[key]}`);
-    });
+    log.error('FAIL: getPublicProfile (private) did not return null');
   }
 }
 
@@ -180,6 +186,7 @@ async function main() {
   const completeUser = User.build(completeUserData);
   const incompleteUser = User.build(incompleteUserData);
 
+  await testGetBaseProfile(completeUser);
   await testGetPublicProfile(completeUser);
   await testGetPublicProfilePrivate(completeUser);
   await testGetUserProfile(completeUser);
@@ -187,7 +194,7 @@ async function main() {
   await testHasCompleteProfile(completeUser);
   await testHasIncompleteProfile(incompleteUser);
 
-  testCount = 6;
+  testCount = 7;
 
   if (passCount === testCount) {
     log.info('\nAll tests passed!');

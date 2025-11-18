@@ -295,18 +295,19 @@ module.exports = (Sequelize, db) => {
     return this.increment({ points });
   };
 
-  User.prototype.getPublicProfile = function () {
-    const baseProfile = {
+  User.prototype.getBaseProfile = function () {
+    return {
       firstName: this.getDataValue('firstName'),
       lastName: this.getDataValue('lastName'),
       picture: this.getDataValue('picture'),
       points: this.getDataValue('points'),
       pronouns: this.getDataValue('pronouns'),
     };
+  };
 
+  User.prototype.getPublicProfile = function () {
     if (this.getDataValue('isProfilePublic')) {
       return {
-        ...baseProfile,
         bio: this.getDataValue('bio'),
         skills: this.getDataValue('skills'),
         careerInterests: this.getDataValue('careerInterests'),
@@ -316,8 +317,7 @@ module.exports = (Sequelize, db) => {
         personalWebsite: this.getDataValue('personalWebsite'),
       };
     }
-
-    return baseProfile;
+    return null;
   };
 
   User.prototype.getUserProfile = function () {
