@@ -108,6 +108,46 @@ async function main() {
     personalWebsite: 'https://najeemhonda.com',
   }, 'User creation with valid data failed');
 
+  // Should fail due to careerInterests not being an array
+  await testFail({
+    firstName: 'Najeem',
+    lastName: 'Honda',
+    year: 1,
+    major: 'Chopped Science',
+    email: 'nhonda@example.com',
+    careerInterests: { invalid: 'data' },
+  }, 'Career interests array type not enforced');
+
+  // Should fail due to careerInterests array length limit
+  await testFail({
+    firstName: 'Najeem',
+    lastName: 'Honda',
+    year: 1,
+    major: 'Chopped Science',
+    email: 'nhonda@example.com',
+    careerInterests: Array(25).fill('Software Engineering'),
+  }, 'Career interests array length limit not enforced');
+
+  // Should fail due to careerInterests array containing non-string
+  await testFail({
+    firstName: 'Najeem',
+    lastName: 'Honda',
+    year: 1,
+    major: 'Chopped Science',
+    email: 'nhonda@example.com',
+    careerInterests: [1, 2, 'Data Science'],
+  }, 'Career interests array element type not enforced');
+
+  // Should succeed with valid careerInterests
+  await testSuccess({
+    firstName: 'Najeem',
+    lastName: 'Honda',
+    year: 1,
+    major: 'Chopped Science',
+    email: 'nhonda@example.com',
+    careerInterests: ['Software Engineering', 'Data Science', 'Product Management'],
+  }, 'Career interests validation failed for valid data');
+
   if (passCount === testCount) {
     log.info('\nAll tests passed!');
     process.exit(0);

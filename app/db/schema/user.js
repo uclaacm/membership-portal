@@ -190,6 +190,25 @@ module.exports = (Sequelize, db) => {
         },
       },
 
+      careerInterests: {
+        type: Sequelize.JSONB,
+        defaultValue: [],
+        validate: {
+          isShortStringArray(arr) {
+            if (!Array.isArray(arr)) {
+              throw new Error(`Career interests must be an array; got ${typeof arr} instead.`);
+            }
+            if (arr.length > 20) {
+              throw new Error(`Career interests array may not have more than 20 items; got ${arr.length}.`);
+            }
+            const badVal = arr.find((interest) => typeof interest !== 'string');
+            if (badVal !== undefined) {
+              throw new Error(`Each career interest must be a string; encountered ${typeof badVal} instead.`);
+            }
+          },
+        },
+      },
+
       // whether the user's profile is public
       isProfilePublic: {
         type: Sequelize.BOOLEAN,
@@ -290,6 +309,7 @@ module.exports = (Sequelize, db) => {
         ...baseProfile,
         bio: this.getDataValue('bio'),
         skills: this.getDataValue('skills'),
+        careerInterests: this.getDataValue('careerInterests'),
         linkedinUrl: this.getDataValue('linkedinUrl'),
         githubUrl: this.getDataValue('githubUrl'),
         portfolioUrl: this.getDataValue('portfolioUrl'),
@@ -318,6 +338,7 @@ module.exports = (Sequelize, db) => {
       personalWebsite: this.getDataValue('personalWebsite'),
       resumeUrl: this.getDataValue('resumeUrl'),
       skills: this.getDataValue('skills'),
+      careerInterests: this.getDataValue('careerInterests'),
       isProfilePublic: this.getDataValue('isProfilePublic'),
     };
   };
@@ -337,6 +358,7 @@ module.exports = (Sequelize, db) => {
       personalWebsite: this.getDataValue('personalWebsite'),
       resumeUrl: this.getDataValue('resumeUrl'),
       skills: this.getDataValue('skills'),
+      careerInterests: this.getDataValue('careerInterests'),
       isProfilePublic: this.getDataValue('isProfilePublic'),
     };
   };
@@ -348,6 +370,8 @@ module.exports = (Sequelize, db) => {
       && this.getDataValue('year')
       && this.getDataValue('skills')
       && this.getDataValue('skills').length > 0
+      && this.getDataValue('careerInterests')
+      && this.getDataValue('careerInterests').length > 0
     );
   };
 
