@@ -78,7 +78,10 @@ router.post('/login', (req, res, next) => {
         // respond with the token upon successful login
         res.json({
           error: null,
-          user: user.getPublicProfile(),
+          user: {
+            ...user.getBaseProfile(),
+            ...(user.getPublicProfile() || {}),
+          },
           token,
         });
         Activity.accountLoggedIn(user.uuid);
