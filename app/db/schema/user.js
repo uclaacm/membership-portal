@@ -277,18 +277,32 @@ module.exports = (Sequelize, db) => {
   };
 
   User.prototype.getPublicProfile = function () {
-    return {
+    const baseProfile = {
       firstName: this.getDataValue('firstName'),
       lastName: this.getDataValue('lastName'),
       picture: this.getDataValue('picture'),
       points: this.getDataValue('points'),
+      pronouns: this.getDataValue('pronouns'),
     };
+
+    if (this.getDataValue('isProfilePublic')) {
+      return {
+        ...baseProfile,
+        bio: this.getDataValue('bio'),
+        skills: this.getDataValue('skills'),
+        linkedinUrl: this.getDataValue('linkedinUrl'),
+        githubUrl: this.getDataValue('githubUrl'),
+        portfolioUrl: this.getDataValue('portfolioUrl'),
+        personalWebsite: this.getDataValue('personalWebsite'),
+      };
+    }
+
+    return baseProfile;
   };
 
   User.prototype.getUserProfile = function () {
-    const uuid = this.getDataValue('uuid');
     return {
-      uuid,
+      uuid: this.getDataValue('uuid'),
       firstName: this.getDataValue('firstName'),
       lastName: this.getDataValue('lastName'),
       picture: this.getDataValue('picture'),
@@ -296,7 +310,45 @@ module.exports = (Sequelize, db) => {
       year: this.getDataValue('year'),
       major: this.getDataValue('major'),
       points: this.getDataValue('points'),
+      pronouns: this.getDataValue('pronouns'),
+      bio: this.getDataValue('bio'),
+      linkedinUrl: this.getDataValue('linkedinUrl'),
+      githubUrl: this.getDataValue('githubUrl'),
+      portfolioUrl: this.getDataValue('portfolioUrl'),
+      personalWebsite: this.getDataValue('personalWebsite'),
+      resumeUrl: this.getDataValue('resumeUrl'),
+      skills: this.getDataValue('skills'),
+      isProfilePublic: this.getDataValue('isProfilePublic'),
     };
+  };
+
+  User.prototype.getCareerProfile = function () {
+    return {
+      firstName: this.getDataValue('firstName'),
+      lastName: this.getDataValue('lastName'),
+      picture: this.getDataValue('picture'),
+      pronouns: this.getDataValue('pronouns'),
+      bio: this.getDataValue('bio'),
+      major: this.getDataValue('major'),
+      year: this.getDataValue('year'),
+      linkedinUrl: this.getDataValue('linkedinUrl'),
+      githubUrl: this.getDataValue('githubUrl'),
+      portfolioUrl: this.getDataValue('portfolioUrl'),
+      personalWebsite: this.getDataValue('personalWebsite'),
+      resumeUrl: this.getDataValue('resumeUrl'),
+      skills: this.getDataValue('skills'),
+      isProfilePublic: this.getDataValue('isProfilePublic'),
+    };
+  };
+
+  User.prototype.hasCompleteProfile = function () {
+    return !!(
+      this.getDataValue('bio')
+      && this.getDataValue('major')
+      && this.getDataValue('year')
+      && this.getDataValue('skills')
+      && this.getDataValue('skills').length > 0
+    );
   };
 
   User.prototype.isRestricted = function () {
