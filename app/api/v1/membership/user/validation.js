@@ -1,5 +1,5 @@
 const { body } = require('express-validator');
-const { handleValidationErrors, escapeHtml } = require('../../validation');
+const { handleValidationErrors } = require('../../validation');
 
 const validateCareerProfileUpdate = [
   body('user.bio')
@@ -7,7 +7,7 @@ const validateCareerProfileUpdate = [
     .isString()
     .trim()
     .isLength({ max: 1000 })
-    .customSanitizer(escapeHtml)
+    .escape()
     .withMessage('Bio must be 1000 characters or less'),
   body('user.linkedinUrl')
     .optional()
@@ -34,7 +34,7 @@ const validateCareerProfileUpdate = [
     .isString()
     .trim()
     .isLength({ min: 1, max: 50 })
-    .customSanitizer(escapeHtml)
+    .escape()
     .withMessage('Each skill must be 1-50 characters'),
   body('user.careerInterests')
     .optional()
@@ -45,14 +45,14 @@ const validateCareerProfileUpdate = [
     .isString()
     .trim()
     .isLength({ min: 1, max: 50 })
-    .customSanitizer(escapeHtml)
+    .escape()
     .withMessage('Each career interest must be 1-50 characters'),
   body('user.pronouns')
     .optional()
     .isString()
     .trim()
     .isLength({ max: 50 })
-    .customSanitizer(escapeHtml)
+    .escape()
     .withMessage('Pronouns must be 50 characters or less'),
   body('user.isProfilePublic')
     .optional()

@@ -13,19 +13,6 @@ const handleValidationErrors = (req, res, next) => {
   next();
 };
 
-const htmlEntities = {
-  '&': '&amp;',
-  '<': '&lt;',
-  '>': '&gt;',
-  '"': '&quot;',
-  "'": '&#39;',
-};
-
-const escapeHtml = (value) => (
-  value.replace(/[&<>"']/g, (char) => htmlEntities[char])
-);
-
 module.exports = {
   handleValidationErrors,
-  escapeHtml,
 };
