@@ -6,8 +6,7 @@ import Config from 'config';
 
 import Activities from './activities';
 import YearSelector from './yearSelector';
-import MobileProfile from './mobileProfile';
-import ChangeToAdmin from './ChangeToAdmin';
+import ProfileCard from './ProfileCard';
 
 export default class Profile extends React.Component {
   constructor(props) {
@@ -18,26 +17,11 @@ export default class Profile extends React.Component {
       originalProfile: Object.assign({}, this.props.profile),
     };
 
-    this.inputs = {};
     this.saveProfile = this.saveProfile.bind(this);
     this.handleUpdate = this.handleUpdate.bind(this);
-    this.registerInput = this.registerInput.bind(this);
-    this.resizeTextAreas = this.resizeTextAreas.bind(this);
-  }
-
-  registerInput(input) {
-    if (input && input.name) this.inputs[input.name] = input;
-  }
-
-  resizeTextAreas() {
-    for (const input in this.inputs) {
-      this.inputs[input].style.height = 'auto';
-      this.inputs[input].style.height = `${this.inputs[input].scrollHeight}px`;
-    }
   }
 
   handleUpdate(e) {
-    this.resizeTextAreas();
     const { name } = e.target;
     const { value } = e.target;
     this.setState((prev) => {
@@ -83,25 +67,11 @@ export default class Profile extends React.Component {
     });
   }
 
-  componentWillMount() {
-    this.resizeTextAreas();
-  }
-
-  componentDidMount() {
-    window.addEventListener('resize', this.resizeTextAreas);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.resizeTextAreas);
-  }
-
   componentWillReceiveProps(nextProps) {
     this.setState({
       profile: Object.assign({}, nextProps.profile),
       originalProfile: Object.assign({}, nextProps.profile),
     });
-
-    this.resizeTextAreas();
   }
 
   render() {
@@ -113,8 +83,8 @@ export default class Profile extends React.Component {
       );
     }
 
-    const { currLevel, nextLevel } = Utils.getLevel(this.props.profile.points);
-    const { adminView, toggleAdminView, isAdmin } = this.props
+    const { adminView, toggleAdminView, isAdmin } = this.props;
+
     return (
       <div>
         <BannerMessage
@@ -123,84 +93,80 @@ export default class Profile extends React.Component {
           success={this.props.updateSuccess}
           message={this.props.updateSuccess ? 'Profile successfully updated.' : this.props.updateError}
         />
-        {/* <MobileProfile profile={this.props.profile} /> */}
-        <div className="profile-wrapper">
-          <div className="form-elem">
-            <p className="SubheaderSecondary">Hello,</p>
-            <textarea
-              rows="1"
-              type="text"
-              name="name"
-              className="Display-2Primary"
-              ref={this.registerInput}
-              onChange={this.handleUpdate}
-              value={this.state.profile.name}
-            />
-          </div>
-          <div className="form-elem">
-            <p className="SubheaderSecondary">You are a</p>
-            <YearSelector target="year" value={this.state.profile.year} onChange={this.handleUpdate} />
-          </div>
-          <div className="form-elem">
-            <p className="SubheaderSecondary">majoring in</p>
-            <select className="Display-2Primary" name="major" onChange={this.handleUpdate} value={this.state.profile.major}>
-              {Config.majors.map(major => <option value={major}>{major}</option>)}
-            </select>
-          </div>
-          <div className="form-elem">
-            <Button
-              className="profile-action-button"
-              style={this.profileUpdated() ? 'green' : 'disabled'}
-              onClick={this.profileUpdated() ? this.saveProfile : null}
-              text="Save"
-            />
-            <Button
-              className="profile-action-button"
-              style={this.profileUpdated() ? 'red' : 'disabled'}
-              onClick={this.profileUpdated() ? () => location.reload() : null}
-              text="Discard"
-            />
-          </div>
 
-          <div className="divider" />
+        <div className="profile-page-container">
+          {/* Left Side: Editable Profile Info & Activity */}
+          <div className="profile-content">
+            <h1 className="profile-heading">My Profile</h1>
 
-          <div className="form-elem">
-            <p className="SubheaderSecondary">Your current rank is</p>
-            <span className="Display-2Primary">{currLevel.rank}</span>
-          </div>
-          {nextLevel ? (
-            <div className="form-elem">
-              <p className="SubheaderSecondary">
-                You have
-                <span className="Subheader-2Primary">{nextLevel.startsAt - this.props.profile.points}</span>
-                {' '}
-                more
-                point(s) until you become a
-              </p>
-              <span className="Display-2Primary">{nextLevel.rank}</span>
+            <div className="profile-edit-section">
+              <h2 className="section-title">Basic Information</h2>
+
+              <div className="form-elem">
+                <label className="SubheaderSecondary">Full Name</label>
+                <textarea
+                  rows="1"
+                  type="text"
+                  name="name"
+                  className="profile-input"
+                  onChange={this.handleUpdate}
+                  value={this.state.profile.name}
+                  placeholder="First Last"
+                />
+              </div>
+
+              <div className="form-elem">
+                <label className="SubheaderSecondary">Year</label>
+                <YearSelector target="year" value={this.state.profile.year} onChange={this.handleUpdate} />
+              </div>
+
+              <div className="form-elem">
+                <label className="SubheaderSecondary">Major</label>
+                <select
+                  className="profile-select"
+                  name="major"
+                  onChange={this.handleUpdate}
+                  value={this.state.profile.major}
+                >
+                  {Config.majors.map((major, idx) => <option key={idx} value={major}>{major}</option>)}
+                </select>
+              </div>
+
+              {this.profileUpdated() && (
+                <div className="form-actions">
+                  <Button
+                    className="profile-action-button"
+                    style="green"
+                    onClick={this.saveProfile}
+                    text="Save Changes"
+                  />
+                  <Button
+                    className="profile-action-button"
+                    style="red"
+                    onClick={() => location.reload()}
+                    text="Discard"
+                  />
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="form-elem">
-              <p className="SubheaderSecondary">You are at the max rank. Congratulations!</p>
-            </div>
-          )}
 
-          <div className="divider" />
-          <div className="form-elem">
-            <Button className="profile-action-button" style="red" text="Sign Out" onClick={this.props.logout} />
-            {isAdmin && <Button
-            className="control-panel-action-button"
-            color="blue"
-            text={adminView ? "Switch to Member View" : "Switch to Admin View"}
-            onClick={toggleAdminView}
-            /> }
-            <ChangeToAdmin />
+            <div className="divider" />
+
+            <div className="activity-section">
+              <h2 className="section-title">Your Activity</h2>
+              {!this.props.activityError && <Activities activities={this.props.activity} />}
+              {this.props.activityError && <p className="activity-error">{this.props.activityError}</p>}
+            </div>
           </div>
 
-          <div className="divider" />
-          <h1 className="Display-2Primary">Your Activity</h1>
-          {!this.props.activityError && <Activities activities={this.props.activity} />}
-          {this.props.activityError && <p className="activity-error">{this.props.activityError}</p>}
+          {/* Right Side: Profile Card */}
+          <div className="profile-sidebar">
+            <ProfileCard
+              profile={this.props.profile}
+              isAdmin={isAdmin}
+              activity={this.props.activity}
+            />
+          </div>
         </div>
       </div>
     );

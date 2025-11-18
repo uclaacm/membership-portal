@@ -36,7 +36,7 @@ const ChangeToAdmin = () => {
         setMessage(`❌ ${data.error}`);
       }
     } catch (error) {
-      console.error("Error in POST request:", error);
+      console.error('Error in POST request:', error);
       setMessage('❌ An unknown error occurred.');
     } finally {
       setPassword('');
@@ -49,24 +49,24 @@ const ChangeToAdmin = () => {
         onClick={handlePromoteClick}
         className="control-panel-action-button"
         color="blue"
-        text="Add Admin Accounts"
+        text="Register as an Officer"
       />
 
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h2>Enter Admin Credentials</h2>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <h2>Register Officer Account</h2>
             <input
               type="text"
               placeholder="User Email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
             />
             <input
               type="password"
               placeholder="Admin Password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
             />
             <button onClick={handleSubmit} className="submit-button">
               Submit

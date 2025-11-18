@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import React from 'react';
 import NavigationItem from './navigationItem';
+import ProfileDropdown from './ProfileDropdown';
 import Config from 'config';
 import './style.scss';
 
@@ -83,9 +84,13 @@ export default class Topbar extends React.Component {
 
           {/* Profile Icon (Desktop only) */}
           {!isAdmin && (
-            <NavLink to="/profile" className="topbar-profile desktop-only" activeClassName="selected">
-              <img src={this.props.picture ? this.props.picture : "/assets/images/unknown.png"} alt="Profile" />
-            </NavLink> 
+            <ProfileDropdown 
+              picture={this.props.picture} 
+              onLogout={this.props.onLogout}
+              isAdmin={this.props.isRealAdmin}
+              adminView={this.props.adminView}
+              onToggleAdminView={this.props.onToggleAdminView}
+            />
           )}
         </div>
       </div>
@@ -95,4 +100,9 @@ export default class Topbar extends React.Component {
 
 Topbar.propTypes = {
   isAdmin: PropTypes.bool.isRequired,
+  picture: PropTypes.string,
+  onLogout: PropTypes.func.isRequired,
+  isRealAdmin: PropTypes.bool,
+  adminView: PropTypes.bool,
+  onToggleAdminView: PropTypes.func,
 };

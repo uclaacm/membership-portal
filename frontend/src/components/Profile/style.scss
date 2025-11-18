@@ -22,6 +22,137 @@
   font-style: italic;
 }
 
+// New two-column layout
+.profile-page-container {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 40px;
+  max-width: 1400px;
+  margin: 80px auto 0;
+  padding: 40px 60px;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    padding: 30px 20px;
+  }
+
+  .profile-content {
+    min-width: 0; // Prevents grid blowout
+
+    .profile-heading {
+      font-size: 2em;
+      font-weight: 600;
+      color: #333;
+      margin: 0 0 30px 0;
+    }
+
+    .section-title {
+      font-size: 1.3em;
+      font-weight: 600;
+      color: #333;
+      margin: 0 0 20px 0;
+    }
+
+    .profile-edit-section {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      margin-bottom: 30px;
+    }
+
+    .form-elem {
+      margin-bottom: 24px;
+
+      &:first-child {
+        margin-bottom: 28px;
+      }
+
+      label {
+        display: block;
+        font-size: 0.9em;
+        color: #666;
+        margin-bottom: 8px;
+        font-weight: 500;
+      }
+
+      .profile-input,
+      .profile-select {
+        width: 100%;
+        max-width: 500px;
+        padding: 10px 12px;
+        border: none;
+        border-bottom: 2px solid #e0e0e0;
+        font-size: 1em;
+        font-family: inherit;
+        transition: border-color 0.2s ease;
+        background: transparent;
+        resize: none;
+        line-height: 1.5;
+        min-height: auto;
+
+        &:focus {
+          outline: none;
+          border-bottom-color: vars.$secondary-color;
+        }
+      }
+
+      .profile-input {
+        height: auto;
+        overflow: hidden;
+      }
+
+      .profile-select {
+        appearance: none;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E")
+          no-repeat right 12px center;
+        background-color: transparent;
+        padding-right: 40px;
+        cursor: pointer;
+      }
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid #e0e0e0;
+
+      .profile-action-button {
+        flex: 0 0 auto;
+      }
+    }
+
+    .divider {
+      height: 1px;
+      background-color: #e0e0e0;
+      margin: 40px 0;
+    }
+
+    .activity-section {
+      .section-title {
+        margin-bottom: 24px;
+      }
+    }
+  }
+
+  .profile-sidebar {
+    @media (max-width: 900px) {
+      order: -1; // Show card first on mobile
+    }
+
+    .admin-actions-card {
+      margin-top: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+  }
+}
+
+// Keep old profile-wrapper for backward compatibility / fallback
 .profile-wrapper {
   margin-top: vars.$topbar-height;
   margin-left: 0px;

@@ -15,6 +15,7 @@ import Events from 'containers/events';
 import Login from 'containers/login';
 import Register from 'containers/register';
 import Profile from 'containers/profile';
+import CareerProfile from 'containers/careerProfile';
 import Leaderboard from 'containers/leaderboard';
 import ControlPanel from 'containers/controlPanel';
 import Resources from 'containers/resources';
@@ -31,6 +32,7 @@ class App extends React.Component {
               <Route path="/register" component={requireAuth(Register)} />
               <Route path="/home" component={requireAuth(Home)} />
               <Route path="/events" component={requireAuth(Events)} />
+              <Route path="/profile/career" component={requireAuth(CareerProfile)} />
               <Route path="/profile" component={requireAuth(Profile)} />
               <Route path="/resources" component={requireAuth(Resources)} />
               <Route path="/leaderboard" component={requireAuth(Leaderboard)} />

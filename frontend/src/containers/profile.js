@@ -64,27 +64,35 @@ const mapStateToProps = (state) => {
     major: '',
     year: 0,
     points: 0,
+    firstName: '',
+    lastName: '',
+    picture: '',
+    rank: null,
   };
 
   if (state.User.get('fetchSuccess')) {
     const User = state.User.get('profile');
     profile.name = `${User.firstName} ${User.lastName}`;
+    profile.firstName = User.firstName;
+    profile.lastName = User.lastName;
     profile.major = User.major;
     profile.year = User.year;
     profile.points = User.points;
+    profile.picture = User.picture;
+    profile.rank = User.rank;
   }
 
   return {
     profile,
-    activity: state.User.get("activity"),
-    fetchSuccess: state.User.get("fetchSuccess"),
-    updated: state.User.get("updated"),
-    updateSuccess: state.User.get("updateSuccess"),
-    updateError: state.User.get("error"),
-    authenticated: state.Auth.get("authenticated"),
-    isAdmin: state.Auth.get("isAdmin"),
-    adminView: state.Auth.get("adminView"),
-    activityError: state.User.get("activityError"),
+    activity: state.User.get('activity'),
+    fetchSuccess: state.User.get('fetchSuccess'),
+    updated: state.User.get('updated'),
+    updateSuccess: state.User.get('updateSuccess'),
+    updateError: state.User.get('error'),
+    authenticated: state.Auth.get('authenticated'),
+    isAdmin: state.Auth.get('isAdmin'),
+    adminView: state.Auth.get('adminView'),
+    activityError: state.User.get('activityError'),
   };
 };
 
