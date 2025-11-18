@@ -190,6 +190,25 @@ module.exports = (Sequelize, db) => {
         },
       },
 
+      careerInterests: {
+        type: Sequelize.JSONB,
+        defaultValue: [],
+        validate: {
+          isShortStringArray(arr) {
+            if (!Array.isArray(arr)) {
+              throw new Error(`Career interests must be an array; got ${typeof arr} instead.`);
+            }
+            if (arr.length > 20) {
+              throw new Error(`Career interests array may not have more than 20 items; got ${arr.length}.`);
+            }
+            const badVal = arr.find((interest) => typeof interest !== 'string');
+            if (badVal !== undefined) {
+              throw new Error(`Each career interest must be a string; encountered ${typeof badVal} instead.`);
+            }
+          },
+        },
+      },
+
       // whether the user's profile is public
       isProfilePublic: {
         type: Sequelize.BOOLEAN,
@@ -276,19 +295,34 @@ module.exports = (Sequelize, db) => {
     return this.increment({ points });
   };
 
-  User.prototype.getPublicProfile = function () {
+  User.prototype.getBaseProfile = function () {
     return {
       firstName: this.getDataValue('firstName'),
       lastName: this.getDataValue('lastName'),
       picture: this.getDataValue('picture'),
       points: this.getDataValue('points'),
+      pronouns: this.getDataValue('pronouns'),
     };
   };
 
+  User.prototype.getPublicProfile = function () {
+    if (this.getDataValue('isProfilePublic')) {
+      return {
+        bio: this.getDataValue('bio'),
+        skills: this.getDataValue('skills'),
+        careerInterests: this.getDataValue('careerInterests'),
+        linkedinUrl: this.getDataValue('linkedinUrl'),
+        githubUrl: this.getDataValue('githubUrl'),
+        portfolioUrl: this.getDataValue('portfolioUrl'),
+        personalWebsite: this.getDataValue('personalWebsite'),
+      };
+    }
+    return null;
+  };
+
   User.prototype.getUserProfile = function () {
-    const uuid = this.getDataValue('uuid');
     return {
-      uuid,
+      uuid: this.getDataValue('uuid'),
       firstName: this.getDataValue('firstName'),
       lastName: this.getDataValue('lastName'),
       picture: this.getDataValue('picture'),
@@ -296,7 +330,34 @@ module.exports = (Sequelize, db) => {
       year: this.getDataValue('year'),
       major: this.getDataValue('major'),
       points: this.getDataValue('points'),
+      pronouns: this.getDataValue('pronouns'),
+      bio: this.getDataValue('bio'),
     };
+  };
+
+  User.prototype.getCareerProfile = function () {
+    return {
+      linkedinUrl: this.getDataValue('linkedinUrl'),
+      githubUrl: this.getDataValue('githubUrl'),
+      portfolioUrl: this.getDataValue('portfolioUrl'),
+      personalWebsite: this.getDataValue('personalWebsite'),
+      resumeUrl: this.getDataValue('resumeUrl'),
+      skills: this.getDataValue('skills'),
+      careerInterests: this.getDataValue('careerInterests'),
+      isProfilePublic: this.getDataValue('isProfilePublic'),
+    };
+  };
+
+  User.prototype.hasCompleteProfile = function () {
+    return !!(
+      this.getDataValue('bio')
+      && this.getDataValue('major')
+      && this.getDataValue('year')
+      && this.getDataValue('skills')
+      && this.getDataValue('skills').length > 0
+      && this.getDataValue('careerInterests')
+      && this.getDataValue('careerInterests').length > 0
+    );
   };
 
   User.prototype.isRestricted = function () {

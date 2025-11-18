@@ -38,7 +38,7 @@ router.post('/', (req, res, next) => {
         // respond with the token upon successful login
         res.json({
           error: null,
-          user: user.getPublicProfile(),
+          user: user.getBaseProfile(),
           token,
         });
         // record that the user changed some account information, and what info was changed

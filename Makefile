@@ -10,7 +10,13 @@ test: build
 ecr-login:
 	$(shell aws ecr get-login --no-include-email --region us-west-1)
 
-setup:
+migrate:
+	npx sequelize-cli db:migrate
+
+rollback:
+	npx sequelize-cli db:migrate:undo
+
+setup: migrate
 	if [ ! -f app/config/SESSION_SECRET ]; then \
 		cat /dev/urandom | od -N 32 -t x4 -An | tr -d '\n ' > app/config/SESSION_SECRET; \
 	fi
