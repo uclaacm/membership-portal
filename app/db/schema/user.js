@@ -332,26 +332,11 @@ module.exports = (Sequelize, db) => {
       points: this.getDataValue('points'),
       pronouns: this.getDataValue('pronouns'),
       bio: this.getDataValue('bio'),
-      linkedinUrl: this.getDataValue('linkedinUrl'),
-      githubUrl: this.getDataValue('githubUrl'),
-      portfolioUrl: this.getDataValue('portfolioUrl'),
-      personalWebsite: this.getDataValue('personalWebsite'),
-      resumeUrl: this.getDataValue('resumeUrl'),
-      skills: this.getDataValue('skills'),
-      careerInterests: this.getDataValue('careerInterests'),
-      isProfilePublic: this.getDataValue('isProfilePublic'),
     };
   };
 
   User.prototype.getCareerProfile = function () {
     return {
-      firstName: this.getDataValue('firstName'),
-      lastName: this.getDataValue('lastName'),
-      picture: this.getDataValue('picture'),
-      pronouns: this.getDataValue('pronouns'),
-      bio: this.getDataValue('bio'),
-      major: this.getDataValue('major'),
-      year: this.getDataValue('year'),
       linkedinUrl: this.getDataValue('linkedinUrl'),
       githubUrl: this.getDataValue('githubUrl'),
       portfolioUrl: this.getDataValue('portfolioUrl'),
