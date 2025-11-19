@@ -10,7 +10,7 @@ const InternshipApplicationSchema = new Schema(
   {
     userId: {
       type: String, // UUID from PostgreSQL
-      required: true,
+      // required: true,
       index: true,
     },
     firstName: {
@@ -54,21 +54,27 @@ const InternshipApplicationSchema = new Schema(
     },
 
     // Committee Choices (ranked preference)
-    // TODO: deal with subcommittee cases
+    /* TODO:
+      - replace string w committee schema type
+      - deal with subteam cases :(
+    */
     firstChoice: {
-      type: Schema.Types.ObjectId,
-      ref: 'Committee',
+      // type: Schema.Types.ObjectId,
+      // ref: 'Committee',
+      type: String,
       required: true,
     },
     // optional
     secondChoice: {
-      type: Schema.Types.ObjectId,
-      ref: 'Committee',
+      // type: Schema.Types.ObjectId,
+      // ref: 'Committee',
+      type: String,
     },
     // optional
     thirdChoice: {
-      type: Schema.Types.ObjectId,
-      ref: 'Committee',
+      // type: Schema.Types.ObjectId,
+      // ref: 'Committee',
+      type: String,
     },
 
     resumeUrl: {
@@ -147,7 +153,7 @@ InternshipApplicationSchema.pre('save', function (next) {
   // Linter wants a return, but not needed because we call next()
 });
 
-// Accept no blank responses
+// Accept no blank responses (if committee chosen)
 InternshipApplicationSchema.pre('save', function (next) {
   const committees = [this.firstChoice, this.secondChoice, this.thirdChoice].filter(Boolean);
 
