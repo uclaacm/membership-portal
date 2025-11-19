@@ -3,6 +3,7 @@ const { matchedData } = require('express-validator');
 const error = require('../../../../error');
 const { User, Activity } = require('../../../../db');
 const { validateUserProfileUpdate } = require('./validation');
+const logger = require('../../../../logger');
 
 const router = express.Router();
 
@@ -32,7 +33,7 @@ router
     if (req.user.isPending()) return next(new error.Forbidden());
 
     // matchedData will only extract the fields that were validated.
-    const validatedData = matchedData(req);
+    const validatedData = matchedData(req).user || {};
     const updatedInfo = Object.fromEntries(
       // only include fields that are different from current values
       Object.entries(validatedData)
@@ -43,6 +44,8 @@ router
           && !(['firstName', 'lastName', 'major'].includes(key) && value === '')
         )),
     );
+
+    logger.info(JSON.stringify(updatedInfo, null, 2));
 
     return req.user
       .update(updatedInfo)
