@@ -2,6 +2,9 @@ const { body } = require('express-validator');
 const { handleValidationErrors } = require('../../validation');
 
 const validateUserProfileUpdate = [
+  body('user')
+    .isObject()
+    .withMessage('Request body must contain a user object'),
   body('user.firstName')
     .optional()
     .isString()
@@ -31,11 +34,11 @@ const validateUserProfileUpdate = [
     .withMessage('Bio must be 1000 characters or less'),
   body('user.linkedinUrl')
     .optional()
-    .isURL({ protocols: ['http', 'https'] })
+    .isURL({ protocols: ['http', 'https'], host_whitelist: ['linkedin.com'] })
     .withMessage('LinkedIn URL must be a valid URL'),
   body('user.githubUrl')
     .optional()
-    .isURL({ protocols: ['http', 'https'] })
+    .isURL({ protocols: ['http', 'https'], host_whitelist: ['github.com'] })
     .withMessage('GitHub URL must be a valid URL'),
   body('user.portfolioUrl')
     .optional()

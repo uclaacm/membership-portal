@@ -170,4 +170,12 @@ describe('PATCH /user/', () => {
     expect(response.body.user.lastName).toEqual(initialFields.lastName);
     expect(response.body.user.major).toEqual(initialFields.major);
   });
+
+  it('rejects linkedinUrl with an invalid domain', async () => {
+    await testValidation('linkedinUrl', 'https://example.com/in/johndoe', 'linkedinUrl');
+  });
+
+  it('rejects githubUrl with an invalid domain', async () => {
+    await testValidation('githubUrl', 'https://example.com/johndoe', 'githubUrl');
+  });
 });

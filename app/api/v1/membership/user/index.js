@@ -33,7 +33,7 @@ router
     if (req.user.isPending()) return next(new error.Forbidden());
 
     // matchedData will only extract the fields that were validated.
-    const validatedData = matchedData(req).user || {};
+    const validatedData = matchedData(req).user;
     const updatedInfo = Object.fromEntries(
       // only include fields that are different from current values
       Object.entries(validatedData)
