@@ -1,6 +1,7 @@
 const express = require('express');
 const error = require('../../../../error');
 const { User, Activity } = require('../../../../db');
+const { validatePublicProfileLookup } = require('./validation');
 
 const router = express.Router();
 
@@ -85,6 +86,59 @@ router.get('/activity', (req, res, next) => {
     .catch(next);
 });
 
+/*
+Individual Profile Endpoint (GET /api/v1/user/profile/:uuid):
+
+Create new route GET /api/v1/user/profile/:uuid
+
+Return user's public profile using getPublicProfile() method
+
+Return 404 if user not found
+
+Return minimal profile if isProfilePublic is false
+
+Add rate limiting (prevent scraping): 100 requests per 15 minutes
+
+Require authentication (only ACM members can view profiles)
+
+Add query parameter support: ?fields=skills,careerInterests to return specific fields
+
+Test edge cases (blocked users, pending users, deleted users)
+
+*/
+
+router
+  .route('/profile/:uuid')
+  .get(...validatePublicProfileLookup, async (req, res, next) => {
+    if (req.user.isPending()
+      || req.user.isRestricted()
+      || req.user.isBlocked()) return next(new error.Forbidden());
+
+    const { uuid } = req.params;
+    const user = await User.findByPk(uuid);
+    if (!user) return next(new error.NotFound('User not found'));
+    if (user.isPending()
+      || user.isRestricted()
+      || user.isBlocked()) return next(new error.Forbidden());
+
+    let profile = {
+      ...user.getBaseProfile(),
+      ...(user.getPublicProfile() || {}),
+    };
+
+    if (req.query.fields) {
+      const fields = req.query.fields.split(',').map((f) => f.trim());
+      profile = Object.fromEntries(
+        fields.map((field) => [field, profile[field]])
+          .filter(([, value]) => value !== undefined),
+      );
+    }
+
+    return res.json({
+      error: null,
+      user: profile,
+    });
+  });
 /**
  * For all further requests on this route, the user needs to be at least an admin
  */

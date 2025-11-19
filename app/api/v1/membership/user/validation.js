@@ -1,4 +1,4 @@
-const { body } = require('express-validator');
+const { body, query, param } = require('express-validator');
 const { handleValidationErrors } = require('../../validation');
 
 const validateCareerProfileUpdate = [
@@ -61,6 +61,15 @@ const validateCareerProfileUpdate = [
   handleValidationErrors,
 ];
 
+const validatePublicProfileLookup = [
+  query('fields')
+    .optional()
+    .isString(),
+  param('uuid')
+    .isUUID(4),
+];
+
 module.exports = {
   validateCareerProfileUpdate,
+  validatePublicProfileLookup,
 };
