@@ -3,7 +3,6 @@ const { matchedData } = require('express-validator');
 const error = require('../../../../error');
 const { User, Activity } = require('../../../../db');
 const { validateUserProfileUpdate } = require('./validation');
-const logger = require('../../../../logger');
 
 const router = express.Router();
 
@@ -44,8 +43,6 @@ router
           && !(['firstName', 'lastName', 'major'].includes(key) && value === '')
         )),
     );
-
-    logger.info(JSON.stringify(updatedInfo, null, 2));
 
     return req.user
       .update(updatedInfo)
