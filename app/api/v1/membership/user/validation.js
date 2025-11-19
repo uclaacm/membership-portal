@@ -1,7 +1,27 @@
 const { body } = require('express-validator');
 const { handleValidationErrors } = require('../../validation');
 
-const validateCareerProfileUpdate = [
+const validateUserProfileUpdate = [
+  body('user.firstName')
+    .optional()
+    .isString()
+    .trim()
+    .withMessage('First name must be a string'),
+  body('user.lastName')
+    .optional()
+    .isString()
+    .trim()
+    .withMessage('Last name must be a string'),
+  body('user.major')
+    .optional()
+    .isString()
+    .trim()
+    .withMessage('Major must be a string'),
+  body('user.year')
+    .optional()
+    .isInt({ min: 1, max: 5 })
+    .toInt()
+    .withMessage('Year must be an integer between 1 and 5'),
   body('user.bio')
     .optional()
     .isString()
@@ -62,5 +82,5 @@ const validateCareerProfileUpdate = [
 ];
 
 module.exports = {
-  validateCareerProfileUpdate,
+  validateUserProfileUpdate,
 };

@@ -1,12 +1,23 @@
 const express = require('express');
+const { matchedData } = require('express-validator');
 const error = require('../../../../error');
 const { User, Activity } = require('../../../../db');
+const { validateUserProfileUpdate } = require('./validation');
 
 const router = express.Router();
 
 /**
  * Get user profile for current user
  */
+const CAREER_FIELDS = [
+  'bio',
+  'skills',
+  'careerInterests',
+  'linkedinUrl',
+  'githubUrl',
+  'portfolioUrl',
+  'personalWebsite',
+];
 router
   .route('/')
   .get((req, res, next) => {
@@ -16,54 +27,45 @@ router
   /**
    * Update user information given a 'user' object with fields to update and updated information
    */
-  .patch((req, res, next) => {
+  .patch(...validateUserProfileUpdate, (req, res, next) => {
     if (!req.body.user) return next(new error.BadRequest());
-
     if (req.user.isPending()) return next(new error.Forbidden());
 
-    // construct new, sanitized object of update information
-    const updatedInfo = {};
-    // for each field { fistName, lastName, major, year }
-    //   check that it is a valid input and it has changed
-    if (
-      req.body.user.firstName
-      && req.body.user.firstName.length > 0
-      && req.body.user.firstName !== req.user.firstName
-    ) updatedInfo.firstName = req.body.user.firstName;
-    if (
-      req.body.user.lastName
-      && req.body.user.lastName.length > 0
-      && req.body.user.lastName !== req.user.lastName
-    ) updatedInfo.lastName = req.body.user.lastName;
-    if (
-      req.body.user.major
-      && req.body.user.major.length > 0
-      && req.body.user.major !== req.user.major
-    ) updatedInfo.major = req.body.user.major;
-    if (
-      req.body.user.year
-      && Number.isNaN(Number.parseInt(req.body.user.year, 10)) === false
-      && Number.parseInt(req.body.user.year, 10) > 0
-      && Number.parseInt(req.body.user.year, 10) <= 5
-      && req.body.user.year !== req.user.year
-    ) updatedInfo.year = Number.parseInt(req.body.user.year, 10);
+    // matchedData will only extract the fields that were validated.
+    const validatedData = matchedData(req);
+    const updatedInfo = Object.fromEntries(
+      // only include fields that are different from current values
+      Object.entries(validatedData)
+        .filter(([key, value]) => (
+          value !== undefined
+          && (typeof value === 'object' || value !== req.user[key])
+          // Ignore empty strings for specific fields
+          && !(['firstName', 'lastName', 'major'].includes(key) && value === '')
+        )),
+    );
 
-    // CASE:
-    // update the user information normally (with the given information,
-    // without any password changes)
     return req.user
       .update(updatedInfo)
       .then((user) => {
-        // respond with the newly updated user profile
         res.json({
           error: null,
-          user: user.getUserProfile(),
+          user: { ...user.getUserProfile(), ...user.getCareerProfile() },
         });
-        // record that the user changed some account information, and what info was changed
+
+        const updatedFields = Object.keys(updatedInfo);
         Activity.accountUpdatedInfo(
           user.uuid,
-          Object.keys(updatedInfo).join(', '),
+          updatedFields.join(', '),
         );
+
+        const updatedCareerFields = updatedFields.filter((field) => CAREER_FIELDS.includes(field));
+        if (updatedCareerFields.length > 0) {
+          Activity.accountUpdatedInfo(
+            user.uuid,
+            `Career profile updated: ${updatedCareerFields.join(', ')}`,
+          );
+        }
+
         return null;
       })
       .catch(next);
