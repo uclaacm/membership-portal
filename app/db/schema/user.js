@@ -129,7 +129,7 @@ module.exports = (Sequelize, db) => {
         type: Sequelize.STRING,
         validate: {
           isUrl: {
-            args: [{ host_whitelist: ['linkedin.com'] }],
+            args: [{ host_whitelist: ['linkedin.com', 'www.linkedin.com'] }],
             msg: 'The LinkedIn URL must be a valid URL',
           },
         },
@@ -139,7 +139,7 @@ module.exports = (Sequelize, db) => {
         type: Sequelize.STRING,
         validate: {
           isUrl: {
-            args: [{ host_whitelist: ['github.com'] }],
+            args: [{ host_whitelist: ['github.com', 'www.github.com'] }],
             msg: 'The GitHub URL must be a valid URL',
           },
         },

@@ -34,11 +34,11 @@ const validateUserProfileUpdate = [
     .withMessage('Bio must be 1000 characters or less'),
   body('user.linkedinUrl')
     .optional()
-    .isURL({ protocols: ['http', 'https'], host_whitelist: ['linkedin.com'] })
+    .isURL({ protocols: ['http', 'https'], host_whitelist: ['linkedin.com', 'www.linkedin.com'] })
     .withMessage('LinkedIn URL must be a valid URL'),
   body('user.githubUrl')
     .optional()
-    .isURL({ protocols: ['http', 'https'], host_whitelist: ['github.com'] })
+    .isURL({ protocols: ['http', 'https'], host_whitelist: ['github.com', 'www.github.com'] })
     .withMessage('GitHub URL must be a valid URL'),
   body('user.portfolioUrl')
     .optional()

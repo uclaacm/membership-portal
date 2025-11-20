@@ -178,4 +178,24 @@ describe('PATCH /user/', () => {
   it('rejects githubUrl with an invalid domain', async () => {
     await testValidation('githubUrl', 'https://example.com/johndoe', 'githubUrl');
   });
+
+  it('accepts linkedinUrl with www in the domain', async () => {
+    const response = await request(baseUrl)
+      .patch('/user/')
+      .set(headers())
+      .send({ user: { linkedinUrl: 'https://www.linkedin.com/in/johndoe' } });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('user.linkedinUrl', 'https://www.linkedin.com/in/johndoe');
+  });
+
+  it('accepts githubUrl with www in the domain', async () => {
+    const response = await request(baseUrl)
+      .patch('/user/')
+      .set(headers())
+      .send({ user: { githubUrl: 'https://www.github.com/johndoe' } });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('user.githubUrl', 'https://www.github.com/johndoe');
+  });
 });
