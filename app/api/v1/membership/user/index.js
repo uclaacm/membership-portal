@@ -2,22 +2,29 @@ const express = require('express');
 const { matchedData } = require('express-validator');
 const error = require('../../../../error');
 const { User, Activity } = require('../../../../db');
-const { validateUserProfileUpdate } = require('./validation');
+const { validateCareerProfileUpdate, validateUserProfileUpdate } = require('./validation');
 
 const router = express.Router();
+
+const getUpdateFields = (req) => {
+  // matchedData will only extract the fields that were validated.
+  const validatedData = matchedData(req).user;
+  const updatedInfo = Object.fromEntries(
+    // only include fields that are different from current values
+    Object.entries(validatedData)
+      .filter(([key, value]) => (
+        value !== undefined
+        && (typeof value === 'object' || value !== req.user[key])
+        // Ignore empty strings for specific fields
+        && !(['firstName', 'lastName', 'major'].includes(key) && value === '')
+      )),
+  );
+  return updatedInfo;
+};
 
 /**
  * Get user profile for current user
  */
-const CAREER_FIELDS = [
-  'bio',
-  'skills',
-  'careerInterests',
-  'linkedinUrl',
-  'githubUrl',
-  'portfolioUrl',
-  'personalWebsite',
-];
 router
   .route('/')
   .get((req, res, next) => {
@@ -27,48 +34,55 @@ router
   /**
    * Update user information given a 'user' object with fields to update and updated information
    */
-  .patch(...validateUserProfileUpdate, (req, res, next) => {
+  .patch(...validateUserProfileUpdate, async (req, res, next) => {
     if (!req.body.user) return next(new error.BadRequest());
     if (req.user.isPending()) return next(new error.Forbidden());
 
-    // matchedData will only extract the fields that were validated.
-    const validatedData = matchedData(req).user;
-    const updatedInfo = Object.fromEntries(
-      // only include fields that are different from current values
-      Object.entries(validatedData)
-        .filter(([key, value]) => (
-          value !== undefined
-          && (typeof value === 'object' || value !== req.user[key])
-          // Ignore empty strings for specific fields
-          && !(['firstName', 'lastName', 'major'].includes(key) && value === '')
-        )),
-    );
+    // Only obtains non-career fields
+    const updatedInfo = getUpdateFields(req);
+    try {
+      const user = await req.user.update(updatedInfo);
+      res.json({
+        error: null,
+        user: user.getUserProfile(),
+      });
+      Activity.accountUpdatedInfo(
+        user.uuid,
+        `User profile updated: ${Object.keys(updatedInfo).join(', ')}`,
+      );
+    } catch (updateError) {
+      return next(updateError);
+    }
 
-    return req.user
-      .update(updatedInfo)
-      .then((user) => {
-        res.json({
-          error: null,
-          user: { ...user.getUserProfile(), ...user.getCareerProfile() },
-        });
+    return null;
+  });
 
-        const updatedFields = Object.keys(updatedInfo);
-        Activity.accountUpdatedInfo(
-          user.uuid,
-          updatedFields.join(', '),
-        );
+router
+  .route('/career')
+  .get((req, res, next) => {
+    if (req.user.isPending()) return next(new error.Forbidden());
+    return res.json({ error: null, user: req.user.getCareerProfile() });
+  })
+  .patch(...validateCareerProfileUpdate, async (req, res, next) => {
+    if (!req.body.user) return next(new error.BadRequest());
+    if (req.user.isPending()) return next(new error.Forbidden());
 
-        const updatedCareerFields = updatedFields.filter((field) => CAREER_FIELDS.includes(field));
-        if (updatedCareerFields.length > 0) {
-          Activity.accountUpdatedInfo(
-            user.uuid,
-            `Career profile updated: ${updatedCareerFields.join(', ')}`,
-          );
-        }
-
-        return null;
-      })
-      .catch(next);
+    // Only obtains career fields
+    const updatedInfo = getUpdateFields(req);
+    try {
+      const user = await req.user.update(updatedInfo);
+      res.json({
+        error: null,
+        user: user.getCareerProfile(),
+      });
+      Activity.accountUpdatedInfo(
+        user.uuid,
+        `Career profile updated: ${Object.keys(updatedInfo).join(', ')}`,
+      );
+    } catch (updateError) {
+      return next(updateError);
+    }
+    return null;
   });
 
 /**

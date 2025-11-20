@@ -1,37 +1,10 @@
 const { body } = require('express-validator');
 const { handleValidationErrors } = require('../../validation');
 
-const validateUserProfileUpdate = [
+const validateCareerProfileUpdate = [
   body('user')
     .isObject()
     .withMessage('Request body must contain a user object'),
-  body('user.firstName')
-    .optional()
-    .isString()
-    .trim()
-    .withMessage('First name must be a string'),
-  body('user.lastName')
-    .optional()
-    .isString()
-    .trim()
-    .withMessage('Last name must be a string'),
-  body('user.major')
-    .optional()
-    .isString()
-    .trim()
-    .withMessage('Major must be a string'),
-  body('user.year')
-    .optional()
-    .isInt({ min: 1, max: 5 })
-    .toInt()
-    .withMessage('Year must be an integer between 1 and 5'),
-  body('user.bio')
-    .optional()
-    .isString()
-    .trim()
-    .isLength({ max: 1000 })
-    .escape()
-    .withMessage('Bio must be 1000 characters or less'),
   body('user.linkedinUrl')
     .optional()
     .isURL({ protocols: ['http', 'https'], host_whitelist: ['linkedin.com', 'www.linkedin.com'] })
@@ -70,6 +43,40 @@ const validateUserProfileUpdate = [
     .isLength({ min: 1, max: 50 })
     .escape()
     .withMessage('Each career interest must be 1-50 characters'),
+  handleValidationErrors,
+];
+
+const validateUserProfileUpdate = [
+  body('user')
+    .isObject()
+    .withMessage('Request body must contain a user object'),
+  body('user.firstName')
+    .optional()
+    .isString()
+    .trim()
+    .withMessage('First name must be a string'),
+  body('user.lastName')
+    .optional()
+    .isString()
+    .trim()
+    .withMessage('Last name must be a string'),
+  body('user.major')
+    .optional()
+    .isString()
+    .trim()
+    .withMessage('Major must be a string'),
+  body('user.year')
+    .optional()
+    .isInt({ min: 1, max: 5 })
+    .toInt()
+    .withMessage('Year must be an integer between 1 and 5'),
+  body('user.bio')
+    .optional()
+    .isString()
+    .trim()
+    .isLength({ max: 1000 })
+    .escape()
+    .withMessage('Bio must be 1000 characters or less'),
   body('user.pronouns')
     .optional()
     .isString()
@@ -85,5 +92,6 @@ const validateUserProfileUpdate = [
 ];
 
 module.exports = {
+  validateCareerProfileUpdate,
   validateUserProfileUpdate,
 };

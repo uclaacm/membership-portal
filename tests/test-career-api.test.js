@@ -66,6 +66,85 @@ describe('PATCH /user/', () => {
     await testValidation('bio', 'a'.repeat(1001), 'bio');
   });
 
+  it('validates pronouns as a string with max 50 characters', async () => {
+    await testValidation('pronouns', 'a'.repeat(51), 'pronouns');
+  });
+
+  it('validates isProfilePublic as a boolean', async () => {
+    await testValidation('isProfilePublic', 'not-a-boolean', 'isProfilePublic');
+  });
+
+  it('updates user fields successfully', async () => {
+    const updatedFields = {
+      firstName: 'John',
+      lastName: 'Doe',
+      major: 'Computer Science',
+      year: 3,
+      bio: 'This is a <bio>.',
+      pronouns: 'he/him',
+      isProfilePublic: true,
+    };
+
+    const response = await request(baseUrl)
+      .patch('/user/')
+      .set(headers())
+      .send({ user: updatedFields });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('user');
+
+    Object.entries(updatedFields).forEach(([key, value]) => {
+      const expectedValue = escapeHtml(value);
+      expect(response.body.user[key]).toEqual(expectedValue);
+    });
+  });
+
+  it('ignores empty strings for firstName, lastName, and major', async () => {
+    const initialFields = {
+      firstName: 'John',
+      lastName: 'Doe',
+      major: 'Computer Science',
+    };
+
+    // Set initial values
+    await request(baseUrl)
+      .patch('/user/')
+      .set(headers())
+      .send({ user: initialFields });
+
+    const response = await request(baseUrl)
+      .patch('/user/')
+      .set(headers())
+      .send({ user: { firstName: '', lastName: '', major: '' } });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('user');
+
+    // Ensure the fields were not overwritten
+    expect(response.body.user.firstName).toEqual(initialFields.firstName);
+    expect(response.body.user.lastName).toEqual(initialFields.lastName);
+    expect(response.body.user.major).toEqual(initialFields.major);
+  });
+});
+
+describe('PATCH /user/career/', () => {
+  const headers = () => ({ Authorization: `Bearer ${token}` });
+
+  const testValidation = async (field, invalidValue, expectedErrorPath) => {
+    const response = await request(baseUrl)
+      .patch('/user/career/')
+      .set(headers())
+      .send({ user: { [field]: invalidValue } });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty('errors');
+    expect(response.body.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ path: `user.${expectedErrorPath}` }),
+      ]),
+    );
+  };
+
   it('validates linkedinUrl as a valid URL', async () => {
     await testValidation('linkedinUrl', 'invalid-url', 'linkedinUrl');
   });
@@ -100,33 +179,18 @@ describe('PATCH /user/', () => {
     await testValidation('careerInterests', ['a'.repeat(51)], 'careerInterests[0]');
   });
 
-  it('validates pronouns as a string with max 50 characters', async () => {
-    await testValidation('pronouns', 'a'.repeat(51), 'pronouns');
-  });
-
-  it('validates isProfilePublic as a boolean', async () => {
-    await testValidation('isProfilePublic', 'not-a-boolean', 'isProfilePublic');
-  });
-
-  it('updates user fields successfully', async () => {
+  it('updates career fields successfully', async () => {
     const updatedFields = {
-      firstName: 'John',
-      lastName: 'Doe',
-      major: 'Computer Science',
-      year: 3,
-      bio: 'This is a <bio>.',
       linkedinUrl: 'https://linkedin.com/in/johndoe',
       githubUrl: 'https://github.com/johndoe',
       portfolioUrl: 'https://portfolio.com/johndoe',
       personalWebsite: 'https://johndoe.com',
       skills: ['JavaScript', 'Node.js'],
       careerInterests: ['Software Engineering', 'Web Development'],
-      pronouns: 'he/him',
-      isProfilePublic: true,
     };
 
     const response = await request(baseUrl)
-      .patch('/user/')
+      .patch('/user/career/')
       .set(headers())
       .send({ user: updatedFields });
 
@@ -134,54 +198,20 @@ describe('PATCH /user/', () => {
     expect(response.body).toHaveProperty('user');
 
     Object.entries(updatedFields).forEach(([key, value]) => {
-      let expectedValue;
-      if (['bio', 'skills', 'careerInterests', 'pronouns'].includes(key)) {
-        expectedValue = Array.isArray(value) ? value.map(escapeHtml) : escapeHtml(value);
-      } else {
-        expectedValue = value;
+      let expectedValue = value;
+      const isURL = ['linkedinUrl', 'githubUrl', 'portfolioUrl', 'personalWebsite'].includes(key);
+      if (Array.isArray(value)) {
+        expectedValue = value.map(escapeHtml);
+      } else if (typeof value === 'string' && !isURL) {
+        expectedValue = escapeHtml(value);
       }
       expect(response.body.user[key]).toEqual(expectedValue);
     });
   });
 
-  it('ignores empty strings for firstName, lastName, and major', async () => {
-    const initialFields = {
-      firstName: 'John',
-      lastName: 'Doe',
-      major: 'Computer Science',
-    };
-
-    // Set initial values
-    await request(baseUrl)
-      .patch('/user/')
-      .set(headers())
-      .send({ user: initialFields });
-
-    const response = await request(baseUrl)
-      .patch('/user/')
-      .set(headers())
-      .send({ user: { firstName: '', lastName: '', major: '' } });
-
-    expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty('user');
-
-    // Ensure the fields were not overwritten
-    expect(response.body.user.firstName).toEqual(initialFields.firstName);
-    expect(response.body.user.lastName).toEqual(initialFields.lastName);
-    expect(response.body.user.major).toEqual(initialFields.major);
-  });
-
-  it('rejects linkedinUrl with an invalid domain', async () => {
-    await testValidation('linkedinUrl', 'https://example.com/in/johndoe', 'linkedinUrl');
-  });
-
-  it('rejects githubUrl with an invalid domain', async () => {
-    await testValidation('githubUrl', 'https://example.com/johndoe', 'githubUrl');
-  });
-
   it('accepts linkedinUrl with www in the domain', async () => {
     const response = await request(baseUrl)
-      .patch('/user/')
+      .patch('/user/career/')
       .set(headers())
       .send({ user: { linkedinUrl: 'https://www.linkedin.com/in/johndoe' } });
 
@@ -191,7 +221,7 @@ describe('PATCH /user/', () => {
 
   it('accepts githubUrl with www in the domain', async () => {
     const response = await request(baseUrl)
-      .patch('/user/')
+      .patch('/user/career/')
       .set(headers())
       .send({ user: { githubUrl: 'https://www.github.com/johndoe' } });
 

@@ -334,6 +334,7 @@ module.exports = (Sequelize, db) => {
       points: this.getDataValue('points'),
       pronouns: this.getDataValue('pronouns'),
       bio: this.getDataValue('bio'),
+      isProfilePublic: this.getDataValue('isProfilePublic'),
     };
   };
 
@@ -346,7 +347,6 @@ module.exports = (Sequelize, db) => {
       resumeUrl: this.getDataValue('resumeUrl'),
       skills: this.getDataValue('skills'),
       careerInterests: this.getDataValue('careerInterests'),
-      isProfilePublic: this.getDataValue('isProfilePublic'),
     };
   };
 
