@@ -6,7 +6,7 @@ const { User, Activity } = require('../app/db');
 const config = require('../app/config');
 
 const API_ROUTE = '/app/api/v1/';
-const route = name => API_ROUTE + name;
+const route = (name) => API_ROUTE + name;
 
 beforeAll(async () => {
   await setup;
@@ -45,21 +45,23 @@ describe('Auth Tests', () => {
 
 describe('User Tests', () => {
   // TODO: This should be extracted from auth
-  const getJWTToken = user => new Promise((res, rej) => jwt.sign(
-    {
-      uuid: user.getDataValue('uuid'),
-      admin: user.isAdmin(),
-      superAdmin: user.isSuperAdmin(),
-      registered: !user.isPending(),
-    },
-    config.session.secret,
-    { expiresIn: 3600 },
-    (err, jwtToken) => {
-      if (err) rej(err);
-      Activity.accountLoggedIn(user.uuid);
-      res(jwtToken);
-    },
-  ));
+  const getJWTToken = (user) => new Promise((res, rej) => {
+    jwt.sign(
+      {
+        uuid: user.getDataValue('uuid'),
+        admin: user.isAdmin(),
+        superAdmin: user.isSuperAdmin(),
+        registered: !user.isPending(),
+      },
+      config.session.secret,
+      { expiresIn: 3600 },
+      (err, jwtToken) => {
+        if (err) rej(err);
+        Activity.accountLoggedIn(user.uuid);
+        res(jwtToken);
+      },
+    );
+  });
 
   let testUser;
   // let testAdmin; // TODO: implement test admin user

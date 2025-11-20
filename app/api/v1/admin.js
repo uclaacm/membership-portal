@@ -6,7 +6,6 @@ const { User } = require('../../db');
 
 const hardcodedPassword = '$2b$10$t5itVIAG3WQTZsIKq2Fs9e8qbSAJAB7WgIXjTnE75HOEV13TzF6bK';
 
-
 // POST /api/admin/promote
 router.post('/promote', async (req, res) => {
   const { email, password } = req.body;

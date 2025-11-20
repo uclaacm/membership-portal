@@ -212,7 +212,7 @@ module.exports = (Sequelize, db) => {
   };
 
   Event.eventExists = function (uuid) {
-    return this.count({ where: { uuid } }).then(c => c !== 0);
+    return this.count({ where: { uuid } }).then((c) => c !== 0);
   };
 
   Event.destroyByUUID = function (uuid) {

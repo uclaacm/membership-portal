@@ -7,7 +7,8 @@
     "start": "node index",
     "dev": "nodemon -L -e js -i node_modules -i .git -V index.js",
     "test": "export TESTING=true && jest --config jest.config.json",
-    "lint": "prettier --write './**/*.js*'"
+    "lint": "prettier --write './**/*.js*'", 
+    "lint:check": "eslint --color 'app/**/*.js*' 'tests/**/*.js*' '*.js'"
   },
   "repository": {
     "type": "git",
