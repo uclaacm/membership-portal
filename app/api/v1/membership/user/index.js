@@ -1,8 +1,26 @@
 const express = require('express');
+const { matchedData } = require('express-validator');
 const error = require('../../../../error');
 const { User, Activity } = require('../../../../db');
+const { validateCareerProfileUpdate, validateUserProfileUpdate } = require('./validation');
 
 const router = express.Router();
+
+const getUpdateFields = (req) => {
+  // matchedData will only extract the fields that were validated.
+  const validatedData = matchedData(req).user;
+  const updatedInfo = Object.fromEntries(
+    // only include fields that are different from current values
+    Object.entries(validatedData)
+      .filter(([key, value]) => (
+        value !== undefined
+        && (typeof value === 'object' || value !== req.user[key])
+        // Ignore empty strings for specific fields
+        && !(['firstName', 'lastName', 'major'].includes(key) && value === '')
+      )),
+  );
+  return updatedInfo;
+};
 
 /**
  * Get user profile for current user
@@ -16,57 +34,55 @@ router
   /**
    * Update user information given a 'user' object with fields to update and updated information
    */
-  .patch((req, res, next) => {
+  .patch(...validateUserProfileUpdate, async (req, res, next) => {
     if (!req.body.user) return next(new error.BadRequest());
-
     if (req.user.isPending()) return next(new error.Forbidden());
 
-    // construct new, sanitized object of update information
-    const updatedInfo = {};
-    // for each field { fistName, lastName, major, year }
-    //   check that it is a valid input and it has changed
-    if (
-      req.body.user.firstName
-      && req.body.user.firstName.length > 0
-      && req.body.user.firstName !== req.user.firstName
-    ) updatedInfo.firstName = req.body.user.firstName;
-    if (
-      req.body.user.lastName
-      && req.body.user.lastName.length > 0
-      && req.body.user.lastName !== req.user.lastName
-    ) updatedInfo.lastName = req.body.user.lastName;
-    if (
-      req.body.user.major
-      && req.body.user.major.length > 0
-      && req.body.user.major !== req.user.major
-    ) updatedInfo.major = req.body.user.major;
-    if (
-      req.body.user.year
-      && Number.isNaN(Number.parseInt(req.body.user.year, 10)) === false
-      && Number.parseInt(req.body.user.year, 10) > 0
-      && Number.parseInt(req.body.user.year, 10) <= 5
-      && req.body.user.year !== req.user.year
-    ) updatedInfo.year = Number.parseInt(req.body.user.year, 10);
+    // Only obtains non-career fields
+    const updatedInfo = getUpdateFields(req);
+    try {
+      const user = await req.user.update(updatedInfo);
+      res.json({
+        error: null,
+        user: user.getUserProfile(),
+      });
+      Activity.accountUpdatedInfo(
+        user.uuid,
+        `User profile updated: ${Object.keys(updatedInfo).join(', ')}`,
+      );
+    } catch (updateError) {
+      return next(updateError);
+    }
 
-    // CASE:
-    // update the user information normally (with the given information,
-    // without any password changes)
-    return req.user
-      .update(updatedInfo)
-      .then((user) => {
-        // respond with the newly updated user profile
-        res.json({
-          error: null,
-          user: user.getUserProfile(),
-        });
-        // record that the user changed some account information, and what info was changed
-        Activity.accountUpdatedInfo(
-          user.uuid,
-          Object.keys(updatedInfo).join(', '),
-        );
-        return null;
-      })
-      .catch(next);
+    return null;
+  });
+
+router
+  .route('/career')
+  .get((req, res, next) => {
+    if (req.user.isPending()) return next(new error.Forbidden());
+    return res.json({ error: null, user: req.user.getCareerProfile() });
+  })
+  .patch(...validateCareerProfileUpdate, async (req, res, next) => {
+    if (!req.body.user) return next(new error.BadRequest());
+    if (req.user.isPending()) return next(new error.Forbidden());
+
+    // Only obtains career fields
+    const updatedInfo = getUpdateFields(req);
+    try {
+      const user = await req.user.update(updatedInfo);
+      res.json({
+        error: null,
+        user: user.getCareerProfile(),
+      });
+      Activity.accountUpdatedInfo(
+        user.uuid,
+        `Career profile updated: ${Object.keys(updatedInfo).join(', ')}`,
+      );
+    } catch (updateError) {
+      return next(updateError);
+    }
+    return null;
   });
 
 /**

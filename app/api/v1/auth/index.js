@@ -148,4 +148,58 @@ router.post('/login', (req, res, next) => {
   return null;
 });
 
+if (config.isDevelopment) {
+  const DEFAULT_DEV_EMAIL = 'dev@g.ucla.edu';
+  router.post('/dev-login', (req, res, next) => {
+    const createUserToken = (user) => {
+      jwt.sign(
+        {
+          uuid: user.getDataValue('uuid'),
+          admin: user.isAdmin(),
+          superAdmin: user.isSuperAdmin(),
+          registered: !user.isPending(),
+        },
+        config.session.secret,
+        { expiresIn: TOKEN_EXPIRES },
+        (err, token) => {
+          if (err) return next(err);
+          res.json({
+            error: null,
+            user: user.getBaseProfile(),
+            token,
+          });
+          Activity.accountLoggedIn(user.uuid);
+          return null;
+        },
+      );
+      return null;
+    };
+
+    User.findByEmail(DEFAULT_DEV_EMAIL)
+      .then((userObj) => {
+        if (!userObj) {
+          const userModel = {
+            profileId: 'dev-profile-id',
+            email: DEFAULT_DEV_EMAIL,
+            firstName: 'Dev',
+            lastName: 'User',
+            picture: null,
+            state: 'ACTIVE',
+            year: 1,
+            major: 'Undeclared',
+          };
+
+          return User.create(userModel)
+            .then((createdUser) => {
+              Activity.accountCreated(createdUser.uuid);
+              return createUserToken(createdUser);
+            })
+            .catch(next);
+        }
+        return createUserToken(userObj);
+      })
+      .catch(next);
+  });
+}
+
 module.exports = { router, authenticated };

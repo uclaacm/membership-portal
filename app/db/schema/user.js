@@ -129,6 +129,7 @@ module.exports = (Sequelize, db) => {
         type: Sequelize.STRING,
         validate: {
           isUrl: {
+            args: [{ host_whitelist: ['linkedin.com', 'www.linkedin.com'] }],
             msg: 'The LinkedIn URL must be a valid URL',
           },
         },
@@ -138,6 +139,7 @@ module.exports = (Sequelize, db) => {
         type: Sequelize.STRING,
         validate: {
           isUrl: {
+            args: [{ host_whitelist: ['github.com', 'www.github.com'] }],
             msg: 'The GitHub URL must be a valid URL',
           },
         },
@@ -332,6 +334,7 @@ module.exports = (Sequelize, db) => {
       points: this.getDataValue('points'),
       pronouns: this.getDataValue('pronouns'),
       bio: this.getDataValue('bio'),
+      isProfilePublic: this.getDataValue('isProfilePublic'),
     };
   };
 
@@ -344,7 +347,6 @@ module.exports = (Sequelize, db) => {
       resumeUrl: this.getDataValue('resumeUrl'),
       skills: this.getDataValue('skills'),
       careerInterests: this.getDataValue('careerInterests'),
-      isProfilePublic: this.getDataValue('isProfilePublic'),
     };
   };
 
