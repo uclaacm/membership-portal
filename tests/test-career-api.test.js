@@ -125,6 +125,47 @@ describe('PATCH /user/', () => {
     expect(response.body.user.lastName).toEqual(initialFields.lastName);
     expect(response.body.user.major).toEqual(initialFields.major);
   });
+
+  it('silently ignores career-related fields', async () => {
+    const initialFields = {
+      firstName: 'John',
+      lastName: 'Doe',
+      major: 'Computer Science',
+    };
+
+    // Set initial values
+    await request(baseUrl)
+      .patch('/user/')
+      .set(headers())
+      .send({ user: initialFields });
+
+    const careerFields = {
+      linkedinUrl: 'https://linkedin.com/in/johndoe',
+      githubUrl: 'https://github.com/johndoe',
+      portfolioUrl: 'https://portfolio.com/johndoe',
+      personalWebsite: 'https://johndoe.com',
+      skills: ['JavaScript', 'Node.js'],
+      careerInterests: ['Software Engineering', 'Web Development'],
+    };
+
+    const response = await request(baseUrl)
+      .patch('/user/')
+      .set(headers())
+      .send({ user: careerFields });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('user');
+
+    // Ensure career fields were not updated
+    Object.keys(careerFields).forEach((field) => {
+      expect(response.body.user[field]).toBeUndefined();
+    });
+
+    // Ensure non-career fields remain unchanged
+    Object.entries(initialFields).forEach(([key, value]) => {
+      expect(response.body.user[key]).toEqual(value);
+    });
+  });
 });
 
 describe('PATCH /user/career/', () => {
@@ -227,5 +268,49 @@ describe('PATCH /user/career/', () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('user.githubUrl', 'https://www.github.com/johndoe');
+  });
+
+  it('silently ignores non-career fields', async () => {
+    const initialFields = {
+      linkedinUrl: 'https://linkedin.com/in/johndoe',
+      githubUrl: 'https://github.com/johndoe',
+      portfolioUrl: 'https://portfolio.com/johndoe',
+      personalWebsite: 'https://johndoe.com',
+      skills: ['JavaScript', 'Node.js'],
+      careerInterests: ['Software Engineering', 'Web Development'],
+    };
+
+    // Set initial values
+    await request(baseUrl)
+      .patch('/user/career/')
+      .set(headers())
+      .send({ user: initialFields });
+
+    const nonCareerFields = {
+      firstName: 'John',
+      lastName: 'Doe',
+      major: 'Computer Science',
+      year: 3,
+      bio: 'This is a <bio>.',
+      pronouns: 'he/him',
+    };
+
+    const response = await request(baseUrl)
+      .patch('/user/career/')
+      .set(headers())
+      .send({ user: nonCareerFields });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('user');
+
+    // Ensure non-career fields were not updated
+    Object.keys(nonCareerFields).forEach((field) => {
+      expect(response.body.user[field]).toBeUndefined();
+    });
+
+    // Ensure career fields remain unchanged
+    Object.entries(initialFields).forEach(([key, value]) => {
+      expect(response.body.user[key]).toEqual(value);
+    });
   });
 });
