@@ -58,7 +58,6 @@ server.use(app.db.errorHandler);
 server.use(app.error.errorHandler);
 server.use(app.error.notFoundHandler);
 
-
 async function startServer() {
   await app.db.setup(false, app.config.isDevelopment);
 
