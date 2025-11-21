@@ -4,7 +4,7 @@ const {
 const { MIN_GRADUATION_YEAR, MAX_PAGINATION_LIMIT } = require('../config/constants');
 
 // Validation error handler
-const handleValidationErrors = (req, res, next) => {
+const handleValidationErrors = (err, req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     res.status(400).json({
@@ -35,10 +35,12 @@ const validateCreateApplication = [
   body('resumeUrl').optional().trim().isURL()
     .withMessage('Resume URL must be a valid URL'),
   body('coverLetter').optional().trim(),
-  // body('responses').optional().isArray().withMessage('Responses must be an array'),
-  // body('responses.*.questionKey').trim().notEmpty().withMessage('Question key is required'),
-  // body('responses.*.question').trim().notEmpty().withMessage('Question text is required'),
-  // body('responses.*.answer').trim().notEmpty().withMessage('Answer is required'),
+  // TODO: Better response validation here and in InternshipApplication schema presave
+  body('firstChoiceResponses').trim().isArray().withMessage('First Choice Responses are required (in array format)'),
+  body('firstChoiceResponses.*.question').trim().notEmpty().withMessage('First Choice Questions are required'),
+  body('firstChoiceResponses.*.answer').trim().notEmpty().withMessage('First Choice Answers are required'),
+  body('secondChoiceResponses').optional(),
+  body('thirdChoiceResponses').optional(),
   handleValidationErrors,
 ];
 
@@ -68,14 +70,26 @@ const validateUpdateApplication = [
   body('resumeUrl').optional().trim().isURL()
     .withMessage('Resume URL must be a valid URL'),
   body('coverLetter').optional().trim(),
-  // body('responses').optional().isArray().withMessage('Responses must be an array'),
-  // body('responses.*.questionKey').optional().trim().notEmpty().withMessage('Question key is required'),
-  // body('responses.*.question').optional().trim().notEmpty().withMessage('Question text is required'),
-  // body('responses.*.answer').optional().trim().notEmpty().withMessage('Answer is required'),
-  body('status')
+  body('firstChoiceResponses').optional().trim().isArray()
+    .withMessage('First Choice Responses are required (in array format)'),
+  body('firstChoiceResponses.*.question').optional().trim().notEmpty()
+    .withMessage('First Choice Questions are required'),
+  body('firstChoiceResponses.*.answer').optional().trim().notEmpty()
+    .withMessage('First Choice Answers are required'),
+  body('secondChoiceResponses').optional(),
+  body('thirdChoiceResponses').optional(),
+  body('firstChoiceStatus')
     .optional()
     .isIn(['pending', 'reviewing', 'interviewing', 'accepted', 'rejected', 'withdrawn'])
-    .withMessage('Invalid status'),
+    .withMessage('Invalid firstChoice status'),
+  body('secondChoiceStatus')
+    .optional()
+    .isIn(['pending', 'reviewing', 'interviewing', 'accepted', 'rejected', 'withdrawn'])
+    .withMessage('Invalid secondChoice status'),
+  body('thirdChoiceStatus')
+    .optional()
+    .isIn(['pending', 'reviewing', 'interviewing', 'accepted', 'rejected', 'withdrawn'])
+    .withMessage('Invalid thirdChoice status'),
   handleValidationErrors,
 ];
 
