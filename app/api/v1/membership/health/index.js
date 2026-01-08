@@ -1,7 +1,7 @@
 const express = require('express');
-const config = require('../../../config');
-const error = require('../../../error');
-const db = require('../../../db');
+const config = require('../../../../config');
+const error = require('../../../../error');
+const db = require('../../../../db');
 
 const router = express.Router();
 
@@ -26,7 +26,7 @@ router.get('/setup', (req, res, next) => {
       new error.Forbidden('This route cannot be accessed in production'),
     );
   }
-  return db.setup(true, true).then(v => res.json(v));
+  return db.setup(true, true).then((v) => res.json(v));
 });
 
 module.exports = { router };

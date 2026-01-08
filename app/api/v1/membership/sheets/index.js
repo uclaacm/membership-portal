@@ -1,8 +1,8 @@
 const express = require('express');
 
-const error = require('../../../error');
-const syncEventsFromSheets = require('../../../../scripts/sheets-event-writer');
-const { Event } = require('../../../db');
+const error = require('../../../../error');
+const syncEventsFromSheets = require('../../../../../scripts/sheets-event-writer');
+const { Event } = require('../../../../db');
 
 const router = express.Router();
 

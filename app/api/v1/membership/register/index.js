@@ -1,8 +1,8 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const config = require('../../../config');
-const error = require('../../../error');
-const { Activity } = require('../../../db');
+const config = require('../../../../config');
+const error = require('../../../../error');
+const { Activity } = require('../../../../db');
 
 const router = express.Router();
 
@@ -75,7 +75,7 @@ router.post('/', (req, res, next) => {
 
   return req.user
     .update(updatedInfo)
-    .then(user => createUserToken(user))
+    .then((user) => createUserToken(user))
     .catch(next);
 });
 
