@@ -61,4 +61,4 @@ CommitteeSchema.index({ name: 1 });
 CommitteeSchema.index({ isActive: 1 });
 
 const Committee = mongoose.model('Committee', CommitteeSchema);
-module.exports = Committee;
+module.exports = { Committee };
