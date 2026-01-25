@@ -247,8 +247,7 @@
 
 .admin-dashboard .admin-event-tile {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
   width: 100%;
   margin-bottom: 10px;
   box-shadow: 0px 0px 3px #d2d2d2;
@@ -259,9 +258,19 @@
     cursor: pointer;
   }
 
+  .main-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
   .top {
-    display: table;
+    display: flex;
+    align-items: center;
     height: 100px;
+    flex: 1;
+
     .cover {
       width: 150px;
       height: 100px;
@@ -271,6 +280,7 @@
       border-top-left-radius: 4px;
       border-bottom-left-radius: 4px;
     }
+
     .event-header {
       display: table-cell;
       vertical-align: middle;
@@ -283,8 +293,170 @@
     }
   }
 
-  .rsvp-count {
+  .rsvp-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
     margin-right: 50px;
+
+    .rsvp-count {
+      font-weight: 500;
+    }
+
+    .view-rsvps-btn {
+      background-color: rgba(30, 108, 255, 1);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 0.85em;
+      font-weight: 500;
+      transition: all 0.2s ease-in-out;
+      white-space: nowrap;
+
+      &:hover {
+        background-color: rgb(0, 41, 117);
+      }
+
+      &:disabled {
+        background-color: #6c757d;
+        cursor: not-allowed;
+
+        &:hover {
+          background-color: #6c757d;
+        }
+      }
+    }
+  }
+
+  .rsvp-display {
+    width: 100%;
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+
+    .rsvp-header {
+      margin: 0 0 15px 0;
+      font-size: 1.1em;
+      color: #333;
+      font-weight: 600;
+    }
+
+    .no-rsvps {
+      color: #6c757d;
+      font-style: italic;
+      margin: 10px 0;
+      text-align: center;
+    }
+
+    .rsvp-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 15px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .rsvp-card {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background-color: #fff;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 12px 15px;
+      transition: all 0.2s ease;
+
+      &:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transform: translateY(-1px);
+      }
+
+      .rsvp-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+        border: 2px solid #e9ecef;
+      }
+
+      .rsvp-info {
+        flex: 1;
+        min-width: 0;
+
+        .rsvp-name {
+          font-size: 1em;
+          font-weight: 600;
+          color: #212529;
+          margin-bottom: 4px;
+        }
+
+        .rsvp-email {
+          font-size: 0.9em;
+          color: #6c757d;
+          margin-bottom: 4px;
+          word-break: break-all;
+        }
+
+        .rsvp-details {
+          font-size: 0.85em;
+          color: #868e96;
+        }
+      }
+    }
+
+    .json-toggle {
+      margin-top: 20px;
+      border-top: 1px solid #dee2e6;
+      padding-top: 15px;
+
+      summary {
+        cursor: pointer;
+        font-size: 0.9em;
+        color: rgba(30, 108, 255, 1);
+        font-weight: 500;
+        padding: 8px 0;
+        user-select: none;
+        list-style: none;
+
+        &::-webkit-details-marker {
+          display: none;
+        }
+
+        &:hover {
+          color: rgb(0, 41, 117);
+        }
+
+        &::before {
+          content: "▶ ";
+          display: inline-block;
+          transition: transform 0.2s;
+        }
+      }
+
+      &[open] summary::before {
+        transform: rotate(90deg);
+      }
+
+      pre {
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 12px;
+        margin: 10px 0 0 0;
+        font-size: 0.75em;
+        line-height: 1.5;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+    }
   }
 
   .bottom {

@@ -137,13 +137,13 @@ const FetchUserRSVPs = () => async (dispatch) => {
 
 const FetchEventRSVPs = eventUuid => async (dispatch) => {
   try {
-    const response = await global.fetch(`${Config.API_URL}${Config.routes.rsvp.get}/${eventUuid}`, {
+    const response = await global.fetch(`${Config.API_URL}/api/v1/rsvp/event/${eventUuid}`, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
         Authorization: `Bearer ${global.localStorage.getItem('token')}`,
-      }
+      },
     });
     const data = await response.json();
 
@@ -153,9 +153,8 @@ const FetchEventRSVPs = eventUuid => async (dispatch) => {
 
     dispatch(RSVPActions.FetchEventRSVPs(null, data.rsvps));
     return { success: true, rsvps: data.rsvps };
-    
   } catch (err) {
-      dispatch(RSVPActions.FetchEventRSVPs(err.message || 'Failed to fetch RSVPs'));
+    dispatch(RSVPActions.FetchEventRSVPs(err.message || 'Failed to fetch RSVPs'));
     return { success: false, error: err };
   }
 };
