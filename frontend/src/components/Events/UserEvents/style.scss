@@ -1,19 +1,18 @@
- .main-section .featured-events .events-container .event-container {
-    * {
-      font-family: "Lato", sans-serif !important;
-    }
-    
-    .text-container {
-      margin-top: 0px;
-    }
-
-    @media (min-width: 768px) {
-      height: 90%;
-      aspect-ratio: 29/32;
-      width: auto;
-
-    }
+.main-section .featured-events .events-container .event-container {
+  * {
+    font-family: "Lato", sans-serif !important;
   }
+
+  .text-container {
+    margin-top: 0px;
+  }
+
+  @media (min-width: 768px) {
+    height: 90%;
+    aspect-ratio: 29/32;
+    width: auto;
+  }
+}
 
 .event-container {
   position: relative;
@@ -21,7 +20,7 @@
   height: 320px;
   perspective: 1000px;
   margin: 10px;
-  
+
   &.is-flipped .card-flipper {
     transform: rotateY(180deg);
   }
@@ -35,7 +34,8 @@
     transform-style: preserve-3d;
   }
 
-  .card-front, .card-back {
+  .card-front,
+  .card-back {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -55,41 +55,43 @@
     transform: rotateY(180deg);
     display: flex;
     flex-direction: column;
-    
+
     .back-content {
       position: relative;
       height: 100%;
       display: flex;
       flex-direction: column;
-      padding: 32px 20px;
-      
+      padding: 20px 20px 60px 20px;
+
       h3 {
         color: #333;
         font-size: 1.2em;
         text-align: left;
-        margin: 0;
+        margin: 0 0 10px 0;
+        flex-shrink: 0;
       }
 
       .description-scroll {
-        flex-grow: 1;
+        flex: 1 1 0;
+        min-height: 0;
         overflow-y: auto;
         padding-right: 10px;
-        margin-bottom: 15px;
-        
+        margin-bottom: 0;
+
         /* Custom scrollbar */
         &::-webkit-scrollbar {
           width: 6px;
         }
-        
+
         &::-webkit-scrollbar-track {
           background: #f1f1f1;
           border-radius: 3px;
         }
-        
+
         &::-webkit-scrollbar-thumb {
           background: #888;
           border-radius: 3px;
-          
+
           &:hover {
             background: #555;
           }
@@ -109,8 +111,9 @@
 
   .flip-back-btn {
     position: absolute;
-    bottom: 10px;
-    left: 10px;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
     background: white;
     border: 1px solid #eee;
     padding: 8px 12px;
@@ -122,12 +125,12 @@
     font-size: 0.9em;
     color: #666;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
     &:hover {
       background: #f8f8f8;
-      transform: translateY(-1px);
-      box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+      transform: translateX(-50%) translateY(-1px);
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
     }
 
     i {
@@ -234,13 +237,19 @@
 .event-title {
   font-size: 1.2em;
   font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  max-width: 100%;
 }
 
 .text {
   font-size: 0.8em;
   color: rgb(74, 74, 74);
 
-  .location-link, .calendar-link {
+  .location-link,
+  .calendar-link {
     color: inherit;
     display: inline-flex;
     align-items: center;
@@ -250,7 +259,7 @@
     border-radius: 4px;
     transition: all 0.2s ease;
     position: relative;
-    
+
     &::before {
       content: "";
       position: absolute;
@@ -263,7 +272,8 @@
       transition: transform 0.2s ease;
     }
 
-    &:hover, &:active {
+    &:hover,
+    &:active {
       background-color: rgba(30, 108, 255, 0.1);
       color: #2196f3;
       text-decoration: none;
@@ -337,7 +347,6 @@
   &.admin-card {
     margin-left: 10px;
   }
-
 }
 
 .event-grid {
