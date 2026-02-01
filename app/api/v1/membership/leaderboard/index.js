@@ -18,7 +18,7 @@ router.route('/').get((req, res, next) => {
 
   return User.getLeaderboard(offset, limit)
     .then((users) => {
-      // map the user objects to public (just name, picture, and points) for privacy reasons
+      // map the user objects to base profile (name, picture, points)
       res.json({
         error: null,
         leaderboard: users.map((u) => u.getBaseProfile()),

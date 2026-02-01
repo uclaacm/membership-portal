@@ -1,17 +1,15 @@
 const express = require('express');
 const error = require('../../../../error');
 const {
-  Event, RSVP,
+  Event, RSVP, User,
 } = require('../../../../db');
 
 const router = express.Router();
 
 /**
- * Gets all RSVPs for a single event or for the user
+ * Gets all RSVPs for the current user
  * Returns a list of RSVP objects
  */
-
-// Get RSVPs for the current user (no UUID)
 router.route('/').get((req, res, next) => {
   if (req.user.isPending()) return next(new error.Forbidden());
 
@@ -22,14 +20,38 @@ router.route('/').get((req, res, next) => {
     .catch(next);
 });
 
-// Get RSVPs for a specific event (with UUID)
-router.route('/:uuid').get((req, res, next) => {
+/**
+ * Gets all RSVPs for a specific event (admin only)
+ * Returns a list of RSVP objects enriched with user profile data
+ */
+router.route('/event/:uuid').get((req, res, next) => {
   if (req.user.isPending()) return next(new error.Forbidden());
 
-  // Find all RSVP records for THAT EVENT
-  // Will return all users who RSVPed to an event
+  // Only admins can access this endpoint
+  if (!req.user.isAdmin()) {
+    return next(new error.Forbidden());
+  }
+
+  // Find all RSVP records for THAT EVENT and enrich with user profiles
   return RSVP.getRSVPsForEvent(req.params.uuid)
-    .then((rsvps) => res.json({ error: null, rsvps: rsvps.map((r) => r.getPublic()) }))
+    .then((rsvps) => {
+      // Extract all user UUIDs from RSVPs
+      const userPromises = rsvps.map((rsvp) => User.findByUUID(rsvp.getDataValue('user')));
+
+      // Fetch all users in parallel
+      return Promise.all(userPromises)
+        .then((users) => {
+          // Combine RSVP data with user profile data
+          const enrichedRsvps = rsvps.map((rsvp, index) => ({
+            uuid: rsvp.getDataValue('uuid'),
+            user: users[index] ? users[index].getUserProfile() : null,
+            event: rsvp.getDataValue('event'),
+            date: rsvp.getDataValue('date'),
+          }));
+
+          return res.json({ error: null, rsvps: enrichedRsvps });
+        });
+    })
     .catch(next);
 });
 
