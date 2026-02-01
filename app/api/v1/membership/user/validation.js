@@ -3,20 +3,16 @@ const rateLimit = require('express-rate-limit');
 const { handleValidationErrors } = require('../../validation');
 
 const validateCareerProfileUpdate = [
-  body('user.bio')
-    .optional()
-    .isString()
-    .trim()
-    .isLength({ max: 1000 })
-    .escape()
-    .withMessage('Bio must be 1000 characters or less'),
+  body('user')
+    .isObject()
+    .withMessage('Request body must contain a user object'),
   body('user.linkedinUrl')
     .optional()
-    .isURL({ protocols: ['http', 'https'] })
+    .isURL({ protocols: ['http', 'https'], host_whitelist: ['linkedin.com', 'www.linkedin.com'] })
     .withMessage('LinkedIn URL must be a valid URL'),
   body('user.githubUrl')
     .optional()
-    .isURL({ protocols: ['http', 'https'] })
+    .isURL({ protocols: ['http', 'https'], host_whitelist: ['github.com', 'www.github.com'] })
     .withMessage('GitHub URL must be a valid URL'),
   body('user.portfolioUrl')
     .optional()
@@ -48,6 +44,40 @@ const validateCareerProfileUpdate = [
     .isLength({ min: 1, max: 50 })
     .escape()
     .withMessage('Each career interest must be 1-50 characters'),
+  handleValidationErrors,
+];
+
+const validateUserProfileUpdate = [
+  body('user')
+    .isObject()
+    .withMessage('Request body must contain a user object'),
+  body('user.firstName')
+    .optional()
+    .isString()
+    .trim()
+    .withMessage('First name must be a string'),
+  body('user.lastName')
+    .optional()
+    .isString()
+    .trim()
+    .withMessage('Last name must be a string'),
+  body('user.major')
+    .optional()
+    .isString()
+    .trim()
+    .withMessage('Major must be a string'),
+  body('user.year')
+    .optional()
+    .isInt({ min: 1, max: 5 })
+    .toInt()
+    .withMessage('Year must be an integer between 1 and 5'),
+  body('user.bio')
+    .optional()
+    .isString()
+    .trim()
+    .isLength({ max: 1000 })
+    .escape()
+    .withMessage('Bio must be 1000 characters or less'),
   body('user.pronouns')
     .optional()
     .isString()
@@ -104,4 +134,5 @@ module.exports = {
   validateCareerProfileUpdate,
   validatePublicProfileLookup,
   validateDirectoryLookup,
+  validateUserProfileUpdate,
 };
