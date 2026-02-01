@@ -6,6 +6,8 @@
   "scripts": {
     "start": "node index",
     "dev": "nodemon -L -e js -i node_modules -i .git -V index.js",
+    "migrate": "make migrate",
+    "rollback": "make rollback",
     "test": "export TESTING=true && jest --config jest.config.json",
     "lint": "prettier --write './**/*.js*'"
   },

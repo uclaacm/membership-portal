@@ -43,11 +43,12 @@ router.route('/future').get((req, res, next) => {
 });
 
 /**
- * Get all events or all events by committee
+ * Get all events, all events by committe, a single event, based on whether a UUID is specified
  *
- * Supports pagination with 'offset' and 'limit' query parameters
- * Supports filtering by committee with 'committee' query parameter
+ * Supports pagination with 'offset' and 'limit' query parameters for listing all events
  */
+
+// Route without UUID - get all events
 router
   .route('/')
   .get((req, res, next) => {
@@ -56,13 +57,11 @@ router
     const offset = parseInt(req.query.offset, 10);
     const limit = parseInt(req.query.limit, 10);
     const { committee } = req.query;
-
     // CASE: committee is present, return all events for committee
     // CASE: no committee in query, return all events
     const getEvents = committee
       ? Event.getCommitteeEvents(committee, offset, limit)
       : Event.getAll(offset, limit);
-
     return getEvents
       .then((events) => {
         events.forEach((e) => {
@@ -109,17 +108,17 @@ router
       .catch(next);
   });
 
-/**
- * Get a single event by UUID
- */
+// Route with UUID - get single event by UUID
 router
   .route('/:uuid')
   .get((req, res, next) => {
     if (req.user.isPending()) return next(new error.Forbidden());
 
+    // CASE: UUID is present, should return matching event
     return Event.findByUUID(req.params.uuid)
       .then((event) => {
-        // return the public event object (or admin version, if user is admin)
+        // return the public event object (or admin version, if user is admin) if
+        // an event was found. otherwise, return null
         res.json({
           error: null,
           event: event ? event.getPublic(req.user.isAdmin()) : null,
@@ -142,7 +141,7 @@ router
    * with updated fields.
    */
   .patch((req, res, next) => {
-    if (!req.body.event) {
+    if (!req.params.uuid || !req.params.uuid.trim() || !req.body.event) {
       return next(new error.BadRequest());
     }
 
@@ -170,11 +169,14 @@ router
    *
    * Returns the number of events deleted (1 if successful, 0 if event not found)
    */
-  .delete((req, res, next) => Event.destroyByUUID(req.params.uuid)
-    .then((numDeleted) => {
-      res.json({ error: null, numDeleted });
-      return null;
-    })
-    .catch(next));
+  .delete((req, res, next) => {
+    if (!req.params.uuid) return next(new error.BadRequest());
+    return Event.destroyByUUID(req.params.uuid)
+      .then((numDeleted) => {
+        res.json({ error: null, numDeleted });
+        return null;
+      })
+      .catch(next);
+  });
 
 module.exports = { router };
