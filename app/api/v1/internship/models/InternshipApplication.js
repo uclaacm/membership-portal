@@ -5,8 +5,10 @@ const { Schema } = mongoose;
 
 const InternshipApplicationSchema = new Schema(
   {
+    // User information
     userId: {
       type: String,
+      required: true,
       trim: true,
       index: true,
     },
@@ -26,7 +28,7 @@ const InternshipApplicationSchema = new Schema(
       unique: true,
       lowercase: true,
       trim: true,
-      match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email address'],
+      match: [/^\S+@(ucla\.edu|g\.ucla\.edu)$/, 'Please provide a valid UCLA email address (ending with @ucla.edu or @g.ucla.edu)'],
     },
     phone: {
       type: String,
@@ -35,6 +37,7 @@ const InternshipApplicationSchema = new Schema(
     university: {
       type: String,
       required: [true, 'University is required'],
+      default: 'UCLA',
       trim: true,
     },
     major: {
@@ -47,12 +50,6 @@ const InternshipApplicationSchema = new Schema(
       required: [true, 'Graduation year is required'],
       min: [MIN_GRADUATION_YEAR, `Graduation year must be ${MIN_GRADUATION_YEAR} or later`],
     },
-    committee: {
-      type: String,
-      required: [true, 'Committee is required'],
-      trim: true,
-      index: true,
-    },
     resumeUrl: {
       type: String,
       trim: true,
@@ -61,7 +58,22 @@ const InternshipApplicationSchema = new Schema(
       type: String,
       trim: true,
     },
-    responses: [{
+
+    // Committee choices and responses
+    firstChoiceCommittee: {
+      type: ObjectId,
+      ref: "Committee",
+      required: [true, "You must apply to at least one commitee"],
+    },
+    secondChoiceCommittee: {
+      type: ObjectId,
+      ref: "Committee"
+    },
+    thirdChoiceCommittee: {
+      type: ObjectId,
+      ref: "Committee"
+    },
+    firstChoiceResponses: [{
       questionKey: {
         type: String,
         required: true,
@@ -78,28 +90,103 @@ const InternshipApplicationSchema = new Schema(
         trim: true,
       },
     }],
-    status: {
+    secondChoiceResponses: [{
+      questionKey: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      question: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      answer: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+    }],
+    thirdChoiceResponses: [{
+      questionKey: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      question: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      answer: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+    }],
+    firstChoiceStatus: {
       type: String,
-      enum: ['pending', 'reviewing', 'accepted', 'rejected'],
+      enum: ['pending', 'reviewing', 'interview_scheduled', 'accepted', 'rejected'],
       default: 'pending',
     },
-    appliedAt: {
+    secondChoiceStatus: {
+      type: String,
+      enum: ['pending', 'reviewing', 'interview_scheduled', 'accepted', 'rejected'],
+      default: 'pending',
+    },
+    thirdChoiceStatus: {
+      type: String,
+      enum: ['pending', 'reviewing', 'interview_scheduled', 'accepted', 'rejected'],
+      default: 'pending',
+    },
+
+    // Metadata
+    submittedAt: {
       type: Date,
       default: Date.now,
     },
+    lastModifiedAt: {
+      type: Date,
+      default: Date.now,
+    }
   },
   {
     timestamps: true,
   },
 );
 
+// Pre-save hook to ensure unique committee choices
+InternshipApplicationSchema.pre("save", function (next) {
+  const choices = [
+    this.firstChoiceCommittee,
+    this.secondChoiceCommittee,
+    this.thirdChoiceCommittee
+  ].filter(Boolean);
+
+  const committees = choices.map(id => id.toString());
+
+  const originalCount = committees.length;
+  const uniqueCount = new Set(committees).size;
+
+  if (originalCount != uniqueCount) {
+    return next(new Error("You cannot select the same committee twice"));
+  }
+
+  next();
+});
+
 // Create indexes
 InternshipApplicationSchema.index({ userId: 1 });
-InternshipApplicationSchema.index({ committee: 1 });
-InternshipApplicationSchema.index({ status: 1 });
-InternshipApplicationSchema.index({ appliedAt: -1 });
-InternshipApplicationSchema.index({ userId: 1, committee: 1 });
-// Compound index for user+committee queries
+InternshipApplicationSchema.index({ firstChoiceCommittee: 1 });
+InternshipApplicationSchema.index({ secondChoiceCommittee: 1 });
+InternshipApplicationSchema.index({ thirdChoiceCommittee: 1 });
+InternshipApplicationSchema.index({ submittedAt: -1 });
+
+// Compound index queries
+InternshipApplicationSchema.index({ userId: 1, submittedAt: -1 });
+InternshipApplicationSchema.index({ firstChoiceCommittee: 1, firstChoiceStatus: 1 });
+InternshipApplicationSchema.index({ secondChoiceCommittee: 1, secondChoiceStatus: 1 });
+InternshipApplicationSchema.index({ thirdChoiceCommittee: 1, thirdChoiceStatus: 1 });
 
 const InternshipApplication = mongoose.model(
   'InternshipApplication',
