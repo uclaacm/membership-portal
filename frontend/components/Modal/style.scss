@@ -1,0 +1,264 @@
+.modal-wrapper {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+
+  .leaderboard-modal-container {
+    position: relative;
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    border-radius: 25px;
+    min-width: 580px;
+    max-width: 700px;
+
+    h1 {
+      text-align: center;
+    }
+
+    .padding {
+      padding: 20px 30px 30px 30px;
+
+      .content-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 40px;
+        width: 100%;
+
+        .image-container {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          max-width: 50%;
+          max-height: 100%;
+
+          img {
+            width: 190px;
+            height: 190px;
+            border-radius: 50%;
+            background: center center fixed;
+            background-size: cover;
+          }
+        }
+
+        .text-container {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          overflow-wrap: break-word;
+          gap: 10px;
+          max-width: 50%;
+
+          h3 {
+            margin: 0px;
+          }
+        }
+
+        @media (max-width: 700px) {
+          .image-container, .text-container {
+            max-width: 100%;
+          }
+        }
+      }
+
+      @media (max-width: 700px) {
+        .content-container {
+          flex-direction: column; 
+          gap: 10px;
+          text-align: center;
+        }
+      }
+
+      .button-container {
+        display: flex;
+        justify-content: center;
+      }
+    }
+  }
+
+  @media (max-width: 700px) {
+    .leaderboard-modal-container {
+      width: 90%;
+      min-width: 90%;
+      // max-width: 80%;
+    }
+}
+
+  .confirmation-modal-container {
+    position: relative;
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+    height: 35%;
+    justify-content: flex-start;
+    border-radius: 25px;
+    min-height: 300px;
+    min-width: 300px;
+
+    .padding {
+      padding: 30px;
+      position: absolute;
+      height: 80%;
+    }
+
+    .button-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      position: absolute;
+      padding-bottom: 30px;
+      width: 100%;
+      left: 0;
+      bottom: 0;
+
+      .button-padding {
+        padding: 10px;
+      }
+    }
+  }
+
+  .attendees-modal-container {
+    position: relative;
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+    height: 80%;
+    justify-content: flex-start;
+    border-radius: 25px;
+    min-height: 300px;
+    min-width: 300px;
+
+    h1 {
+      text-align: center;
+    }
+
+    .button-container {
+      position: absolute;
+      bottom: 10%;
+    }
+
+    .padding {
+      padding: 30px;
+    }
+
+    .modal-table {
+      overflow-y: scroll;
+      height: 45vh;
+
+      table {
+        width: 100%;
+      }
+
+      img {
+        height: 150px;
+        vertical-align: middle;
+      }
+
+      img.rounded {
+        margin-right: 15px;
+        margin-left: 5px;
+        height: 30px;
+        width: 30px;
+        vertical-align: middle;
+        border-radius: 50%;
+      }
+    }
+
+    .table-form-elem {
+      padding: 0;
+    }
+
+    input {
+      background-color: #f0f0f0;
+    }
+  }
+
+  .small-input-modal-container {
+    position: relative;
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    width: 45%;
+    height: 57.5%;
+    justify-content: flex-start;
+    border-radius: 25px;
+    min-height: 300px;
+    min-width: 300px;
+
+    h1 {
+      text-align: center;
+    }
+
+    .button-container {
+      position: absolute;
+      bottom: 10%;
+    }
+
+    .padding {
+      padding: 30px;
+    }
+
+    .modal-table {
+      overflow-y: scroll;
+      height: 45vh;
+
+      table {
+        width: 100%;
+      }
+
+      img {
+        margin-right: 15px;
+        margin-left: 5px;
+        height: 30px;
+        width: 30px;
+        vertical-align: middle;
+        border-radius: 50%;
+      }
+    }
+
+    .table-form-elem {
+      padding: 0;
+    }
+
+    input {
+      background-color: #f0f0f0;
+    }
+  }
+}
+
+thead tr td {
+  font-weight: bold;
+  font-size: 1.1em;
+  color: #333333;
+  padding: 12px 10px;
+  border-top: 2px solid #b4b4b4;
+  border-bottom: 1px solid #b4b4b4;
+
+  &.name div img {
+    visibility: hidden;
+  }
+}
+
+tr td {
+  padding: 10px 10px;
+  color: #666666;
+  font-size: 0.9em;
+  border-bottom: 1px solid #b4b4b4;
+  vertical-align: middle;
+}
+
+.center {
+  display: flex;
+  justify-content: flex-end;
+}

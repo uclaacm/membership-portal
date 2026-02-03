@@ -6,6 +6,7 @@ import moment from "moment";
 
 import { authUserProfileAtom } from "@/lib/atoms";
 import Config from "@/lib/config";
+import Topbar from "@/components/Topbar";
 import WelcomeBanner from "./components/WelcomeBanner";
 import FeaturedEvents from "./components/featuredEvents";
 import Points from "./components/points";
@@ -99,8 +100,20 @@ export default function HomePage() {
     </div>
   ));
 
+  const handleLogout = () => {
+    window.location.href = Config.API_URL + Config.routes.auth.logout;
+  };
+
   return (
     <div className="home-dashboard">
+      <Topbar 
+        isAdmin={false}
+        picture={userProfile?.picture}
+        onLogout={handleLogout}
+        isRealAdmin={false}
+        adminView={false}
+      />
+      
       {/* Sidebar */}
       <aside className="sidebar-custom">
         <div className="sidebar-box event-checkin">

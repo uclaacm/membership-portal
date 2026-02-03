@@ -1,0 +1,212 @@
+@use "sass:math";
+
+@use "styles/vars";
+
+.hidden {
+  display: none;
+}
+
+.button-component {
+  display: inline-block;
+
+  button {
+    font-family: "Lato", sans-serif;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: block;
+    border: none;
+    outline: none;
+    width: auto;
+    color: vars.$white;
+    text-align: center;
+    border-radius: vars.$input-button-size;
+    font-size: vars.$checkin-fontsize;
+    height: vars.$input-button-size;
+    transition: 0.125s ease-in-out;
+    padding: 0 12px;
+    text-wrap: wrap;
+
+    span{
+      height: 100%;
+      width: 100%;
+      text-wrap: nowrap;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  .button-inside {
+    display: flex;
+    align-items: center;
+  }
+
+  .button-icon {
+    display: inline-block;
+    text-align: center;
+    margin-right: 10px;
+  }
+
+  .button-custom-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .small {
+    height: vars.$input-button-size * math.div(2, 3);
+    line-height: vars.$input-button-size * math.div(2, 3);
+    font-size: 14px;
+  }
+
+  .small-text {
+    font-size: 14px;
+  }
+
+  .blue {
+    background: vars.$secondaryblue;
+    box-shadow: 0 4px 0 vars.$primaryblue;
+  }
+
+  .blue-signup {
+    background: vars.$secondaryblue;
+    box-shadow: 0 4px 0 #2e419d;
+  }
+
+  .green {
+    background: vars.$light-green;
+    box-shadow: 0 4px 0 vars.$dark-green;
+  }
+
+  .red {
+    background: vars.$light-red;
+    box-shadow: 0 4px 0 vars.$dark-red;
+  }
+
+  .gray {
+    background: vars.$white;
+    box-shadow: 0 4px 0 vars.$gray1;
+    color: vars.$black;
+  }
+
+  .disabled {
+    background: #cccccc;
+    color: white;
+    cursor: default;
+    -webkit-transform: translateY(4px);
+    transform: translateY(4px);
+    box-shadow: 0 0px 0 vars.$gray1;
+  }
+
+  .blue:hover {
+    -webkit-transform: translateY(1px);
+    transform: translateY(1px);
+    box-shadow: 0 3px 0 vars.$primaryblue;
+  }
+
+  .blue-signup:hover {
+    -webkit-transform: translateY(1px);
+    transform: translateY(1px);
+    box-shadow: 0 3px 0 #2e419d;
+  }
+
+  .green:hover {
+    -webkit-transform: translateY(1px);
+    transform: translateY(1px);
+    box-shadow: 0 3px 0 vars.$dark-green;
+  }
+
+  .red:hover {
+    -webkit-transform: translateY(1px);
+    transform: translateY(1px);
+    box-shadow: 0 3px 0 vars.$dark-red;
+  }
+
+  .gray:hover {
+    -webkit-transform: translateY(1px);
+    transform: translateY(1px);
+    box-shadow: 0 3px 0 vars.$gray1;
+    color: vars.$black;
+  }
+
+  .blue:active {
+    -webkit-transform: translateY(4px);
+    transform: translateY(4px);
+    box-shadow: 0 0px 0 vars.$primaryblue;
+  }
+
+  .blue-signup:active {
+    -webkit-transform: translateY(4px);
+    transform: translateY(4px);
+    box-shadow: 0 0px 0 #3167ae;
+  }
+
+  .green:active {
+    -webkit-transform: translateY(4px);
+    transform: translateY(4px);
+    box-shadow: 0 0px 0 vars.$dark-green;
+  }
+
+  .red:active {
+    -webkit-transform: translateY(4px);
+    transform: translateY(4px);
+    box-shadow: 0 0px 0 vars.$dark-red;
+  }
+
+  .gray:active {
+    -webkit-transform: translateY(4px);
+    transform: translateY(4px);
+    box-shadow: 0 0px 0 vars.$gray1;
+    color: vars.$black;
+  }
+
+  .event-button {
+    background: vars.$secondaryblue;
+    width: vars.$event-img-width;
+    height: 34px;
+    font-size: 14px;
+  }
+
+  &.large-button {
+    button {
+      padding: 0 48px;
+      height: 50px;
+      line-height: 50px;
+    }
+  }
+
+  .collapsed {
+    width: 30px;
+    height: 35px;
+    padding: 0px;
+    min-width: 50px;
+    text-align: center;
+
+    .button-icon {
+      margin: auto;
+      font-size: 1.3em;
+    }
+
+    span {
+      display: none;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .collapsible {
+      width: 50px;
+      height: 50px;
+      padding: 0px;
+      min-width: 60px;
+      text-align: center;
+
+      .button-icon {
+        margin: auto;
+        font-size: 1.3em;
+      }
+
+      span {
+        display: none;
+      }
+    }
+  }
+}
