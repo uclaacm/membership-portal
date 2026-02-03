@@ -1,0 +1,278 @@
+@use '@/styles/vars';
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -40%);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.banner {
+  position: relative;
+  height: 100vh;    // make sure the banner fills the screen
+  overflow: hidden;
+  width: 100%;
+
+  &.decorative {
+    height: 175px;
+    
+  }
+
+  .square-col-container {
+    position: absolute;
+    top: 50%;                  // middle of the banner
+    left: 0;                   // stick to left edge (or use right:0 if you prefer)
+    width: 106%;               // keep your overflow-trick if you like
+    transform: translateY(-50%); // pull it up by half its own height
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;   // still center columns horizontally
+    overflow: visible;
+  }
+
+  .square-col {
+    height: 100%;
+    margin: -300px 10px;
+    padding: 0 5px;
+    transform: rotate(45deg);
+    width: 50px;
+
+    @media (max-width: 500px) {
+      margin: -100px 10px;
+    }
+
+    @media (max-height: 800px) {
+      margin: -175px 10px;
+      
+    }
+  }
+
+  .square {
+    background-color: vars.$acm-cobalt;
+    border-radius: 14px;
+    height: 50px;
+    margin-bottom: 6px;
+    transition: background 2.5s ease-in-out;
+    width: 50px;
+  }
+
+  .square.dark {
+    background-color: vars.$acm-black;
+  }
+
+  .square.light {
+    background-color: vars.$acm-tint;
+  }
+
+  .square.white {
+    background-color: transparent !important;
+  }
+
+  
+
+  &.hack .square {
+    background-color: vars.$hack-purple;
+  }
+
+  &.hack .square.dark {
+    background-color: vars.$hack-black;
+  }
+
+  &.hack .square.light {
+    background-color: vars.$hack-tint;
+  }
+
+  &.ai .square {
+    background-color: vars.$ai-arctic;
+  }
+
+  &.ai .square.dark {
+    background-color: vars.$ai-black;
+  }
+
+  &.ai .square.light {
+    background-color: vars.$ai-tint;
+  }
+
+  &.w .square {
+    background-color: vars.$w-teal;
+  }
+
+  &.w .square.dark {
+    background-color: vars.$w-black;
+  }
+
+  &.w .square.light {
+    background-color: vars.$w-tint;
+  }
+
+  &.cyber .square {
+    background-color: vars.$cyber-amber;
+  }
+
+  &.cyber .square.dark {
+    background-color: vars.$cyber-black;
+  }
+
+  &.cyber .square.light {
+    background-color: vars.$cyber-tint;
+  }
+
+  &.studio .square {
+    background-color: vars.$studio-raspberry;
+  }
+
+  &.studio .square.dark {
+    background-color: vars.$studio-black;
+  }
+
+  &.studio .square.light {
+    background-color: vars.$studio-tint;
+  }
+
+  &.icpc .square {
+    background-color: vars.$icpc-tangerine;
+  }
+
+  &.icpc .square.dark {
+    background-color: vars.$icpc-black;
+  }
+
+  &.icpc .square.light {
+    background-color: vars.$icpc-tint;
+  }
+
+  &.design .square {
+    background-color: vars.$design-orange;
+  }
+
+  &.design .square.dark {
+    background-color: vars.$design-black;
+  }
+
+  &.design .square.light {
+    background-color: vars.$design-tint;
+  }
+
+  &.teachla .square {
+    background-color: vars.$teachla-green;
+  }
+
+  &.teachla .square.dark {
+    background-color: vars.$teachla-black;
+  }
+
+  &.teachla .square.light {
+    background-color: vars.$teachla-tint;
+  }
+
+  &.cloud .square {
+    background-color: vars.$cloud-purple;
+  }
+
+  &.cloud .square.dark {
+    background-color: vars.$cloud-black;
+  }
+
+  &.cloud .square.light {
+    background-color: vars.$cloud-tint;
+  }
+
+
+  .title {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 100%;
+    animation: fadeIn 1.2s ease-out 0.8s forwards;
+    opacity: 0; /* Start with opacity 0 to prevent flash before animation */
+    
+    h1 {
+      color: vars.$white;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 2.3em;
+      font-weight: bold;
+      margin: 0;
+      padding: 0;
+      transition: color 2.5s ease-in-out;
+    }
+  }
+
+  &.hack .title h1 {
+    color: vars.$hack-purple;
+  }
+
+  &.ai .title h1 {
+    color: vars.$ai-arctic;
+  }
+
+  &.w .title h1 {
+    color: vars.$w-teal;
+  }
+
+  &.cyber .title h1 {
+    color: vars.$cyber-amber;
+  }
+
+  &.studio .title h1 {
+    color: vars.$studio-raspberry;
+  }
+
+  &.icpc .title h1 {
+    color: vars.$icpc-tangerine;
+  }
+
+  &.design .title h1 {
+    color: vars.$design-orange;
+  }
+
+  &.teachla .title h1 {
+    color: vars.$teachla-green;
+  }
+
+  .square.logo-bg {
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: var(--logo-url);
+      background-size: 125%;
+      background-position: center;
+      border-radius: 14px;
+
+      opacity: 0;
+      transform: scale(0.95) rotate(-45deg);
+      animation: fadeInOut 4s ease-in-out infinite;
+    }
+  }
+
+  @keyframes fadeInOut {
+    0% {
+      opacity: 0;
+      transform: scale(0.95) rotate(-45deg);
+    }
+    25% {
+      opacity: 1;
+      transform: scale(1) rotate(-45deg);
+    }
+    85% {
+      opacity: 1;
+      transform: scale(1) rotate(-45deg);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(0.95) rotate(-45deg);
+    }
+  }
+
+}
