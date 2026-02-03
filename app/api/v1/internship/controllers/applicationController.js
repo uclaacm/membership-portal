@@ -3,7 +3,16 @@ const { InternshipApplication } = require('../models/InternshipApplication');
 // Create a new internship application
 async function createApplication(req, res) {
   try {
-    const application = new InternshipApplication(req.body);
+    // Autopopulate user info from authenticated user
+    const applicationData = {
+      ...req.body,
+      userId: req.user.uuid,
+      firstName: req.user.firstName,
+      lastName: req.user.lastName,
+      email: req.user.email,
+    };
+
+    const application = new InternshipApplication(applicationData);
     await application.save();
 
     res.status(201).json({

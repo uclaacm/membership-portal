@@ -5,16 +5,11 @@ const { Committee } = require('../models/Committee');
 
 // Validate application creation
 const validateCreateApplication = [
-  body('userId').optional().trim(),
-  body('firstName').trim().notEmpty().withMessage('First name is required'),
-  body('lastName').trim().notEmpty().withMessage('Last name is required'),
-  body('email').trim().isEmail().withMessage('Valid email is required')
-    .custom((value) => {
-      if (!value.endsWith('@ucla.edu')) {
-        throw new Error('Email must be a @ucla.edu email address');
-      }
-      return true;
-    }),
+// Rejects apps with fields that have .not() bc they should be autopopulated, prevents spoofing
+  body('userId').not().exists().withMessage('userId will be set automatically from your account'),
+  body('firstName').not().exists().withMessage('firstName will be set automatically from your account'),
+  body('lastName').not().exists().withMessage('lastName will be set automatically from your account'),
+  body('email').not().exists().withMessage('email will be set automatically from your account'),
   body('phone').optional().trim(),
   body('university').trim().notEmpty().withMessage('University is required'),
   body('major').trim().notEmpty().withMessage('Major is required'),
