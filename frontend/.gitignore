@@ -29,6 +29,17 @@ build/Release
 # Dependency directories
 node_modules
 jspm_packages
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# Next.js
+/.next/
+/out/
 
 # Optional npm cache directory
 .npm
@@ -42,7 +53,13 @@ desktop.ini
 .DS_Store
 .Trashes
 
-lib/
-public/
+# Typescript
+*.tsbuildinfo
+next-env.d.ts
+
+build/
 .cache-loader
 .vscode
+
+*.pem
+.env*

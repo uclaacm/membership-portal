@@ -1,0 +1,184 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --color-primaryblue: rgb(38, 41, 56);
+  --color-secondaryblue: rgb(59, 89, 237);
+  --color-tertiaryblue: #d2dbe7;
+  --color-primaryblack: rgba(0, 0, 0, 0.8);
+  --color-secondaryblack: rgba(0, 0, 0, 0.6);
+  --color-disabled: rgba(0, 0, 0, 0.2);
+
+  --color-primaryblue-alpha: rgba(26, 29, 38, 0.5);
+  --color-secondaryblue-dark: rgb(47, 70, 188);
+
+  --color-primary: #214d85;
+  --color-secondary: #2f7ee6;
+  --color-tertiary: #8fa5c2;
+  --color-quaternary: #d2dbe7;
+  --color-light-green: #34dc6a;
+  --color-dark-green: #248a45;
+  --color-light-red: #f74e4e;
+  --color-dark-red: #c14b4b;
+
+  --color-gray1: #d8d8d8;
+  --color-gray2: #979797;
+  --color-gray3: #595959;
+
+  --color-acm-cobalt: #1E6CFF;
+  --color-acm-black: #181818;
+  --color-acm-tint: #3DA2FF;
+
+  --color-hack-purple: #C960FF;
+  --color-hack-black: #262938;
+  --color-hack-tint: #C137D8;
+
+  --color-cloud-purple: #8272FF;
+  --color-cloud-black: #29273B;
+  --color-cloud-tint: #CFDBFF;
+
+  --color-w-teal: #1BC3A9;
+  --color-w-black: #233431;
+  --color-w-tint: #56E4B1;
+
+  --color-icpc-tangerine: #FF8383;
+  --color-icpc-black: #3A2B2B;
+  --color-icpc-tint: #F38F70;
+
+  --color-ai-arctic: #28B2FF;
+  --color-ai-black: #233339;
+  --color-ai-tint: #35DDF3;
+
+  --color-studio-raspberry: #FB4469;
+  --color-studio-black: #39272B;
+  --color-studio-tint: #FF8C93;
+
+  --color-cyber-amber: #FFCB44;
+  --color-cyber-black: #3A3327;
+  --color-cyber-tint: #FFE81A;
+
+  --color-design-orange: #FE8D3C;
+  --color-design-black: #372B25;
+  --color-design-tint: #FFAC30;
+
+  --color-teachla-green: #5EDA12;
+  --color-teachla-black: #2C3022;
+  --color-teachla-tint: #B0EE00;
+
+  --color-cloud-purple: #9f97ff;
+  --color-cloud-black: #262938;
+  --color-cloud-tint: #746fb1;
+}
+
+@source inline("{hover:,}{text,bg}-{acm-cobalt,acm-black,acm-tint,hack-purple,hack-black,hack-tint,cloud-purple,cloud-black,cloud-tint,w-teal,w-black,w-tint,icpc-tangerine,icpc-black,icpc-tint,ai-arctic,ai-black,ai-tint,studio-raspberry,studio-black,studio-tint,cyber-amber,cyber-black,cyber-tint,design-orange,design-black,design-tint,teachla-green,teachla-black,teachla-tint,cloud-purple,cloud-black,cloud-tint}");
+
+@layer utilities {
+  .logo-bg::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: var(--logo-url);
+    background-size: 125%;
+    background-position: center;
+    border-radius: 14px;
+
+    opacity: 0;
+    transform: scale(.95) rotate(-45deg);
+    animation: fadeInOut 4s ease-in-out infinite;
+  }
+}
+
+@layer base {
+  .login ~ html,
+  .login ~ body {
+    /* margin: 0px;
+    height: 100%;
+    min-height: 100%;
+    overflow: hidden; */
+    @apply m-0 h-full min-h-full overflow-hidden;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -40%);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) rotate(-45deg);
+  }
+
+  25% {
+    opacity: 1;
+    transform: scale(1) rotate(-45deg);
+  }
+
+  85% {
+    opacity: 1;
+    transform: scale(1) rotate(-45deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(0.95) rotate(-45deg);
+  }
+}
+
+@-webkit-keyframes bouncedelay {
+
+  0%,
+  80%,
+  100% {
+    -webkit-transform: scale(0);
+  }
+
+  40% {
+    -webkit-transform: scale(1);
+  }
+}
+
+@keyframes bouncedelay {
+
+  0%,
+  80%,
+  100% {
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  }
+
+  40% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}

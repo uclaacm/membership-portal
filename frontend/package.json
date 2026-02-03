@@ -1,27 +1,30 @@
 {
   "name": "membership-portal-ui",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "frontend for the ACM membership portal",
   "private": true,
-  "main": "index.js",
   "scripts": {
-    "test": "jest --config jest.config.json",
-    "build": "NODE_ENV=production webpack --progress --color",
-    "dev": "WEBPACK=true NODE_ENV=development webpack-dev-server --cache --progress --color --mode development",
-    "lint": "eslint --fix --color 'src/**/*.js*' 'tests/**/*.js*' && prettier --write 'src/**/*.js*' 'tests/**/*.js*' 'src/**/*.css' 'src/**/*.scss'"
+    "dev": "next dev -p 8000",
+    "build": "NODE_ENV=production next build",
+    "start": "next start",
+    "lint": "eslint --fix --color 'app/**/*.ts*' && prettier --write 'app/**/*.ts*'",
+    "test": "jest --config jest.config.json"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/uclaacm/membership-portal-ui.git"
   },
-  "author": "nkansal96",
+  "author": "RyloRiz",
   "contributors": [
+    {
+      "name": "nkansal96"
+    },
     {
       "name": "Dylon Tjanaka",
       "url": "https://dtjanaka.com"
     }
   ],
-  "license": "MIT",
+  "license": "MPL-2.0",
   "bugs": {
     "url": "https://github.com/uclaacm/membership-portal-ui/issues"
   },
@@ -77,26 +80,51 @@
     "webpack-dev-server": "^4.0.0"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^7.1.0",
     "@react-oauth/google": "^0.12.1",
-    "babel-polyfill": "^6.23.0",
     "chart.js": "^2.7.2",
     "dompurify": "^0.9.0",
     "history": "^4.7.2",
     "immutable": "^3.8.1",
+    "jotai": "^2.15.1",
     "moment": "^2.18.1",
+    "next": "16.0.3",
+    "next-themes": "^0.4.6",
     "prop-types": "^15.6.2",
-    "react": "^16.5.2",
+    "react": "19.2.0",
     "react-chartjs": "^1.2.0",
     "react-chartjs-2": "^2.7.0",
     "react-datepicker": "^1.6.0",
-    "react-dom": "^16.5.2",
-    "react-input-mask": "^0.8.0",
-    "react-redux": "^5.0.7",
-    "react-router-dom": "^4.3.1",
-    "react-router-redux": "^5.0.0-alpha.4",
-    "redux": "^4.0.1",
-    "redux-thunk": "^2.3.0",
-    "sass": "^1.80.2",
-    "whatwg-fetch": "^2.0.3"
-  }
+    "react-dom": "19.2.0"
+  },
+  "devDependencies": {
+    "@eslint/compat": "^2.0.0",
+    "@eslint/js": "^9.39.1",
+    "@next/eslint-plugin-next": "^16.0.3",
+    "@stylistic/eslint-plugin": "^3.1.0",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19.2.10",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-config-airbnb-extended": "^2.3.2",
+    "eslint-config-next": "16.0.3",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-import-x": "^4.16.1",
+    "eslint-plugin-jest": "^29.1.0",
+    "eslint-plugin-jsx-a11y": "^6.1.2",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-react": "^7.11.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "jest": "^30.2.0",
+    "lint-staged": "^7.3.0",
+    "prettier": "^3.6.2",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "typescript-eslint": "^8.47.0"
+  },
+  "packageManager": "yarn@4.12.0"
 }

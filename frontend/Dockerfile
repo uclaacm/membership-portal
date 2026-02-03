@@ -1,51 +1,44 @@
-# Need a custom image here so that we can incorporate an npm build too
-# Alpine is super light
-FROM node:18-alpine as build
+# Brand-new to making Dockerfiles so if someone from CI/CD can review this plz
 
-# Create directories
-#   /working is the build directory
-#   /static is the directory linked to nginx (serves static content)
-RUN mkdir -p /var/www/membership/working && \
-    mkdir -p /var/www/membership/static && \
-    mkdir -p /var/www/membership/static/build
+# Build Stage
+FROM node:18-alpine AS build
+WORKDIR /app
 
-# Install the required packages to build the frontend
-WORKDIR /var/www/membership/working
-COPY package.json yarn.lock /var/www/membership/working/
-RUN yarn install
+# Install deps
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 
 # Copy the source files
-COPY pages/ /var/www/membership/working/pages/
-COPY src/ /var/www/membership/working/src/
-COPY .babelrc *.js *.json /var/www/membership/working/
+COPY . .
 
-# Inject Google API env vars at build time so Webpack's DefinePlugin can bake them in
-ARG GOOGLE_CLIENT_ID
-ARG GOOGLE_API_KEY
-ARG GOOGLE_AUTH_DOMAIN
-ENV GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID
-ENV GOOGLE_API_KEY=$GOOGLE_API_KEY
-ENV GOOGLE_AUTH_DOMAIN=$GOOGLE_AUTH_DOMAIN
+# Inject Google API env vars at build time (must be NEXT_PUBLIC_ to be available client-side)
+ARG NEXT_PUBLIC_GOOGLE_CLIENT_ID
+ARG NEXT_PUBLIC_GOOGLE_API_KEY
+ARG NEXT_PUBLIC_GOOGLE_AUTH_DOMAIN
+ENV NEXT_PUBLIC_GOOGLE_CLIENT_ID=$NEXT_PUBLIC_GOOGLE_CLIENT_ID
+ENV NEXT_PUBLIC_GOOGLE_API_KEY=$NEXT_PUBLIC_GOOGLE_API_KEY
+ENV NEXT_PUBLIC_GOOGLE_AUTH_DOMAIN=$NEXT_PUBLIC_GOOGLE_AUTH_DOMAIN
 
-# build and copy files to server root
-RUN yarn build && \
-    cp -rv pages/* ../static/ && \
-    cp -rv lib/build/* ../static/build/ && \
-    cp -rv lib/index.html ../static/index.html
+# Generates .next/standalone
+RUN pnpm build
 
-# Use separate build stage to serve files. This reduces the image size drastically
-FROM alpine:3.18
+# Prod/Deploy Stage
+FROM node:18-alpine AS runner
+WORKDIR /app
 
-# add nginx
-RUN apk add --no-cache nginx
+ENV NODE_ENV=production
 
-# Copy the configuration file
-RUN mkdir -p /run/nginx
-COPY conf/ /etc/nginx/
+# Non-root user required by Next.js for some security thing
+RUN addgroup --system --gid 1001 next \
+  && adduser --system --uid 1001 next
 
-# Copy the build files from the previous stage
-WORKDIR /var/www/membership/static
-COPY --from=build /var/www/membership/static /var/www/membership/static
+COPY --from=build /app/public ./public
+COPY --from=build /app/.next/standalone ./
+COPY --from=build /app/.next/static ./.next/static
 
-# Run the server
-CMD ["nginx", "-g", "daemon off;"]
+USER next
+
+EXPOSE 8080
+
+# Start Next.js server
+CMD ["node", "server.js"]
