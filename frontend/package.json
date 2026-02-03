@@ -43,7 +43,6 @@
     "babel-core": "^7.0.0-bridge.0",
     "babel-jest": "^23.6.0",
     "babel-loader": "^8.0.4",
-    "cache-loader": "^1.2.2",
     "clean-webpack-plugin": "^4.0.0",
     "compression-webpack-plugin": "^11.1.0",
     "css-loader": "^7.1.2",

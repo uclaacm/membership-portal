@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import Button from 'components/Button';
 import BannerMessage from 'components/BannerMessage';
@@ -35,6 +36,7 @@ export default class AdminEvents extends React.Component {
     this.addEvent = this.addEvent.bind(this);
     this.cancelAddEventParent = this.cancelAddEventParent.bind(this);
     this.handleEditClick = this.handleEditClick.bind(this);
+    this.syncEvents = this.syncEvents.bind(this);
   }
 
   // Shows the add event sidebar
@@ -90,11 +92,21 @@ export default class AdminEvents extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if ((nextProps.updated && nextProps.updateSuccess) || (nextProps.created && nextProps.createSuccess)) {
+    const isUpdateComplete = nextProps.updated && nextProps.updateSuccess;
+    const isCreateComplete = nextProps.created && nextProps.createSuccess;
+    const isSyncComplete = nextProps.synced && nextProps.syncSuccess;
+
+    if (isUpdateComplete || isCreateComplete || isSyncComplete) {
       this.setState(prev => ({
         showAddEvent: false,
         isEditEvent: false,
       }));
+    }
+  }
+
+  syncEvents() {
+    if (this.props.syncEvents) {
+      this.props.syncEvents();
     }
   }
 
@@ -123,19 +135,22 @@ export default class AdminEvents extends React.Component {
       ? 'Event updated successfully'
       : this.props.createSuccess
         ? 'Event created successfully'
-        : this.props.error;
+        : this.props.syncSuccess
+          ? this.props.syncMessage || 'Events synced successfully from Google Sheets'
+          : this.props.error;
 
     return (
       <div className="events-dashboard admin-dashboard">
         <BannerMessage
-          showing={this.props.updated || this.props.created}
-          success={this.props.updateSuccess || this.props.createSuccess}
+          showing={this.props.updated || this.props.created || this.props.synced}
+          success={this.props.updateSuccess || this.props.createSuccess || this.props.syncSuccess}
           message={bannerMessage}
         />
         <AdminAddEvent
           event={this.state.eventPlaceholder}
           onClickAdd={this.addEvent}
           onClickCancel={this.cancelAddEventParent}
+          onClickSync={this.syncEvents}
           isEdit={this.state.isEditEvent}
           showing={this.state.showAddEvent}
           createImage={this.props.createImage}
@@ -171,3 +186,18 @@ export default class AdminEvents extends React.Component {
     );
   }
 }
+
+AdminEvents.propTypes = {
+  events: PropTypes.arrayOf(PropTypes.object).isRequired,
+  error: PropTypes.string,
+  created: PropTypes.bool,
+  createSuccess: PropTypes.bool,
+  updated: PropTypes.bool,
+  updateSuccess: PropTypes.bool,
+  synced: PropTypes.bool,
+  syncSuccess: PropTypes.bool,
+  syncMessage: PropTypes.string,
+  addEvent: PropTypes.func.isRequired,
+  updateEvent: PropTypes.func.isRequired,
+  syncEvents: PropTypes.func.isRequired,
+};

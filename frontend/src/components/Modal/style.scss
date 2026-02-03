@@ -64,7 +64,8 @@
         }
 
         @media (max-width: 700px) {
-          .image-container, .text-container {
+          .image-container,
+          .text-container {
             max-width: 100%;
           }
         }
@@ -72,7 +73,7 @@
 
       @media (max-width: 700px) {
         .content-container {
-          flex-direction: column; 
+          flex-direction: column;
           gap: 10px;
           text-align: center;
         }
@@ -91,7 +92,7 @@
       min-width: 90%;
       // max-width: 80%;
     }
-}
+  }
 
   .confirmation-modal-container {
     position: relative;

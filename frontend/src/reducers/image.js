@@ -25,7 +25,7 @@ const defaultState = Immutable.fromJS({
   createSuccess: false,
   createUuid: null,
   deleteSuccess: false,
-})
+});
 
 /** *********************************************
  ** Image States                              **
@@ -71,7 +71,7 @@ const GetAllImages = () => async (dispatch) => {
       },
     });
 
-    let status = await imagesRes.status;
+    const status = await imagesRes.status;
     if (status === 401 || status === 403) {
       return dispatch(LogoutUser());
     }

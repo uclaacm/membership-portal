@@ -23,6 +23,10 @@ const UPDATE_EVENT_SUCCESS = Symbol();
 const UPDATE_EVENT_ERROR = Symbol();
 const UPDATE_EVENT_DONE = Symbol();
 
+const SYNC_EVENTS_SUCCESS = Symbol();
+const SYNC_EVENTS_ERROR = Symbol();
+const SYNC_EVENTS_DONE = Symbol();
+
 const defaultState = Immutable.fromJS({
   events: [],
   error: null,
@@ -32,6 +36,9 @@ const defaultState = Immutable.fromJS({
   postSuccess: false,
   updateSuccess: false,
   deleteSuccess: false,
+  synced: false,
+  syncSuccess: false,
+  syncMessage: null,
 });
 
 /** *********************************************
@@ -65,6 +72,14 @@ class State {
     return {
       type: error ? DELETE_EVENT_ERROR : DELETE_EVENT_SUCCESS,
       error: error || undefined,
+    };
+  }
+
+  static SyncEvents(error, message) {
+    return {
+      type: error ? SYNC_EVENTS_ERROR : SYNC_EVENTS_SUCCESS,
+      error: error || undefined,
+      message: message || undefined,
     };
   }
 }
@@ -206,6 +221,38 @@ const DeleteEvent = uuid => async (dispatch) => {
   }
 };
 
+const SyncEventsFromSheets = () => async (dispatch) => {
+  try {
+    const response = await fetch(`${Config.API_URL}/api/v1/sheets/event`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${Storage.get('token')}`,
+      },
+    });
+
+    const status = await response.status;
+    if (status === 401 || status === 403) {
+      return dispatch(LogoutUser());
+    }
+
+    const data = await response.json();
+    if (!data) throw new Error('Empty response from server');
+
+    // If sync completely failed (no events synced).
+    if (!data.success && data.total === 0) {
+      throw new Error(data.message || 'Failed to sync events');
+    }
+
+    // Refresh events after sync (success or partial success).
+    dispatch(State.SyncEvents(null, data.message));
+    dispatch(GetCurrentEvents());
+  } catch (err) {
+    dispatch(State.SyncEvents(err.message));
+  }
+};
+
 /** *********************************************
  ** Events Reducer                            **
  ********************************************** */
@@ -274,6 +321,29 @@ const Events = (state = defaultState, action) => {
         val.set('deleteSuccess', false);
       });
 
+    case SYNC_EVENTS_SUCCESS:
+      return state.withMutations((val) => {
+        val.set('error', null);
+        val.set('synced', true);
+        val.set('syncSuccess', true);
+        val.set('syncMessage', action.message);
+      });
+
+    case SYNC_EVENTS_ERROR:
+      return state.withMutations((val) => {
+        val.set('error', action.error);
+        val.set('synced', true);
+        val.set('syncSuccess', false);
+        val.set('syncMessage', null);
+      });
+
+    case SYNC_EVENTS_DONE:
+      return state.withMutations((val) => {
+        val.set('error', null);
+        val.set('synced', false);
+        val.set('syncMessage', null);
+      });
+
     default:
       return state;
   }
@@ -281,7 +351,8 @@ const Events = (state = defaultState, action) => {
 
 const CreateEventDone = () => ({ type: POST_EVENT_DONE });
 const UpdateEventDone = () => ({ type: UPDATE_EVENT_DONE });
+const SyncEventsDone = () => ({ type: SYNC_EVENTS_DONE });
 
 export {
-  Events, GetCurrentEvents, PostNewEvent, UpdateEvent, DeleteEvent, CreateEventDone, UpdateEventDone,
+  Events, GetCurrentEvents, PostNewEvent, UpdateEvent, DeleteEvent, CreateEventDone, UpdateEventDone, SyncEventsFromSheets, SyncEventsDone,
 };

@@ -17,10 +17,11 @@ class Events extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.eventUpdated || nextProps.eventCreated) {
+    if (nextProps.eventUpdated || nextProps.eventCreated || nextProps.eventsSynced) {
       setTimeout(() => {
         this.props.updateDone();
         this.props.createDone();
+        this.props.syncDone();
       }, 250);
     }
   }
@@ -57,8 +58,12 @@ class Events extends React.Component {
             createSuccess={this.props.eventCreateSuccess}
             updated={this.props.eventUpdated}
             updateSuccess={this.props.eventUpdateSuccess}
+            synced={this.props.eventsSynced}
+            syncSuccess={this.props.eventsSyncSuccess}
+            syncMessage={this.props.syncMessage}
             addEvent={this.props.addEvent}
             updateEvent={this.props.updateEvent}
+            syncEvents={this.props.syncEvents}
             fetchEventRSVPs={this.props.fetchEventRSVPs}
             rsvpError={this.props.rsvpError}
             createImage={this.props.createImage}
@@ -78,6 +83,9 @@ const mapStateToProps = state => ({
   eventCreateSuccess: state.Events.get('postSuccess'),
   eventUpdated: state.Events.get('updated'),
   eventUpdateSuccess: state.Events.get('updateSuccess'),
+  eventsSynced: state.Events.get('synced'),
+  eventsSyncSuccess: state.Events.get('syncSuccess'),
+  syncMessage: state.Events.get('syncMessage'),
   authenticated: state.Auth.get('authenticated'),
   isAdmin: state.Auth.get('isAdmin'),
   adminView: state.Auth.get('adminView'),
@@ -123,6 +131,14 @@ const mapDispatchToProps = dispatch => ({
 
   createDone: () => {
     dispatch(Action.CreateEventDone());
+  },
+
+  syncEvents: () => {
+    dispatch(Action.SyncEventsFromSheets());
+  },
+
+  syncDone: () => {
+    dispatch(Action.SyncEventsDone());
   },
 
   fetchUserRSVPs: () => {

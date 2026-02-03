@@ -62,7 +62,7 @@ class ControlPanel extends React.Component {
         userEmail={userEmail}
         events={events.reverse()}
         deleteEvent={deleteEvent}
-        images={images.reverse()}     // recent first
+        images={images.reverse()} // recent first
         deleteImage={deleteImage}
         admins={admins}
         removeAdmin={removeAdmin}
@@ -81,17 +81,17 @@ class ControlPanel extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  userEmail: state.User.get("profile").email,
-  authenticated: state.Auth.get("authenticated"),
-  isAdmin: state.Auth.get("isAdmin"),
-  isSuperAdmin: state.Auth.get("isSuperAdmin"),
-  events: state.Events.get("events"),
-  images: state.Images.get("images"),
-  admins: state.Admins.get("admins"),
-  oneClickUpdated: state.OneClick.get("updated"),
-  oneClickUpdateSuccess: state.OneClick.get("updateSuccess"),
-  oneClickError: state.OneClick.get("error"),
-  adminView: state.Auth.get("adminView"),
+  userEmail: state.User.get('profile').email,
+  authenticated: state.Auth.get('authenticated'),
+  isAdmin: state.Auth.get('isAdmin'),
+  isSuperAdmin: state.Auth.get('isSuperAdmin'),
+  events: state.Events.get('events'),
+  images: state.Images.get('images'),
+  admins: state.Admins.get('admins'),
+  oneClickUpdated: state.OneClick.get('updated'),
+  oneClickUpdateSuccess: state.OneClick.get('updateSuccess'),
+  oneClickError: state.OneClick.get('error'),
+  adminView: state.Auth.get('adminView'),
 });
 
 const mapDispatchToProps = dispatch => ({

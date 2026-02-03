@@ -41,7 +41,7 @@ export default {
       upload: '/api/v1/image',
       specific: '/api/v1/image/raw',
       all: '/api/v1/image',
-    }
+    },
   },
   organization: {
     logo: '/assets/images/logo.png',

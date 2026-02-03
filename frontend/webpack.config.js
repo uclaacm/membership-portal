@@ -10,6 +10,12 @@ const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
   mode: process.env.NODE_ENV || 'development',
+  cache: {
+    type: 'filesystem',
+    buildDependencies: {
+      config: [__filename],
+    },
+  },
   context: path.resolve(__dirname, 'src'),
   entry: {
     main: 'main.js',
@@ -40,7 +46,6 @@ module.exports = {
         test: /\.jsx?$/,
         exclude: /(node_modules)/,
         use: [
-          'cache-loader',
           {
             loader: 'thread-loader',
             options: {

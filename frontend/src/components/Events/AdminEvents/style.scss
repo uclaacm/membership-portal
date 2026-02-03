@@ -67,11 +67,39 @@
           align-items: center;
         }
 
+        a {
+          color: vars.$secondaryblue;
+          text-decoration: underline;
+        }
+
         .divider {
           width: 100%;
           height: 1px;
           background-color: #dadada;
           margin: 15px 0px 20px 0px;
+        }
+
+        .text-divider {
+          color: vars.$secondaryblack;
+          display: flex;
+          align-items: center;
+          text-align: center;
+          margin: 15px 0px 20px 0px;
+        }
+
+        .text-divider::before,
+        .text-divider::after {
+          content: "";
+          flex: 1;
+          border-bottom: 1px solid #dadada;
+        }
+
+        .text-divider:not(:empty)::before {
+          margin-right: 0.25em;
+        }
+
+        .text-divider:not(:empty)::after {
+          margin-left: 0.25em;
         }
 
         .input-field {
@@ -216,6 +244,7 @@
         }
 
         .button-area {
+          color: vars.$secondaryblack;
           text-align: center;
           width: 100%;
 
