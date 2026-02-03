@@ -18,6 +18,7 @@ router.use('/event', auth, require('./membership/event').router);
 router.use('/attendance', auth, require('./membership/attendance').router);
 router.use('/leaderboard', auth, require('./membership/leaderboard').router);
 router.use('/rsvp', auth, require('./membership/rsvp').router);
+router.use('/sheets', auth, require('./membership/sheets').router);
 
 // Can't authenticate CSS url(), so cannot force auth route-wide
 router.use('/image', require('./membership/image').router);

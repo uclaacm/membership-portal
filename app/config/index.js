@@ -26,6 +26,11 @@ module.exports = {
     hostedDomain: 'g.ucla.edu',
   },
 
+  sheets: {
+    serviceAcct: process.env.SERVICE_ACCOUNT,
+    eventsSheetId: process.env.EVENTS_SPREADSHEET_ID,
+  },
+
   // primary database connection information
   database: {
     host: process.env.PG_HOST,

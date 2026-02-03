@@ -5,4 +5,5 @@ certs-data
 certs
 node.env
 pg_bkup*
+.DS_Store
 .vscode
