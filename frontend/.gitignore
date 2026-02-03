@@ -63,3 +63,4 @@ build/
 
 *.pem
 .env*
+certificates

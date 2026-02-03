@@ -33,14 +33,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className="light">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/logo.png" type="image/png" />
         <link rel="shortcut icon" href="/logo.png" type="image/png" />
         <link rel="apple-touch-icon" href="/logo.png" />
       </head>
-      <body className={`${latoSans.variable} ${poppinsSans.variable} antialiased`}>
+      <body className={`${latoSans.variable} ${poppinsSans.variable} antialiased`} style={{ background: '#ffffff' }}>
         {/* <AuthLayer> */}
         <Provider>{children}</Provider>
         {/* </AuthLayer> */}

@@ -1,5 +1,5 @@
 export default {
-  API_URL: process.env.WEBPACK ? "http://localhost:8080/app" : "/app",
+  API_URL: typeof window === "undefined" ? "http://backend:8080/app" : "/app",
   CLIENT_ROOT_URL: "",
   google: {
     apiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,

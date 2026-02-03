@@ -4,7 +4,7 @@
   "description": "frontend for the ACM membership portal",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 8000",
+    "dev": "next dev --webpack -p 8000 -H 0.0.0.0",
     "build": "NODE_ENV=production next build",
     "start": "next start",
     "lint": "eslint --fix --color 'app/**/*.ts*' && prettier --write 'app/**/*.ts*'",
@@ -95,7 +95,8 @@
     "react-chartjs": "^1.2.0",
     "react-chartjs-2": "^2.7.0",
     "react-datepicker": "^1.6.0",
-    "react-dom": "19.2.0"
+    "react-dom": "19.2.0",
+    "sass": "^1.97.3"
   },
   "devDependencies": {
     "@eslint/compat": "^2.0.0",
@@ -125,6 +126,5 @@
     "tailwindcss": "^4",
     "typescript": "^5",
     "typescript-eslint": "^8.47.0"
-  },
-  "packageManager": "yarn@4.12.0"
+  }
 }
