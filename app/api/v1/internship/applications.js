@@ -8,7 +8,8 @@ const {
   updateApplication,
   deleteApplication,
 } = require('./controllers/applicationController');
-const { validateCreateApplication, validateUpdateApplication, validateMongoId } = require('./middleware/validation');
+const { validateCreateApplication, validateUpdateApplication } = require('./middleware/validation');
+const { strictCreateApplicationLimiter } = require('./middleware/rateLimiter');
 
 const router = express.Router();
 
@@ -16,7 +17,8 @@ const router = express.Router();
 router.get('/applications', getAllApplications);
 
 // POST a new application
-router.post('/applications', auth, validateCreateApplication, createApplication);
+// Order matters! auth → rateLimit → validate → controller
+router.post('/applications', auth, strictCreateApplicationLimiter, validateCreateApplication, createApplication);
 
 // GET a single application by ID
 router.get('/applications/:id', getApplicationById);
@@ -25,6 +27,6 @@ router.get('/applications/:id', getApplicationById);
 router.put('/applications/:id', auth, validateUpdateApplication, updateApplication);
 
 // DELETE an application by ID
-router.delete('/applications/:id', auth, validateMongoId, deleteApplication);
+router.delete('/applications/:id', auth, deleteApplication);
 
 module.exports = { router };
