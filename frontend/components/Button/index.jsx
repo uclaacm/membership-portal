@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Loader from 'components/Loader';
+import Loader from '@/components/Loader';
+import './style.scss';
 
 class Button extends React.Component {
   constructor(props) {

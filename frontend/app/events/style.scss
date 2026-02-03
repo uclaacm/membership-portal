@@ -1,0 +1,94 @@
+@use "./AdminEvents/style" as adminEventsStyle;
+@use "./EventFilterBar/style" as eventFilterBarStyle;
+@use "@/styles/vars";
+
+.hidden {
+  display: none;
+}
+
+.event-day-wrapper {
+  display: inline-block;
+}
+
+/* 
+ * Special Events heading with Poppins font
+ * Not used in the main Events page, but available for testing
+ * Can be applied to any heading with:
+ * <h1 className="events-heading">Events</h1>
+ */
+.events-heading {
+  width: 172px;
+  height: 50px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-size: 50px;
+  line-height: 50px;
+  letter-spacing: 0%;
+  margin-bottom: 20px;
+  margin-right: 16px;
+}
+
+/* 
+ * Flex container for the Events heading and filter bar
+ * Use with events-heading class:
+ * <div className="events-filter-row">
+ *   <h1 className="events-heading">Events</h1>
+ *   <EventFilterBar />
+ * </div>
+ */
+.events-filter-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.events-dashboard {
+  margin-top: vars.$topbar-height;
+  margin-top: vars.$topbar-height;
+  box-sizing: padding-box;
+  padding: 30px;
+  overflow: visible;
+  transition: margin-left 0.125s ease-in-out;
+
+  .earlier-events-icon {
+    position: relative;
+    text-align: center;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: 0.125s ease-in-out;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  .checkin-button {
+    position: fixed;
+    top: 80px; 
+    top: 80px;
+    right: 20px;
+    z-index: 10;
+  }
+
+  h1 {
+    margin-left: 20px;
+  }
+
+  @media (max-width: 700px) {
+    margin-left: 0px;
+
+    .checkin-button {
+      top: inherit;
+      right: 30px;
+      bottom: 30px;
+    }
+
+    .earlier-events-icon {
+      margin-top: 50px;
+    }
+  }
+
+  @media (max-width: 425px) {
+    padding: 30px 20px;
+  }
+}

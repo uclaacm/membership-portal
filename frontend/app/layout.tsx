@@ -41,7 +41,7 @@ export default function RootLayout({
         <link rel="shortcut icon" href="/logo.png" type="image/png" />
         <link rel="apple-touch-icon" href="/logo.png" />
       </head>
-      <body className={`${latoSans.variable} ${poppinsSans.variable} antialiased`} style={{ background: '#ffffff' }}>
+      <body className={`${latoSans.variable} ${poppinsSans.variable} antialiased`} style={{ background: '#ffffff', color: '#000000' }}>
         {/* <AuthLayer> */}
         <Provider>{children}</Provider>
         {/* </AuthLayer> */}
