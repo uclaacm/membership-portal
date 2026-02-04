@@ -1,7 +1,7 @@
 const express = require('express');
 const error = require('../../../../error');
-const { User, Activity } = require('../../../../db');
-const { validatePublicProfileLookup } = require('./validation');
+const { User, Activity, db: Sequelize } = require('../../../../db');
+const { validatePublicProfileLookup, validateDirectoryLookup } = require('./validation');
 
 const router = express.Router();
 
@@ -86,27 +86,6 @@ router.get('/activity', (req, res, next) => {
     .catch(next);
 });
 
-/*
-Individual Profile Endpoint (GET /api/v1/user/profile/:uuid):
-
-Create new route GET /api/v1/user/profile/:uuid
-
-Return user's public profile using getPublicProfile() method
-
-Return 404 if user not found
-
-Return minimal profile if isProfilePublic is false
-
-Add rate limiting (prevent scraping): 100 requests per 15 minutes
-
-Require authentication (only ACM members can view profiles)
-
-Add query parameter support: ?fields=skills,careerInterests to return specific fields
-
-Test edge cases (blocked users, pending users, deleted users)
-
-*/
-
 router
   .route('/profile/:uuid')
   .get(...validatePublicProfileLookup, async (req, res, next) => {
@@ -139,6 +118,66 @@ router
       user: profile,
     });
   });
+
+router.get('/directory', ...validateDirectoryLookup, async (req, res, next) => {
+  if (req.user.isPending()) return next(new error.Forbidden());
+
+  const page = req.query.page || 1;
+  const limit = req.query.limit || 20;
+  const offset = (page - 1) * limit;
+
+  const where = {
+    isProfilePublic: true,
+    state: 'ACTIVE',
+  };
+
+  // Filter by skills (JSONB query)
+  if (req.query.skills) {
+    const skills = req.query.skills.split(',');
+    where.skills = {
+      [Sequelize.Op.overlap]: skills, // PostgreSQL array overlap
+    };
+  }
+
+  // Filter by career interests
+  if (req.query.careerInterests) {
+    const interests = req.query.careerInterests.split(',');
+    where.careerInterests = {
+      [Sequelize.Op.overlap]: interests,
+    };
+  }
+
+  // Search by name
+  if (req.query.search) {
+    where[Sequelize.Op.or] = [
+      { firstName: { [Sequelize.Op.iLike]: `%${req.query.search}%` } },
+      { lastName: { [Sequelize.Op.iLike]: `%${req.query.search}%` } },
+    ];
+  }
+
+  try {
+    const { rows, count } = await User.findAndCountAll({
+      where,
+      limit,
+      offset,
+      order: [['points', 'DESC']],
+    });
+    res.json({
+      error: null,
+      directory: {
+        users: rows.map((user) => user.getPublicProfile()),
+        total: count,
+        page,
+        limit,
+        pages: Math.ceil(count / limit),
+      },
+    });
+  } catch (queryError) {
+    next(queryError);
+  }
+  return null;
+});
+
 /**
  * For all further requests on this route, the user needs to be at least an admin
  */
