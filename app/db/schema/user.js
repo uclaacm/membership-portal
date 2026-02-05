@@ -174,7 +174,7 @@ module.exports = (Sequelize, db) => {
 
       // user's skills
       skills: {
-        type: Sequelize.JSONB,
+        type: Sequelize.ARRAY(Sequelize.STRING),
         defaultValue: [],
         validate: {
           isShortStringArray(arr) {
@@ -193,7 +193,7 @@ module.exports = (Sequelize, db) => {
       },
 
       careerInterests: {
-        type: Sequelize.JSONB,
+        type: Sequelize.ARRAY(Sequelize.STRING),
         defaultValue: [],
         validate: {
           isShortStringArray(arr) {

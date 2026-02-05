@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { TextEncoder, TextDecoder } = require('util');
 
 global.TextEncoder = TextEncoder;

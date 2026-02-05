@@ -103,6 +103,7 @@ const validatePublicProfileLookup = [
     .isString(),
   param('uuid')
     .isUUID(4),
+  handleValidationErrors,
 ];
 
 const validateDirectoryLookup = [
@@ -118,9 +119,9 @@ const validateDirectoryLookup = [
     .withMessage('Page must be an integer greater than 0'),
   query('limit')
     .optional()
-    .isInt({ min: 1, max: 100 })
+    .isInt({ min: 1 })
     .toInt()
-    .withMessage('Limit must be an integer between 1 and 100'),
+    .withMessage('Limit must be an integer greater than 0'),
   query('skills')
     .optional()
     .isString(),

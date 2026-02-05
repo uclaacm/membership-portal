@@ -1,15 +1,16 @@
-import request from 'supertest';
-import { server, setup } from '..';
-
-const jwt = require('jsonwebtoken');
+const request = require('supertest');
+const { v4: uuidv4 } = require('uuid');
+const { server, setup } = require('..');
 const { User, Activity } = require('../app/db');
-const config = require('../app/config');
 
 const API_ROUTE = '/app/api/v1/';
 const route = (name) => API_ROUTE + name;
+let token;
 
 beforeAll(async () => {
   await setup(false, true);
+  const response = await request(server).post(route('auth/dev-login'));
+  token = response.body.token;
 });
 
 afterAll(() => {
@@ -17,47 +18,11 @@ afterAll(() => {
 });
 
 describe('Public Profile and Directory Tests', () => {
-  const getJWTToken = (user) => new Promise((res, rej) => {
-    jwt.sign(
-      {
-        uuid: user.getDataValue('uuid'),
-        admin: user.isAdmin(),
-        superAdmin: user.isSuperAdmin(),
-        registered: !user.isPending(),
-      },
-      config.session.secret,
-      { expiresIn: 3600 },
-      (err, jwtToken) => {
-        if (err) rej(err);
-        Activity.accountLoggedIn(user.uuid);
-        res(jwtToken);
-      },
-    );
-  });
-
-  let testUser;
-  let testToken;
   let publicUser;
   let privateUser;
   let pendingUser;
 
   beforeEach(async () => {
-    // Create test user for authentication
-    const uniqueEmail = `testuser${Date.now()}@testemail.com`;
-    testUser = await User.create({
-      email: uniqueEmail,
-      firstName: 'TEST_FIRST_NAME',
-      lastName: 'TEST_LAST_NAME',
-      accessType: 'STANDARD',
-      state: 'ACTIVE',
-      year: 3,
-      major: 'Computer Science',
-      points: 100,
-      isProfilePublic: true,
-    });
-    Activity.accountCreated(testUser.uuid);
-    testToken = await getJWTToken(testUser);
-
     // Create public profile user
     publicUser = await User.create({
       email: `public${Date.now()}@test.com`,
@@ -111,18 +76,16 @@ describe('Public Profile and Directory Tests', () => {
   });
 
   afterEach(async () => {
-    await testUser.destroy();
     await publicUser.destroy();
     await privateUser.destroy();
     await pendingUser.destroy();
-    testToken = undefined;
   });
 
   describe('GET /api/v1/user/profile/:uuid - Individual Profile', () => {
     test('Should return full public profile when isProfilePublic is true', async () => {
       const response = await request(server)
         .get(route(`user/profile/${publicUser.uuid}`))
-        .auth(testToken, { type: 'bearer' });
+        .auth(token, { type: 'bearer' });
 
       expect(response.statusCode).toBe(200);
       expect(response.body.error).toBeNull();
@@ -143,7 +106,7 @@ describe('Public Profile and Directory Tests', () => {
     test('Should return minimal profile when isProfilePublic is false', async () => {
       const response = await request(server)
         .get(route(`user/profile/${privateUser.uuid}`))
-        .auth(testToken, { type: 'bearer' });
+        .auth(token, { type: 'bearer' });
 
       expect(response.statusCode).toBe(200);
       expect(response.body.error).toBeNull();
@@ -151,22 +114,23 @@ describe('Public Profile and Directory Tests', () => {
         firstName: 'Bob',
         lastName: 'Jones',
         points: 80,
+        pronouns: null,
+        picture: null,
       });
-      expect(response.body.profile).toHaveProperty('picture');
       // Should NOT contain private fields
       expect(response.body.profile.bio).toBeUndefined();
       expect(response.body.profile.skills).toBeUndefined();
       expect(response.body.profile.careerInterests).toBeUndefined();
       expect(response.body.profile.linkedinUrl).toBeUndefined();
       expect(response.body.profile.githubUrl).toBeUndefined();
-      expect(response.body.profile.pronouns).toBeUndefined();
+      expect(response.body.profile.personalWebsite).toBeUndefined();
     });
 
     test('Should return 404 for non-existent user', async () => {
-      const fakeUuid = '00000000-0000-0000-0000-000000000000';
+      const fakeUuid = uuidv4();
       const response = await request(server)
         .get(route(`user/profile/${fakeUuid}`))
-        .auth(testToken, { type: 'bearer' });
+        .auth(token, { type: 'bearer' });
 
       expect(response.statusCode).toBe(404);
       expect(response.body.error).toBeDefined();
@@ -184,7 +148,7 @@ describe('Public Profile and Directory Tests', () => {
       const response = await request(server)
         .get(route(`user/profile/${publicUser.uuid}`))
         .query({ fields: 'skills,careerInterests' })
-        .auth(testToken, { type: 'bearer' });
+        .auth(token, { type: 'bearer' });
 
       expect(response.statusCode).toBe(200);
       expect(response.body.error).toBeNull();
@@ -194,22 +158,21 @@ describe('Public Profile and Directory Tests', () => {
       // Actual implementation may vary
     });
 
-    test('Should handle pending user appropriately', async () => {
+    test('Should yield 403 Forbidden for requesting restricted user', async () => {
       const response = await request(server)
         .get(route(`user/profile/${pendingUser.uuid}`))
-        .auth(testToken, { type: 'bearer' });
+        .auth(token, { type: 'bearer' });
 
-      // Pending users might return 404 or minimal profile depending on requirements
-      expect([200, 404]).toContain(response.statusCode);
+      expect(response.statusCode).toBe(403);
     });
 
-    test('Should handle invalid UUID format', async () => {
+    test('Should yield 400 Bad Request for invalid UUID format', async () => {
       const response = await request(server)
         .get(route('user/profile/invalid-uuid'))
-        .auth(testToken, { type: 'bearer' });
+        .auth(token, { type: 'bearer' });
 
-      expect([400, 404]).toContain(response.statusCode);
-      expect(response.body.error).toBeDefined();
+      expect(response.statusCode).toBe(400);
+      expect(response.body.errors).toBeDefined();
     });
   });
 
@@ -275,7 +238,7 @@ describe('Public Profile and Directory Tests', () => {
     test('Should return paginated list of public profiles', async () => {
       const response = await request(server)
         .get(route('user/directory'))
-        .auth(testToken, { type: 'bearer' });
+        .auth(token, { type: 'bearer' });
 
       expect(response.statusCode).toBe(200);
       expect(response.body.error).toBeNull();
@@ -292,7 +255,7 @@ describe('Public Profile and Directory Tests', () => {
       const response = await request(server)
         .get(route('user/directory'))
         .query({ skills: 'React,Python' })
-        .auth(testToken, { type: 'bearer' });
+        .auth(token, { type: 'bearer' });
 
       expect(response.statusCode).toBe(200);
       expect(response.body.error).toBeNull();
@@ -311,7 +274,7 @@ describe('Public Profile and Directory Tests', () => {
       const response = await request(server)
         .get(route('user/directory'))
         .query({ careerInterests: 'Software Engineering' })
-        .auth(testToken, { type: 'bearer' });
+        .auth(token, { type: 'bearer' });
 
       expect(response.statusCode).toBe(200);
       expect(response.body.error).toBeNull();
@@ -327,7 +290,7 @@ describe('Public Profile and Directory Tests', () => {
       const response = await request(server)
         .get(route('user/directory'))
         .query({ search: 'Alice' })
-        .auth(testToken, { type: 'bearer' });
+        .auth(token, { type: 'bearer' });
 
       expect(response.statusCode).toBe(200);
       expect(response.body.error).toBeNull();
@@ -342,7 +305,7 @@ describe('Public Profile and Directory Tests', () => {
       const response = await request(server)
         .get(route('user/directory'))
         .query({ page: 1, limit: 2 })
-        .auth(testToken, { type: 'bearer' });
+        .auth(token, { type: 'bearer' });
 
       expect(response.statusCode).toBe(200);
       expect(response.body.error).toBeNull();
@@ -354,7 +317,7 @@ describe('Public Profile and Directory Tests', () => {
     test('Should use default pagination values', async () => {
       const response = await request(server)
         .get(route('user/directory'))
-        .auth(testToken, { type: 'bearer' });
+        .auth(token, { type: 'bearer' });
 
       expect(response.statusCode).toBe(200);
       expect(response.body.error).toBeNull();
@@ -366,7 +329,7 @@ describe('Public Profile and Directory Tests', () => {
       const response = await request(server)
         .get(route('user/directory'))
         .query({ limit: 500 })
-        .auth(testToken, { type: 'bearer' });
+        .auth(token, { type: 'bearer' });
 
       expect(response.statusCode).toBe(200);
       expect(response.body.error).toBeNull();
@@ -376,7 +339,7 @@ describe('Public Profile and Directory Tests', () => {
     test('Should only return users with isProfilePublic = true', async () => {
       const response = await request(server)
         .get(route('user/directory'))
-        .auth(testToken, { type: 'bearer' });
+        .auth(token, { type: 'bearer' });
 
       expect(response.statusCode).toBe(200);
       const { users } = response.body.directory;
@@ -389,7 +352,7 @@ describe('Public Profile and Directory Tests', () => {
     test('Should only return ACTIVE users', async () => {
       const response = await request(server)
         .get(route('user/directory'))
-        .auth(testToken, { type: 'bearer' });
+        .auth(token, { type: 'bearer' });
 
       expect(response.statusCode).toBe(200);
       const { users } = response.body.directory;
@@ -402,7 +365,7 @@ describe('Public Profile and Directory Tests', () => {
     test('Should order by points descending by default', async () => {
       const response = await request(server)
         .get(route('user/directory'))
-        .auth(testToken, { type: 'bearer' });
+        .auth(token, { type: 'bearer' });
 
       expect(response.statusCode).toBe(200);
       const { users } = response.body.directory;
@@ -425,7 +388,7 @@ describe('Public Profile and Directory Tests', () => {
       const response = await request(server)
         .get(route('user/directory'))
         .query({ limit: 2 })
-        .auth(testToken, { type: 'bearer' });
+        .auth(token, { type: 'bearer' });
 
       expect(response.statusCode).toBe(200);
       const { total, limit, pages } = response.body.directory;
@@ -440,7 +403,7 @@ describe('Public Profile and Directory Tests', () => {
           careerInterests: 'Software Engineering',
           limit: 10,
         })
-        .auth(testToken, { type: 'bearer' });
+        .auth(token, { type: 'bearer' });
 
       expect(response.statusCode).toBe(200);
       expect(response.body.error).toBeNull();
@@ -457,7 +420,7 @@ describe('Public Profile and Directory Tests', () => {
       const response = await request(server)
         .get(route('user/directory'))
         .query({ skills: 'NonExistentSkill12345' })
-        .auth(testToken, { type: 'bearer' });
+        .auth(token, { type: 'bearer' });
 
       expect(response.statusCode).toBe(200);
       expect(response.body.error).toBeNull();
@@ -469,7 +432,7 @@ describe('Public Profile and Directory Tests', () => {
       const response = await request(server)
         .get(route('user/directory'))
         .query({ page: 9999 })
-        .auth(testToken, { type: 'bearer' });
+        .auth(token, { type: 'bearer' });
 
       expect(response.statusCode).toBe(200);
       expect(response.body.error).toBeNull();

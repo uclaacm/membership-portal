@@ -10,6 +10,7 @@ const {
 } = require('./validation');
 
 const router = express.Router();
+const MAX_PAGE_LIMIT = 100;
 
 const getUpdateFields = (req) => {
   // matchedData will only extract the fields that were validated.
@@ -114,7 +115,7 @@ router
       || req.user.isBlocked()) return next(new error.Forbidden());
 
     const { uuid } = req.params;
-    const user = await User.findByPk(uuid);
+    const user = await User.findByUUID(uuid);
     if (!user) return next(new error.NotFound('User not found'));
     if (user.isPending()
       || user.isRestricted()
@@ -135,15 +136,15 @@ router
 
     return res.json({
       error: null,
-      user: profile,
+      profile,
     });
   });
 
 router.get('/directory', ...validateDirectoryLookup, async (req, res, next) => {
   if (req.user.isPending()) return next(new error.Forbidden());
 
-  const page = req.query.page || 1;
-  const limit = req.query.limit || 20;
+  const page = Math.floor(Number(req.query.page) || 1);
+  const limit = Math.min(MAX_PAGE_LIMIT, Math.floor(Number(req.query.limit) || 20));
   const offset = (page - 1) * limit;
 
   const where = {
@@ -151,19 +152,19 @@ router.get('/directory', ...validateDirectoryLookup, async (req, res, next) => {
     state: 'ACTIVE',
   };
 
-  // Filter by skills (JSONB query)
+  // Filter by skills
   if (req.query.skills) {
-    const skills = req.query.skills.split(',');
+    const skills = req.query.skills.split(',').map((s) => s.trim());
     where.skills = {
-      [Sequelize.Op.overlap]: skills, // PostgreSQL array overlap
+      [Sequelize.Op.overlap]: Sequelize.cast(skills, 'text[]'),
     };
   }
 
   // Filter by career interests
   if (req.query.careerInterests) {
-    const interests = req.query.careerInterests.split(',');
+    const interests = req.query.careerInterests.split(',').map((i) => i.trim());
     where.careerInterests = {
-      [Sequelize.Op.overlap]: interests,
+      [Sequelize.Op.overlap]: Sequelize.cast(interests, 'text[]'),
     };
   }
 
@@ -185,7 +186,10 @@ router.get('/directory', ...validateDirectoryLookup, async (req, res, next) => {
     res.json({
       error: null,
       directory: {
-        users: rows.map((user) => user.getPublicProfile()),
+        users: rows.map((user) => ({
+          ...user.getBaseProfile(),
+          ...user.getPublicProfile(),
+        })),
         total: count,
         page,
         limit,
