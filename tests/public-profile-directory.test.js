@@ -1,7 +1,7 @@
 const request = require('supertest');
 const { v4: uuidv4 } = require('uuid');
 const { server, setup } = require('..');
-const { User, Activity } = require('../app/db');
+const { User, Activity, db: Sequelize } = require('../app/db');
 
 const API_ROUTE = '/app/api/v1/';
 const route = (name) => API_ROUTE + name;
@@ -13,8 +13,9 @@ beforeAll(async () => {
   token = response.body.token;
 });
 
-afterAll(() => {
+afterAll(async () => {
   server.close();
+  await Sequelize.close();
 });
 
 describe('Public Profile and Directory Tests', () => {
