@@ -61,17 +61,17 @@ const InternshipApplicationSchema = new Schema(
 
     // Committee choices and responses
     firstChoiceCommittee: {
-      type: ObjectId,
-      ref: "Committee",
-      required: [true, "You must apply to at least one commitee"],
+      type: mongoose.Types.ObjectId,
+      ref: 'Committee',
+      required: [true, 'You must apply to at least one committee'],
     },
     secondChoiceCommittee: {
-      type: ObjectId,
-      ref: "Committee"
+      type: mongoose.Types.ObjectId,
+      ref: 'Committee',
     },
     thirdChoiceCommittee: {
-      type: ObjectId,
-      ref: "Committee"
+      type: mongoose.Types.ObjectId,
+      ref: 'Committee',
     },
     firstChoiceResponses: [{
       questionKey: {
@@ -148,7 +148,7 @@ const InternshipApplicationSchema = new Schema(
     lastModifiedAt: {
       type: Date,
       default: Date.now,
-    }
+    },
   },
   {
     timestamps: true,
@@ -156,23 +156,23 @@ const InternshipApplicationSchema = new Schema(
 );
 
 // Pre-save hook to ensure unique committee choices
-InternshipApplicationSchema.pre("save", function (next) {
+InternshipApplicationSchema.pre('save', function (next) {
   const choices = [
     this.firstChoiceCommittee,
     this.secondChoiceCommittee,
-    this.thirdChoiceCommittee
+    this.thirdChoiceCommittee,
   ].filter(Boolean);
 
-  const committees = choices.map(id => id.toString());
+  const committees = choices.map((id) => id.toString());
 
   const originalCount = committees.length;
   const uniqueCount = new Set(committees).size;
 
-  if (originalCount != uniqueCount) {
-    return next(new Error("You cannot select the same committee twice"));
+  if (originalCount !== uniqueCount) {
+    return next(new Error('You cannot select the same committee twice'));
   }
 
-  next();
+  return next();
 });
 
 // Create indexes

@@ -1,4 +1,5 @@
-const { body } = require('express-validator');
+const { body, query, param } = require('express-validator');
+const rateLimit = require('express-rate-limit');
 const { handleValidationErrors } = require('../../validation');
 
 const validateCareerProfileUpdate = [
@@ -91,7 +92,48 @@ const validateUserProfileUpdate = [
   handleValidationErrors,
 ];
 
+const validatePublicProfileLookup = [
+  rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    limit: 100,
+    message: 'Too many profile requests from this IP, please try again later.',
+  }),
+  query('fields')
+    .optional()
+    .isString(),
+  param('uuid')
+    .isUUID(4),
+  handleValidationErrors,
+];
+
+const validateDirectoryLookup = [
+  rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    limit: 50,
+    message: 'Too many directory requests from this IP, please try again later.',
+  }),
+  query('page')
+    .optional()
+    .isInt({ min: 1 })
+    .toInt()
+    .withMessage('Page must be an integer greater than 0'),
+  query('limit')
+    .optional()
+    .isInt({ min: 1 })
+    .toInt()
+    .withMessage('Limit must be an integer greater than 0'),
+  query('skills')
+    .optional()
+    .isString(),
+  query('careerInterests')
+    .optional()
+    .isString(),
+  handleValidationErrors,
+];
+
 module.exports = {
   validateCareerProfileUpdate,
+  validatePublicProfileLookup,
+  validateDirectoryLookup,
   validateUserProfileUpdate,
 };
