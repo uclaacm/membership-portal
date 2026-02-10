@@ -63,7 +63,7 @@ const InternshipApplicationSchema = new Schema(
     firstChoiceCommittee: {
       type: Schema.Types.ObjectId,
       ref: "Committee",
-      required: [true, "You must apply to at least one commitee"],
+      required: [true, "You must apply to at least one committee"],
     },
     secondChoiceCommittee: {
       type: Schema.Types.ObjectId,
