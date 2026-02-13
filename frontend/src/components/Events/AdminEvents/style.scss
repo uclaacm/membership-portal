@@ -367,12 +367,37 @@
     border-bottom-right-radius: 4px;
 
     .rsvp-header {
-      margin: 0 0 15px 0;
+      margin-left: 15px;
       font-size: 1.1em;
       color: #333;
       font-weight: 600;
     }
 
+    .copy-email-button {
+      background-color: rgba(30, 108, 255, 1);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 0.85em;
+      font-weight: 500;
+      transition: all 0.2s ease-in-out;
+      white-space: nowrap;
+      float: right;
+      margin-right: 15px;
+
+      &:hover {
+        background-color: rgb(0, 41, 117);
+      }
+    }
+
+    .rsvp-header-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
     .no-rsvps {
       color: #6c757d;
       font-style: italic;
@@ -517,9 +542,6 @@
         width: 100%;
         font-weight: bold;
         font-size: 1.2em;
-      }
-
-      .label {
       }
     }
 

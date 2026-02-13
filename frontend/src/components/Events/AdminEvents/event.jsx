@@ -11,9 +11,11 @@ class AdminEventCard extends React.Component {
       showRsvpData: false,
       rsvpData: null,
       rsvps: 0,
+      emailsCopied: false,
     };
     this.editEvent = this.editEvent.bind(this);
     this.handleViewRsvps = this.handleViewRsvps.bind(this);
+    this.copyEmailsToClipboard = this.copyEmailsToClipboard.bind(this);
   }
 
   async componentDidMount() {
@@ -35,6 +37,21 @@ class AdminEventCard extends React.Component {
       return;
     }
     if (handleEditClick) handleEditClick(event);
+  }
+
+  copyEmailsToClipboard(e) {
+    const { rsvpData } = this.state;
+    if (!rsvpData || rsvpData.length === 0) return;
+    e.stopPropagation();
+    const emails = rsvpData.map(rsvp => rsvp.user.email).join(', ');
+    // eslint-disable-next-line no-undef
+    navigator.clipboard.writeText(emails);
+    // Set copied state
+    this.setState({ emailsCopied: true });
+    // Reset after 2 seconds
+    setTimeout(() => {
+      this.setState({ emailsCopied: false });
+    }, 2000);
   }
 
   async handleViewRsvps(e) {
@@ -65,10 +82,11 @@ class AdminEventCard extends React.Component {
     }
   }
 
+  /* can add a button here to copy all emails from the rsvp */
   render() {
     const { event } = this.props;
     const {
-      rsvps, showRsvpData, rsvpData, loading,
+      rsvps, showRsvpData, rsvpData, loading, emailsCopied,
     } = this.state;
 
     let buttonText = 'View All RSVPs';
@@ -108,12 +126,17 @@ class AdminEventCard extends React.Component {
 
         {showRsvpData && rsvpData && (
           <div className="rsvp-display">
-            <h4 className="rsvp-header">
-              RSVPs (
-              {rsvpData.length}
-              {' '}
-              total)
-            </h4>
+            <div className="rsvp-header-section">
+              <h4 className="rsvp-header">
+                RSVPs (
+                {rsvpData.length}
+                {' '}
+                total)
+              </h4>
+              <button type="button" className="copy-email-button" onClick={this.copyEmailsToClipboard}>
+                {emailsCopied ? 'Copied!' : 'Copy All Emails'}
+              </button>
+            </div>
             {rsvpData.length === 0 ? (
               <p className="no-rsvps">No RSVPs yet for this event.</p>
             ) : (
