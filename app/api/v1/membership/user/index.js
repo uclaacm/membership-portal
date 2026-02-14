@@ -15,15 +15,26 @@ const MAX_PAGE_LIMIT = 100;
 const getUpdateFields = (req) => {
   // matchedData will only extract the fields that were validated.
   const validatedData = matchedData(req).user;
+
+  // Optional URL fields that can be cleared with empty strings
+  const optionalUrlFields = ['portfolioUrl', 'personalWebsite', 'resumeUrl'];
+
   const updatedInfo = Object.fromEntries(
     // only include fields that are different from current values
     Object.entries(validatedData)
-      .filter(([key, value]) => (
-        value !== undefined
-        && (typeof value === 'object' || value !== req.user[key])
-        // Ignore empty strings for specific fields
-        && !(['firstName', 'lastName', 'major'].includes(key) && value === '')
-      )),
+      .filter(([key, value]) => {
+        // Always filter out undefined values
+        if (value === undefined) return false;
+
+        // Ignore empty strings for required fields
+        if (['firstName', 'lastName', 'major'].includes(key) && value === '') return false;
+
+        // Allow empty strings for optional URL fields (to clear them)
+        if (optionalUrlFields.includes(key) && value === '') return true;
+
+        // Include if value is object or different from current value
+        return typeof value === 'object' || value !== req.user[key];
+      }),
   );
   return updatedInfo;
 };
