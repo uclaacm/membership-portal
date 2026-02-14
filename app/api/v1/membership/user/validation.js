@@ -7,21 +7,33 @@ const validateCareerProfileUpdate = [
     .isObject()
     .withMessage('Request body must contain a user object'),
   body('user.linkedinUrl')
-    .optional()
+    .notEmpty()
+    .withMessage('LinkedIn URL is required')
     .isURL({ protocols: ['http', 'https'], host_whitelist: ['linkedin.com', 'www.linkedin.com'] })
-    .withMessage('LinkedIn URL must be a valid URL'),
+    .withMessage('LinkedIn URL must be a valid linkedin.com URL'),
   body('user.githubUrl')
-    .optional()
+    .notEmpty()
+    .withMessage('GitHub URL is required')
     .isURL({ protocols: ['http', 'https'], host_whitelist: ['github.com', 'www.github.com'] })
-    .withMessage('GitHub URL must be a valid URL'),
+    .withMessage('GitHub URL must be a valid github.com URL'),
   body('user.portfolioUrl')
     .optional()
+    .customSanitizer((value) => (value === '' ? null : value))
+    .if((value) => value !== null)
     .isURL({ protocols: ['http', 'https'] })
     .withMessage('Portfolio URL must be a valid URL'),
   body('user.personalWebsite')
     .optional()
+    .customSanitizer((value) => (value === '' ? null : value))
+    .if((value) => value !== null)
     .isURL({ protocols: ['http', 'https'] })
     .withMessage('Personal website must be a valid URL'),
+  body('user.resumeUrl')
+    .optional()
+    .customSanitizer((value) => (value === '' ? null : value))
+    .if((value) => value !== null)
+    .isURL({ protocols: ['http', 'https'] })
+    .withMessage('Resume URL must be a valid URL'),
   body('user.skills')
     .optional()
     .isArray({ max: 20 })
