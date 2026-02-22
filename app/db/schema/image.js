@@ -44,7 +44,7 @@ module.exports = (Sequelize, db) => {
   );
 
   Image.getAll = function getAll() {
-    return this.findAll({ order: [['id', 'ASC']] }).map(e => e.getMetadata());
+    return this.findAll({ order: [['id', 'ASC']] }).map((e) => e.getMetadata());
   };
 
   Image.destroyByUUID = function destroyByUUID(uuid) {

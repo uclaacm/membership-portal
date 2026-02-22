@@ -1,23 +1,40 @@
 const express = require('express');
 const { matchedData } = require('express-validator');
 const error = require('../../../../error');
-const { User, Activity } = require('../../../../db');
-const { validateCareerProfileUpdate, validateUserProfileUpdate } = require('./validation');
+const { User, Activity, db: Sequelize } = require('../../../../db');
+const {
+  validatePublicProfileLookup,
+  validateDirectoryLookup,
+  validateUserProfileUpdate,
+  validateCareerProfileUpdate,
+} = require('./validation');
 
 const router = express.Router();
+const MAX_PAGE_LIMIT = 100;
 
 const getUpdateFields = (req) => {
   // matchedData will only extract the fields that were validated.
   const validatedData = matchedData(req).user;
+
+  // Optional URL fields that can be cleared with empty strings
+  const optionalUrlFields = ['portfolioUrl', 'personalWebsite', 'resumeUrl'];
+
   const updatedInfo = Object.fromEntries(
     // only include fields that are different from current values
     Object.entries(validatedData)
-      .filter(([key, value]) => (
-        value !== undefined
-        && (typeof value === 'object' || value !== req.user[key])
-        // Ignore empty strings for specific fields
-        && !(['firstName', 'lastName', 'major'].includes(key) && value === '')
-      )),
+      .filter(([key, value]) => {
+        // Always filter out undefined values
+        if (value === undefined) return false;
+
+        // Ignore empty strings for required fields
+        if (['firstName', 'lastName', 'major'].includes(key) && value === '') return false;
+
+        // Allow empty strings for optional URL fields (to clear them)
+        if (optionalUrlFields.includes(key) && value === '') return true;
+
+        // Include if value is object or different from current value
+        return typeof value === 'object' || value !== req.user[key];
+      }),
   );
   return updatedInfo;
 };
@@ -99,6 +116,101 @@ router.get('/activity', (req, res, next) => {
       return null;
     })
     .catch(next);
+});
+
+router
+  .route('/profile/:uuid')
+  .get(...validatePublicProfileLookup, async (req, res, next) => {
+    if (req.user.isPending()
+      || req.user.isRestricted()
+      || req.user.isBlocked()) return next(new error.Forbidden());
+
+    const { uuid } = req.params;
+    const user = await User.findByUUID(uuid);
+    if (!user) return next(new error.NotFound('User not found'));
+    if (user.isPending()
+      || user.isRestricted()
+      || user.isBlocked()) return next(new error.Forbidden());
+
+    let profile = {
+      ...user.getBaseProfile(),
+      ...(user.getPublicProfile() || {}),
+    };
+
+    if (req.query.fields) {
+      const fields = req.query.fields.split(',').map((f) => f.trim());
+      profile = Object.fromEntries(
+        fields.map((field) => [field, profile[field]])
+          .filter(([, value]) => value !== undefined),
+      );
+    }
+
+    return res.json({
+      error: null,
+      profile,
+    });
+  });
+
+router.get('/directory', ...validateDirectoryLookup, async (req, res, next) => {
+  if (req.user.isPending()) return next(new error.Forbidden());
+
+  const page = Math.floor(Number(req.query.page) || 1);
+  const limit = Math.min(MAX_PAGE_LIMIT, Math.floor(Number(req.query.limit) || 20));
+  const offset = (page - 1) * limit;
+
+  const where = {
+    isProfilePublic: true,
+    state: 'ACTIVE',
+  };
+
+  // Filter by skills
+  if (req.query.skills) {
+    const skills = req.query.skills.split(',').map((s) => s.trim());
+    where.skills = {
+      [Sequelize.Op.overlap]: Sequelize.cast(skills, 'text[]'),
+    };
+  }
+
+  // Filter by career interests
+  if (req.query.careerInterests) {
+    const interests = req.query.careerInterests.split(',').map((i) => i.trim());
+    where.careerInterests = {
+      [Sequelize.Op.overlap]: Sequelize.cast(interests, 'text[]'),
+    };
+  }
+
+  // Search by name
+  if (req.query.search) {
+    where[Sequelize.Op.or] = [
+      { firstName: { [Sequelize.Op.iLike]: `%${req.query.search}%` } },
+      { lastName: { [Sequelize.Op.iLike]: `%${req.query.search}%` } },
+    ];
+  }
+
+  try {
+    const { rows, count } = await User.findAndCountAll({
+      where,
+      limit,
+      offset,
+      order: [['points', 'DESC']],
+    });
+    res.json({
+      error: null,
+      directory: {
+        users: rows.map((user) => ({
+          ...user.getBaseProfile(),
+          ...user.getPublicProfile(),
+        })),
+        total: count,
+        page,
+        limit,
+        pages: Math.ceil(count / limit),
+      },
+    });
+  } catch (queryError) {
+    next(queryError);
+  }
+  return null;
 });
 
 /**
