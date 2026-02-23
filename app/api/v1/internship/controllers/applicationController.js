@@ -1,8 +1,26 @@
-const { InternshipApplication } = require('../models/InternshipApplication');
+const {
+  InternshipApplication,
+  getCurrentApplicationCycle,
+} = require('../models/InternshipApplication');
 
 // Create a new internship application
 async function createApplication(req, res) {
   try {
+    const applicationCycle = getCurrentApplicationCycle();
+
+    const existingApplication = await InternshipApplication.findOne({
+      userId: req.user.uuid,
+      applicationCycle,
+    });
+
+    if (existingApplication) {
+      res.status(409).json({
+        success: false,
+        message: `You have already submitted an application for cycle ${applicationCycle}`,
+      });
+      return;
+    }
+
     // Autopopulate user info from authenticated user
     const applicationData = {
       ...req.body,
@@ -10,6 +28,7 @@ async function createApplication(req, res) {
       firstName: req.user.firstName,
       lastName: req.user.lastName,
       email: req.user.email,
+      applicationCycle,
     };
 
     const application = new InternshipApplication(applicationData);
@@ -22,9 +41,9 @@ async function createApplication(req, res) {
     });
   } catch (error) {
     if (error.code === 11000) {
-      res.status(400).json({
+      res.status(409).json({
         success: false,
-        message: 'An application with this email already exists',
+        message: 'You have already submitted an application for this cycle',
       });
     } else if (error.name === 'ValidationError') {
       res.status(400).json({

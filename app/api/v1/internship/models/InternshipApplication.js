@@ -3,6 +3,11 @@ const { MIN_GRADUATION_YEAR } = require('../config/constants');
 
 const { Schema } = mongoose;
 
+function getCurrentApplicationCycle(referenceDate = new Date()) {
+  const year = referenceDate.getFullYear();
+  return `${year}-${year + 1}`;
+}
+
 const InternshipApplicationSchema = new Schema(
   {
     // User information
@@ -25,7 +30,7 @@ const InternshipApplicationSchema = new Schema(
     email: {
       type: String,
       required: [true, 'Email is required'],
-      unique: true,
+      index: true,
       lowercase: true,
       trim: true,
       match: [/^\S+@(ucla\.edu|g\.ucla\.edu)$/, 'Please provide a valid UCLA email address (ending with @ucla.edu or @g.ucla.edu)'],
@@ -141,6 +146,12 @@ const InternshipApplicationSchema = new Schema(
     },
 
     // Metadata
+    applicationCycle: {
+      type: String,
+      required: true,
+      index: true,
+      default: getCurrentApplicationCycle,
+    },
     submittedAt: {
       type: Date,
       default: Date.now,
@@ -177,6 +188,7 @@ InternshipApplicationSchema.pre('save', function (next) {
 
 // Create indexes
 InternshipApplicationSchema.index({ userId: 1 });
+InternshipApplicationSchema.index({ userId: 1, applicationCycle: 1 }, { unique: true });
 InternshipApplicationSchema.index({ firstChoiceCommittee: 1 });
 InternshipApplicationSchema.index({ secondChoiceCommittee: 1 });
 InternshipApplicationSchema.index({ thirdChoiceCommittee: 1 });
@@ -193,4 +205,7 @@ const InternshipApplication = mongoose.model(
   InternshipApplicationSchema,
 );
 
-module.exports = { InternshipApplication };
+module.exports = {
+  InternshipApplication,
+  getCurrentApplicationCycle,
+};
