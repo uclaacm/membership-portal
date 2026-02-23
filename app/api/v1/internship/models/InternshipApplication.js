@@ -62,16 +62,16 @@ const InternshipApplicationSchema = new Schema(
     // Committee choices and responses
     firstChoiceCommittee: {
       type: Schema.Types.ObjectId,
-      ref: "Committee",
-      required: [true, "You must apply to at least one committee"],
+      ref: 'Committee',
+      required: [true, 'You must apply to at least one committee'],
     },
     secondChoiceCommittee: {
       type: Schema.Types.ObjectId,
-      ref: "Committee"
+      ref: 'Committee',
     },
     thirdChoiceCommittee: {
       type: Schema.Types.ObjectId,
-      ref: "Committee"
+      ref: 'Committee',
     },
     firstChoiceResponses: [{
       questionKey: {

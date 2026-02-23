@@ -16,6 +16,7 @@
  * campus IP addresses.
  */
 const rateLimit = require('express-rate-limit');
+const { ipKeyGenerator } = require('express-rate-limit');
 const {
   CREATE_RATE_LIMIT_WINDOW_MS,
   CREATE_RATE_LIMIT_MAX,
@@ -27,7 +28,7 @@ const createApplicationLimiter = rateLimit({
 
   // Use user's UUID as the key instead of IP
   // This ensures rate limiting is per-user, not per-IP
-  keyGenerator: (req) => (req.user ? req.user.uuid : req.ip),
+  keyGenerator: (req) => (req.user ? req.user.uuid : ipKeyGenerator(req.ip)),
 
   // Customize error message
   handler: (req, res) => {
@@ -52,7 +53,7 @@ const strictCreateApplicationLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 10, // 10 submissions per hour per user
 
-  keyGenerator: (req) => (req.user ? req.user.uuid : req.ip),
+  keyGenerator: (req) => (req.user ? req.user.uuid : ipKeyGenerator(req.ip)),
 
   handler: (req, res) => {
     res.status(429).json({
