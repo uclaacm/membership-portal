@@ -1,4 +1,5 @@
-const { body } = require('express-validator');
+const { body, query, param } = require('express-validator');
+const rateLimit = require('express-rate-limit');
 const { handleValidationErrors } = require('../../validation');
 
 const validateCareerProfileUpdate = [
@@ -6,21 +7,33 @@ const validateCareerProfileUpdate = [
     .isObject()
     .withMessage('Request body must contain a user object'),
   body('user.linkedinUrl')
-    .optional()
+    .notEmpty()
+    .withMessage('LinkedIn URL is required')
     .isURL({ protocols: ['http', 'https'], host_whitelist: ['linkedin.com', 'www.linkedin.com'] })
-    .withMessage('LinkedIn URL must be a valid URL'),
+    .withMessage('LinkedIn URL must be a valid linkedin.com URL'),
   body('user.githubUrl')
-    .optional()
+    .notEmpty()
+    .withMessage('GitHub URL is required')
     .isURL({ protocols: ['http', 'https'], host_whitelist: ['github.com', 'www.github.com'] })
-    .withMessage('GitHub URL must be a valid URL'),
+    .withMessage('GitHub URL must be a valid github.com URL'),
   body('user.portfolioUrl')
     .optional()
+    .customSanitizer((value) => (value === '' ? null : value))
+    .if((value) => value !== null)
     .isURL({ protocols: ['http', 'https'] })
     .withMessage('Portfolio URL must be a valid URL'),
   body('user.personalWebsite')
     .optional()
+    .customSanitizer((value) => (value === '' ? null : value))
+    .if((value) => value !== null)
     .isURL({ protocols: ['http', 'https'] })
     .withMessage('Personal website must be a valid URL'),
+  body('user.resumeUrl')
+    .optional()
+    .customSanitizer((value) => (value === '' ? null : value))
+    .if((value) => value !== null)
+    .isURL({ protocols: ['http', 'https'] })
+    .withMessage('Resume URL must be a valid URL'),
   body('user.skills')
     .optional()
     .isArray({ max: 20 })
@@ -91,7 +104,48 @@ const validateUserProfileUpdate = [
   handleValidationErrors,
 ];
 
+const validatePublicProfileLookup = [
+  rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    limit: 100,
+    message: 'Too many profile requests from this IP, please try again later.',
+  }),
+  query('fields')
+    .optional()
+    .isString(),
+  param('uuid')
+    .isUUID(4),
+  handleValidationErrors,
+];
+
+const validateDirectoryLookup = [
+  rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    limit: 50,
+    message: 'Too many directory requests from this IP, please try again later.',
+  }),
+  query('page')
+    .optional()
+    .isInt({ min: 1 })
+    .toInt()
+    .withMessage('Page must be an integer greater than 0'),
+  query('limit')
+    .optional()
+    .isInt({ min: 1 })
+    .toInt()
+    .withMessage('Limit must be an integer greater than 0'),
+  query('skills')
+    .optional()
+    .isString(),
+  query('careerInterests')
+    .optional()
+    .isString(),
+  handleValidationErrors,
+];
+
 module.exports = {
   validateCareerProfileUpdate,
+  validatePublicProfileLookup,
+  validateDirectoryLookup,
   validateUserProfileUpdate,
 };
