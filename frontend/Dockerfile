@@ -19,6 +19,14 @@ COPY pages/ /var/www/membership/working/pages/
 COPY src/ /var/www/membership/working/src/
 COPY .babelrc *.js *.json /var/www/membership/working/
 
+# Inject Google API env vars at build time so Webpack's DefinePlugin can bake them in
+ARG GOOGLE_CLIENT_ID
+ARG GOOGLE_API_KEY
+ARG GOOGLE_AUTH_DOMAIN
+ENV GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID
+ENV GOOGLE_API_KEY=$GOOGLE_API_KEY
+ENV GOOGLE_AUTH_DOMAIN=$GOOGLE_AUTH_DOMAIN
+
 # build and copy files to server root
 RUN yarn build && \
     cp -rv pages/* ../static/ && \
