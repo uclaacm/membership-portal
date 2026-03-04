@@ -1,9 +1,37 @@
-const { InternshipApplication } = require('../models/InternshipApplication');
+const {
+  InternshipApplication,
+  getCurrentApplicationCycle,
+} = require('../models/InternshipApplication');
 
 // Create a new internship application
 async function createApplication(req, res) {
   try {
-    const application = new InternshipApplication(req.body);
+    const applicationCycle = getCurrentApplicationCycle();
+
+    const existingApplication = await InternshipApplication.findOne({
+      userId: req.user.uuid,
+      applicationCycle,
+    });
+
+    if (existingApplication) {
+      res.status(409).json({
+        success: false,
+        message: `You have already submitted an application for cycle ${applicationCycle}`,
+      });
+      return;
+    }
+
+    // Autopopulate user info from authenticated user
+    const applicationData = {
+      ...req.body,
+      userId: req.user.uuid,
+      firstName: req.user.firstName,
+      lastName: req.user.lastName,
+      email: req.user.email,
+      applicationCycle,
+    };
+
+    const application = new InternshipApplication(applicationData);
     await application.save();
 
     res.status(201).json({
@@ -13,9 +41,9 @@ async function createApplication(req, res) {
     });
   } catch (error) {
     if (error.code === 11000) {
-      res.status(400).json({
+      res.status(409).json({
         success: false,
-        message: 'An application with this email already exists',
+        message: 'You have already submitted an application for this cycle',
       });
     } else if (error.name === 'ValidationError') {
       res.status(400).json({
@@ -37,18 +65,43 @@ async function createApplication(req, res) {
 async function getAllApplications(req, res) {
   try {
     const {
-      status, committee, userId, page = 1, limit = 10,
+      firstChoiceStatus,
+      secondChoiceStatus,
+      thirdChoiceStatus,
+      firstChoiceCommittee,
+      secondChoiceCommittee,
+      thirdChoiceCommittee,
+      applicationCycle,
+      userId,
+      page = 1,
+      limit = 10,
     } = req.query;
 
     // Build query object with validated parameters
     const query = {};
-    // Status is already validated by express-validator to be one of the allowed values
-    if (status && typeof status === 'string') {
-      query.status = status;
+    // Status filters are already validated by express-validator
+    if (firstChoiceStatus && typeof firstChoiceStatus === 'string') {
+      query.firstChoiceStatus = firstChoiceStatus;
     }
-    // Filter by committee
-    if (committee && typeof committee === 'string') {
-      query.committee = committee;
+    if (secondChoiceStatus && typeof secondChoiceStatus === 'string') {
+      query.secondChoiceStatus = secondChoiceStatus;
+    }
+    if (thirdChoiceStatus && typeof thirdChoiceStatus === 'string') {
+      query.thirdChoiceStatus = thirdChoiceStatus;
+    }
+    // Filter by committee choices
+    if (firstChoiceCommittee && typeof firstChoiceCommittee === 'string') {
+      query.firstChoiceCommittee = firstChoiceCommittee;
+    }
+    if (secondChoiceCommittee && typeof secondChoiceCommittee === 'string') {
+      query.secondChoiceCommittee = secondChoiceCommittee;
+    }
+    if (thirdChoiceCommittee && typeof thirdChoiceCommittee === 'string') {
+      query.thirdChoiceCommittee = thirdChoiceCommittee;
+    }
+    // Filter by application cycle
+    if (applicationCycle && typeof applicationCycle === 'string') {
+      query.applicationCycle = applicationCycle;
     }
     // Filter by userId (for member portal integration)
     if (userId && typeof userId === 'string') {
@@ -61,7 +114,7 @@ async function getAllApplications(req, res) {
     const skip = (pageNum - 1) * limitNum;
 
     const applications = await InternshipApplication.find(query)
-      .sort({ appliedAt: -1 })
+      .sort({ submittedAt: -1 })
       .skip(skip)
       .limit(limitNum);
 
@@ -125,11 +178,17 @@ async function updateApplication(req, res) {
       'university',
       'major',
       'graduationYear',
-      'committee',
+      'firstChoiceCommittee',
+      'secondChoiceCommittee',
+      'thirdChoiceCommittee',
       'resumeUrl',
       'coverLetter',
-      'responses',
-      'status',
+      'firstChoiceResponses',
+      'secondChoiceResponses',
+      'thirdChoiceResponses',
+      'firstChoiceStatus',
+      'secondChoiceStatus',
+      'thirdChoiceStatus',
     ];
 
     // Build update object with only allowed fields
