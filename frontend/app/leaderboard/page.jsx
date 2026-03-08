@@ -4,10 +4,9 @@ import { useEffect, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import Topbar from '@/components/Topbar';
 import Leaderboard from './leaderboard';
-import Config from '@/lib/config';
 import logoutUser from '@/app/actions/auth/logoutUser';
+import fetchLeaderboard from '@/app/actions/leaderboard/fetchLeaderboard';
 import { authUserProfileAtom } from '@/lib/atoms';
-import CookieStore from '@/lib/cookieStore';
 
 export default function LeaderboardPage() {
   const userProfile = useAtomValue(authUserProfileAtom);
@@ -20,19 +19,8 @@ export default function LeaderboardPage() {
     
     const loadLeaderboard = async () => {
       try {
-        const token = CookieStore.get('token');
-        const response = await fetch(Config.API_URL + Config.routes.leaderboard, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-        const data = await response.json();
-        
-        if (data.error) {
-          setError(data.error);
-        } else {
-          setLeaderboard(data.leaderboard || []);
-        }
+        const leaderboard = await fetchLeaderboard();
+        setLeaderboard(leaderboard);
       } catch (err) {
         console.error('Failed to load leaderboard:', err);
         setError('Failed to load leaderboard');
