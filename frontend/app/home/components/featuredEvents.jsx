@@ -10,7 +10,7 @@ const FeaturedEvents = ({ title, events }) => (
       </div>
 
       <div className="events-container">
-        {events.map(event => event)}
+        {events}
       </div>
     </div>
   </>

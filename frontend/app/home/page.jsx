@@ -13,6 +13,8 @@ import Topbar from "@/components/Topbar";
 import WelcomeBanner from "./components/WelcomeBanner";
 import FeaturedEvents from "./components/featuredEvents";
 import Points from "./components/points";
+import EventCard from "@/app/events/UserEvents/eventCard";
+import "@/app/events/UserEvents/style.scss";
 import "./components/styles.scss";
 
 const NUMBER_LEADERBOARD_USERS = 10;
@@ -22,8 +24,8 @@ const getRecentEvents = (events) => {
   if (!events || !Array.isArray(events)) return [];
   
   return events
-    .filter(event => moment(event.startDate).isSameOrAfter(moment(), 'day'))
-    .sort((a, b) => moment(a.startDate).diff(moment(b.startDate)))
+    .filter(event => event.startDate.isSameOrAfter(moment(), 'day'))
+    .sort((a, b) => a.startDate.diff(b.startDate))
     .slice(0, NUMBER_FEATURED_EVENTS);
 };
 
@@ -46,7 +48,11 @@ export default function HomePage() {
           fetchFutureEvents(),
         ]);
         setLeaderboard(leaderboardData);
-        setEvents(eventsData);
+        setEvents(eventsData.map(e => ({
+          ...e,
+          startDate: moment(e.startDate),
+          endDate: moment(e.endDate),
+        })));
       } catch (error) {
         console.error("Failed to load data:", error);
       }
@@ -84,13 +90,7 @@ export default function HomePage() {
 
   const recentEvents = getRecentEvents(events);
   const eventCards = recentEvents.map(event => (
-    <div key={event.uuid} className="event-card">
-      <h3>{event.title}</h3>
-      <p className="event-date">
-        {moment(event.startDate).format('MMMM D, YYYY [at] h:mm A')}
-      </p>
-      {event.location && <p className="event-location">{event.location}</p>}
-    </div>
+    <EventCard key={event.uuid} event={event} />
   ));
 
   const handleLogout = async () => {
