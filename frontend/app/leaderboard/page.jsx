@@ -5,6 +5,7 @@ import { useAtomValue } from 'jotai';
 import Topbar from '@/components/Topbar';
 import Leaderboard from './leaderboard';
 import Config from '@/lib/config';
+import logoutUser from '@/app/actions/auth/logoutUser';
 import { authUserProfileAtom } from '@/lib/atoms';
 import CookieStore from '@/lib/cookieStore';
 
@@ -41,8 +42,8 @@ export default function LeaderboardPage() {
     loadLeaderboard();
   }, []);
 
-  const handleLogout = () => {
-    window.location.href = Config.API_URL + Config.routes.auth.logout;
+  const handleLogout = async () => {
+    await logoutUser();
   };
 
   if (!mounted) {

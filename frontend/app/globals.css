@@ -1,9 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 html,
 body {
   margin: 0px;
   height: auto;
   min-height: 100%;
   font-family: "Lato", sans-serif;
+  color: #111;
+  background-color: #fff;
+  color-scheme: light;
 }
 
 a,

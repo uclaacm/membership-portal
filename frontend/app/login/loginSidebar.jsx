@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import Config from '@/lib/config';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import Logo from './logo.js';
-import Banner from './banner';
+import Banner from '../../components/Banner.tsx';
 export default class LoginSidebar extends React.Component {
   constructor(props) {
     super(props);

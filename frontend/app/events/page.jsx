@@ -5,6 +5,7 @@ import { useAtomValue } from 'jotai';
 import Topbar from '@/components/Topbar';
 import UserEvents from './UserEvents';
 import Config from '@/lib/config';
+import logoutUser from '@/app/actions/auth/logoutUser';
 import { authUserProfileAtom } from '@/lib/atoms';
 import CookieStore from '@/lib/cookieStore';
 import './style.scss';
@@ -56,8 +57,8 @@ export default function EventsPage() {
     loadEvents();
   }, []);
 
-  const handleLogout = () => {
-    window.location.href = Config.API_URL + Config.routes.auth.logout;
+  const handleLogout = async () => {
+    await logoutUser();
   };
 
   if (!mounted) {

@@ -5,8 +5,8 @@ import type { NextRequest } from "next/server";
 import { isAuthenticated, isTokenAdmin, isTokenRegistered } from "@/lib/token";
 
 const SUPER_PROTECTED = ["/controlpanel"];
-const PROTECTED = ["/register", "/home", "/events", "profile", "/resources", "/leaderboard"];
-const ALL = [...SUPER_PROTECTED, ...PROTECTED, "/login"];
+const PROTECTED = ["/home", "/events", "profile", "/resources", "/leaderboard"];
+const ALL = [...SUPER_PROTECTED, ...PROTECTED, "/login", "/register"];
 
 export default async function proxy(req: NextRequest) {
   const isRoute = /^\/\w*$/.test(req.nextUrl.pathname);
@@ -31,7 +31,13 @@ export default async function proxy(req: NextRequest) {
   if (req.nextUrl.pathname.startsWith("/login") && authenticated) return NextResponse.redirect(homeUrl);
   if (req.nextUrl.pathname.startsWith("/register") && authenticated && isRegistered)
     return NextResponse.redirect(homeUrl);
+  if (req.nextUrl.pathname.startsWith("/register") && !authenticated)
+    return NextResponse.redirect(loginUrl);
   if ((isProtected || isSuperProtected) && !authenticated) return NextResponse.redirect(loginUrl);
+  if ((isProtected || isSuperProtected) && authenticated && !isRegistered) {
+    const registerUrl = new URL("/register", req.url);
+    return NextResponse.redirect(registerUrl);
+  }
   if (isSuperProtected && !isAdmin) return NextResponse.redirect(homeUrl);
 
   return NextResponse.next();

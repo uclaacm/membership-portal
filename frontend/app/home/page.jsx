@@ -6,6 +6,7 @@ import moment from "moment";
 
 import { authUserProfileAtom } from "@/lib/atoms";
 import Config from "@/lib/config";
+import logoutUser from "@/app/actions/auth/logoutUser";
 import Topbar from "@/components/Topbar";
 import WelcomeBanner from "./components/WelcomeBanner";
 import FeaturedEvents from "./components/featuredEvents";
@@ -100,8 +101,8 @@ export default function HomePage() {
     </div>
   ));
 
-  const handleLogout = () => {
-    window.location.href = Config.API_URL + Config.routes.auth.logout;
+  const handleLogout = async () => {
+    await logoutUser();
   };
 
   return (

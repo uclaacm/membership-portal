@@ -16,7 +16,7 @@ export default async function registerUser(info: any): Promise<boolean> {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: `Bearer ${cks.get("token")}`,
+        Authorization: `Bearer ${cks.get("token")?.value}`,
       },
       body: JSON.stringify({ info }),
     });

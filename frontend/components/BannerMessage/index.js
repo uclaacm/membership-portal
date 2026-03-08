@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 
 export default class BannerMessage extends React.Component {
