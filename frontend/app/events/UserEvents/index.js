@@ -1,5 +1,6 @@
+'use client';
+
 import React from 'react';
-import moment from 'moment';
 
 import Button from '@/components/Button';
 import OverlayPopup from '@/components/OverlayPopup';
@@ -8,7 +9,6 @@ import EarlierEventsIcon from '../earlierEventsIcon';
 import EventDay from './eventDay';
 import EventFilterBar from '../EventFilterBar';
 import Config from '@/lib/config';
-import './style.scss';
 
 
 export default class UserEvents extends React.Component {
@@ -33,6 +33,7 @@ export default class UserEvents extends React.Component {
     this.handleSearchChange = this.handleSearchChange.bind(this);
     this.handleCommitteeChange = this.handleCommitteeChange.bind(this);
     this.handleTimeRangeChange = this.handleTimeRangeChange.bind(this);
+    this.attendanceCodeRef = React.createRef();
   }
 
   showCheckIn(e) {
@@ -67,7 +68,7 @@ export default class UserEvents extends React.Component {
 
   submitCheckIn(e) {
     e.preventDefault();
-    this.props.checkIn(this.refs.attendanceCode.value);
+    this.props.checkIn(this.attendanceCodeRef.current.value);
   }
 
   handleSearchChange(searchQuery) {
@@ -97,26 +98,28 @@ export default class UserEvents extends React.Component {
 
       // Filter by time range
       let matchesTimeRange = true;
-      const today = moment().startOf('day');
-      const eventStart = moment(event.start);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
       switch (timeRange) {
         case 'Past Events':
-          matchesTimeRange = eventStart.isBefore(today, 'day');
+          matchesTimeRange = event.startDate.isBefore(today, 'day');
           break;
         case 'Upcoming':
-          matchesTimeRange = eventStart.isSameOrAfter(today, 'day');
+          matchesTimeRange = event.startDate.isSameOrAfter(today, 'day');
           break;
         case 'Today':
-          matchesTimeRange = eventStart.isSame(today, 'day');
+          matchesTimeRange = event.startDate.isSame(today, 'day');
           break;
         case 'This Week':
-          const weekStart = moment().startOf('week');
-          const weekEnd = moment().endOf('week');
-          matchesTimeRange = eventStart.isBetween(weekStart, weekEnd, 'day', '[]');
+          const weekStart = new Date(today);
+          weekStart.setDate(today.getDate() - today.getDay());
+          const weekEnd = new Date(weekStart);
+          weekEnd.setDate(weekStart.getDate() + 6);
+          matchesTimeRange = event.startDate.isBetween(weekStart, weekEnd, 'day', '[]');
           break;
         case 'This Month':
-          matchesTimeRange = eventStart.isSame(today, 'month');
+          matchesTimeRange = event.startDate.isSame(today, 'month');
           break;
         case 'This Quarter':
           const quarter = Math.floor(today.getMonth() / 3);
@@ -145,7 +148,7 @@ export default class UserEvents extends React.Component {
         submitText="Submit"
       >
         <form onSubmit={this.submitCheckIn}>
-          <input type="text" placeholder="Attendance code..." ref="attendanceCode" />
+          <input type="text" placeholder="Attendance code..." ref={this.attendanceCodeRef} />
           <br />
           {this.props.checkInError ? (
             <span className="CaptionSecondary error">{this.props.checkInError}</span>
@@ -246,7 +249,7 @@ export default class UserEvents extends React.Component {
           text="Check In"
           onClick={this.showCheckIn}
         />
-          <EventDay events={filteredEvents} userRsvps={this.props.userRsvps} admin={false} />
+          <EventDay events={filteredEvents} admin={false} />
       </div>
       </>
     );

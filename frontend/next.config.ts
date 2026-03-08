@@ -1,8 +1,12 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const nextConfig: NextConfig = {
   /* config options here */
   output: "standalone",
+  sassOptions: {
+    includePaths: [path.join(__dirname)],
+  },
   // Optimize webpack for Docker
   webpack: (config, { dev }) => {
     if (dev) {

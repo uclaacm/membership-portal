@@ -1,6 +1,6 @@
 @use "./AdminEvents/style" as adminEventsStyle;
 @use "./EventFilterBar/style" as eventFilterBarStyle;
-@use "@/styles/vars";
+@use "../../styles/vars";
 
 .hidden {
   display: none;

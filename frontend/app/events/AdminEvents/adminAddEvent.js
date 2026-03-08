@@ -1,11 +1,14 @@
+'use client';
+
 import React, { createRef } from 'react';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import InputElement from 'react-input-mask';
 import DatePicker from 'react-datepicker';
-import Button from 'components/Button/index';
-import Config from '../../../config';
-import Storage from 'storage';
+import Button from '@/components/Button';
+import Config from '@/lib/config';
+import uploadImage from '@/app/actions/image/uploadImage';
 
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -21,6 +24,7 @@ export default class AdminAddEvent extends React.Component {
     this.handleChangeTime = this.handleChangeTime.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleSync = this.handleSync.bind(this);
   }
 
   resizeTextArea(e) {
@@ -63,23 +67,17 @@ export default class AdminAddEvent extends React.Component {
       const formData = new FormData();
       formData.append('image', this.state.coverImageFile);
 
-      let oldImageCreateUuid = this.props.imageCreateUuid;
-      let retries = 0;
-      let interval;
-      this.props.createImage(formData)
-
-      interval = setInterval(() => {
-        if (retries > 5 || this.props.imageCreateUuid !== oldImageCreateUuid) {
-          clearInterval(interval);
+      uploadImage(formData).then((result) => {
+        if (result.success && result.uuid) {
           this.setState((prev) => {
             const newState = Object.assign({}, prev);
-            newState.event.cover = `${Config.API_URL + Config.routes.image.specific}/${this.props.imageCreateUuid}`;
+            newState.event.cover = `${Config.API_URL + Config.routes.image.specific}/${result.uuid}`;
             return newState;
           }, callback);
         } else {
-          retries += 1;
+          callback();
         }
-      }, 500);
+      });
     } else {
       callback();
     }
@@ -145,6 +143,12 @@ export default class AdminAddEvent extends React.Component {
     });
   }
 
+  handleSync() {
+    if (this.props.onClickSync) {
+      this.props.onClickSync();
+    }
+  }
+
   render() {
     const committeeColorMap = Object.fromEntries(Config.committeeColors);
 
@@ -158,6 +162,18 @@ export default class AdminAddEvent extends React.Component {
             />
           </div>
           <div className="editor">
+            <div className="button-area">
+              <Button onClick={this.handleSync} style="blue" text="Sync" icon="" />
+              <span> from </span>
+              <a
+                href="https://docs.google.com/spreadsheets/d/1iANP5StqWwmRBWXRekl8Q90ssLk9hnqxaH778l7e3dE"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Sheets
+              </a>
+            </div>
+            <div className="text-divider">OR</div>
             <div className="input-row">
               <div className="input-field half-width">
                 <p>Image URL or Upload</p>
@@ -181,9 +197,9 @@ export default class AdminAddEvent extends React.Component {
             <div className="input-row">
               <div className="input-field">
                 <p>Committee</p>
-                <select 
-                  value={this.state.event.committee} 
-                  name="committee" 
+                <select
+                  value={this.state.event.committee}
+                  name="committee"
                   onChange={this.handleChange}
                   className="committee-select"
                   style={{ color: committeeColorMap[this.state.event.committee] }}
@@ -285,3 +301,20 @@ export default class AdminAddEvent extends React.Component {
     );
   }
 }
+
+AdminAddEvent.propTypes = {
+  event: PropTypes.object,
+  onClickAdd: PropTypes.func,
+  onClickCancel: PropTypes.func,
+  onClickSync: PropTypes.func,
+  isEdit: PropTypes.bool,
+  showing: PropTypes.bool,
+};
+
+AdminAddEvent.defaultProps = {
+  onClickAdd: null,
+  onClickCancel: null,
+  onClickSync: null,
+  isEdit: false,
+  showing: false,
+};

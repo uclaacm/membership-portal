@@ -1,7 +1,12 @@
+'use client';
+
 import React from "react";
 import Config from '@/lib/config';
 import './style.scss';
 import moment from "moment";
+import fetchUserRSVPs from '@/app/actions/rsvp/fetchUserRSVPs';
+import createRSVP from '@/app/actions/rsvp/createRSVP';
+import cancelRSVP from '@/app/actions/rsvp/cancelRSVP';
 
 /* 
       attendancePoints: "",
@@ -37,21 +42,10 @@ class EventCard extends React.Component {
         return `https://www.google.com/maps/search/?api=1&query=${encodedLocation}`;
     }
 
-    componentDidMount() {
-        this.checkRsvpStatus();
-    }
-
-    componentDidUpdate(prevProps) {
-        // Check if this event is in the user's RSVPs
-        if (this.props.userRsvps !== prevProps.userRsvps) {
-            this.checkRsvpStatus();
-        }
-    }
-
-    checkRsvpStatus() {
-        const { userRsvps, event } = this.props;
-        if (userRsvps && userRsvps.length > 0) {
-            const hasRsvped = userRsvps.some(rsvp => rsvp.event === event.uuid);
+    async componentDidMount() {
+        const result = await fetchUserRSVPs();
+        if (result.success && result.rsvps) {
+            const hasRsvped = result.rsvps.some(rsvp => rsvp.event === this.props.event.uuid);
             this.setState({ isRsvped: hasRsvped });
         }
     }
@@ -60,31 +54,16 @@ class EventCard extends React.Component {
         this.setState({ loading: true });
         
         try {
-            const token = document.cookie.split(';').find(c => c.trim().startsWith('token='))?.split('=')[1];
-            const headers = {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            };
-
             if (this.state.isRsvped) {
                 // Cancel RSVP
-                const response = await fetch(`${Config.API_URL}${Config.routes.rsvp.cancel}/${this.props.event.uuid}`, {
-                    method: 'DELETE',
-                    headers,
-                });
-                const result = await response.json();
-                if (!result.error) {
+                const result = await cancelRSVP(this.props.event.uuid);
+                if (result.success) {
                     this.setState({ isRsvped: false });
                 }
             } else {
                 // Create RSVP
-                const response = await fetch(Config.API_URL + Config.routes.rsvp.create, {
-                    method: 'POST',
-                    headers,
-                    body: JSON.stringify({ eventUuid: this.props.event.uuid }),
-                });
-                const result = await response.json();
-                if (!result.error) {
+                const result = await createRSVP(this.props.event.uuid);
+                if (result.success) {
                     this.setState({ isRsvped: true });
                 }
             }
@@ -102,10 +81,6 @@ class EventCard extends React.Component {
         console.log(event.description);
 
         const committeeColorMap = Object.fromEntries(Config.committeeColors);
-        
-        // Convert dates to moment objects
-        const startDate = moment(event.start);
-        const endDate = moment(event.end);
 
         return (
             <>
@@ -126,12 +101,12 @@ class EventCard extends React.Component {
                                 <p className="event-title">{event.title}</p>
                                 <p className="text">
                                     <a 
-                                        href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${startDate.format("YYYYMMDDTHHmmss")}/${endDate.format("YYYYMMDDTHHmmss")}`}
+                                        href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${event.startDate?.format("YYYYMMDDTHHmmss")}/${event.endDate?.format("YYYYMMDDTHHmmss")}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="calendar-link"
                                     >
-                                        🗓️ {startDate.format("MMMM D, YYYY")}, {startDate.format("h:mm a")}&mdash;{endDate.format("h:mm a")} 
+                                        🗓️ {event.startDate?.format("MMMM D, YYYY")}, {event.startDate?.format("h:mm a")}&mdash;{event.endDate?.format("h:mm a")} 
                                     </a>
                                 </p>
                                 <p className="text">

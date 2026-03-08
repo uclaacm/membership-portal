@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import Topbar from '@/components/Topbar';
 import UserEvents from './UserEvents';
-import Config from '@/lib/config';
 import logoutUser from '@/app/actions/auth/logoutUser';
+import fetchFutureEvents from '@/app/actions/events/fetchFutureEvents';
+import fetchUserRSVPs from '@/app/actions/rsvp/fetchUserRSVPs';
 import { authUserProfileAtom } from '@/lib/atoms';
-import CookieStore from '@/lib/cookieStore';
 import './style.scss';
 
 export default function EventsPage() {
@@ -22,31 +22,19 @@ export default function EventsPage() {
     
     const loadEvents = async () => {
       try {
-        const token = CookieStore.get('token');
-        const headers = {
-          'Authorization': `Bearer ${token}`,
-        };
-        
-        // Fetch events
-        const eventsResponse = await fetch(Config.API_URL + Config.routes.events.future, {
-          headers,
-        });
-        const eventsData = await eventsResponse.json();
-        
-        if (eventsData.error) {
-          setError(eventsData.error);
+        const [eventsResult, rsvpResult] = await Promise.all([
+          fetchFutureEvents(),
+          fetchUserRSVPs(),
+        ]);
+
+        if (eventsResult.error) {
+          setError(eventsResult.error);
         } else {
-          setEvents(eventsData.events || []);
+          setEvents(eventsResult.events || []);
         }
 
-        // Fetch user RSVPs
-        const rsvpResponse = await fetch(Config.API_URL + Config.routes.rsvp.get, {
-          headers,
-        });
-        const rsvpData = await rsvpResponse.json();
-        
-        if (!rsvpData.error) {
-          setUserRsvps(rsvpData.rsvps || []);
+        if (!rsvpResult.error) {
+          setUserRsvps(rsvpResult.rsvps || []);
         }
       } catch (err) {
         console.error('Failed to load events:', err);
