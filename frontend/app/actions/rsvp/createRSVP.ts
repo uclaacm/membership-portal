@@ -14,8 +14,15 @@ export default async function createRSVP(eventUuid: string): Promise<{ success: 
         "Content-Type": "application/json",
         Authorization: `Bearer ${cks.get("token")?.value}`,
       },
-      body: JSON.stringify({ event: eventUuid }),
+      body: JSON.stringify({ event: { uuid: eventUuid } }),
     });
+
+    if (!response.ok) {
+      const text = await response.text();
+      let msg = `Request failed (${response.status})`;
+      try { msg = JSON.parse(text)?.error?.message ?? msg; } catch {}
+      return { success: false, error: msg };
+    }
 
     const data = await response.json();
     if (!data) throw new Error("Empty response");

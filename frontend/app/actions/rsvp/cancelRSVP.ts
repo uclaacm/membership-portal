@@ -15,6 +15,13 @@ export default async function cancelRSVP(eventUuid: string): Promise<{ success: 
       },
     });
 
+    if (!response.ok) {
+      const text = await response.text();
+      let msg = `Request failed (${response.status})`;
+      try { msg = JSON.parse(text)?.error?.message ?? msg; } catch {}
+      return { success: false, error: msg };
+    }
+
     const data = await response.json();
     if (!data) throw new Error("Empty response");
     if (data.error) return { success: false, error: data.error.message ?? data.error };

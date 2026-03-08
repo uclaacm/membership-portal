@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAtomValue } from 'jotai';
+import moment from 'moment';
 import Topbar from '@/components/Topbar';
 import UserEvents from './UserEvents';
 import logoutUser from '@/app/actions/auth/logoutUser';
@@ -22,16 +23,16 @@ export default function EventsPage() {
     
     const loadEvents = async () => {
       try {
-        const [eventsResult, rsvpResult] = await Promise.all([
+        const [eventsArray, rsvpResult] = await Promise.all([
           fetchFutureEvents(),
           fetchUserRSVPs(),
         ]);
 
-        if (eventsResult.error) {
-          setError(eventsResult.error);
-        } else {
-          setEvents(eventsResult.events || []);
-        }
+        setEvents(eventsArray.map(e => ({
+          ...e,
+          startDate: moment(e.startDate),
+          endDate: moment(e.endDate),
+        })));
 
         if (!rsvpResult.error) {
           setUserRsvps(rsvpResult.rsvps || []);

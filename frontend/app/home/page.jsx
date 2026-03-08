@@ -153,7 +153,7 @@ export default function HomePage() {
           <h3>Leaderboard</h3>
           <ul className="leaderboard-list-container">
             {leaderboard.slice(0, NUMBER_LEADERBOARD_USERS).map((user, index) => (
-              <li key={user.id}>
+              <li key={index}>
                 {index + 1}
                 {' - '}
                 {user.firstName}

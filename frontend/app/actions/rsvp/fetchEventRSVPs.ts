@@ -7,7 +7,7 @@ import Logger from "@/lib/logger";
 export default async function fetchEventRSVPs(eventUuid: string): Promise<{ success: boolean; rsvps?: any[]; error?: string }> {
   try {
     const cks = await cookies();
-    const response = await fetch(`${Config.API_URL}${Config.routes.rsvp.get}/${eventUuid}`, {
+    const response = await fetch(`${Config.API_URL}${Config.routes.rsvp.get}/event/${eventUuid}`, {
       headers: {
         Accept: "application/json",
         Authorization: `Bearer ${cks.get("token")?.value}`,
