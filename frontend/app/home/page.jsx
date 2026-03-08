@@ -5,8 +5,10 @@ import { useAtomValue } from "jotai";
 import moment from "moment";
 
 import { authUserProfileAtom } from "@/lib/atoms";
-import Config from "@/lib/config";
 import logoutUser from "@/app/actions/auth/logoutUser";
+import fetchLeaderboard from "@/app/actions/leaderboard/fetchLeaderboard";
+import fetchFutureEvents from "@/app/actions/events/fetchFutureEvents";
+import checkIn from "@/app/actions/attendance/checkIn";
 import Topbar from "@/components/Topbar";
 import WelcomeBanner from "./components/WelcomeBanner";
 import FeaturedEvents from "./components/featuredEvents";
@@ -39,13 +41,12 @@ export default function HomePage() {
 
     const loadData = async () => {
       try {
-        const leaderboardRes = await fetch(Config.API_URL + Config.routes.leaderboard);
-        const leaderboardData = await leaderboardRes.json();
-        setLeaderboard(leaderboardData.leaderboard || []);
-
-        const eventsRes = await fetch(Config.API_URL + Config.routes.events.future);
-        const eventsData = await eventsRes.json();
-        setEvents(eventsData.events || []);
+        const [leaderboardData, eventsData] = await Promise.all([
+          fetchLeaderboard(),
+          fetchFutureEvents(),
+        ]);
+        setLeaderboard(leaderboardData);
+        setEvents(eventsData);
       } catch (error) {
         console.error("Failed to load data:", error);
       }
@@ -61,22 +62,13 @@ export default function HomePage() {
     setCheckInStatus(null);
 
     try {
-      const response = await fetch(Config.API_URL + Config.routes.attendance.attend, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ attendanceCode: checkInCode }),
-      });
-
-      const data = await response.json();
-
-      if (data.error) {
+      const result = await checkIn(checkInCode);
+      if (!result.success) {
         setCheckInStatus("error");
         setCheckInPoints(0);
       } else {
         setCheckInStatus("success");
-        setCheckInPoints(data.points || 0);
+        setCheckInPoints(result.points ?? 0);
         setCheckInCode("");
         setTimeout(() => setCheckInStatus(null), 5000);
       }
