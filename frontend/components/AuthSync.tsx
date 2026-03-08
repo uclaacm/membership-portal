@@ -2,15 +2,15 @@
 
 import { useEffect } from "react";
 import { useSetAtom } from "jotai";
+import { authUserProfileAtom } from "@/lib/atoms";
+import type { UserExtendedProfile } from "@/lib/types/User";
 
-// import { authTokenAtom } from "@/lib/atoms";
+export default function AuthSync({ user }: { user: UserExtendedProfile | null }) {
+  const setUserProfile = useSetAtom(authUserProfileAtom);
 
-export default function AuthSync({ token }: { token: string | null }) {
-  // const setToken = useSetAtom(authTokenAtom);
-
-  // useEffect(() => {
-  //   setToken(token);
-  // }, [token, setToken]);
+  useEffect(() => {
+    setUserProfile(user);
+  }, [user, setUserProfile]);
 
   return null;
 }
