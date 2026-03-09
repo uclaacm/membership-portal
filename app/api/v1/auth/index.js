@@ -96,7 +96,9 @@ router.post('/login', (req, res, next) => {
     .then((ticket) => {
       const { email } = ticket.getPayload();
 
-      if (!email.toLowerCase().endsWith(config.google.hostedDomain)) {
+      const lowerEmail = email.toLowerCase();
+      const isAllowed = config.google.allowedDomains.some((domain) => lowerEmail.endsWith(`@${domain}`));
+      if (!isAllowed) {
         return next(
           new error.Unauthorized('Unauthorized email'),
         );
@@ -122,6 +124,7 @@ router.post('/login', (req, res, next) => {
               lastName: familyName,
               picture,
               state: 'PENDING',
+              accessType: userEmail.toLowerCase().endsWith(`@${config.google.adminDomain}`) ? 'ADMIN' : 'STANDARD',
               year: 1,
               major: 'Undeclared',
             };
