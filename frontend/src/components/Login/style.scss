@@ -97,9 +97,25 @@
     text-decoration: none;
     font-weight: 500;
     font-size: 0.8rem;
-    margin-top: 3rem;
+    margin-top: 1.25rem;
     display: flex;
     align-items: center;
+  }
+
+  .login-error {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #c0392b;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+  }
+
+  .login-error-icon {
+    flex-shrink: 0;
+    width: 0.9rem;
+    height: 0.9rem;
+    fill: #c0392b;
   }
 
   .back-btn svg {

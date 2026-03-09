@@ -85,7 +85,15 @@ const LoginUser = tokenId => async (dispatch) => {
       body: JSON.stringify({ tokenId }),
     });
 
-    const data = await response.json();
+    const text = await response.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      throw new Error(response.status === 401
+        ? 'Please use a @g.ucla.edu, @ucla.edu, or @uclaacm.com email address.'
+        : `Login failed (${response.status})`);
+    }
 
     if (!data) throw new Error('Empty response from server');
     if (data.error) throw new Error(data.error.message);

@@ -6,7 +6,7 @@ export default class LoginComponent extends React.Component {
   render() {
     return (
       <div className="login">
-        <LoginSidebar onsubmit={this.props.onsubmit} />
+        <LoginSidebar onsubmit={this.props.onsubmit} loginError={this.props.loginError} />
         <div className="login-tile">
           <Banner decorative={false} />
         </div>
