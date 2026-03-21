@@ -202,4 +202,11 @@ if (config.isDevelopment) {
   });
 }
 
-module.exports = { router, authenticated };
+const isAdmin = (req, res, next) => {
+  if (!req.user || !req.user.isAdmin()) {
+    return next(new error.Forbidden());
+  }
+  return next();
+};
+
+module.exports = { router, authenticated, isAdmin };
