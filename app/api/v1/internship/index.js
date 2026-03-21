@@ -38,7 +38,7 @@ router.put('/applications/:id', auth, validateUpdateApplication, updateApplicati
 router.delete('/applications/:id', auth, deleteApplication);
 
 // GET all committees
-router.get('/committees', auth, getAllCommittees);
+router.get('/committees', getAllCommittees);
 
 // GET a single committee by ID
 router.get('/committees/:id', auth, getCommitteeById);
