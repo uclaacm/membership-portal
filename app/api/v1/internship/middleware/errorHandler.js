@@ -6,9 +6,12 @@ const log = app.logger;
 const errorHandler = (error, req, res, next) => {
   log.error('Error:', error);
 
-  res.status(500).json({
+  const statusCode = error.statusCode || 500;
+  const message = error.statusCode ? error.message : 'Internal server error';
+
+  res.status(statusCode).json({
     success: false,
-    message: 'Internal server error',
+    message,
     error: process.env.NODE_ENV === 'development' ? error.message : undefined,
   });
 };
