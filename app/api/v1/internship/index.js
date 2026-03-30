@@ -8,6 +8,7 @@ const {
   getApplicationById,
   updateApplication,
   deleteApplication,
+  getOwnApplication,
 } = require('./controllers/applicationController');
 const {
   getAllCommittees,
@@ -21,15 +22,18 @@ const { strictCreateApplicationLimiter, committeeRateLimiter } = require('./midd
 
 const router = express.Router();
 
-// GET all applications
-router.get('/applications', validateGetApplications, getAllApplications);
+// GET all applications (admin only)
+router.get('/applications', auth, admin, validateGetApplications, getAllApplications);
+
+// GET own application (authenticated non-admin user)
+router.get('/applications/me', auth, getOwnApplication);
 
 // POST a new application
 // Order matters! auth → rateLimit → validate → controller
 router.post('/applications', auth, strictCreateApplicationLimiter, validateCreateApplication, createApplication);
 
-// GET a single application by ID
-router.get('/applications/:id', getApplicationById);
+// GET a single application by ID (admin only)
+router.get('/applications/:id', auth, admin, getApplicationById);
 
 // PUT (update) an application by ID
 router.put('/applications/:id', auth, validateUpdateApplication, updateApplication);
