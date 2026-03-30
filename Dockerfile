@@ -20,4 +20,4 @@ RUN make setup
 
 # open a port and start the server
 EXPOSE 8080
-CMD ["yarn", "start"]
+CMD ["sh", "-c", "node scripts/db-init.js && npx sequelize-cli db:migrate && yarn start"]

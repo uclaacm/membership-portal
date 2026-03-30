@@ -10,7 +10,10 @@ test: build
 ecr-login:
 	$(shell aws ecr get-login --no-include-email --region us-west-1)
 
-migrate:
+db-init:
+	node scripts/db-init.js
+
+migrate: db-init
 	npx sequelize-cli db:migrate
 
 rollback:

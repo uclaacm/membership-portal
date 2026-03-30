@@ -69,6 +69,7 @@ router.post('/login', (req, res, next) => {
         uuid: user.getDataValue('uuid'),
         admin: user.isAdmin(),
         superAdmin: user.isSuperAdmin(),
+        officer: user.isOfficer(),
         registered: !user.isPending(),
       },
       config.session.secret,
