@@ -165,6 +165,20 @@ async function getApplicationById(req, res) {
   }
 }
 
+// Get the authenticated user's own application
+async function getOwnApplication(req, res) {
+  try {
+    const userId = req.user.uuid;
+    const application = await InternshipApplication.findOne({ userId });
+    if (!application) {
+      return res.status(404).json({ success: false, message: 'Application not found' });
+    }
+    return res.status(200).json({ success: true, data: application });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Error fetching application', error: error.message });
+  }
+}
+
 // Update an internship application
 async function updateApplication(req, res) {
   try {
@@ -265,4 +279,5 @@ module.exports = {
   getApplicationById,
   updateApplication,
   deleteApplication,
+  getOwnApplication,
 };
