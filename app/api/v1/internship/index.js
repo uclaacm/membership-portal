@@ -2,12 +2,16 @@ const express = require('express');
 // Check user is authenticated
 const auth = require('../auth').authenticated;
 const admin = require('../auth').isAdmin;
+const officer = require('../auth').isOfficer;
+const adminOrOfficer = require('../auth').isAdminOrOfficer;
+
 const {
   createApplication,
   getAllApplications,
   getApplicationById,
   updateApplication,
   deleteApplication,
+  getOwnApplication,
 } = require('./controllers/applicationController');
 const {
   getAllCommittees,
@@ -17,19 +21,22 @@ const {
   deleteCommittee,
 } = require('./controllers/committeeController');
 const { validateCreateApplication, validateUpdateApplication, validateGetApplications } = require('./middleware/validation');
-const { strictCreateApplicationLimiter, committeeRateLimiter } = require('./middleware/rateLimiter');
+const { strictCreateApplicationLimiter, getApplicationsLimiter, committeeRateLimiter } = require('./middleware/rateLimiter');
 
 const router = express.Router();
 
-// GET all applications
-router.get('/applications', validateGetApplications, getAllApplications);
+// GET all applications (officers and admins only)
+router.get('/applications', auth, adminOrOfficer, getApplicationsLimiter, validateGetApplications, getAllApplications);
+
+// GET own application (authenticated non-admin user)
+router.get('/applications/me', auth, getApplicationsLimiter, getOwnApplication);
+
+// GET a single application by ID (officers only)
+router.get('/applications/:id', auth, officer, getApplicationsLimiter, getApplicationById);
 
 // POST a new application
 // Order matters! auth → rateLimit → validate → controller
 router.post('/applications', auth, strictCreateApplicationLimiter, validateCreateApplication, createApplication);
-
-// GET a single application by ID
-router.get('/applications/:id', getApplicationById);
 
 // PUT (update) an application by ID
 router.put('/applications/:id', auth, validateUpdateApplication, updateApplication);
