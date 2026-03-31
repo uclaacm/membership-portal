@@ -216,7 +216,13 @@ const isOfficer = (req, res, next) => {
   }
   return next();
 };
+const isOfficerOrAdmin = (req, res, next) => {
+  if (!req.user || (!req.user.isOfficer() && !req.user.isAdmin())) {
+    return next(new error.Forbidden());
+  }
+  return next();
+};
 
 module.exports = {
-  router, authenticated, isAdmin, isOfficer,
+  router, authenticated, isAdmin, isOfficer, isOfficerOrAdmin,
 };
