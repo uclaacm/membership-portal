@@ -24,14 +24,14 @@ const { strictCreateApplicationLimiter, getApplicationsLimiter, committeeRateLim
 
 const router = express.Router();
 
-// GET all applications (officers only)
+// GET all applications (officers and admins only)
 router.get('/applications', auth, officer, getApplicationsLimiter, validateGetApplications, getAllApplications);
-
-// GET a single application by ID (officers only)
-router.get('/applications/:id', auth, officer, getApplicationsLimiter, getApplicationById);
 
 // GET own application (authenticated non-admin user)
 router.get('/applications/me', auth, getApplicationsLimiter, getOwnApplication);
+
+// GET a single application by ID (officers only)
+router.get('/applications/:id', auth, officer, getApplicationsLimiter, getApplicationById);
 
 // POST a new application
 // Order matters! auth → rateLimit → validate → controller
