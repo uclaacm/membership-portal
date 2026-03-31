@@ -210,4 +210,13 @@ const isAdmin = (req, res, next) => {
   return next();
 };
 
-module.exports = { router, authenticated, isAdmin };
+const isOfficer = (req, res, next) => {
+  if (!req.user || !req.user.isOfficer()) {
+    return next(new error.Forbidden());
+  }
+  return next();
+};
+
+module.exports = {
+  router, authenticated, isAdmin, isOfficer,
+};

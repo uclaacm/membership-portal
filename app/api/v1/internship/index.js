@@ -2,6 +2,8 @@ const express = require('express');
 // Check user is authenticated
 const auth = require('../auth').authenticated;
 const admin = require('../auth').isAdmin;
+const officer = require('../auth').isOfficer;
+
 const {
   createApplication,
   getAllApplications,
@@ -22,11 +24,11 @@ const { strictCreateApplicationLimiter, getApplicationsLimiter, committeeRateLim
 
 const router = express.Router();
 
-// GET all applications (admin only)
-router.get('/applications', auth, admin, getApplicationsLimiter, validateGetApplications, getAllApplications);
+// GET all applications (officers only)
+router.get('/applications', auth, officer, getApplicationsLimiter, validateGetApplications, getAllApplications);
 
-// GET a single application by ID (admin only)
-router.get('/applications/:id', auth, admin, getApplicationsLimiter, getApplicationById);
+// GET a single application by ID (officers only)
+router.get('/applications/:id', auth, officer, getApplicationsLimiter, getApplicationById);
 
 // GET own application (authenticated non-admin user)
 router.get('/applications/me', auth, getApplicationsLimiter, getOwnApplication);
