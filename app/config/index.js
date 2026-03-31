@@ -23,7 +23,13 @@ module.exports = {
     apiKey: process.env.GOOGLE_API_KEY,
     authDomain: process.env.GOOGLE_AUTH_DOMAIN,
     clientId: process.env.GOOGLE_CLIENT_ID,
-    hostedDomain: 'g.ucla.edu',
+    allowedDomains: ['g.ucla.edu', 'ucla.edu', 'uclaacm.com'],
+    adminDomain: 'uclaacm.com',
+  },
+
+  sheets: {
+    serviceAcct: process.env.SERVICE_ACCOUNT,
+    eventsSheetId: process.env.EVENTS_SPREADSHEET_ID,
   },
 
   // primary database connection information
