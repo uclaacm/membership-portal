@@ -32,10 +32,27 @@ module.exports = (Sequelize, db) => {
       // type of account
       //   RESTRICTED - not used currently
       //   STANDARD   - a regular member
+      //   OFFICER    - committee officer with elevated but scoped permissions
       //   ADMIN      - admin type user
       accessType: {
-        type: Sequelize.ENUM('RESTRICTED', 'STANDARD', 'ADMIN', 'SUPERADMIN'),
+        type: Sequelize.ENUM('RESTRICTED', 'STANDARD', 'OFFICER', 'ADMIN', 'SUPERADMIN'),
         defaultValue: 'STANDARD',
+      },
+
+      // committees the officer belongs to (only relevant when accessType is OFFICER)
+      committees: {
+        type: Sequelize.ARRAY(Sequelize.STRING),
+        defaultValue: [],
+        validate: {
+          isValidCommittee(value) {
+            const validCommittees = ['Hack', 'AI', 'ICPC', 'Studio', 'Cyber', 'W', 'Game', 'Design', 'TeachLA'];
+            if (!Array.isArray(value)) return;
+            const invalid = value.filter((c) => !validCommittees.includes(c));
+            if (invalid.length > 0) {
+              throw new Error(`Invalid committee(s): ${invalid.join(', ')}. Must be one of: ${validCommittees.join(', ')}`);
+            }
+          },
+        },
       },
 
       // account state
@@ -336,6 +353,8 @@ module.exports = (Sequelize, db) => {
       pronouns: this.getDataValue('pronouns'),
       bio: this.getDataValue('bio'),
       isProfilePublic: this.getDataValue('isProfilePublic'),
+      isOfficer: this.isOfficer(),
+      committees: this.getDataValue('committees') || [],
     };
   };
 
@@ -369,6 +388,15 @@ module.exports = (Sequelize, db) => {
 
   User.prototype.isStandard = function () {
     return this.getDataValue('accessType') === 'STANDARD';
+  };
+
+  User.prototype.isOfficer = function () {
+    return this.getDataValue('accessType') === 'OFFICER';
+  };
+
+  User.prototype.hasCommittee = function (committee) {
+    const committees = this.getDataValue('committees') || [];
+    return committees.includes(committee);
   };
 
   User.prototype.isAdmin = function () {

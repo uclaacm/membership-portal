@@ -1,72 +1,29 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
+  async up(queryInterface) {
     await queryInterface.sequelize.transaction(async (transaction) => {
-      // Adding new columns to the users table
-      await queryInterface.addColumn('users', 'bio', {
-        type: Sequelize.TEXT,
-        validate: {
-          len: [0, 1000],
-        },
-      }, { transaction });
+      // IF NOT EXISTS makes this safe on a DB where db.sync() already created these columns
+      await queryInterface.sequelize.query(`
+        ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "bio" TEXT;
+        ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "linkedinUrl" VARCHAR(255);
+        ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "githubUrl" VARCHAR(255);
+        ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "portfolioUrl" VARCHAR(255);
+        ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "personalWebsite" VARCHAR(255);
+        ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "resumeUrl" VARCHAR(255);
+        ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "skills" JSONB DEFAULT '[]';
+        ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "isProfilePublic" BOOLEAN DEFAULT false;
+        ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "pronouns" VARCHAR(255);
+      `, { transaction });
 
-      await queryInterface.addColumn('users', 'linkedinUrl', {
-        type: Sequelize.STRING,
-        validate: {
-          isUrl: true,
-        },
-      }, { transaction });
-
-      await queryInterface.addColumn('users', 'githubUrl', {
-        type: Sequelize.STRING,
-        validate: {
-          isUrl: true,
-        },
-      }, { transaction });
-
-      await queryInterface.addColumn('users', 'portfolioUrl', {
-        type: Sequelize.STRING,
-        validate: {
-          isUrl: true,
-        },
-      }, { transaction });
-
-      await queryInterface.addColumn('users', 'personalWebsite', {
-        type: Sequelize.STRING,
-        validate: {
-          isUrl: true,
-        },
-      }, { transaction });
-
-      await queryInterface.addColumn('users', 'resumeUrl', {
-        type: Sequelize.STRING,
-        validate: {
-          isUrl: true,
-        },
-      }, { transaction });
-
-      await queryInterface.addColumn('users', 'skills', {
-        type: Sequelize.JSONB,
-        defaultValue: [],
-      }, { transaction });
-
-      await queryInterface.addColumn('users', 'isProfilePublic', {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false,
-      }, { transaction });
-
-      await queryInterface.addColumn('users', 'pronouns', {
-        type: Sequelize.STRING,
-      }, { transaction });
-
-      // Adding an index for isProfilePublic
-      await queryInterface.addIndex('users', ['isProfilePublic'], { transaction });
+      await queryInterface.sequelize.query(
+        'CREATE INDEX IF NOT EXISTS "users_is_profile_public" ON "users" ("isProfilePublic");',
+        { transaction },
+      );
     });
   },
 
   async down(queryInterface) {
     await queryInterface.sequelize.transaction(async (transaction) => {
-      // Removing the added columns
       await queryInterface.removeColumn('users', 'bio', { transaction });
       await queryInterface.removeColumn('users', 'linkedinUrl', { transaction });
       await queryInterface.removeColumn('users', 'githubUrl', { transaction });
@@ -76,8 +33,6 @@ module.exports = {
       await queryInterface.removeColumn('users', 'skills', { transaction });
       await queryInterface.removeColumn('users', 'isProfilePublic', { transaction });
       await queryInterface.removeColumn('users', 'pronouns', { transaction });
-
-      // Removing the index for isProfilePublic
       await queryInterface.removeIndex('users', ['isProfilePublic'], { transaction });
     });
   },

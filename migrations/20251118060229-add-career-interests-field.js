@@ -1,10 +1,9 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
-    await queryInterface.addColumn('users', 'careerInterests', {
-      type: Sequelize.JSONB,
-      defaultValue: [],
-    });
+  async up(queryInterface) {
+    await queryInterface.sequelize.query(
+      'ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "careerInterests" JSONB DEFAULT \'[]\';',
+    );
   },
 
   async down(queryInterface) {

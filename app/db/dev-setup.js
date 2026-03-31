@@ -282,6 +282,124 @@ module.exports = (User, Event) => {
       pronouns: 'He/Him',
     }),
 
+    // Officer seed users — one per committee
+    User.findOrCreate({
+      where: { email: 'officer.hack@g.ucla.edu' },
+      defaults: {
+        accessType: 'OFFICER',
+        state: 'ACTIVE',
+        firstName: 'Hack',
+        lastName: 'Officer',
+        year: 3,
+        major: 'Computer Science',
+        committees: ['Hack'],
+      },
+    }),
+
+    User.findOrCreate({
+      where: { email: 'officer.ai@g.ucla.edu' },
+      defaults: {
+        accessType: 'OFFICER',
+        state: 'ACTIVE',
+        firstName: 'AI',
+        lastName: 'Officer',
+        year: 3,
+        major: 'Computer Science',
+        committees: ['AI'],
+      },
+    }),
+
+    User.findOrCreate({
+      where: { email: 'officer.icpc@g.ucla.edu' },
+      defaults: {
+        accessType: 'OFFICER',
+        state: 'ACTIVE',
+        firstName: 'ICPC',
+        lastName: 'Officer',
+        year: 3,
+        major: 'Computer Science',
+        committees: ['ICPC'],
+      },
+    }),
+
+    User.findOrCreate({
+      where: { email: 'officer.studio@g.ucla.edu' },
+      defaults: {
+        accessType: 'OFFICER',
+        state: 'ACTIVE',
+        firstName: 'Studio',
+        lastName: 'Officer',
+        year: 3,
+        major: 'Computer Science',
+        committees: ['Studio'],
+      },
+    }),
+
+    User.findOrCreate({
+      where: { email: 'officer.cyber@g.ucla.edu' },
+      defaults: {
+        accessType: 'OFFICER',
+        state: 'ACTIVE',
+        firstName: 'Cyber',
+        lastName: 'Officer',
+        year: 3,
+        major: 'Computer Science',
+        committees: ['Cyber'],
+      },
+    }),
+
+    User.findOrCreate({
+      where: { email: 'officer.w@g.ucla.edu' },
+      defaults: {
+        accessType: 'OFFICER',
+        state: 'ACTIVE',
+        firstName: 'ACM',
+        lastName: 'W Officer',
+        year: 3,
+        major: 'Computer Science',
+        committees: ['W'],
+      },
+    }),
+
+    User.findOrCreate({
+      where: { email: 'officer.game@g.ucla.edu' },
+      defaults: {
+        accessType: 'OFFICER',
+        state: 'ACTIVE',
+        firstName: 'Game',
+        lastName: 'Officer',
+        year: 3,
+        major: 'Computer Science',
+        committees: ['Game'],
+      },
+    }),
+
+    User.findOrCreate({
+      where: { email: 'officer.design@g.ucla.edu' },
+      defaults: {
+        accessType: 'OFFICER',
+        state: 'ACTIVE',
+        firstName: 'Design',
+        lastName: 'Officer',
+        year: 3,
+        major: 'Computer Science',
+        committees: ['Design'],
+      },
+    }),
+
+    User.findOrCreate({
+      where: { email: 'officer.teachla@g.ucla.edu' },
+      defaults: {
+        accessType: 'OFFICER',
+        state: 'ACTIVE',
+        firstName: 'TeachLA',
+        lastName: 'Officer',
+        year: 3,
+        major: 'Computer Science',
+        committees: ['TeachLA'],
+      },
+    }),
+
     Event.findOrCreate({
       where: { attendanceCode: 'ast4r' },
       defaults: {
