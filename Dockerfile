@@ -13,7 +13,9 @@ RUN cd /var/www/membership && yarn install
 # set the working direction and copy the source
 WORKDIR /var/www/membership
 COPY . /var/www/membership
-RUN make setup
+RUN if [ ! -f app/config/SESSION_SECRET ]; then \
+        cat /dev/urandom | od -N 32 -t x4 -An | tr -d '\n ' > app/config/SESSION_SECRET; \
+    fi
 
 # open a port and start the server
 EXPOSE 8080
