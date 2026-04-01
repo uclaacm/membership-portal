@@ -3,7 +3,7 @@ const express = require('express');
 const auth = require('../auth').authenticated;
 const admin = require('../auth').isAdmin;
 const officer = require('../auth').isOfficer;
-const adminOrOfficer = require('../auth').isAdminOrOfficer;
+const adminOrOfficer = require('../auth').isOfficerOrAdmin;
 
 const {
   createApplication,
