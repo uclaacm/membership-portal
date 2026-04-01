@@ -19,10 +19,11 @@ migrate: db-init
 rollback:
 	npx sequelize-cli db:migrate:undo
 
-setup: migrate
+setup:
 	if [ ! -f app/config/SESSION_SECRET ]; then \
 		cat /dev/urandom | od -N 32 -t x4 -An | tr -d '\n ' > app/config/SESSION_SECRET; \
 	fi
+	$(MAKE) migrate
 
 ash:
 	docker run -v $(pwd):/app -p "8080:8080" $(APP_NAME) /bin/ash
