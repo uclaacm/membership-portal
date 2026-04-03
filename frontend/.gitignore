@@ -47,6 +47,9 @@ jspm_packages
 # Optional REPL history
 .node_repl_history
 
+# Stale artifacts
+let
+
 # OS-specific
 Thumbs.db
 desktop.ini
