@@ -245,7 +245,6 @@ export default class UserEvents extends React.Component {
         <Button
           className={`checkin-button${this.state.showCheckIn ? ' hidden' : ''}`}
           style="blue"
-          icon="fa-calendar-check-o"
           text="Check In"
           onClick={this.showCheckIn}
         />

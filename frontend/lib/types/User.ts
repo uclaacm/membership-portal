@@ -6,6 +6,7 @@ export interface UserPublicProfile {
 }
 
 export interface UserExtendedProfile extends UserPublicProfile {
+  uuid: string;
   email: string;
   year: number;
   major: string;

@@ -102,7 +102,7 @@ class Leaderboard extends React.Component {
             </thead>
             <tbody>
               {this.props.leaderboard.slice(3, 3 + this.state.maxItems).map((user, i) => (
-                <tr className={user.id === this.props.user?.uuid ? "current-user" : ""} key={user.id}>
+                <tr className={user.firstName === this.props.user?.firstName && user.lastName === this.props.user?.lastName ? "current-user" : ""} key={i}>
                   <td>{i + 4}</td>
                   <td className="name">
                     <div className="inner-name">

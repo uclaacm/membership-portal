@@ -98,15 +98,15 @@ export default function HomePage() {
   };
 
   return (
-    <div className="home-dashboard">
-      <Topbar 
+    <>
+      <Topbar
         isAdmin={false}
         picture={userProfile?.picture}
         onLogout={handleLogout}
         isRealAdmin={false}
         adminView={false}
       />
-      
+    <div className="home-dashboard">
       {/* Sidebar */}
       <aside className="sidebar-custom">
         <div className="sidebar-box event-checkin">
@@ -182,5 +182,6 @@ export default function HomePage() {
         <FeaturedEvents title="Featured Events" events={eventCards} />
       </main>
     </div>
+    </>
   );
 }

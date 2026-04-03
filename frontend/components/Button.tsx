@@ -1,8 +1,10 @@
 import Image from "next/image";
 import Loader from "@/components/Loader";
+import "./Button.scss";
 
 export default function Button({
   action,
+  onClick,
   className,
   color,
   icon,
@@ -14,6 +16,8 @@ export default function Button({
 }: Partial<{
   // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   action: Function;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+  onClick: Function;
   className: string;
   color: string;
   icon: string;
@@ -23,20 +27,24 @@ export default function Button({
   text: string;
   type: "submit" | "reset" | "button";
 }>) {
-  const buttonClass = `inline-block ${className}`;
-  const buttonIcon = icon ? <i className={`fa ${icon} inline-block text-center mr-2.5`} aria-hidden="true" /> : null;
+  const handleClick = () => {
+    if (loading) return;
+    if (onClick) onClick();
+    else if (action) action();
+  };
+
+  const buttonClass = `button-component ${className ?? ""}`;
+  const buttonIcon = icon ? <i className={`fa ${icon} button-icon`} aria-hidden="true" /> : null;
   const buttonCustomIcon = customIcon ? (
-    <Image src={customIcon} alt="Button" className="inline-block w-[18px] h-[18px]" />
+    <Image src={customIcon} alt="Button" className="button-icon button-custom-icon" width={18} height={18} />
   ) : null;
 
   return (
-    <div className={buttonClass} onClick={() => action && action()}>
-      <button
-        className={`${style} ${color} font-["Lato",sans-serif] box-border cursor-pointer border-none outline-none w-auto text-white text-center rounded-[40px] text-[18px] h-10 transition-[0.125s_ease-in-out] p-[0_12px] text-wrap flex items-center`}
-        type={type}>
-        {!loading && buttonIcon && !buttonCustomIcon}
+    <div className={buttonClass} onClick={handleClick}>
+      <button className={`button-inside ${style ?? ""} ${color ?? ""}`} type={type}>
+        {!loading && !buttonCustomIcon && buttonIcon}
         {!loading && buttonCustomIcon}
-        {!loading && <span className="h-full w-full text-nowrap flex items-center justify-center">{text}</span>}
+        {!loading && <span>{text}</span>}
         {loading && <Loader />}
       </button>
     </div>

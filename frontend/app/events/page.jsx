@@ -8,6 +8,7 @@ import UserEvents from './UserEvents';
 import logoutUser from '@/app/actions/auth/logoutUser';
 import fetchFutureEvents from '@/app/actions/events/fetchFutureEvents';
 import fetchUserRSVPs from '@/app/actions/rsvp/fetchUserRSVPs';
+import checkInAction from '@/app/actions/attendance/checkIn';
 import { authUserProfileAtom } from '@/lib/atoms';
 import './style.scss';
 
@@ -17,6 +18,10 @@ export default function EventsPage() {
   const [userRsvps, setUserRsvps] = useState([]);
   const [error, setError] = useState(null);
   const [mounted, setMounted] = useState(false);
+  const [checkInSubmitted, setCheckInSubmitted] = useState(false);
+  const [checkInSuccess, setCheckInSuccess] = useState(false);
+  const [checkInPoints, setCheckInPoints] = useState(0);
+  const [checkInError, setCheckInError] = useState('');
 
   useEffect(() => {
     setMounted(true);
@@ -50,6 +55,21 @@ export default function EventsPage() {
     await logoutUser();
   };
 
+  const handleCheckIn = async (attendanceCode) => {
+    const result = await checkInAction(attendanceCode);
+    setCheckInSubmitted(true);
+    setCheckInSuccess(result.success);
+    setCheckInPoints(result.points ?? 0);
+    setCheckInError(result.error ?? '');
+  };
+
+  const handleResetCheckIn = () => {
+    setCheckInSubmitted(false);
+    setCheckInSuccess(false);
+    setCheckInPoints(0);
+    setCheckInError('');
+  };
+
   if (!mounted) {
     return null;
   }
@@ -63,10 +83,16 @@ export default function EventsPage() {
         isRealAdmin={false}
         adminView={false}
       />
-      <UserEvents 
+      <UserEvents
         events={events}
         userRsvps={userRsvps}
         error={error}
+        checkIn={handleCheckIn}
+        checkInSubmitted={checkInSubmitted}
+        checkInSuccess={checkInSuccess}
+        checkInPoints={checkInPoints}
+        checkInError={checkInError}
+        resetCheckIn={handleResetCheckIn}
       />
     </div>
   );
