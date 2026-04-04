@@ -82,10 +82,10 @@ router
       .catch(next);
   })
   /**
-   * For all further requests on this route, the user needs to be an admin
+   * For all further requests on this route, the user needs to be an admin or officer
    */
   .all((req, res, next) => {
-    if (!req.user.isAdmin()) return next(new error.Forbidden());
+    if (!req.user.isAdmin() && !req.user.isOfficer()) return next(new error.Forbidden());
     return next();
   })
   /**
@@ -94,6 +94,18 @@ router
    */
   .post((req, res, next) => {
     if (!req.body.event) return next(new error.BadRequest());
+
+    if (!req.user.isAdmin()) {
+      if (!req.body.event.committee || !req.body.event.committee.trim()) {
+        return next(new error.Forbidden('You do not have permission to create events outside your committee.'));
+      }
+
+      try {
+        assertCanManageCommitteeResource(req.user, req.body.event.committee, 'event');
+      } catch (err) {
+        return next(err);
+      }
+    }
 
     if (
       req.body.event.startDate
