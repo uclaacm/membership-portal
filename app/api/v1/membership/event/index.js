@@ -1,6 +1,7 @@
 const express = require('express');
 const error = require('../../../../error');
 const { Event } = require('../../../../db');
+const { assertCanManageCommitteeResource } = require('../../auth/committeeScope');
 
 const router = express.Router();
 
@@ -128,19 +129,14 @@ router
       .catch(next);
   })
   /**
-   * For all further requests on this route, the user needs to be an admin
-   */
-  .all((req, res, next) => {
-    if (!req.user.isAdmin()) return next(new error.Forbidden());
-    return next();
-  })
-  /**
    * Updates an event given an event UUID and the partial object with updates
    *
    * URI should contain the UUID and the POST body should contain an 'event' object
    * with updated fields.
    */
   .patch((req, res, next) => {
+    if (!req.user.isAdmin()) return next(new error.Forbidden());
+
     if (!req.params.uuid || !req.params.uuid.trim() || !req.body.event) {
       return next(new error.BadRequest());
     }
@@ -171,10 +167,20 @@ router
    */
   .delete((req, res, next) => {
     if (!req.params.uuid) return next(new error.BadRequest());
-    return Event.destroyByUUID(req.params.uuid)
-      .then((numDeleted) => {
-        res.json({ error: null, numDeleted });
-        return null;
+
+    return Event.findByUUID(req.params.uuid)
+      .then((event) => {
+        if (!event) {
+          res.json({ error: null, numDeleted: 0 });
+          return null;
+        }
+
+        assertCanManageCommitteeResource(req.user, event.committee, 'event');
+        return Event.destroyByUUID(req.params.uuid)
+          .then((numDeleted) => {
+            res.json({ error: null, numDeleted });
+            return null;
+          });
       })
       .catch(next);
   });
