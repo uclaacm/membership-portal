@@ -55,6 +55,8 @@ router
   .get((req, res, next) => {
     if (req.user.isPending()) return next(new error.Forbidden());
 
+    const canViewAttendanceCode = req.user.isAdmin() || req.user.isOfficer();
+
     const offset = parseInt(req.query.offset, 10);
     const limit = parseInt(req.query.limit, 10);
     const { committee } = req.query;
@@ -75,7 +77,7 @@ router
 
         res.json({
           error: null,
-          events: events.map((e) => e.getPublic(req.user.isAdmin())),
+          events: events.map((e) => e.getPublic(canViewAttendanceCode)),
         });
         return null;
       })
@@ -119,7 +121,9 @@ router
 
     return Event.create(Event.sanitize(req.body.event))
       .then((event) => {
-        res.json({ error: null, event: event.getPublic() });
+        res.json(
+          { error: null, event: event.getPublic(req.user.isAdmin() || req.user.isOfficer()) },
+        );
         return null;
       })
       .catch(next);
@@ -131,6 +135,8 @@ router
   .get((req, res, next) => {
     if (req.user.isPending()) return next(new error.Forbidden());
 
+    const canViewAttendanceCode = req.user.isAdmin() || req.user.isOfficer();
+
     // CASE: UUID is present, should return matching event
     return Event.findByUUID(req.params.uuid)
       .then((event) => {
@@ -138,7 +144,7 @@ router
         // an event was found. otherwise, return null
         res.json({
           error: null,
-          event: event ? event.getPublic(req.user.isAdmin()) : null,
+          event: event ? event.getPublic(canViewAttendanceCode) : null,
         });
         return null;
       })
@@ -185,7 +191,9 @@ router
         return event.update(updates);
       })
       .then((event) => {
-        res.json({ error: null, event: event.getPublic() });
+        res.json(
+          { error: null, event: event.getPublic(req.user.isAdmin() || req.user.isOfficer()) },
+        );
         return null;
       })
       .catch(next);
@@ -194,7 +202,7 @@ router
    * Delete an event given a UUID
    *
    * Returns the number of events deleted (1 if successful, 0 if event not found)
-   */
+     */
   .delete((req, res, next) => {
     if (!req.params.uuid) return next(new error.BadRequest());
 
