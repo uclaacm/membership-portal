@@ -1,7 +1,7 @@
 const express = require('express');
 const error = require('../../../../error');
 const { Event } = require('../../../../db');
-const { assertCanManageCommitteeResource } = require('../../auth/committeeScope');
+const { assertCanManageCommitteeResource, canManageCommitteeResource } = require('../../auth/committeeScope');
 
 const router = express.Router();
 
@@ -96,12 +96,16 @@ router
     if (!req.body.event) return next(new error.BadRequest());
 
     if (!req.user.isAdmin()) {
-      if (!req.body.event.committee || !req.body.event.committee.trim()) {
+      const committee = typeof req.body.event.committee === 'string'
+        ? req.body.event.committee.trim()
+        : '';
+
+      if (!committee) {
         return next(new error.Forbidden('You do not have permission to create events outside your committee.'));
       }
 
       try {
-        assertCanManageCommitteeResource(req.user, req.body.event.committee, 'event');
+        assertCanManageCommitteeResource(req.user, committee, 'event');
       } catch (err) {
         return next(err);
       }
@@ -147,7 +151,7 @@ router
    * with updated fields.
    */
   .patch((req, res, next) => {
-    if (!req.user.isAdmin()) return next(new error.Forbidden());
+    if (!req.user.isAdmin() && !req.user.isOfficer()) return next(new error.Forbidden());
 
     if (!req.params.uuid || !req.params.uuid.trim() || !req.body.event) {
       return next(new error.BadRequest());
@@ -163,8 +167,22 @@ router
     return Event.findByUUID(req.params.uuid)
       .then((event) => {
         if (!event) throw new error.BadRequest('No such event found');
+
+        if (!req.user.isAdmin() && !canManageCommitteeResource(req.user, event.committee)) {
+          throw new error.Forbidden('You do not have permission to update this event.');
+        }
+
+        const updates = Event.sanitize(req.body.event);
+        if (
+          !req.user.isAdmin()
+          && updates.committee
+          && !canManageCommitteeResource(req.user, updates.committee)
+        ) {
+          throw new error.Forbidden('You do not have permission to move this event to another committee.');
+        }
+
         // update the event with the new information after sanitizing the input
-        return event.update(Event.sanitize(req.body.event));
+        return event.update(updates);
       })
       .then((event) => {
         res.json({ error: null, event: event.getPublic() });
