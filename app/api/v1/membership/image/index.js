@@ -70,7 +70,7 @@ router
       .catch(next);
   })
   .all(auth, (req, res, next) => {
-    if (!req.user.isAdmin()) return next(new error.Forbidden());
+    if (!req.user.isAdmin() && !req.user.isOfficer()) return next(new error.Forbidden());
     return next();
   })
   .post([auth, upload.single('image')], (req, res, next) => {
