@@ -69,17 +69,18 @@ router
       })
       .catch(next);
   })
-  .all(auth, (req, res, next) => {
-    if (!req.user.isAdmin() && !req.user.isOfficer()) return next(new error.Forbidden());
-    return next();
-  })
   .post([auth, upload.single('image')], (req, res, next) => {
+    if (!req.user.isAdmin() && !req.user.isOfficer()) {
+      return next(new error.Forbidden());
+    }
+
     if (!req.file) return next(new error.BadRequest());
     const imageBuffer = req.file.buffer;
     const mimeType = req.file.mimetype;
+
     Image.create({ data: imageBuffer, mimetype: mimeType, size: imageBuffer.length })
       .then((image) => {
-        res.json({ error: null, uuid: image.uuid });
+        res.json({ error: null, uuid: image.getDataValue('uuid') });
       })
       .catch(next);
     return null; // eslint
