@@ -3,6 +3,7 @@ const error = require('../../../../error');
 const {
   Event, RSVP, User,
 } = require('../../../../db');
+const { canManageCommitteeResource } = require('../../auth/committeeScope');
 
 const router = express.Router();
 
@@ -21,35 +22,44 @@ router.route('/').get((req, res, next) => {
 });
 
 /**
- * Gets all RSVPs for a specific event (admin only)
+ * Gets all RSVPs for a specific event (admin or committee-scoped officer)
  * Returns a list of RSVP objects enriched with user profile data
  */
 router.route('/event/:uuid').get((req, res, next) => {
   if (req.user.isPending()) return next(new error.Forbidden());
 
-  // Only admins can access this endpoint
-  if (!req.user.isAdmin()) {
+  // Only admins and officers can access this endpoint.
+  if (!req.user.isAdmin() && !req.user.isOfficer()) {
     return next(new error.Forbidden());
   }
 
-  // Find all RSVP records for THAT EVENT and enrich with user profiles
-  return RSVP.getRSVPsForEvent(req.params.uuid)
-    .then((rsvps) => {
-      // Extract all user UUIDs from RSVPs
-      const userPromises = rsvps.map((rsvp) => User.findByUUID(rsvp.getDataValue('user')));
+  return Event.findByUUID(req.params.uuid)
+    .then((event) => {
+      if (!event) throw new error.UserError('Event not found');
 
-      // Fetch all users in parallel
-      return Promise.all(userPromises)
-        .then((users) => {
-          // Combine RSVP data with user profile data
-          const enrichedRsvps = rsvps.map((rsvp, index) => ({
-            uuid: rsvp.getDataValue('uuid'),
-            user: users[index] ? users[index].getUserProfile() : null,
-            event: rsvp.getDataValue('event'),
-            date: rsvp.getDataValue('date'),
-          }));
+      if (!req.user.isAdmin() && !canManageCommitteeResource(req.user, event.committee)) {
+        throw new error.Forbidden('You do not have permission to view RSVPs for this event.');
+      }
 
-          return res.json({ error: null, rsvps: enrichedRsvps });
+      // Find all RSVP records for THAT EVENT and enrich with user profiles
+      return RSVP.getRSVPsForEvent(req.params.uuid)
+        .then((rsvps) => {
+          // Extract all user UUIDs from RSVPs
+          const userPromises = rsvps.map((rsvp) => User.findByUUID(rsvp.getDataValue('user')));
+
+          // Fetch all users in parallel
+          return Promise.all(userPromises)
+            .then((users) => {
+              // Combine RSVP data with user profile data
+              const enrichedRsvps = rsvps.map((rsvp, index) => ({
+                uuid: rsvp.getDataValue('uuid'),
+                user: users[index] ? users[index].getUserProfile() : null,
+                event: rsvp.getDataValue('event'),
+                date: rsvp.getDataValue('date'),
+              }));
+
+              return res.json({ error: null, rsvps: enrichedRsvps });
+            });
         });
     })
     .catch(next);
