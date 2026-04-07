@@ -4,6 +4,7 @@ app/config/SESSION_SECRET
 certs-data
 certs
 node.env
+.env
 pg_bkup*
 .DS_Store
 .vscode

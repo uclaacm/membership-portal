@@ -10,10 +10,20 @@ test: build
 ecr-login:
 	$(shell aws ecr get-login --no-include-email --region us-west-1)
 
+db-init:
+	node scripts/db-init.js
+
+migrate: db-init
+	npx sequelize-cli db:migrate
+
+rollback:
+	npx sequelize-cli db:migrate:undo
+
 setup:
 	if [ ! -f app/config/SESSION_SECRET ]; then \
 		cat /dev/urandom | od -N 32 -t x4 -An | tr -d '\n ' > app/config/SESSION_SECRET; \
 	fi
+	$(MAKE) migrate
 
 ash:
 	docker run -v $(pwd):/app -p "8080:8080" $(APP_NAME) /bin/ash

@@ -96,8 +96,10 @@ class NotAvailable extends HTTPError {
 /**
  * General error handler middleware. Attaches to express so that throwing or calling next() with
  * an error ends up here and all errors are handled uniformly.
+ * NOTE: All error handlers MUST define four parameters to be recognized correctly by express.
  */
-const errorHandler = (err, req, res) => {
+/* eslint-disable no-unused-vars */
+const errorHandler = (err, req, res, next) => {
   let localErr = err;
   if (!localErr) localErr = new InternalServerError('An unknown error occurred');
   if (!localErr.status) localErr = new InternalServerError(localErr.message);

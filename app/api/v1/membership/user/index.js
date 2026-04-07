@@ -1,8 +1,43 @@
 const express = require('express');
+const { matchedData } = require('express-validator');
 const error = require('../../../../error');
-const { User, Activity } = require('../../../../db');
+const { User, Activity, db: Sequelize } = require('../../../../db');
+const {
+  validatePublicProfileLookup,
+  validateDirectoryLookup,
+  validateUserProfileUpdate,
+  validateCareerProfileUpdate,
+} = require('./validation');
 
 const router = express.Router();
+const MAX_PAGE_LIMIT = 100;
+
+const getUpdateFields = (req) => {
+  // matchedData will only extract the fields that were validated.
+  const validatedData = matchedData(req).user;
+
+  // Optional URL fields that can be cleared with empty strings
+  const optionalUrlFields = ['portfolioUrl', 'personalWebsite', 'resumeUrl'];
+
+  const updatedInfo = Object.fromEntries(
+    // only include fields that are different from current values
+    Object.entries(validatedData)
+      .filter(([key, value]) => {
+        // Always filter out undefined values
+        if (value === undefined) return false;
+
+        // Ignore empty strings for required fields
+        if (['firstName', 'lastName', 'major'].includes(key) && value === '') return false;
+
+        // Allow empty strings for optional URL fields (to clear them)
+        if (optionalUrlFields.includes(key) && value === '') return true;
+
+        // Include if value is object or different from current value
+        return typeof value === 'object' || value !== req.user[key];
+      }),
+  );
+  return updatedInfo;
+};
 
 /**
  * Get user profile for current user
@@ -16,57 +51,55 @@ router
   /**
    * Update user information given a 'user' object with fields to update and updated information
    */
-  .patch((req, res, next) => {
+  .patch(...validateUserProfileUpdate, async (req, res, next) => {
     if (!req.body.user) return next(new error.BadRequest());
-
     if (req.user.isPending()) return next(new error.Forbidden());
 
-    // construct new, sanitized object of update information
-    const updatedInfo = {};
-    // for each field { fistName, lastName, major, year }
-    //   check that it is a valid input and it has changed
-    if (
-      req.body.user.firstName
-      && req.body.user.firstName.length > 0
-      && req.body.user.firstName !== req.user.firstName
-    ) updatedInfo.firstName = req.body.user.firstName;
-    if (
-      req.body.user.lastName
-      && req.body.user.lastName.length > 0
-      && req.body.user.lastName !== req.user.lastName
-    ) updatedInfo.lastName = req.body.user.lastName;
-    if (
-      req.body.user.major
-      && req.body.user.major.length > 0
-      && req.body.user.major !== req.user.major
-    ) updatedInfo.major = req.body.user.major;
-    if (
-      req.body.user.year
-      && Number.isNaN(Number.parseInt(req.body.user.year, 10)) === false
-      && Number.parseInt(req.body.user.year, 10) > 0
-      && Number.parseInt(req.body.user.year, 10) <= 5
-      && req.body.user.year !== req.user.year
-    ) updatedInfo.year = Number.parseInt(req.body.user.year, 10);
+    // Only obtains non-career fields
+    const updatedInfo = getUpdateFields(req);
+    try {
+      const user = await req.user.update(updatedInfo);
+      res.json({
+        error: null,
+        user: user.getUserProfile(),
+      });
+      Activity.accountUpdatedInfo(
+        user.uuid,
+        `User profile updated: ${Object.keys(updatedInfo).join(', ')}`,
+      );
+    } catch (updateError) {
+      return next(updateError);
+    }
 
-    // CASE:
-    // update the user information normally (with the given information,
-    // without any password changes)
-    return req.user
-      .update(updatedInfo)
-      .then((user) => {
-        // respond with the newly updated user profile
-        res.json({
-          error: null,
-          user: user.getUserProfile(),
-        });
-        // record that the user changed some account information, and what info was changed
-        Activity.accountUpdatedInfo(
-          user.uuid,
-          Object.keys(updatedInfo).join(', '),
-        );
-        return null;
-      })
-      .catch(next);
+    return null;
+  });
+
+router
+  .route('/career')
+  .get((req, res, next) => {
+    if (req.user.isPending()) return next(new error.Forbidden());
+    return res.json({ error: null, user: req.user.getCareerProfile() });
+  })
+  .patch(...validateCareerProfileUpdate, async (req, res, next) => {
+    if (!req.body.user) return next(new error.BadRequest());
+    if (req.user.isPending()) return next(new error.Forbidden());
+
+    // Only obtains career fields
+    const updatedInfo = getUpdateFields(req);
+    try {
+      const user = await req.user.update(updatedInfo);
+      res.json({
+        error: null,
+        user: user.getCareerProfile(),
+      });
+      Activity.accountUpdatedInfo(
+        user.uuid,
+        `Career profile updated: ${Object.keys(updatedInfo).join(', ')}`,
+      );
+    } catch (updateError) {
+      return next(updateError);
+    }
+    return null;
   });
 
 /**
@@ -83,6 +116,101 @@ router.get('/activity', (req, res, next) => {
       return null;
     })
     .catch(next);
+});
+
+router
+  .route('/profile/:uuid')
+  .get(...validatePublicProfileLookup, async (req, res, next) => {
+    if (req.user.isPending()
+      || req.user.isRestricted()
+      || req.user.isBlocked()) return next(new error.Forbidden());
+
+    const { uuid } = req.params;
+    const user = await User.findByUUID(uuid);
+    if (!user) return next(new error.NotFound('User not found'));
+    if (user.isPending()
+      || user.isRestricted()
+      || user.isBlocked()) return next(new error.Forbidden());
+
+    let profile = {
+      ...user.getBaseProfile(),
+      ...(user.getPublicProfile() || {}),
+    };
+
+    if (req.query.fields) {
+      const fields = req.query.fields.split(',').map((f) => f.trim());
+      profile = Object.fromEntries(
+        fields.map((field) => [field, profile[field]])
+          .filter(([, value]) => value !== undefined),
+      );
+    }
+
+    return res.json({
+      error: null,
+      profile,
+    });
+  });
+
+router.get('/directory', ...validateDirectoryLookup, async (req, res, next) => {
+  if (req.user.isPending()) return next(new error.Forbidden());
+
+  const page = Math.floor(Number(req.query.page) || 1);
+  const limit = Math.min(MAX_PAGE_LIMIT, Math.floor(Number(req.query.limit) || 20));
+  const offset = (page - 1) * limit;
+
+  const where = {
+    isProfilePublic: true,
+    state: 'ACTIVE',
+  };
+
+  // Filter by skills
+  if (req.query.skills) {
+    const skills = req.query.skills.split(',').map((s) => s.trim());
+    where.skills = {
+      [Sequelize.Op.overlap]: Sequelize.cast(skills, 'text[]'),
+    };
+  }
+
+  // Filter by career interests
+  if (req.query.careerInterests) {
+    const interests = req.query.careerInterests.split(',').map((i) => i.trim());
+    where.careerInterests = {
+      [Sequelize.Op.overlap]: Sequelize.cast(interests, 'text[]'),
+    };
+  }
+
+  // Search by name
+  if (req.query.search) {
+    where[Sequelize.Op.or] = [
+      { firstName: { [Sequelize.Op.iLike]: `%${req.query.search}%` } },
+      { lastName: { [Sequelize.Op.iLike]: `%${req.query.search}%` } },
+    ];
+  }
+
+  try {
+    const { rows, count } = await User.findAndCountAll({
+      where,
+      limit,
+      offset,
+      order: [['points', 'DESC']],
+    });
+    res.json({
+      error: null,
+      directory: {
+        users: rows.map((user) => ({
+          ...user.getBaseProfile(),
+          ...user.getPublicProfile(),
+        })),
+        total: count,
+        page,
+        limit,
+        pages: Math.ceil(count / limit),
+      },
+    });
+  } catch (queryError) {
+    next(queryError);
+  }
+  return null;
 });
 
 /**

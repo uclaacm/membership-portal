@@ -11,6 +11,9 @@ const apiLimiter = rateLimit({
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
 
+// Internship API - use authentication middleware and router
+router.use('/internship', auth, require('./internship').router);
+
 // Private API - use authentication middleware
 router.use('/register', auth, require('./membership/register').router);
 router.use('/user', auth, require('./membership/user').router);
@@ -20,11 +23,10 @@ router.use('/leaderboard', auth, require('./membership/leaderboard').router);
 router.use('/rsvp', auth, require('./membership/rsvp').router);
 router.use('/sheets', auth, require('./membership/sheets').router);
 
-// Can't authenticate CSS url(), so cannot force auth route-wide
-router.use('/image', require('./membership/image').router);
-
 // Mount the admin routes
 router.use('/admin', require('./admin').router);
+
+router.use('/image', require('./membership/image').router);
 
 // Public API
 router.use('/auth', require('./auth').router);

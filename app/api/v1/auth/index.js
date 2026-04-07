@@ -69,6 +69,7 @@ router.post('/login', (req, res, next) => {
         uuid: user.getDataValue('uuid'),
         admin: user.isAdmin(),
         superAdmin: user.isSuperAdmin(),
+        officer: user.isOfficer(),
         registered: !user.isPending(),
       },
       config.session.secret,
@@ -78,7 +79,7 @@ router.post('/login', (req, res, next) => {
         // respond with the token upon successful login
         res.json({
           error: null,
-          user: user.getPublicProfile(),
+          user: user.getBaseProfile(),
           token,
         });
         Activity.accountLoggedIn(user.uuid);
@@ -151,4 +152,80 @@ router.post('/login', (req, res, next) => {
   return null;
 });
 
-module.exports = { router, authenticated };
+if (config.isDevelopment) {
+  const DEFAULT_DEV_EMAIL = 'dev@g.ucla.edu';
+  router.post('/dev-login', (req, res, next) => {
+    const createUserToken = (user) => {
+      jwt.sign(
+        {
+          uuid: user.getDataValue('uuid'),
+          admin: user.isAdmin(),
+          superAdmin: user.isSuperAdmin(),
+          registered: !user.isPending(),
+        },
+        config.session.secret,
+        { expiresIn: TOKEN_EXPIRES },
+        (err, token) => {
+          if (err) return next(err);
+          res.json({
+            error: null,
+            user: user.getBaseProfile(),
+            token,
+          });
+          Activity.accountLoggedIn(user.uuid);
+          return null;
+        },
+      );
+      return null;
+    };
+
+    User.findByEmail(DEFAULT_DEV_EMAIL)
+      .then((userObj) => {
+        if (!userObj) {
+          const userModel = {
+            profileId: 'dev-profile-id',
+            email: DEFAULT_DEV_EMAIL,
+            firstName: 'Dev',
+            lastName: 'User',
+            picture: null,
+            state: 'ACTIVE',
+            year: 1,
+            major: 'Undeclared',
+          };
+
+          return User.create(userModel)
+            .then((createdUser) => {
+              Activity.accountCreated(createdUser.uuid);
+              return createUserToken(createdUser);
+            })
+            .catch(next);
+        }
+        return createUserToken(userObj);
+      })
+      .catch(next);
+  });
+}
+
+const isAdmin = (req, res, next) => {
+  if (!req.user || !req.user.isAdmin()) {
+    return next(new error.Forbidden());
+  }
+  return next();
+};
+
+const isOfficer = (req, res, next) => {
+  if (!req.user || !req.user.isOfficer()) {
+    return next(new error.Forbidden());
+  }
+  return next();
+};
+const isOfficerOrAdmin = (req, res, next) => {
+  if (!req.user || (!req.user.isOfficer() && !req.user.isAdmin())) {
+    return next(new error.Forbidden());
+  }
+  return next();
+};
+
+module.exports = {
+  router, authenticated, isAdmin, isOfficer, isOfficerOrAdmin,
+};

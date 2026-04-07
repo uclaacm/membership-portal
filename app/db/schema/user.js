@@ -32,10 +32,27 @@ module.exports = (Sequelize, db) => {
       // type of account
       //   RESTRICTED - not used currently
       //   STANDARD   - a regular member
+      //   OFFICER    - committee officer with elevated but scoped permissions
       //   ADMIN      - admin type user
       accessType: {
-        type: Sequelize.ENUM('RESTRICTED', 'STANDARD', 'ADMIN', 'SUPERADMIN'),
+        type: Sequelize.ENUM('RESTRICTED', 'STANDARD', 'OFFICER', 'ADMIN', 'SUPERADMIN'),
         defaultValue: 'STANDARD',
+      },
+
+      // committees the officer belongs to (only relevant when accessType is OFFICER)
+      committees: {
+        type: Sequelize.ARRAY(Sequelize.STRING),
+        defaultValue: [],
+        validate: {
+          isValidCommittee(value) {
+            const validCommittees = ['Hack', 'AI', 'ICPC', 'Studio', 'Cyber', 'W', 'Game', 'Design', 'TeachLA'];
+            if (!Array.isArray(value)) return;
+            const invalid = value.filter((c) => !validCommittees.includes(c));
+            if (invalid.length > 0) {
+              throw new Error(`Invalid committee(s): ${invalid.join(', ')}. Must be one of: ${validCommittees.join(', ')}`);
+            }
+          },
+        },
       },
 
       // account state
@@ -112,6 +129,116 @@ module.exports = (Sequelize, db) => {
         },
       },
 
+      // user's biography
+      bio: {
+        type: Sequelize.TEXT,
+        validate: {
+          // added limit to bio length
+          len: {
+            args: [0, 1000],
+            msg: 'Your bio must be at most 1000 characters long',
+          },
+        },
+      },
+
+      // user's social links
+      linkedinUrl: {
+        type: Sequelize.STRING,
+        validate: {
+          isUrl: {
+            args: [{ host_whitelist: ['linkedin.com', 'www.linkedin.com'] }],
+            msg: 'The LinkedIn URL must be a valid URL',
+          },
+        },
+      },
+
+      githubUrl: {
+        type: Sequelize.STRING,
+        validate: {
+          isUrl: {
+            args: [{ host_whitelist: ['github.com', 'www.github.com'] }],
+            msg: 'The GitHub URL must be a valid URL',
+          },
+        },
+      },
+
+      portfolioUrl: {
+        type: Sequelize.STRING,
+        validate: {
+          isUrl: {
+            msg: 'The portfolio URL must be a valid URL',
+          },
+        },
+      },
+
+      personalWebsite: {
+        type: Sequelize.STRING,
+        validate: {
+          isUrl: {
+            msg: 'The personal website URL must be a valid URL',
+          },
+        },
+      },
+
+      resumeUrl: {
+        type: Sequelize.STRING,
+        validate: {
+          isUrl: {
+            msg: 'The resume URL must be a valid URL',
+          },
+        },
+      },
+
+      // user's skills
+      skills: {
+        type: Sequelize.ARRAY(Sequelize.STRING),
+        defaultValue: [],
+        validate: {
+          isShortStringArray(arr) {
+            if (!Array.isArray(arr)) {
+              throw new Error(`Skills must be an array; got ${typeof arr} instead.`);
+            }
+            if (arr.length > 20) {
+              throw new Error(`Skills array may not have more than 20 items; got ${arr.length}.`);
+            }
+            const badVal = arr.find((skill) => typeof skill !== 'string');
+            if (badVal !== undefined) {
+              throw new Error(`Each skill must be a string; encountered ${typeof badVal} instead.`);
+            }
+          },
+        },
+      },
+
+      careerInterests: {
+        type: Sequelize.ARRAY(Sequelize.STRING),
+        defaultValue: [],
+        validate: {
+          isShortStringArray(arr) {
+            if (!Array.isArray(arr)) {
+              throw new Error(`Career interests must be an array; got ${typeof arr} instead.`);
+            }
+            if (arr.length > 20) {
+              throw new Error(`Career interests array may not have more than 20 items; got ${arr.length}.`);
+            }
+            const badVal = arr.find((interest) => typeof interest !== 'string');
+            if (badVal !== undefined) {
+              throw new Error(`Each career interest must be a string; encountered ${typeof badVal} instead.`);
+            }
+          },
+        },
+      },
+
+      // whether the user's profile is public
+      isProfilePublic: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+      },
+
+      // user's pronouns
+      pronouns: {
+        type: Sequelize.STRING,
+      },
+
       // amount of points the user has
       points: {
         type: Sequelize.INTEGER,
@@ -144,6 +271,11 @@ module.exports = (Sequelize, db) => {
           name: 'user_points_btree_index',
           method: 'BTREE',
           fields: ['points', { attribute: 'points', order: 'DESC' }],
+        },
+
+        // For efficient directory queries
+        {
+          fields: ['isProfilePublic'],
         },
       ],
     },
@@ -182,19 +314,35 @@ module.exports = (Sequelize, db) => {
     return this.increment({ points });
   };
 
-  User.prototype.getPublicProfile = function () {
+  User.prototype.getBaseProfile = function () {
     return {
+      id: this.getDataValue('uuid'),
       firstName: this.getDataValue('firstName'),
       lastName: this.getDataValue('lastName'),
       picture: this.getDataValue('picture'),
       points: this.getDataValue('points'),
+      pronouns: this.getDataValue('pronouns'),
     };
   };
 
+  User.prototype.getPublicProfile = function () {
+    if (this.getDataValue('isProfilePublic')) {
+      return {
+        bio: this.getDataValue('bio'),
+        skills: this.getDataValue('skills'),
+        careerInterests: this.getDataValue('careerInterests'),
+        linkedinUrl: this.getDataValue('linkedinUrl'),
+        githubUrl: this.getDataValue('githubUrl'),
+        portfolioUrl: this.getDataValue('portfolioUrl'),
+        personalWebsite: this.getDataValue('personalWebsite'),
+      };
+    }
+    return null;
+  };
+
   User.prototype.getUserProfile = function () {
-    const uuid = this.getDataValue('uuid');
     return {
-      uuid,
+      uuid: this.getDataValue('uuid'),
       firstName: this.getDataValue('firstName'),
       lastName: this.getDataValue('lastName'),
       picture: this.getDataValue('picture'),
@@ -202,7 +350,36 @@ module.exports = (Sequelize, db) => {
       year: this.getDataValue('year'),
       major: this.getDataValue('major'),
       points: this.getDataValue('points'),
+      pronouns: this.getDataValue('pronouns'),
+      bio: this.getDataValue('bio'),
+      isProfilePublic: this.getDataValue('isProfilePublic'),
+      isOfficer: this.isOfficer(),
+      committees: this.getDataValue('committees') || [],
     };
+  };
+
+  User.prototype.getCareerProfile = function () {
+    return {
+      linkedinUrl: this.getDataValue('linkedinUrl'),
+      githubUrl: this.getDataValue('githubUrl'),
+      portfolioUrl: this.getDataValue('portfolioUrl'),
+      personalWebsite: this.getDataValue('personalWebsite'),
+      resumeUrl: this.getDataValue('resumeUrl'),
+      skills: this.getDataValue('skills'),
+      careerInterests: this.getDataValue('careerInterests'),
+    };
+  };
+
+  User.prototype.hasCompleteProfile = function () {
+    return !!(
+      this.getDataValue('bio')
+      && this.getDataValue('major')
+      && this.getDataValue('year')
+      && this.getDataValue('skills')
+      && this.getDataValue('skills').length > 0
+      && this.getDataValue('careerInterests')
+      && this.getDataValue('careerInterests').length > 0
+    );
   };
 
   User.prototype.isRestricted = function () {
@@ -211,6 +388,15 @@ module.exports = (Sequelize, db) => {
 
   User.prototype.isStandard = function () {
     return this.getDataValue('accessType') === 'STANDARD';
+  };
+
+  User.prototype.isOfficer = function () {
+    return this.getDataValue('accessType') === 'OFFICER';
+  };
+
+  User.prototype.hasCommittee = function (committee) {
+    const committees = this.getDataValue('committees') || [];
+    return committees.includes(committee);
   };
 
   User.prototype.isAdmin = function () {
