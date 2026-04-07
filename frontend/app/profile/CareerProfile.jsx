@@ -5,22 +5,27 @@ import PropTypes from 'prop-types';
 import Link from 'next/link';
 import './careerProfile.scss';
 
+const normalizeUrl = (url) => {
+  if (!url || url.trim() === '') return url;
+  return /^https?:\/\//i.test(url) ? url : `https://${url}`;
+};
+
 const isValidLinkedInUrl = (url) => {
   if (!url || url.trim() === '') return true;
   const linkedInPattern = /^https?:\/\/(www\.)?linkedin\.com\/in\/.+/i;
-  return linkedInPattern.test(url);
+  return linkedInPattern.test(normalizeUrl(url));
 };
 
 const isValidGitHubUrl = (url) => {
   if (!url || url.trim() === '') return true;
   const gitHubPattern = /^https?:\/\/(www\.)?github\.com\/.+/i;
-  return gitHubPattern.test(url);
+  return gitHubPattern.test(normalizeUrl(url));
 };
 
 const isValidUrl = (url) => {
   if (!url || url.trim() === '') return true;
   try {
-    new URL(url);
+    new URL(normalizeUrl(url));
     return true;
   } catch (e) {
     return false;
@@ -31,7 +36,7 @@ const getLinkedInUrlError = (url) => {
   if (!url || url.trim() === '') return null;
   if (!isValidUrl(url)) return 'Please enter a valid URL';
   if (!isValidLinkedInUrl(url)) {
-    return 'LinkedIn URL must be in the format: https://linkedin.com/in/username';
+    return 'LinkedIn URL must be in the format: linkedin.com/in/username';
   }
   return null;
 };
@@ -40,7 +45,7 @@ const getGitHubUrlError = (url) => {
   if (!url || url.trim() === '') return null;
   if (!isValidUrl(url)) return 'Please enter a valid URL';
   if (!isValidGitHubUrl(url)) {
-    return 'GitHub URL must be in the format: https://github.com/username';
+    return 'GitHub URL must be in the format: github.com/username';
   }
   return null;
 };
@@ -195,12 +200,12 @@ class CareerProfile extends React.Component {
       careerInterests: this.state.careerInterests,
       isProfilePublic: this.state.isProfilePublic,
       // Required fields
-      linkedinUrl: this.state.linkedinUrl,
-      githubUrl: this.state.githubUrl,
+      linkedinUrl: normalizeUrl(this.state.linkedinUrl),
+      githubUrl: normalizeUrl(this.state.githubUrl),
       // Optional URL fields that can be cleared
-      portfolioUrl: this.state.portfolioUrl,
-      personalWebsite: this.state.personalWebsite,
-      resumeUrl: this.state.resumeUrl,
+      portfolioUrl: normalizeUrl(this.state.portfolioUrl),
+      personalWebsite: normalizeUrl(this.state.personalWebsite),
+      resumeUrl: normalizeUrl(this.state.resumeUrl),
     };
 
     try {
