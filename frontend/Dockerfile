@@ -1,12 +1,12 @@
 # Brand-new to making Dockerfiles so if someone from CI/CD can review this plz
 
 # Build Stage
-FROM node:18-alpine AS build
+FROM node:20-alpine AS build
 WORKDIR /app
 
 # Install deps
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
+COPY package.json package-lock.json ./
+RUN npm ci
 
 # Copy the source files
 COPY . .
@@ -20,10 +20,10 @@ ENV NEXT_PUBLIC_GOOGLE_API_KEY=$NEXT_PUBLIC_GOOGLE_API_KEY
 ENV NEXT_PUBLIC_GOOGLE_AUTH_DOMAIN=$NEXT_PUBLIC_GOOGLE_AUTH_DOMAIN
 
 # Generates .next/standalone
-RUN pnpm build
+RUN npm run build
 
 # Prod/Deploy Stage
-FROM node:18-alpine AS runner
+FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
