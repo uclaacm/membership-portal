@@ -7,16 +7,11 @@ const nextConfig: NextConfig = {
   sassOptions: {
     includePaths: [path.join(__dirname)],
   },
-  // Optimize webpack for Docker
-  webpack: (config, { dev }) => {
-    if (dev) {
-      // Better file watching in Docker
-      config.watchOptions = {
-        poll: 1000,
-        aggregateTimeout: 300,
-      };
-    }
-    return config;
+  // Use Turbopack (default in Next.js 16)
+  turbopack: {
+    resolveAlias: {
+      "@": path.resolve(__dirname),
+    },
   },
   // Proxy API requests to backend
   async rewrites() {
