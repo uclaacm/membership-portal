@@ -2,78 +2,77 @@
 
 .control-panel-wrapper {
   padding: 60px;
-  overflow: visible;
-  transition: 0.125s ease-in-out;
+  max-width: 1100px;
 
-  .signout-action-button {
-    margin: 6px;
-    margin-left: 0px;
+  .panel-title {
+    margin-bottom: 6px;
   }
 
-  .deleteevents-action-button {
-    margin: 6px;
-    margin-left: 0px;
+  .panel-subtitle {
+    color: vars.$secondaryblack;
+    font-size: 15px;
+    margin-bottom: 48px;
+    margin-top: 0;
   }
 
-  .form-elem {
-    width: 100%;
+  .panel-section {
+    margin-bottom: 44px;
+  }
+
+  .section-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: vars.$gray2;
+    margin: 0 0 14px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid vars.$gray1;
+  }
+
+  .panel-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .panel-card {
+    background: vars.$white;
+    border: 1px solid vars.$gray1;
+    border-radius: 10px;
+    padding: 20px 22px;
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 6px;
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
 
-    p {
-      padding: 2px 0px;
-      font-size: 1.1em;
-
-      span {
-        font-size: 1.1em;
-        padding: 0px 5px;
-      }
+    &:hover {
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.07);
+      border-color: vars.$tertiaryblue;
     }
 
-    .passwordResetBar {
-      display: flex;
-      align-items: center;
-      justify-content: start;
-
-      .passwordResetStatus {
-        margin-left: 18px;
-      }
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: vars.$primaryblack;
     }
 
-    .control-panel-action-button {
-      margin: 6px;
-      margin-left: 0px;
+    .card-desc {
+      font-size: 13px;
+      color: vars.$secondaryblack;
+      line-height: 1.5;
+      margin-bottom: 12px;
+      flex-grow: 1;
     }
+  }
+}
 
-    input[type="text"],
-    input[type="password"],
-    input[type="email"] {
-      display: inline-block;
-      outline: none;
-      border: none;
-      width: 100%;
-      max-width: 400px;
-      border-bottom: 2px dashed #dadada;
-      transition: 0.125s ease-in-out;
-      resize: none;
-      font-family: Lato, sans-serif;
-      font-size: 20px;
-    }
+@media (max-width: 700px) {
+  .control-panel-wrapper {
+    padding: 30px 20px;
 
-    input[type="text"]:focus,
-    input[type="password"]:focus {
-      border-bottom: 2px solid #aaaaaa;
-    }
-
-    select {
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
-      border: none;
-      outline: none;
-      background: none;
-      border-bottom: 2px dashed #dadada;
-      padding: 5px 0px;
+    .panel-grid {
+      grid-template-columns: 1fr;
     }
   }
 }

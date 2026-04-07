@@ -13,7 +13,13 @@ import 'react-datepicker/dist/react-datepicker.css';
 export default class AdminAddEvent extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { event: this.props.event, startTimeError: false, endTimeError: false, coverImageFile: null };
+    this.state = {
+      event: this.props.event,
+      startTimeError: false,
+      endTimeError: false,
+      coverImageFile: null,
+      coverUrlError: '',
+    };
     this.coverUploadRef = createRef();
     this.resizeTextArea = this.resizeTextArea.bind(this);
     this.handleChangeCover = this.handleChangeCover.bind(this);
@@ -56,32 +62,42 @@ export default class AdminAddEvent extends React.Component {
     });
   }
 
-  handleSubmit() {
+  async handleSubmit() {
     if (this.state.endTimeError || this.state.startTimeError) return;
 
+    const coverUrl = this.state.event.cover || '';
+    if (!this.state.coverImageFile && coverUrl.length > 2048) {
+      this.setState({
+        coverUrlError: 'Image URL is too long. Please keep it under 2048 characters or upload a file.',
+      });
+      return;
+    }
+
     const callback = () => { if (this.props.onClickAdd) this.props.onClickAdd(this.state.event); };
+    const selectedFile = this.coverUploadRef.current
+      && this.coverUploadRef.current.files
+      && this.coverUploadRef.current.files[0]
+      ? this.coverUploadRef.current.files[0]
+      : this.state.coverImageFile;
 
-    if (this.state.coverImageFile) {
+    if (selectedFile) {
       const formData = new FormData();
-      formData.append('image', this.state.coverImageFile);
+      formData.append('image', selectedFile);
 
-      let oldImageCreateUuid = this.props.imageCreateUuid;
-      let retries = 0;
-      let interval;
-      this.props.createImage(formData)
+      const uploadResult = await this.props.createImage(formData);
+      if (!uploadResult || !uploadResult.success || !uploadResult.uuid) {
+        this.setState({
+          coverUrlError: 'Image upload failed. Please try again or use an image URL.',
+        });
+        return;
+      }
 
-      interval = setInterval(() => {
-        if (retries > 5 || this.props.imageCreateUuid !== oldImageCreateUuid) {
-          clearInterval(interval);
-          this.setState((prev) => {
-            const newState = Object.assign({}, prev);
-            newState.event.cover = `${Config.API_URL + Config.routes.image.specific}/${this.props.imageCreateUuid}`;
-            return newState;
-          }, callback);
-        } else {
-          retries += 1;
-        }
-      }, 500);
+      this.setState((prev) => {
+        const newState = Object.assign({}, prev);
+        newState.event.cover = `${Config.API_URL + Config.routes.image.specific}/${uploadResult.uuid}`;
+        newState.coverUrlError = '';
+        return newState;
+      }, callback);
     } else {
       callback();
     }
@@ -114,6 +130,7 @@ export default class AdminAddEvent extends React.Component {
         const newState = Object.assign({}, prev);
         newState.event.cover = e.target.value;
         newState.coverImageFile = null;
+        newState.coverUrlError = '';
         return newState;
       });
     } else {
@@ -123,18 +140,18 @@ export default class AdminAddEvent extends React.Component {
         return;
       }
 
-      const reader = new FileReader();
-      reader.onloadend = () => {
+      const localPreviewUrl = (window.URL && window.URL.createObjectURL)
+        ? window.URL.createObjectURL(file)
+        : this.state.event.cover;
 
-        this.setState((prev) => {
-          const newState = Object.assign({}, prev);
-          newState.event.cover = reader.result;       // don't freak out, this is temporary/local-only until handleSubmit
-          newState.coverImageFile = file;
-          return newState;
-        });
-
-      };
-      reader.readAsDataURL(file);
+      this.setState((prev) => {
+        const newState = Object.assign({}, prev);
+        // Local preview only; persisted cover URL is set after successful upload.
+        newState.event.cover = localPreviewUrl;
+        newState.coverImageFile = file;
+        newState.coverUrlError = '';
+        return newState;
+      });
     }
   }
 
@@ -143,6 +160,16 @@ export default class AdminAddEvent extends React.Component {
       const newState = Object.assign({}, prev);
       newState.event = nextProps.event;
       if (newState.event) newState.event.attendanceCode = nextProps.event.attendanceCode || '';
+
+      const isOfficerCreateMode = nextProps.isOfficer && !nextProps.isAdmin && !nextProps.isEdit;
+      if (isOfficerCreateMode && nextProps.officerCommittees.length > 0) {
+        const allowedCommittees = nextProps.officerCommittees;
+        const currentCommittee = newState.event.committee;
+        if (!allowedCommittees.includes(currentCommittee)) {
+          newState.event.committee = allowedCommittees[0];
+        }
+      }
+
       return newState;
     });
   }
@@ -155,6 +182,11 @@ export default class AdminAddEvent extends React.Component {
 
   render() {
     const committeeColorMap = Object.fromEntries(Config.committeeColors);
+    const isOfficerCreateMode = this.props.isOfficer && !this.props.isAdmin && !this.props.isEdit;
+    const committeeOptions = isOfficerCreateMode
+      ? this.props.officerCommittees
+      : ['ACM', ...Config.committees];
+    const committeeSelectDisabled = isOfficerCreateMode;
 
     return (
       <div className={`add-event-overlay${this.props.showing ? ' showing' : ''}`} onClick={this.props.onClickCancel}>
@@ -182,6 +214,7 @@ export default class AdminAddEvent extends React.Component {
               <div className="input-field half-width">
                 <p>Image URL or Upload</p>
                 <input type="text" value={this.state.event.cover} name="cover" onChange={this.handleChangeCover} />
+                {this.state.coverUrlError && <p className="error">{this.state.coverUrlError}</p>}
               </div>
               <div className="input-field one-fourth-width file-upload">
                 <input type="file" value={''} name="cover" ref={this.coverUploadRef} id="coverInput" accept="image/*" onChange={this.handleChangeCover} onClick={(event) => { event.target.value = null }} />
@@ -207,9 +240,9 @@ export default class AdminAddEvent extends React.Component {
                   onChange={this.handleChange}
                   className="committee-select"
                   style={{ color: committeeColorMap[this.state.event.committee] }}
+                  disabled={committeeSelectDisabled}
                 >
-                  <option value="ACM">ACM</option>
-                  {Config.committees.map((committee, index) => (
+                  {committeeOptions.map((committee, index) => (
                     <option key={index} value={committee}>
                       {committee}
                     </option>
@@ -313,6 +346,9 @@ AdminAddEvent.propTypes = {
   onClickSync: PropTypes.func,
   isEdit: PropTypes.bool,
   showing: PropTypes.bool,
+  isAdmin: PropTypes.bool,
+  isOfficer: PropTypes.bool,
+  officerCommittees: PropTypes.arrayOf(PropTypes.string),
 };
 
 AdminAddEvent.defaultProps = {
@@ -321,4 +357,7 @@ AdminAddEvent.defaultProps = {
   onClickSync: null,
   isEdit: false,
   showing: false,
+  isAdmin: false,
+  isOfficer: false,
+  officerCommittees: [],
 };

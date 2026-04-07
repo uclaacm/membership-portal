@@ -19,15 +19,60 @@ import moment from "moment";
       startTime: "",
 */
 class EventCard extends React.Component {
+    static EventCardState = {
+        AVAILABLE: 'AVAILABLE',          
+        RSVPED: 'RSVPED',                
+        LOADING: 'LOADING',               
+        CHECKED_IN: 'CHECKED_IN',        
+    };
+
     constructor(props) {
         super(props);
         this.state = {
             isRsvped: false,
             loading: false,
-            isFlipped: false
+            isFlipped: false,
+            isCheckInned: this.isEventCheckedIn(props),
         };
         this.handleRSVP = this.handleRSVP.bind(this);
         this.handleFlip = this.handleFlip.bind(this);
+    }
+
+    isEventCheckedIn(props = this.props) {
+        console.log('Checking if event is checked in with props:', props);
+        const { checkedInEvents, event } = props;
+        return checkedInEvents && checkedInEvents.has(event.uuid);
+    }
+
+    getEventCardState() {
+        if (this.state.isCheckInned) {
+            return EventCard.EventCardState.CHECKED_IN;
+        }
+        if (this.state.loading) {
+            return EventCard.EventCardState.LOADING;
+        }
+        if (this.state.isRsvped) {
+            return EventCard.EventCardState.RSVPED;
+        }
+        return EventCard.EventCardState.AVAILABLE;
+    }
+
+    getButtonText() {
+        const state = this.getEventCardState();
+        switch (state) {
+            case EventCard.EventCardState.CHECKED_IN:
+                return '✓ Checked In';
+            case EventCard.EventCardState.LOADING:
+                return 'Loading...';
+            case EventCard.EventCardState.RSVPED:
+                return 'Cancel RSVP';
+            default:
+                return 'RSVP';
+        }
+    }
+
+    isRSVPDisabled() {
+        return this.state.isCheckInned || this.state.loading;
     }
 
     handleFlip() {
@@ -41,12 +86,16 @@ class EventCard extends React.Component {
     }
 
     componentDidMount() {
-        // Fetch RSVPs when component mounts
         this.props.fetchUserRSVPs();
+        this.props.fetchCheckedInEvents();
     }
 
     componentDidUpdate(prevProps) {
-        // Check if this event is in the user's RSVPs
+        if (this.props.checkedInEvents !== prevProps.checkedInEvents) {
+            const isCheckInned = this.isEventCheckedIn();
+            this.setState({ isCheckInned });
+        }
+
         if (this.props.userRsvps !== prevProps.userRsvps) {
             this.checkRsvpStatus();
         }
@@ -61,6 +110,11 @@ class EventCard extends React.Component {
     }
     
     async handleRSVP() {
+        // Prevent RSVP action if checked in
+        if (this.state.isCheckInned) {
+            return;
+        }
+
         this.setState({ loading: true });
         
         try {
@@ -73,6 +127,7 @@ class EventCard extends React.Component {
             } else {
                 // Create RSVP
                 const result = await this.props.createRSVP(this.props.event.uuid);
+                console.log(result); 
                 if (result.success) {
                     this.setState({ isRsvped: true });
                 }
@@ -84,11 +139,32 @@ class EventCard extends React.Component {
         this.setState({ loading: false });
     }
 
+    getPlainTextDescription(description) {
+        // Strips HTML tags while preserving basic formatting (line breaks)
+        if (description == null) return '';
+        if (typeof description !== 'string') return String(description);
+        const withLineBreaks = description
+            .replace(/<\s*br\s*\/?\s*>/gi, '\n')
+            .replace(/<\s*\/\s*p\s*>/gi, '\n\n')
+            .replace(/<\s*\/\s*div\s*>/gi, '\n\n');
+
+        if (typeof DOMParser === 'undefined') {
+            return withLineBreaks.replace(/\n{3,}/g, '\n\n').trim();
+        }
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(withLineBreaks, 'text/html');
+        const plainText = doc.body.textContent || '';
+
+        return plainText.replace(/\n{3,}/g, '\n\n').trim();
+    }
+
     render() {
         const { event } = this.props;
-        const { isRsvped, loading, isFlipped } = this.state;
-
-        console.log(event.description);
+        const { isFlipped } = this.state;
+        const currentState = this.getEventCardState();
+        const buttonText = this.getButtonText();
+        const isDisabled = this.isRSVPDisabled();
 
         const committeeColorMap = Object.fromEntries(Config.committeeColors);
 
@@ -130,8 +206,17 @@ class EventCard extends React.Component {
                                     </a>
                                 </p>
                                 <p className="text" style={{color: committeeColorMap[event.committee]}}>{event.committee}</p>
-                                <div className={`pill-shape rsvp ${isRsvped ? 'rsvped' : ''} ${loading ? 'loading' : ''}`} onClick={this.handleRSVP}>
-                                    {loading ? 'Loading...' : isRsvped ? 'Cancel RSVP' : 'RSVP'}
+                                
+                                {/* RSVP Button with enum-based states */}
+                                <div 
+                                    className={`pill-shape rsvp ${currentState.toLowerCase()} ${isDisabled ? 'disabled' : ''}`}
+                                    onClick={this.handleRSVP}
+                                    style={{
+                                        opacity: isDisabled ? 0.6 : 1,
+                                        cursor: isDisabled ? 'not-allowed' : 'pointer',
+                                    }}
+                                >
+                                    {buttonText}
                                 </div>
                             </div>
                         </div>
@@ -144,7 +229,7 @@ class EventCard extends React.Component {
                                 </button>
                                 <h3>{event.title}</h3>
                                 <div className="description-scroll">
-                                    <p>{event.description}</p>
+                                    <p>{this.getPlainTextDescription(event.description)}</p>
                                 </div>
                             </div>
                         </div>
@@ -156,11 +241,13 @@ class EventCard extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    userRsvps: state.RSVP.get('userRsvps')
+    userRsvps: state.RSVP.get('userRsvps'),
+    checkedInEvents: state.CheckIn.get('checkedInEvents'),  
 });
 
 const mapDispatchToProps = dispatch => ({
     fetchUserRSVPs: () => dispatch(Action.FetchUserRSVPs()),
+    fetchCheckedInEvents: () => dispatch(Action.FetchCheckedInEvents()),  
     createRSVP: (eventUuid) => dispatch(Action.CreateRSVP(eventUuid)),
     cancelRSVP: (eventUuid) => dispatch(Action.CancelRSVP(eventUuid))
 });

@@ -9,9 +9,11 @@ export default class EventMonth extends React.Component {
     return (
       <div className="event-month">
         <h1 className="Display-2Primary date-month">
-          Events in {month.date.format('MMMM')}
+          Events in
+          {' '}
+          {month.date.format('MMMM')}
         </h1>
-        {month.days.map((day, i) => (
+        {month.days.map(day => (
           <EventDay key={day.date.toString()} day={day} handleEditClick={handleEditClick} />
         ))}
       </div>
@@ -21,8 +23,14 @@ export default class EventMonth extends React.Component {
 
 EventMonth.propTypes = {
   month: PropTypes.shape({
-    date: PropTypes.object,
-    days: PropTypes.array,
+    date: PropTypes.shape({
+      format: PropTypes.func,
+      toString: PropTypes.func,
+    }),
+    days: PropTypes.arrayOf(PropTypes.shape({
+      date: PropTypes.object,
+      events: PropTypes.array,
+    })),
   }).isRequired,
   handleEditClick: PropTypes.func.isRequired,
 };

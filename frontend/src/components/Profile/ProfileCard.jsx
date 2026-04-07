@@ -2,60 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Utils from 'utils';
-import Config from 'config';
 import './profileCard.scss';
 
 export default class ProfileCard extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      showModal: false,
-      password: '',
-      email: '',
-      message: '',
-    };
-    this.handleRegisterClick = this.handleRegisterClick.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.closeModal = this.closeModal.bind(this);
-  }
-
-  handleRegisterClick(e) {
-    e.preventDefault();
-    this.setState({ showModal: true, message: '' });
-  }
-
-  closeModal() {
-    this.setState({
-      showModal: false, password: '', email: '', message: '',
-    });
-  }
-
-  async handleSubmit() {
-    try {
-      const response = await fetch(Config.API_URL + Config.routes.admin.promote, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: this.state.email,
-          password: this.state.password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        this.setState({ message: `✅ ${data.message}`, password: '' });
-      } else {
-        this.setState({ message: `❌ ${data.error}`, password: '' });
-      }
-    } catch (error) {
-      console.error('Error in POST request:', error);
-      this.setState({ message: '❌ An unknown error occurred.', password: '' });
-    }
-  }
-
   render() {
     const { profile, isAdmin, activity } = this.props;
     const { currLevel, nextLevel } = Utils.getLevel(profile.points);
@@ -148,44 +97,11 @@ export default class ProfileCard extends React.Component {
         <div className="profile-card-divider" />
 
         <div className="profile-card-actions">
-          <Link to="/profile/career" className="card-link">
+          <Link to="/profile/career/edit" className="card-link">
             <i className="fa fa-briefcase" />
             <span>Career Profile</span>
           </Link>
-          {isAdmin && (
-            <a href="#" className="card-link" onClick={this.handleRegisterClick}>
-              <i className="fa fa-user-plus" />
-              <span>Register as an Officer</span>
-            </a>
-          )}
         </div>
-
-        {this.state.showModal && (
-          <div className="modal-overlay" onClick={this.closeModal}>
-            <div className="modal" onClick={e => e.stopPropagation()}>
-              <h2>Register Officer Account</h2>
-              <input
-                type="text"
-                placeholder="User Email"
-                value={this.state.email}
-                onChange={e => this.setState({ email: e.target.value })}
-              />
-              <input
-                type="password"
-                placeholder="Admin Password"
-                value={this.state.password}
-                onChange={e => this.setState({ password: e.target.value })}
-              />
-              <button onClick={this.handleSubmit} className="submit-button">
-                Submit
-              </button>
-              <button onClick={this.closeModal} className="cancel-button">
-                Cancel
-              </button>
-              {this.state.message && <p className="message">{this.state.message}</p>}
-            </div>
-          </div>
-        )}
       </div>
     );
   }

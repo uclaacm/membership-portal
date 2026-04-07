@@ -8,9 +8,9 @@ import ControlPanelComponent from 'components/ControlPanel';
 
 class ControlPanel extends React.Component {
   componentWillMount() {
-    const { isAdmin, isSuperAdmin, redirectHome } = this.props;
+    const { isAdmin, isOfficer, isSuperAdmin, redirectHome } = this.props;
 
-    if (!isAdmin) {
+    if (!isAdmin && !isOfficer) {
       return redirectHome();
     }
     // when data is actually fetched
@@ -25,7 +25,7 @@ class ControlPanel extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (!nextProps.isAdmin) {
+    if (!nextProps.isAdmin && !nextProps.isOfficer) {
       return nextProps.redirectHome();
     }
 
@@ -48,16 +48,23 @@ class ControlPanel extends React.Component {
       removeAdmin,
       addAdmin,
       reassignAdmin,
+      isAdmin,
+      isOfficer,
       isSuperAdmin,
+      officerCommittees,
       changeOneClickPassword,
       oneClickUpdated,
       oneClickUpdateSuccess,
       oneClickError,
+      eventDeleteError,
+      imageDeleteError,
       adminView,
       toggleAdminView,
     } = this.props;
     return (
       <ControlPanelComponent
+        isAdmin={isAdmin}
+        isOfficer={isOfficer}
         logout={logout}
         userEmail={userEmail}
         events={events.reverse()}
@@ -69,10 +76,13 @@ class ControlPanel extends React.Component {
         reassignAdmin={reassignAdmin}
         addAdmin={addAdmin}
         isSuperAdmin={isSuperAdmin}
+        officerCommittees={officerCommittees}
         changeOneClickPassword={changeOneClickPassword}
         oneClickUpdated={oneClickUpdated}
         oneClickUpdateSuccess={oneClickUpdateSuccess}
         oneClickError={oneClickError}
+        eventDeleteError={eventDeleteError}
+        imageDeleteError={imageDeleteError}
         adminView={adminView}
         toggleAdminView={toggleAdminView}
       />
@@ -80,19 +90,26 @@ class ControlPanel extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
-  userEmail: state.User.get('profile').email,
+const mapStateToProps = (state) => {
+  const profile = state.User.get('profile') || {};
+  return {
+    userEmail: profile.email,
   authenticated: state.Auth.get('authenticated'),
   isAdmin: state.Auth.get('isAdmin'),
   isSuperAdmin: state.Auth.get('isSuperAdmin'),
+  isOfficer: state.Auth.get('isOfficer'),
+    officerCommittees: profile.committees || [],
   events: state.Events.get('events'),
   images: state.Images.get('images'),
+    eventDeleteError: state.Events.get('deleteError'),
+    imageDeleteError: state.Images.get('deleteError'),
   admins: state.Admins.get('admins'),
   oneClickUpdated: state.OneClick.get('updated'),
   oneClickUpdateSuccess: state.OneClick.get('updateSuccess'),
   oneClickError: state.OneClick.get('error'),
   adminView: state.Auth.get('adminView'),
-});
+  };
+};
 
 const mapDispatchToProps = dispatch => ({
   redirectHome: () => {
@@ -150,6 +167,7 @@ const mapDispatchToProps = dispatch => ({
 
 ControlPanel.propTypes = {
   isAdmin: PropTypes.bool.isRequired,
+  isOfficer: PropTypes.bool.isRequired,
   redirectHome: PropTypes.func.isRequired,
   userEmail: PropTypes.string.isRequired,
   logout: PropTypes.func.isRequired,
@@ -160,11 +178,15 @@ ControlPanel.propTypes = {
   removeAdmin: PropTypes.func.isRequired,
   addAdmin: PropTypes.func.isRequired,
   reassignAdmin: PropTypes.func.isRequired,
+  isAdmin: PropTypes.bool.isRequired,
   isSuperAdmin: PropTypes.bool.isRequired,
+  officerCommittees: PropTypes.arrayOf(PropTypes.string).isRequired,
   changeOneClickPassword: PropTypes.func.isRequired,
   oneClickUpdated: PropTypes.bool.isRequired,
   oneClickUpdateSuccess: PropTypes.bool.isRequired,
   oneClickError: PropTypes.string.isRequired,
+  eventDeleteError: PropTypes.string,
+  imageDeleteError: PropTypes.string,
   adminView: PropTypes.bool.isRequired,
   toggleAdminView: PropTypes.func.isRequired,
 };

@@ -77,6 +77,10 @@ const CreateRSVP = eventUuid => async (dispatch) => {
       throw new Error(data.error || 'Failed to RSVP to event');
     }
 
+    if (data.error) {
+      throw new Error(data.error);
+    }
+
     dispatch(RSVPActions.RSVP(null, eventUuid));
     return { success: true };
   } catch (err) {
@@ -98,8 +102,14 @@ const CancelRSVP = eventUuid => async (dispatch) => {
 
     const data = await response.json();
 
+    console.log('Cancel RSVP response:', data);
+
     if (!response.ok) {
       throw new Error(data.error || 'Failed to cancel RSVP');
+    }
+
+    if (data.error) { 
+      throw new Error(data.error);
     }
 
     dispatch(RSVPActions.CancelRSVP(null, eventUuid));

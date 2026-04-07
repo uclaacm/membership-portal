@@ -64,6 +64,7 @@ class State {
 
 const FetchUser = () => async (dispatch) => {
   try {
+    // Fetch basic profile
     const response = await fetch(Config.API_URL + Config.routes.user.user, {
       method: 'GET',
       headers: {
@@ -82,7 +83,23 @@ const FetchUser = () => async (dispatch) => {
     if (!data) throw new Error('Empty response from server');
     if (data.error) throw new Error(data.error.message);
 
-    dispatch(State.FetchUser(null, data.user));
+    // Fetch career profile
+    const careerResponse = await fetch(Config.API_URL + Config.routes.user.career, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${Storage.get('token')}`,
+      },
+    });
+
+    const careerData = await careerResponse.json();
+    if (careerData && !careerData.error && careerData.user) {
+      // Merge career data with user profile
+      dispatch(State.FetchUser(null, { ...data.user, ...careerData.user }));
+    } else {
+      dispatch(State.FetchUser(null, data.user));
+    }
   } catch (err) {
     dispatch(State.FetchUser(err.message));
   }
@@ -105,6 +122,11 @@ const UpdateUser = user => async (dispatch) => {
       return dispatch(LogoutUser());
     }
 
+    if (status >= 400) {
+      const data = await response.json();
+      throw new Error(data.error?.message || `Server error: ${status}`);
+    }
+
     const data = await response.json();
     if (!data) throw new Error('Empty response from server');
     if (data.error) throw new Error(data.error.message);
@@ -113,6 +135,46 @@ const UpdateUser = user => async (dispatch) => {
     dispatch(State.UpdateUser());
   } catch (err) {
     dispatch(State.UpdateUser(err.message));
+    throw err;
+  }
+};
+
+const UpdateCareerProfile = user => async (dispatch) => {
+  try {
+    const response = await fetch(Config.API_URL + Config.routes.user.career, {
+      method: 'PATCH',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${Storage.get('token')}`,
+      },
+      body: JSON.stringify({ user }),
+    });
+
+    const status = await response.status;
+    if (status === 401 || status === 403) {
+      return dispatch(LogoutUser());
+    }
+
+    if (status >= 400) {
+      const data = await response.json();
+      throw new Error(data.error?.message || `Server error: ${status}`);
+    }
+
+    const data = await response.json();
+    if (!data) throw new Error('Empty response from server');
+    if (data.error) throw new Error(data.error.message);
+
+    // Merge career profile data with existing profile instead of replacing
+    dispatch(State.UpdateUser());
+    dispatch((innerDispatch, getState) => {
+      const currentProfile = getState().User.get('profile');
+      const mergedProfile = { ...currentProfile, ...user, ...data.user };
+      innerDispatch(State.FetchUser(null, mergedProfile));
+    });
+  } catch (err) {
+    dispatch(State.UpdateUser(err.message));
+    throw err;
   }
 };
 
@@ -202,5 +264,5 @@ const User = (state = defaultState, action) => {
 const UserUpdateDone = () => ({ type: UPDATE_COMPLETED });
 
 export {
-  User, FetchUser, UpdateUser, UserUpdateDone, FetchActivity,
+  User, FetchUser, UpdateUser, UpdateCareerProfile, UserUpdateDone, FetchActivity,
 };

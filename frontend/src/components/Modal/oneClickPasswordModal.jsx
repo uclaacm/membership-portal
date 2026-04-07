@@ -1,17 +1,17 @@
-import React from "react";
-import PropTypes from "prop-types";
-import Button from "components/Button";
+import React from 'react';
+import PropTypes from 'prop-types';
+import Button from 'components/Button';
 
 export default class OneClickPasswordModal extends React.Component {
   constructor() {
     super();
     this.state = {
-      passwordResetMessage: "",
+      passwordResetMessage: '',
     };
   }
 
-  changePasswordResetMessage = msg => {
-    this.setState(prev => ({ passwordResetMessage: msg }));
+  changePasswordResetMessage = (msg) => {
+    this.setState({ passwordResetMessage: msg });
   };
 
   render() {
@@ -29,7 +29,7 @@ export default class OneClickPasswordModal extends React.Component {
                 name="current-password"
                 placeholder="Current password"
                 id="passwordResetOldPassword"
-                onChange={() => this.changePasswordResetMessage("")}
+                onChange={() => this.changePasswordResetMessage('')}
               />
               <br />
               <br />
@@ -38,7 +38,7 @@ export default class OneClickPasswordModal extends React.Component {
                 name="new-password"
                 placeholder="New password"
                 id="passwordResetNewPassword"
-                onChange={() => this.changePasswordResetMessage("")}
+                onChange={() => this.changePasswordResetMessage('')}
               />
               <br />
               <br />
@@ -47,7 +47,7 @@ export default class OneClickPasswordModal extends React.Component {
                 name="new-password"
                 placeholder="Confirm new password"
                 id="passwordResetConfirmNewPassword"
-                onChange={() => this.changePasswordResetMessage("")}
+                onChange={() => this.changePasswordResetMessage('')}
               />
             </div>
 
@@ -58,13 +58,13 @@ export default class OneClickPasswordModal extends React.Component {
                   color="red"
                   text="Change Password"
                   onClick={() => {
-                    const oldPassword = document.getElementById("passwordResetOldPassword").value;
-                    const newPassword = document.getElementById("passwordResetNewPassword").value;
-                    const confirmNewPassword = document.getElementById("passwordResetConfirmNewPassword").value;
-                    if (oldPassword === "" || newPassword === "" || confirmNewPassword === "") {
-                      this.changePasswordResetMessage("At least one field is empty.");
+                    const oldPassword = document.getElementById('passwordResetOldPassword').value;
+                    const newPassword = document.getElementById('passwordResetNewPassword').value;
+                    const confirmNewPassword = document.getElementById('passwordResetConfirmNewPassword').value;
+                    if (oldPassword === '' || newPassword === '' || confirmNewPassword === '') {
+                      this.changePasswordResetMessage('At least one field is empty.');
                     } else if (newPassword !== confirmNewPassword) {
-                      this.changePasswordResetMessage("New password does not match.");
+                      this.changePasswordResetMessage('New password does not match.');
                     } else {
                       onChange(oldPassword, newPassword);
                     }

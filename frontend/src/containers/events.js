@@ -27,8 +27,8 @@ class Events extends React.Component {
   }
 
   render() {
-    // Only show admin view if user is admin AND adminView is true
-    const showAdminView = this.props.isAdmin && this.props.adminView;
+    // Show elevated events dashboard for admins and officers when adminView is enabled.
+    const showAdminView = (this.props.isAdmin || this.props.isOfficer) && this.props.adminView;
 
     return (
       <div>
@@ -69,6 +69,9 @@ class Events extends React.Component {
             createImage={this.props.createImage}
             imageCreateSuccess={this.props.imageCreateSuccess}
             imageCreateUuid={this.props.imageCreateUuid}
+            isAdmin={this.props.isAdmin}
+            isOfficer={this.props.isOfficer}
+            officerCommittees={this.props.officerCommittees}
           />
         )}
       </div>
@@ -77,6 +80,7 @@ class Events extends React.Component {
 }
 
 const mapStateToProps = state => ({
+  profile: state.User.get('profile'),
   events: state.Events.get('events'),
   error: state.Events.get('error'),
   eventCreated: state.Events.get('posted'),
@@ -88,6 +92,8 @@ const mapStateToProps = state => ({
   syncMessage: state.Events.get('syncMessage'),
   authenticated: state.Auth.get('authenticated'),
   isAdmin: state.Auth.get('isAdmin'),
+  isOfficer: state.Auth.get('isOfficer'),
+  officerCommittees: (state.User.get('profile') && state.User.get('profile').committees) || [],
   adminView: state.Auth.get('adminView'),
   checkInSubmitted: state.CheckIn.get('submitted'),
   checkInPoints: state.CheckIn.get('numPoints'),
@@ -158,7 +164,7 @@ const mapDispatchToProps = dispatch => ({
   },
 
   createImage: (formData) => {
-    dispatch(Action.CreateImage(formData));
+    return dispatch(Action.CreateImage(formData));
   },
 });
 

@@ -178,25 +178,33 @@
   background-color: rgba(30, 108, 255, 1);
   color: white;
   bottom: 0px;
-  right: 0px;
+  left: 0px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   text-align: center;
   width: auto;
+  height: auto;
   text-wrap: nowrap;
-  margin-right: 14px;
+  margin-left: 0;
   margin-bottom: 14px;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 400;
+  position: relative !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
 
   &:hover {
     background-color: rgb(0, 41, 117);
   }
 
   &.rsvped {
-    background-color: #28a745;
-    padding: 0px 10px;
+    background-color: #dc3545;
+    padding: 8px 14px;
 
     &:hover {
-      background-color: #dc3545;
+      background-color: #8b0000;
     }
   }
 
@@ -207,6 +215,29 @@
     &:hover {
       background-color: #6c757d;
     }
+  }
+
+  &.checked_in {
+    background-color: #4caf50;
+
+    &:hover {
+      background-color: #45a049;
+    }
+  }
+
+  /* Mobile responsiveness */
+  @media (max-width: 600px) {
+    padding: 10px 16px;
+    font-size: 15px;
+    margin-left: 0;
+    margin-bottom: 10px;
+  }
+
+  @media (max-width: 400px) {
+    padding: 8px 12px;
+    font-size: 13px;
+    margin-left: 0;
+    margin-bottom: 8px;
   }
 }
 

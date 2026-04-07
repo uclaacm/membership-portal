@@ -30,6 +30,7 @@ const SYNC_EVENTS_DONE = Symbol();
 const defaultState = Immutable.fromJS({
   events: [],
   error: null,
+  deleteError: null,
   posted: false,
   updated: false,
   deleted: false,
@@ -207,12 +208,21 @@ const DeleteEvent = uuid => async (dispatch) => {
     });
 
     const status = await response.status;
-    if (status === 401 || status === 403) {
-      dispatch(LogoutUser());
+    if (status === 401) {
+      return dispatch(LogoutUser());
     }
 
     const data = await response.json();
     if (!data) throw new Error('Empty response from server');
+
+    if (status === 403) {
+      throw new Error((data.error && data.error.message) || 'You do not have permission to delete this event.');
+    }
+
+    if (status >= 400) {
+      throw new Error((data.error && data.error.message) || `Server error: ${status}`);
+    }
+    if (data.error) throw new Error(data.error.message);
 
     dispatch(State.DeleteEvent());
     dispatch(GetCurrentEvents());
@@ -309,7 +319,8 @@ const Events = (state = defaultState, action) => {
 
     case DELETE_EVENT_SUCCESS:
       return state.withMutations((val) => {
-        val.set('error', 'null');
+        val.set('error', null);
+        val.set('deleteError', null);
         val.set('deleted', true);
         val.set('deleteSuccess', true);
       });
@@ -317,6 +328,7 @@ const Events = (state = defaultState, action) => {
     case DELETE_EVENT_ERROR:
       return state.withMutations((val) => {
         val.set('error', action.error);
+        val.set('deleteError', action.error);
         val.set('deleted', true);
         val.set('deleteSuccess', false);
       });
