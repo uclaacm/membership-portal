@@ -213,7 +213,7 @@ class CareerProfile extends React.Component {
       this.setState({ saving: false, saveSuccess: true });
       setTimeout(() => {
         this.setState({ saveSuccess: false });
-        this.props.history.push('/profile/career');
+        if (this.props.onSaved) this.props.onSaved();
       }, 2000);
     } catch (error) {
       this.setState({ saving: false, saveError: error.message || 'Failed to save changes' });

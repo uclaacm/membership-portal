@@ -21,7 +21,21 @@ export default async function fetchUser(): Promise<UserExtendedProfile | null> {
     const data = await response.json();
     if (!data || data.error) return null;
 
-    return data.user as UserExtendedProfile;
+    let careerData: Partial<UserExtendedProfile> = {};
+    try {
+      const careerResponse = await fetch(Config.API_URL + Config.routes.user.career, {
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const career = await careerResponse.json();
+      if (career?.user) careerData = career.user;
+    } catch {
+      // career profile is optional
+    }
+
+    return { ...data.user, ...careerData } as UserExtendedProfile;
   } catch (err) {
     Logger.error(`Fetch user failed: ${(err as Error).message}`);
     return null;

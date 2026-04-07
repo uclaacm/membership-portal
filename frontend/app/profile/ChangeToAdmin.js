@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Button from '@/components/Button';
 import Config from '@/lib/config';
-import Storage from '@/lib/storage';
+import CookieStore from '@/lib/cookieStore';
 import './ChangeToAdmin.scss';
 
 const COMMITTEES = Config.committees;
@@ -39,7 +39,7 @@ const ChangeToAdmin = () => {
     try {
       let response;
       if (role === 'OFFICER') {
-        const token = Storage.get('token');
+        const token = CookieStore.get('token');
         response = await fetch(Config.API_URL + Config.routes.admin.promoteOfficer, {
           method: 'POST',
           headers: {

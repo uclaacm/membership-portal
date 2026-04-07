@@ -1,14 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAtom, useAtomValue } from 'jotai';
 import Topbar from '@/components/Topbar';
 import CareerProfile from '@/app/profile/CareerProfile';
 import logoutUser from '@/app/actions/auth/logoutUser';
-import updateCareerProfile from '@/app/actions/user/updateCareerProfile';
 import { authUserProfileAtom, isAdminAtom, isOfficerAtom, adminViewAtom } from '@/lib/atoms';
+import Config from '@/lib/config';
+import CookieStore from '@/lib/cookieStore';
 
 export default function CareerEditPage() {
+  const router = useRouter();
   const userProfile = useAtomValue(authUserProfileAtom);
   const isAdmin = useAtomValue(isAdminAtom);
   const isOfficer = useAtomValue(isOfficerAtom);
@@ -21,6 +24,22 @@ export default function CareerEditPage() {
 
   const handleLogout = async () => {
     await logoutUser();
+  };
+
+  const handleUpdateCareerProfile = async (profile) => {
+    const token = CookieStore.get('token');
+    const response = await fetch(Config.API_URL + Config.routes.user.career, {
+      method: 'PATCH',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ user: profile }),
+    });
+    const data = await response.json();
+    if (!data || data.error) return { success: false, error: data?.error?.message ?? data?.error ?? 'Update failed' };
+    return { success: true };
   };
 
   if (!mounted) return null;
@@ -40,7 +59,8 @@ export default function CareerEditPage() {
       />
       <CareerProfile
         profile={userProfile || {}}
-        updateCareerProfile={updateCareerProfile}
+        updateCareerProfile={handleUpdateCareerProfile}
+        onSaved={() => { window.location.href = '/profile/career'; }}
       />
     </div>
   );

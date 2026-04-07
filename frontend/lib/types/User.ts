@@ -11,4 +11,14 @@ export interface UserExtendedProfile extends UserPublicProfile {
   year: number;
   major: string;
   committees?: string[];
+  bio?: string;
+  pronouns?: string;
+  skills?: string[];
+  careerInterests?: string[];
+  isProfilePublic?: boolean;
+  linkedinUrl?: string;
+  githubUrl?: string;
+  portfolioUrl?: string;
+  personalWebsite?: string;
+  resumeUrl?: string;
 }

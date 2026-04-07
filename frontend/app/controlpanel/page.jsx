@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useAtom, useAtomValue } from 'jotai';
 import Topbar from '@/components/Topbar';
 import ControlPanel from './controlPanel';
+import moment from 'moment';
 import logoutUser from '@/app/actions/auth/logoutUser';
 import fetchAllEvents from '@/app/actions/events/fetchAllEvents';
 import deleteEventAction from '@/app/actions/events/deleteEvent';
@@ -40,10 +41,17 @@ export default function ControlPanelPage() {
 
   useEffect(() => {
     setMounted(true);
-    fetchAllEvents().then(setEvents);
+    fetchAllEvents().then(evts => setEvents(evts.map(e => ({ ...e, startDate: moment(e.startDate) }))));
     fetchImages().then(setImages);
-    fetchAdmins().then(setAdmins);
   }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    const token = CookieStore.get('token');
+    if (isTokenSuperAdmin(token || '')) {
+      fetchAdmins().then(setAdmins);
+    }
+  }, [mounted]);
 
   const handleLogout = async () => {
     await logoutUser();
@@ -55,7 +63,7 @@ export default function ControlPanelPage() {
       setEventDeleteError(result.error ?? 'Failed to delete event');
     } else {
       setEventDeleteError(null);
-      fetchAllEvents().then(setEvents);
+      fetchAllEvents().then(evts => setEvents(evts.map(e => ({ ...e, startDate: moment(e.startDate) }))));
     }
   };
 

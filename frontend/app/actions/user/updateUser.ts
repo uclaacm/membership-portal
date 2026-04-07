@@ -17,7 +17,7 @@ export default async function updateUser(profile: { firstName: string; lastName:
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(profile),
+      body: JSON.stringify({ user: profile }),
     });
 
     const data = await response.json();

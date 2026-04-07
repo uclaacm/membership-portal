@@ -36,8 +36,8 @@ class ControlPanel extends React.Component {
     };
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.oneClickUpdated && nextProps.oneClickUpdateSuccess) {
+  componentDidUpdate(prevProps) {
+    if (!prevProps.oneClickUpdated && this.props.oneClickUpdated && this.props.oneClickUpdateSuccess) {
       this.closeOneClickPasswordModal();
     }
   }
