@@ -1,14 +1,17 @@
+'use client';
+
 import React from 'react';
-import Button from 'components/Button';
-import BannerMessage from 'components/BannerMessage';
-import EventsModal from 'components/Modal/eventsModal';
-import ImagesModal from 'components/Modal/imagesModal';
-import AdminsModal from 'components/Modal/adminsModal';
-import ReassignModal from 'components/Modal/reassignModal';
-import OneClickPasswordModal from 'components/Modal/oneClickPasswordModal';
-import ConfirmationModal from 'components/Modal/confirmationModal';
+import Button from '@/components/Button';
+import BannerMessage from '@/components/BannerMessage';
+import EventsModal from '@/components/Modal/eventsModal';
+import ImagesModal from '@/components/Modal/imagesModal';
+import AdminsModal from '@/components/Modal/adminsModal';
+import ReassignModal from '@/components/Modal/reassignModal';
+import OneClickPasswordModal from '@/components/Modal/oneClickPasswordModal';
+import ConfirmationModal from '@/components/Modal/confirmationModal';
 import ChangeToAdmin from '../profile/ChangeToAdmin';
 import PropTypes from 'prop-types';
+import '@/components/Modal/style.scss';
 
 class ControlPanel extends React.Component {
   constructor() {
@@ -33,7 +36,7 @@ class ControlPanel extends React.Component {
     };
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.oneClickUpdated && nextProps.oneClickUpdateSuccess) {
       this.closeOneClickPasswordModal();
     }

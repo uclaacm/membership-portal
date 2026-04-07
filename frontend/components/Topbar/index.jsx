@@ -57,7 +57,7 @@ export default function Topbar({ isAdmin, picture, onLogout, isRealAdmin, adminV
         <div className={`topbar-links ${menuOpen ? 'open' : ''}`}>
           {sharedLinks}
 
-          {isRealAdmin && adminView && (
+          {(isRealAdmin || isOfficer) && adminView && (
             <Link href="/controlpanel" className={pathname === '/controlpanel' ? 'selected' : ''}>
               <NavigationItem text="Control Panel" />
             </Link>

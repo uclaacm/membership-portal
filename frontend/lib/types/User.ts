@@ -10,4 +10,5 @@ export interface UserExtendedProfile extends UserPublicProfile {
   email: string;
   year: number;
   major: string;
+  committees?: string[];
 }

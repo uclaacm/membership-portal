@@ -1,7 +1,9 @@
+'use client';
+
 import React from 'react';
-import Config from 'config';
+import Config from '@/lib/config';
 import PropTypes from 'prop-types';
-import Button from 'components/Button';
+import Button from '@/components/Button';
 
 export default class ImagesModal extends React.Component {
   render() {
