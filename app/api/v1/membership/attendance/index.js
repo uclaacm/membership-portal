@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 const express = require('express');
 const error = require('../../../../error');
 const {
-  Event, Activity, Attendance, db,
+  Event, Activity, Attendance, RSVP, db,
 } = require('../../../../db');
 
 const router = express.Router();
@@ -70,15 +70,23 @@ router.route('/attend').post((req, res, next) => {
         if (attended) {
           return Promise.reject(new error.UserError('You have already attended this event!'));
         }
-        return Promise.all([
-          Attendance.attendEvent(req.user.uuid, event.uuid),
-          Activity.attendedEvent(
-            req.user.uuid,
-            event.title,
-            event.attendancePoints,
-          ),
-          req.user.addPoints(event.attendancePoints),
-        ]);
+        // Check if user has already RSVP'd to this event
+        return RSVP.userRSVPedEvent(req.user.uuid, event.uuid).then((hasRsvped) => {
+          const promises = [
+            Attendance.attendEvent(req.user.uuid, event.uuid),
+            Activity.attendedEvent(
+              req.user.uuid,
+              event.title,
+              event.attendancePoints,
+            ),
+            req.user.addPoints(event.attendancePoints),
+          ];
+          // If user hasn't RSVP'd, create an RSVP
+          if (!hasRsvped) {
+            promises.push(RSVP.rsvpToEvent(req.user.uuid, event.uuid));
+          }
+          return Promise.all(promises);
+        });
       }))
         .then(() => {
           res.json({ error: null, event: event.getPublic() });
