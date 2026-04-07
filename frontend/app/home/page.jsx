@@ -111,8 +111,8 @@ export default function HomePage() {
         adminView={adminView}
         onToggleAdminView={() => setAdminView(v => !v)}
         isOfficer={isOfficer}
-        officerView={officerView}
-        onToggleOfficerView={() => setOfficerView(v => !v)}
+        officerView={adminView}
+        onToggleOfficerView={() => setAdminView(v => !v)}
       />
     <div className="home-dashboard">
       {/* Sidebar */}

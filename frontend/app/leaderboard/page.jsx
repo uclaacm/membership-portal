@@ -52,14 +52,14 @@ export default function LeaderboardPage() {
         adminView={adminView}
         onToggleAdminView={() => setAdminView(v => !v)}
         isOfficer={isOfficer}
-        officerView={officerView}
-        onToggleOfficerView={() => setOfficerView(v => !v)}
+        officerView={adminView}
+        onToggleOfficerView={() => setAdminView(v => !v)}
       />
       <Leaderboard
         leaderboard={leaderboard}
         user={userProfile}
         error={error}
-        isAdmin={adminView}
+        isAdmin={isAdmin && adminView}
       />
     </div>
   );

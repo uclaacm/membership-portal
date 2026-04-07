@@ -43,6 +43,7 @@
     "react-chartjs-2": "^5.2.0",
     "react-datepicker": "^7.4.0",
     "react-dom": "19.2.0",
+    "react-input-mask": "^2.0.4",
     "sass": "^1.97.3"
   },
   "devDependencies": {

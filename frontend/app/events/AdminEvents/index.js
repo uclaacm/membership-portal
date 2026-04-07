@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 
 import Button from '@/components/Button';
 import BannerMessage from '@/components/BannerMessage';
-import EarlierEventsIcon from '@/components/Events/earlierEventsIcon';
+import EarlierEventsIcon from '@/app/events/earlierEventsIcon';
 import EventMonth from './eventMonth';
 import AdminAddEvent from './adminAddEvent';
 

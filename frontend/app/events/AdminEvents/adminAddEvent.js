@@ -4,7 +4,6 @@ import React, { createRef } from 'react';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 
-import InputElement from 'react-input-mask';
 import DatePicker from 'react-datepicker';
 import Button from '@/components/Button';
 import Config from '@/lib/config';
@@ -156,10 +155,12 @@ export default class AdminAddEvent extends React.Component {
       <div className={`add-event-overlay${this.props.showing ? ' showing' : ''}`} onClick={this.props.onClickCancel}>
         <div className="event-sidebar" onClick={e => e.stopPropagation()}>
           <div className="cover-img">
-            <img
-              src={this.state.event.cover}
-              id="event-cover-img"
-            />
+            {this.state.event.cover && (
+              <img
+                src={this.state.event.cover}
+                id="event-cover-img"
+              />
+            )}
           </div>
           <div className="editor">
             <div className="button-area">
@@ -245,10 +246,11 @@ export default class AdminAddEvent extends React.Component {
               </div>
               <div className="input-field three-fourth-width">
                 <p>Start Time</p>
-                <InputElement
+                <input
+                  type="text"
                   className={this.state.startTimeError ? 'error' : ''}
                   onChange={this.handleChangeTime}
-                  mask="99:99"
+                  placeholder="HH:MM"
                   name="startTime"
                   value={this.state.event.startDate ? this.state.event.startDate.format('HH:mm') : ''}
                 />
@@ -265,10 +267,11 @@ export default class AdminAddEvent extends React.Component {
               </div>
               <div className="input-field three-fourth-width">
                 <p>End Time</p>
-                <InputElement
+                <input
+                  type="text"
                   className={this.state.endTimeError ? 'error' : ''}
                   onChange={this.handleChangeTime}
-                  mask="99:99"
+                  placeholder="HH:MM"
                   name="endTime"
                   value={this.state.event.endDate ? this.state.event.endDate.format('HH:mm') : ''}
                 />

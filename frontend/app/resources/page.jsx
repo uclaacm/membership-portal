@@ -28,8 +28,8 @@ export default function ResourcesPage() {
         adminView={adminView}
         onToggleAdminView={() => setAdminView(v => !v)}
         isOfficer={isOfficer}
-        officerView={officerView}
-        onToggleOfficerView={() => setOfficerView(v => !v)}
+        officerView={adminView}
+        onToggleOfficerView={() => setAdminView(v => !v)}
       />
       <Resources />
     </div>

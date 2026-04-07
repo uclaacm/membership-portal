@@ -5,6 +5,7 @@ import { useAtom, useAtomValue } from 'jotai';
 import moment from 'moment';
 import Topbar from '@/components/Topbar';
 import UserEvents from './UserEvents';
+import AdminEvents from './AdminEvents';
 import logoutUser from '@/app/actions/auth/logoutUser';
 import fetchFutureEvents from '@/app/actions/events/fetchFutureEvents';
 import fetchUserRSVPs from '@/app/actions/rsvp/fetchUserRSVPs';
@@ -88,20 +89,29 @@ export default function EventsPage() {
         adminView={adminView}
         onToggleAdminView={() => setAdminView(v => !v)}
         isOfficer={isOfficer}
-        officerView={officerView}
-        onToggleOfficerView={() => setOfficerView(v => !v)}
+        officerView={adminView}
+        onToggleOfficerView={() => setAdminView(v => !v)}
       />
-      <UserEvents
-        events={events}
-        userRsvps={userRsvps}
-        error={error}
-        checkIn={handleCheckIn}
-        checkInSubmitted={checkInSubmitted}
-        checkInSuccess={checkInSuccess}
-        checkInPoints={checkInPoints}
-        checkInError={checkInError}
-        resetCheckIn={handleResetCheckIn}
-      />
+      {(isAdmin || isOfficer) && adminView ? (
+        <AdminEvents
+          events={events}
+          error={error}
+          isAdmin={isAdmin}
+          isOfficer={isOfficer}
+        />
+      ) : (
+        <UserEvents
+          events={events}
+          userRsvps={userRsvps}
+          error={error}
+          checkIn={handleCheckIn}
+          checkInSubmitted={checkInSubmitted}
+          checkInSuccess={checkInSuccess}
+          checkInPoints={checkInPoints}
+          checkInError={checkInError}
+          resetCheckIn={handleResetCheckIn}
+        />
+      )}
     </div>
   );
 }

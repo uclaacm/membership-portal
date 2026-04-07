@@ -5,7 +5,7 @@ import type { NextRequest } from "next/server";
 import { isAuthenticated, isTokenAdmin, isTokenRegistered } from "@/lib/token";
 
 const SUPER_PROTECTED = ["/controlpanel"];
-const PROTECTED = ["/home", "/events", "profile", "/resources", "/leaderboard"];
+const PROTECTED = ["/home", "/events", "/profile", "/resources", "/leaderboard"];
 const ALL = [...SUPER_PROTECTED, ...PROTECTED, "/login", "/register"];
 
 export default async function proxy(req: NextRequest) {
