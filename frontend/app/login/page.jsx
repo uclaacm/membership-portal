@@ -24,7 +24,7 @@ export default function LoginPage() {
       return;
     }
     setAuthUserProfile(result.user);
-    
+
     // Check if user is registered by reading the token
     const authToken = CookieStore.get('token');
     if (authToken && !isTokenRegistered(authToken)) {

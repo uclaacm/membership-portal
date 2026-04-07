@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useAtomValue } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import moment from 'moment';
 import Topbar from '@/components/Topbar';
 import UserEvents from './UserEvents';
@@ -9,11 +9,15 @@ import logoutUser from '@/app/actions/auth/logoutUser';
 import fetchFutureEvents from '@/app/actions/events/fetchFutureEvents';
 import fetchUserRSVPs from '@/app/actions/rsvp/fetchUserRSVPs';
 import checkInAction from '@/app/actions/attendance/checkIn';
-import { authUserProfileAtom } from '@/lib/atoms';
+import { authUserProfileAtom, isAdminAtom, isOfficerAtom, adminViewAtom, officerViewAtom } from '@/lib/atoms';
 import './style.scss';
 
 export default function EventsPage() {
   const userProfile = useAtomValue(authUserProfileAtom);
+  const isAdmin = useAtomValue(isAdminAtom);
+  const isOfficer = useAtomValue(isOfficerAtom);
+  const [adminView, setAdminView] = useAtom(adminViewAtom);
+  const [officerView, setOfficerView] = useAtom(officerViewAtom);
   const [events, setEvents] = useState([]);
   const [userRsvps, setUserRsvps] = useState([]);
   const [error, setError] = useState(null);
@@ -76,12 +80,16 @@ export default function EventsPage() {
 
   return (
     <div className="events">
-      <Topbar 
-        isAdmin={false}
+      <Topbar
+        isAdmin={adminView}
         picture={userProfile?.picture}
         onLogout={handleLogout}
-        isRealAdmin={false}
-        adminView={false}
+        isRealAdmin={isAdmin}
+        adminView={adminView}
+        onToggleAdminView={() => setAdminView(v => !v)}
+        isOfficer={isOfficer}
+        officerView={officerView}
+        onToggleOfficerView={() => setOfficerView(v => !v)}
       />
       <UserEvents
         events={events}

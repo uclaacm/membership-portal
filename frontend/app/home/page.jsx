@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAtomValue } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import moment from "moment";
 
-import { authUserProfileAtom } from "@/lib/atoms";
+import { authUserProfileAtom, isAdminAtom, isOfficerAtom, adminViewAtom, officerViewAtom } from "@/lib/atoms";
 import logoutUser from "@/app/actions/auth/logoutUser";
 import fetchLeaderboard from "@/app/actions/leaderboard/fetchLeaderboard";
 import fetchFutureEvents from "@/app/actions/events/fetchFutureEvents";
@@ -31,6 +31,10 @@ const getRecentEvents = (events) => {
 
 export default function HomePage() {
   const userProfile = useAtomValue(authUserProfileAtom);
+  const isAdmin = useAtomValue(isAdminAtom);
+  const isOfficer = useAtomValue(isOfficerAtom);
+  const [adminView, setAdminView] = useAtom(adminViewAtom);
+  const [officerView, setOfficerView] = useAtom(officerViewAtom);
   const [mounted, setMounted] = useState(false);
   const [checkInCode, setCheckInCode] = useState("");
   const [checkInStatus, setCheckInStatus] = useState(null);
@@ -100,11 +104,15 @@ export default function HomePage() {
   return (
     <>
       <Topbar
-        isAdmin={false}
+        isAdmin={adminView}
         picture={userProfile?.picture}
         onLogout={handleLogout}
-        isRealAdmin={false}
-        adminView={false}
+        isRealAdmin={isAdmin}
+        adminView={adminView}
+        onToggleAdminView={() => setAdminView(v => !v)}
+        isOfficer={isOfficer}
+        officerView={officerView}
+        onToggleOfficerView={() => setOfficerView(v => !v)}
       />
     <div className="home-dashboard">
       {/* Sidebar */}
@@ -173,9 +181,9 @@ export default function HomePage() {
       {/* Main Section */}
       <main className="main-section">
         <WelcomeBanner
-          isAdmin={false}
+          isAdmin={isAdmin}
           isSuperAdmin={false}
-          adminView={false}
+          adminView={adminView}
           picture={userProfile?.picture}
           username={userProfile ? `${userProfile.firstName} ${userProfile.lastName}` : 'Member'}
         />

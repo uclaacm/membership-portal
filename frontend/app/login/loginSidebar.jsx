@@ -82,4 +82,5 @@ export default class LoginSidebar extends React.Component {
 
 LoginSidebar.propTypes = {
   onsubmit: PropTypes.func.isRequired,
+  loginError: PropTypes.string,
 };

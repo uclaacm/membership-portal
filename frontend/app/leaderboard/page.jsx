@@ -1,15 +1,19 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useAtomValue } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import Topbar from '@/components/Topbar';
 import Leaderboard from './leaderboard';
 import logoutUser from '@/app/actions/auth/logoutUser';
 import fetchLeaderboard from '@/app/actions/leaderboard/fetchLeaderboard';
-import { authUserProfileAtom } from '@/lib/atoms';
+import { authUserProfileAtom, isAdminAtom, isOfficerAtom, adminViewAtom, officerViewAtom } from '@/lib/atoms';
 
 export default function LeaderboardPage() {
   const userProfile = useAtomValue(authUserProfileAtom);
+  const isAdmin = useAtomValue(isAdminAtom);
+  const isOfficer = useAtomValue(isOfficerAtom);
+  const [adminView, setAdminView] = useAtom(adminViewAtom);
+  const [officerView, setOfficerView] = useAtom(officerViewAtom);
   const [leaderboard, setLeaderboard] = useState([]);
   const [error, setError] = useState(null);
   const [mounted, setMounted] = useState(false);
@@ -40,18 +44,22 @@ export default function LeaderboardPage() {
 
   return (
     <div className="leaderboard">
-      <Topbar 
-        isAdmin={false}
+      <Topbar
+        isAdmin={adminView}
         picture={userProfile?.picture}
         onLogout={handleLogout}
-        isRealAdmin={false}
-        adminView={false}
+        isRealAdmin={isAdmin}
+        adminView={adminView}
+        onToggleAdminView={() => setAdminView(v => !v)}
+        isOfficer={isOfficer}
+        officerView={officerView}
+        onToggleOfficerView={() => setOfficerView(v => !v)}
       />
-      <Leaderboard 
-        leaderboard={leaderboard} 
-        user={userProfile} 
+      <Leaderboard
+        leaderboard={leaderboard}
+        user={userProfile}
         error={error}
-        isAdmin={false}
+        isAdmin={adminView}
       />
     </div>
   );

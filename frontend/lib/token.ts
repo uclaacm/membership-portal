@@ -32,3 +32,7 @@ export function isTokenSuperAdmin(token: string): boolean {
 export function isTokenRegistered(token: string): boolean {
   return !!tokenGetClaims(token).registered;
 }
+
+export function isTokenOfficer(token: string): boolean {
+  return !!tokenGetClaims(token).officer;
+}

@@ -8,7 +8,7 @@ import ProfileDropdown from './ProfileDropdown';
 import Config from '@/lib/config';
 import './styles.scss';
 
-export default function Topbar({ isAdmin, picture, onLogout, isRealAdmin, adminView, onToggleAdminView }) {
+export default function Topbar({ isAdmin, picture, onLogout, isRealAdmin, adminView, onToggleAdminView, isOfficer, officerView, onToggleOfficerView }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
 
@@ -41,6 +41,9 @@ export default function Topbar({ isAdmin, picture, onLogout, isRealAdmin, adminV
       <Link href="/resources" className={pathname === '/resources' ? 'selected' : ''}>
         <NavigationItem text={isAdmin ? 'Organization' : 'Resources'} />
       </Link>
+      <Link href="/profile/career" className={pathname.startsWith('/profile/career') ? 'selected' : ''}>
+        <NavigationItem text="Career Hub" />
+      </Link>
     </>
   );
 
@@ -54,19 +57,31 @@ export default function Topbar({ isAdmin, picture, onLogout, isRealAdmin, adminV
         <div className={`topbar-links ${menuOpen ? 'open' : ''}`}>
           {sharedLinks}
 
-          {/* Add Control Panel for Admins */}
-          {isAdmin && (
+          {/* Control Panel for admins and officers */}
+          {(isAdmin || isOfficer) && (
             <Link href="/controlpanel" className={pathname === '/controlpanel' ? 'selected' : ''}>
               <NavigationItem text="Control Panel" />
             </Link>
           )}
 
-          {/* Add Profile Link (Mobile only) */}
-          {!isAdmin && (
-            <Link href="/profile" className={`topbar-profile-mobile navigation-item ${pathname === '/profile' ? 'selected' : ''}`}>
-              <NavigationItem text="Profile" />
-            </Link>
+          {/* Mobile only items */}
+          <Link href="/profile" className={`topbar-mobile-only ${pathname === '/profile' ? 'selected' : ''}`}>
+            <NavigationItem text="Profile" />
+          </Link>
+
+          {(isRealAdmin || isOfficer) && (
+            <a className="topbar-mobile-only" onClick={isRealAdmin ? onToggleAdminView : onToggleOfficerView}>
+              <div className="navigation-item">
+                <span>{isRealAdmin ? (adminView ? 'Member View' : 'Admin View') : (officerView ? 'Member View' : 'Officer View')}</span>
+              </div>
+            </a>
           )}
+
+          <a className="topbar-mobile-only signout-link" onClick={onLogout}>
+            <div className="navigation-item">
+              <span>Sign Out</span>
+            </div>
+          </a>
         </div>
 
         {/* Hamburger Button (Mobile only) */}
@@ -75,15 +90,16 @@ export default function Topbar({ isAdmin, picture, onLogout, isRealAdmin, adminV
         </div>
 
         {/* Profile Icon (Desktop only) */}
-        {!isAdmin && (
-          <ProfileDropdown 
-            picture={picture} 
-            onLogout={onLogout}
-            isAdmin={isRealAdmin}
-            adminView={adminView}
-            onToggleAdminView={onToggleAdminView}
-          />
-        )}
+        <ProfileDropdown
+          picture={picture}
+          onLogout={onLogout}
+          isAdmin={isRealAdmin}
+          adminView={adminView}
+          onToggleAdminView={onToggleAdminView}
+          isOfficer={isOfficer}
+          officerView={officerView}
+          onToggleOfficerView={onToggleOfficerView}
+        />
       </div>
     </div>
   );
