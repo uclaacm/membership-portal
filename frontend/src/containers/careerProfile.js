@@ -1,22 +1,37 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Action } from 'reducers';
+import Topbar from 'containers/topbar';
 import CareerProfile from 'components/Profile/CareerProfile';
 
 class CareerProfileContainer extends React.Component {
+  componentWillMount() {
+    if (this.props.authenticated) {
+      this.props.fetchUser();
+    }
+  }
+
   render() {
-    return <CareerProfile profile={this.props.profile} />;
+    return (
+      <div>
+        <Topbar />
+        <CareerProfile 
+          profile={this.props.profile} 
+          updateCareerProfile={this.props.updateCareerProfile}
+        />
+      </div>
+    );
   }
 }
 
-const mapStateToProps = (state) => {
-  if (state.User.get('fetchSuccess')) {
-    return {
-      profile: state.User.get('profile'),
-    };
-  }
-  return {
-    profile: {},
-  };
-};
+const mapStateToProps = (state) => ({
+  authenticated: state.Auth.get('authenticated'),
+  profile: state.User.get('profile') || {},
+});
 
-export default connect(mapStateToProps, null)(CareerProfileContainer);
+const mapDispatchToProps = (dispatch) => ({
+  fetchUser: () => dispatch(Action.FetchUser()),
+  updateCareerProfile: (user) => dispatch(Action.UpdateCareerProfile(user)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(CareerProfileContainer);

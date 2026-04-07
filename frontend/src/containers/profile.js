@@ -15,11 +15,6 @@ class Profile extends React.Component {
   }
 
   componentWillMount() {
-    // Only redirect if admin is in admin view
-    const showAdminView = this.props.isAdmin && this.props.adminView;
-    if (showAdminView) {
-      return this.props.redirectHome();
-    }
     if (this.props.authenticated) {
       this.props.fetchUser();
       this.props.fetchActivity();
@@ -27,11 +22,6 @@ class Profile extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    // Only redirect if admin is in admin view
-    const showAdminView = nextProps.isAdmin && nextProps.adminView;
-    if (showAdminView) {
-      return nextProps.redirectHome();
-    }
     if (nextProps.updated) {
       setTimeout(() => {
         this.props.updateDone();

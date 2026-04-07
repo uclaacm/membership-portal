@@ -10,6 +10,7 @@ export default {
   routes: {
     user: {
       user: '/api/v1/user',
+      career: '/api/v1/user/career',
       activity: '/api/v1/user/activity',
       admins: '/api/v1/user/admins',
     },
@@ -36,6 +37,7 @@ export default {
     leaderboard: '/api/v1/leaderboard',
     admin: {
       promote: '/api/v1/admin/promote',
+      promoteOfficer: '/api/v1/admin/promote-officer',
     },
     image: {
       upload: '/api/v1/image',

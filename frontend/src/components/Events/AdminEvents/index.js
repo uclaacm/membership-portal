@@ -41,10 +41,17 @@ export default class AdminEvents extends React.Component {
 
   // Shows the add event sidebar
   showAddEvent(e) {
+    const officerDefaultCommittee = (!this.props.isAdmin && this.props.isOfficer && this.props.officerCommittees.length > 0)
+      ? this.props.officerCommittees[0]
+      : '';
+
     this.setState(prev => ({
       showAddEvent: true,
       isEditEvent: false,
-      eventPlaceholder: this.emptyEvent,
+      eventPlaceholder: {
+        ...this.emptyEvent,
+        committee: officerDefaultCommittee,
+      },
     }));
   }
 
@@ -155,6 +162,9 @@ export default class AdminEvents extends React.Component {
           showing={this.state.showAddEvent}
           createImage={this.props.createImage}
           imageCreateUuid={this.props.imageCreateUuid}
+          isAdmin={this.props.isAdmin}
+          isOfficer={this.props.isOfficer}
+          officerCommittees={this.props.officerCommittees}
         />
 
         {!this.state.showAddEvent && (
@@ -189,6 +199,9 @@ export default class AdminEvents extends React.Component {
 
 AdminEvents.propTypes = {
   events: PropTypes.arrayOf(PropTypes.object).isRequired,
+  isAdmin: PropTypes.bool.isRequired,
+  isOfficer: PropTypes.bool.isRequired,
+  officerCommittees: PropTypes.arrayOf(PropTypes.string).isRequired,
   error: PropTypes.string,
   created: PropTypes.bool,
   createSuccess: PropTypes.bool,

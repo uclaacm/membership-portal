@@ -28,6 +28,8 @@ export default class LoginSidebar extends React.Component {
 
   render() {
     const { err } = this.state;
+    const { loginError } = this.props;
+    const displayErr = loginError || err;
 
     return (
       <GoogleOAuthProvider clientId={Config.google.clientId}>
@@ -61,11 +63,12 @@ export default class LoginSidebar extends React.Component {
             </svg>
             </a>
 
-            {err ? (
+            {displayErr ? (
               <span>
                 <b>Error</b>
                 :
-                {err}
+                {' '}
+                {displayErr}
               </span>
             ) : (
               <span>&nbsp;</span>

@@ -18,8 +18,36 @@ class AdminEventCard extends React.Component {
     this.copyEmailsToClipboard = this.copyEmailsToClipboard.bind(this);
   }
 
+  canViewRsvps() {
+    const {
+      isAdmin,
+      isOfficer,
+      officerCommittees,
+      event,
+    } = this.props;
+
+    if (isAdmin) return true;
+    if (!isOfficer) return false;
+    return officerCommittees.includes(event.committee);
+  }
+
+  canEditEvent() {
+    const {
+      isAdmin,
+      isOfficer,
+      officerCommittees,
+      event,
+    } = this.props;
+
+    if (isAdmin) return true;
+    if (!isOfficer) return false;
+    return officerCommittees.includes(event.committee);
+  }
+
   async componentDidMount() {
     const { event, fetchEventRSVPs } = this.props;
+    if (!this.canViewRsvps()) return;
+
     // Fetch RSVPs when component mounts
     if (event && event.uuid) {
       const response = await fetchEventRSVPs(event.uuid);
@@ -33,6 +61,10 @@ class AdminEventCard extends React.Component {
     const { handleEditClick, event } = this.props;
     // Don't edit if clicking on the view RSVPs button
     if (e.target.closest('.view-rsvps-btn')) {
+      e.stopPropagation();
+      return;
+    }
+    if (!this.canEditEvent()) {
       e.stopPropagation();
       return;
     }
@@ -59,6 +91,8 @@ class AdminEventCard extends React.Component {
     const { showRsvpData } = this.state;
     e.stopPropagation(); // Prevent the edit event from firing
 
+    if (!this.canViewRsvps()) return;
+
     if (showRsvpData) {
       // Hide the data
       this.setState({ showRsvpData: false });
@@ -82,7 +116,6 @@ class AdminEventCard extends React.Component {
     }
   }
 
-  /* can add a button here to copy all emails from the rsvp */
   render() {
     const { event } = this.props;
     const {
@@ -90,8 +123,11 @@ class AdminEventCard extends React.Component {
     } = this.state;
 
     let buttonText = 'View All RSVPs';
+    const canViewRsvps = this.canViewRsvps();
     if (loading) {
       buttonText = 'Loading...';
+    } else if (!canViewRsvps) {
+      buttonText = 'RSVPs Restricted';
     } else if (showRsvpData) {
       buttonText = 'Hide RSVPs';
     }
@@ -117,7 +153,7 @@ class AdminEventCard extends React.Component {
               type="button"
               className="view-rsvps-btn"
               onClick={this.handleViewRsvps}
-              disabled={loading}
+              disabled={loading || !canViewRsvps}
             >
               {buttonText}
             </button>
@@ -169,10 +205,6 @@ class AdminEventCard extends React.Component {
                 ))}
               </div>
             )}
-            <details className="json-toggle">
-              <summary>View Raw JSON</summary>
-              <pre>{JSON.stringify({ error: null, rsvps: rsvpData }, null, 2)}</pre>
-            </details>
           </div>
         )}
       </div>
@@ -189,6 +221,9 @@ AdminEventCard.propTypes = {
   }).isRequired,
   handleEditClick: PropTypes.func,
   fetchEventRSVPs: PropTypes.func.isRequired,
+  isAdmin: PropTypes.bool.isRequired,
+  isOfficer: PropTypes.bool.isRequired,
+  officerCommittees: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 AdminEventCard.defaultProps = {
@@ -197,6 +232,9 @@ AdminEventCard.defaultProps = {
 
 const mapStateToProps = state => ({
   eventRsvps: state.RSVP.get('eventRsvps'),
+  isAdmin: state.Auth.get('isAdmin'),
+  isOfficer: state.Auth.get('isOfficer'),
+  officerCommittees: (state.User.get('profile') && state.User.get('profile').committees) || [],
 });
 
 const mapDispatchToProps = dispatch => ({

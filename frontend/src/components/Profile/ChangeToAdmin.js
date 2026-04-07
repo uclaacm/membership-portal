@@ -1,84 +1,158 @@
-// src/components/ChangeToAdmin.jsx
 import React, { useState } from 'react';
 import Button from 'components/Button';
 import Config from 'config';
+import Storage from 'storage';
 import './ChangeToAdmin.scss';
+
+const COMMITTEES = Config.committees;
 
 const ChangeToAdmin = () => {
   const [showModal, setShowModal] = useState(false);
-  const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
+  const [role, setRole] = useState('OFFICER');
+  const [committees, setCommittees] = useState([]);
+  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState({ text: '', success: false });
+  const [loading, setLoading] = useState(false);
 
-  const handlePromoteClick = () => {
+  const openModal = () => {
     setShowModal(true);
-    setMessage('');
+    setEmail('');
+    setRole('OFFICER');
+    setCommittees([]);
+    setPassword('');
+    setMessage({ text: '', success: false });
+  };
+
+  const toggleCommittee = (c) => {
+    setCommittees(prev => prev.includes(c) ? prev.filter(x => x !== c) : [...prev, c]);
   };
 
   const handleSubmit = async () => {
+    if (!email) {
+      setMessage({ text: 'Email is required.', success: false });
+      return;
+    }
+    setLoading(true);
     try {
-      const response = await fetch(Config.API_URL + Config.routes.admin.promote, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
+      let response;
+      if (role === 'OFFICER') {
+        const token = Storage.get('token');
+        response = await fetch(Config.API_URL + Config.routes.admin.promoteOfficer, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ email, committees }),
+        });
+      } else {
+        response = await fetch(Config.API_URL + Config.routes.admin.promote, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+      }
 
       const data = await response.json();
-
       if (response.ok) {
-        setMessage(`✅ ${data.message}`);
+        setMessage({ text: data.message, success: true });
       } else {
-        setMessage(`❌ ${data.error}`);
+        setMessage({ text: data.error || 'Something went wrong.', success: false });
       }
-    } catch (error) {
-      console.error('Error in POST request:', error);
-      setMessage('❌ An unknown error occurred.');
+    } catch {
+      setMessage({ text: 'Network error. Please try again.', success: false });
     } finally {
+      setLoading(false);
       setPassword('');
     }
   };
 
   return (
-    <div>
-      <Button
-        onClick={handlePromoteClick}
-        className="control-panel-action-button"
-        color="blue"
-        text="Register as an Officer"
-      />
+    <>
+      <Button onClick={openModal} color="blue" text="Assign Role" />
 
       {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
-            <h2>Register Officer Account</h2>
-            <input
-              type="text"
-              placeholder="User Email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-            />
-            <input
-              type="password"
-              placeholder="Admin Password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-            />
-            <button onClick={handleSubmit} className="submit-button">
-              Submit
-            </button>
-            <button onClick={() => setShowModal(false)} className="cancel-button">
-              Cancel
-            </button>
-            {message && <p className="message">{message}</p>}
+        <div className="ar-overlay" onClick={() => setShowModal(false)}>
+          <div className="ar-modal" onClick={e => e.stopPropagation()}>
+            <h2 className="ar-title">Assign Role</h2>
+
+            <div className="ar-field">
+              <label className="ar-label">Email</label>
+              <input
+                className="ar-input"
+                type="email"
+                placeholder="user@g.ucla.edu"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+              />
+            </div>
+
+            <div className="ar-field">
+              <label className="ar-label">Role</label>
+              <div className="ar-role-tabs">
+                <button
+                  className={`ar-role-tab ${role === 'OFFICER' ? 'active' : ''}`}
+                  onClick={() => setRole('OFFICER')}
+                  type="button"
+                >
+                  Officer
+                </button>
+                <button
+                  className={`ar-role-tab ${role === 'ADMIN' ? 'active' : ''}`}
+                  onClick={() => setRole('ADMIN')}
+                  type="button"
+                >
+                  Admin
+                </button>
+              </div>
+            </div>
+
+            {role === 'OFFICER' && (
+              <div className="ar-field">
+                <label className="ar-label">Committees</label>
+                <div className="ar-committee-grid">
+                  {COMMITTEES.map(c => (
+                    <button
+                      key={c}
+                      type="button"
+                      className={`ar-chip ${committees.includes(c) ? 'selected' : ''}`}
+                      onClick={() => toggleCommittee(c)}
+                    >
+                      {c}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {role === 'ADMIN' && (
+              <div className="ar-field">
+                <label className="ar-label">Admin Password</label>
+                <input
+                  className="ar-input"
+                  type="password"
+                  placeholder="Required for admin promotion"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                />
+              </div>
+            )}
+
+            {message.text && (
+              <p className={`ar-message ${message.success ? 'success' : 'error'}`}>
+                {message.text}
+              </p>
+            )}
+
+            <div className="ar-actions">
+              <Button text="Assign" color="blue" onClick={handleSubmit} loading={loading} />
+              <Button text="Cancel" color="red" onClick={() => setShowModal(false)} />
+            </div>
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

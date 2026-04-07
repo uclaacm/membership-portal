@@ -46,6 +46,9 @@ export default class Topbar extends React.Component {
         <NavLink to="/leaderboard" activeClassName="selected">
           <NavigationItem icon="fa-list" text={isAdmin ? 'Members' : 'Leaderboard'} />
         </NavLink>
+        <NavLink to="/profile/career" activeClassName="selected">
+          <NavigationItem icon="fa-briefcase" text="Career Hub" />
+        </NavLink>
         <NavLink to="/resources" activeClassName="selected">
           <NavigationItem icon={isAdmin ? 'fa-building' : 'fa-file'} text={isAdmin ? 'Organization' : 'Resources'} />
         </NavLink>
@@ -69,12 +72,24 @@ export default class Topbar extends React.Component {
               </NavLink>
             )}
 
-            {/* Add Profile Link (Mobile only) */}
-            {!isAdmin && (
-              <NavLink to="/profile" className="topbar-profile-mobile navigation-item" activeClassName="selected">
-                <NavigationItem icon="fa-user-circle" text="Profile" />
-              </NavLink>
+            {/* Mobile only items */}
+            <NavLink to="/profile" exact className="topbar-mobile-only" activeClassName="selected">
+              <NavigationItem icon="fa-user-circle" text="Profile" />
+            </NavLink>
+            
+            {(this.props.isRealAdmin || this.props.isOfficer) && (
+              <a className="topbar-mobile-only" onClick={this.props.isRealAdmin ? this.props.onToggleAdminView : this.props.onToggleOfficerView}>
+                <div className="navigation-item">
+                  <span>{this.props.isRealAdmin ? (this.props.adminView ? 'Member View' : 'Admin View') : (this.props.officerView ? 'Member View' : 'Officer View')}</span>
+                </div>
+              </a>
             )}
+            
+            <a className="topbar-mobile-only signout-link" onClick={this.props.onLogout}>
+              <div className="navigation-item">
+                <span>Sign Out</span>
+              </div>
+            </a>
           </div>
 
           {/* Hamburger Button (Mobile only) */}
@@ -83,15 +98,16 @@ export default class Topbar extends React.Component {
           </div>
 
           {/* Profile Icon (Desktop only) */}
-          {!isAdmin && (
-            <ProfileDropdown 
+          <ProfileDropdown
               picture={this.props.picture} 
               onLogout={this.props.onLogout}
               isAdmin={this.props.isRealAdmin}
               adminView={this.props.adminView}
               onToggleAdminView={this.props.onToggleAdminView}
+              isOfficer={this.props.isOfficer}
+              officerView={this.props.officerView}
+              onToggleOfficerView={this.props.onToggleOfficerView}
             />
-          )}
         </div>
       </div>
     );
@@ -105,4 +121,7 @@ Topbar.propTypes = {
   isRealAdmin: PropTypes.bool,
   adminView: PropTypes.bool,
   onToggleAdminView: PropTypes.func,
+  isOfficer: PropTypes.bool,
+  officerView: PropTypes.bool,
+  onToggleOfficerView: PropTypes.func,
 };

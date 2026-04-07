@@ -38,7 +38,6 @@ const Home = ({
   events,
 }) => {
   const handleSubmit = (e) => {
-    e.preventDefault();
     checkIn(e.target.attendanceCode.value);
   };
 

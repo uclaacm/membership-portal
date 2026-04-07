@@ -12,7 +12,7 @@ class TopbarContainer extends React.Component {
   }
 
   render() {
-    const showAdminView = this.props.isAdmin && this.props.adminView;
+    const showAdminView = (this.props.isAdmin || this.props.isOfficer) && this.props.adminView;
     return (
       <Topbar
         isAdmin={showAdminView}
@@ -21,6 +21,9 @@ class TopbarContainer extends React.Component {
         isRealAdmin={this.props.isAdmin}
         adminView={this.props.adminView}
         onToggleAdminView={this.props.toggleAdminView}
+        isOfficer={this.props.isOfficer}
+        officerView={this.props.adminView}
+        onToggleOfficerView={this.props.toggleAdminView}
       />
     );
   }
@@ -37,6 +40,7 @@ const mapStateToProps = (state) => {
       points: profile.points,
       isAdmin: state.Auth.get('isAdmin'),
       isSuperAdmin: state.Auth.get('isSuperAdmin'),
+      isOfficer: state.Auth.get('isOfficer'),
       adminView: state.Auth.get('adminView'),
     };
   }

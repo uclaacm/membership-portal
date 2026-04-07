@@ -12,20 +12,6 @@ const AUTH_USER = Symbol();
 const UNAUTH_USER = Symbol();
 const AUTH_ERROR = Symbol();
 const TOGGLE_ADMIN_VIEW = Symbol();
-
-const initState = () => {
-  const token = Storage.get('token');
-  return Immutable.fromJS({
-    error: null,
-    timestamp: null,
-    authenticated: !!token,
-    isAdmin: !!token && tokenIsAdmin(token),
-    isSuperAdmin: !!token && tokenIsSuperAdmin(token),
-    isRegistered: !!token && tokenIsRegistered(token),
-    adminView: false,
-  });
-};
-
 /** *********************************************
  ** Helper Functions                          **
  ********************************************** */
@@ -46,7 +32,25 @@ const tokenGetClaims = (token) => {
 
 const tokenIsAdmin = token => !!tokenGetClaims(token).admin;
 const tokenIsSuperAdmin = token => !!tokenGetClaims(token).superAdmin;
+const tokenIsOfficer = token => !!tokenGetClaims(token).officer;
 const tokenIsRegistered = token => !!tokenGetClaims(token).registered;
+
+const initState = () => {
+  const token = Storage.get('token');
+  const isAdmin = !!token && tokenIsAdmin(token);
+  const isOfficer = !!token && tokenIsOfficer(token);
+  return Immutable.fromJS({
+    error: null,
+    timestamp: null,
+    authenticated: !!token,
+    isAdmin,
+    isSuperAdmin: !!token && tokenIsSuperAdmin(token),
+    isOfficer,
+    isRegistered: !!token && tokenIsRegistered(token),
+    // Default to elevated view if admin or officer
+    adminView: isAdmin || isOfficer,
+  });
+};
 
 /** *********************************************
  ** Auth States                               **
@@ -58,12 +62,13 @@ class State {
       type: error ? AUTH_ERROR : AUTH_USER,
       isAdmin: error ? undefined : tokenIsAdmin(token),
       isSuperAdmin: error ? undefined : tokenIsSuperAdmin(token),
+      isOfficer: error ? undefined : tokenIsOfficer(token),
       isRegistered: error ? undefined : tokenIsRegistered(token),
       error: error || undefined,
     };
   }
 
-  static UnAuth(error) {
+  static UnAuth() {
     return {
       type: UNAUTH_USER,
     };
@@ -85,7 +90,15 @@ const LoginUser = tokenId => async (dispatch) => {
       body: JSON.stringify({ tokenId }),
     });
 
-    const data = await response.json();
+    const text = await response.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      throw new Error(response.status === 401
+        ? 'Please use a @g.ucla.edu, @ucla.edu, or @uclaacm.com email address.'
+        : `Login failed (${response.status})`);
+    }
 
     if (!data) throw new Error('Empty response from server');
     if (data.error) throw new Error(data.error.message);
@@ -97,7 +110,7 @@ const LoginUser = tokenId => async (dispatch) => {
   }
 };
 
-const LogoutUser = error => async (dispatch) => {
+const LogoutUser = () => async (dispatch) => {
   dispatch(State.UnAuth());
   Storage.remove('token');
   dispatch(replace('/login'));
@@ -126,7 +139,9 @@ const Auth = (state = initState(), action) => {
         val.set('isRegistered', action.isRegistered);
         val.set('isAdmin', action.isAdmin);
         val.set('isSuperAdmin', action.isSuperAdmin);
-        val.set('adminView', false);
+        val.set('isOfficer', action.isOfficer);
+        // Default to elevated view on login for admins and officers
+        val.set('adminView', action.isAdmin || action.isOfficer);
       });
 
     case UNAUTH_USER:
@@ -135,6 +150,7 @@ const Auth = (state = initState(), action) => {
         val.set('isRegistered', false);
         val.set('isAdmin', false);
         val.set('isSuperAdmin', false);
+        val.set('isOfficer', false);
         val.set('adminView', false);
       });
 

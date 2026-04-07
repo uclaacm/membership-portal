@@ -147,5 +147,9 @@ module.exports = {
     historyApiFallback: true,
     host: '0.0.0.0',
     port: 8000,
+    headers: {
+      'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
+      'Cross-Origin-Embedder-Policy': 'unsafe-none',
+    },
   },
 };

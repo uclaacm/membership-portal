@@ -27,7 +27,7 @@ class Login extends React.Component {
   }
 
   render() {
-    return <LoginComponent onsubmit={this.handleLogin.bind(this)} />;
+    return <LoginComponent onsubmit={this.handleLogin.bind(this)} loginError={this.props.loginError} />;
   }
 }
 
@@ -36,6 +36,7 @@ const mapStateToProps = state => ({
   isRegistered: state.Auth.get('isRegistered'),
   timestamp: state.Auth.get('timestamp'),
   authenticated: state.Auth.get('authenticated'),
+  loginError: state.Auth.get('error'),
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -6,7 +6,7 @@ import { routerReducer, routerMiddleware } from 'react-router-redux';
 import thunk from 'redux-thunk';
 
 import {
-  User, FetchUser, UpdateUser, UserUpdateDone, FetchActivity,
+  User, FetchUser, UpdateUser, UpdateCareerProfile, UserUpdateDone, FetchActivity,
 } from './user';
 import {
   Admins, FetchAdmins, AddAdmin, DeleteAdmin, ChangeSuperAdmin,
@@ -31,7 +31,7 @@ import {
   SyncEventsDone,
 } from './events';
 import { Leaderboard, FetchLeaderboard, InvalidateLeaderboard } from './leaderboard';
-import { CheckIn, CheckInto, ResetCheckIn } from './checkin';
+import { CheckIn, CheckInto, ResetCheckIn, FetchCheckedInEvents } from './checkin';
 import { Registration, RegisterUser, registerDone } from './registration';
 import {
   Images, GetAllImages, CreateImage, DeleteImage,
@@ -67,6 +67,7 @@ const Action = {
   ChangeOneClickPasswordDone,
   FetchUser,
   UpdateUser,
+  UpdateCareerProfile,
   UserUpdateDone,
   FetchActivity,
   AddAdmin,
@@ -87,6 +88,7 @@ const Action = {
   registerDone,
   CheckInto,
   ResetCheckIn,
+  FetchCheckedInEvents,
   CreateRSVP,
   CancelRSVP,
   FetchUserRSVPs,
