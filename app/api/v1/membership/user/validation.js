@@ -56,6 +56,25 @@ const validateCareerProfileUpdate = [
     .isLength({ min: 1, max: 50 })
     .escape()
     .withMessage('Each career interest must be 1-50 characters'),
+  // Allow updating basic profile fields from the career profile form as well
+  body('user.bio')
+    .optional()
+    .isString()
+    .trim()
+    .isLength({ max: 1000 })
+    .escape()
+    .withMessage('Bio must be 1000 characters or less'),
+  body('user.pronouns')
+    .optional()
+    .isString()
+    .trim()
+    .isLength({ max: 50 })
+    .escape()
+    .withMessage('Pronouns must be 50 characters or less'),
+  body('user.isProfilePublic')
+    .optional()
+    .isBoolean()
+    .withMessage('isProfilePublic must be a boolean'),
   handleValidationErrors,
 ];
 
