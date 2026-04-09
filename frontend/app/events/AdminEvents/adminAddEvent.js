@@ -34,7 +34,7 @@ export default class AdminAddEvent extends React.Component {
   handleChangeStartDate(date) {
     this.setState((prev) => {
       const newState = Object.assign({}, prev);
-      newState.event.startDate = date;
+      newState.event.startDate = date ? moment(date) : null;
       return newState;
     });
   }
@@ -42,7 +42,7 @@ export default class AdminAddEvent extends React.Component {
   handleChangeEndDate(date) {
     this.setState((prev) => {
       const newState = Object.assign({}, prev);
-      newState.event.endDate = date;
+      newState.event.endDate = date ? moment(date) : null;
       return newState;
     });
   }
@@ -239,7 +239,7 @@ export default class AdminAddEvent extends React.Component {
               <div className="input-field three-fourth-width">
                 <p>Start Date</p>
                 <DatePicker
-                  selected={this.state.event.startDate}
+                  selected={this.state.event.startDate ? this.state.event.startDate.toDate() : null}
                   onChange={this.handleChangeStartDate}
                   className="date-picker"
                 />
@@ -260,7 +260,7 @@ export default class AdminAddEvent extends React.Component {
               <div className="input-field three-fourth-width">
                 <p>End Date</p>
                 <DatePicker
-                  selected={this.state.event.endDate}
+                  selected={this.state.event.endDate ? this.state.event.endDate.toDate() : null}
                   onChange={this.handleChangeEndDate}
                   className="date-picker"
                 />

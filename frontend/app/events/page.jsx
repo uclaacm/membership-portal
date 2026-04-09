@@ -8,6 +8,9 @@ import UserEvents from './UserEvents';
 import AdminEvents from './AdminEvents';
 import logoutUser from '@/app/actions/auth/logoutUser';
 import fetchFutureEvents from '@/app/actions/events/fetchFutureEvents';
+import createEvent from '@/app/actions/events/createEvent';
+import updateEvent from '@/app/actions/events/updateEvent';
+import syncEventsAction from '@/app/actions/events/syncEvents';
 import fetchUserRSVPs from '@/app/actions/rsvp/fetchUserRSVPs';
 import checkInAction from '@/app/actions/attendance/checkIn';
 import { authUserProfileAtom, isAdminAtom, isOfficerAtom, adminViewAtom, officerViewAtom } from '@/lib/atoms';
@@ -75,6 +78,58 @@ export default function EventsPage() {
     setCheckInError('');
   };
 
+  const normalizeEventForServer = (event) => ({
+    ...event,
+    startDate: event.startDate ? event.startDate.toISOString?.() ?? event.startDate : null,
+    endDate: event.endDate ? event.endDate.toISOString?.() ?? event.endDate : null,
+  });
+
+  const handleAddEvent = async (event) => {
+    try {
+      await createEvent(normalizeEventForServer(event));
+      // Reload events after creation
+      const eventsArray = await fetchFutureEvents();
+      setEvents(eventsArray.map(e => ({
+        ...e,
+        startDate: moment(e.startDate),
+        endDate: moment(e.endDate),
+      })));
+    } catch (err) {
+      console.error('Failed to create event:', err);
+      setError('Failed to create event');
+    }
+  };
+
+  const handleUpdateEvent = async (event) => {
+    try {
+      await updateEvent(normalizeEventForServer(event));
+      const eventsArray = await fetchFutureEvents();
+      setEvents(eventsArray.map(e => ({
+        ...e,
+        startDate: moment(e.startDate),
+        endDate: moment(e.endDate),
+      })));
+    } catch (err) {
+      console.error('Failed to update event:', err);
+      setError('Failed to update event');
+    }
+  };
+
+  const handleSyncEvents = async () => {
+    try {
+      await syncEventsAction();
+      const eventsArray = await fetchFutureEvents();
+      setEvents(eventsArray.map(e => ({
+        ...e,
+        startDate: moment(e.startDate),
+        endDate: moment(e.endDate),
+      })));
+    } catch (err) {
+      console.error('Failed to sync events:', err);
+      setError('Failed to sync events');
+    }
+  };
+
   if (!mounted) {
     return null;
   }
@@ -98,6 +153,9 @@ export default function EventsPage() {
           error={error}
           isAdmin={isAdmin}
           isOfficer={isOfficer}
+          addEvent={handleAddEvent}
+          updateEvent={handleUpdateEvent}
+          syncEvents={handleSyncEvents}
         />
       ) : (
         <UserEvents
