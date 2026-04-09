@@ -1,30 +1,30 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import BannerMessage from '@/components/BannerMessage';
-import Banner from '@/components/BannerJS/banner';
-import RegisterSidebar from './registerSidebar.jsx';
-import SuccessCard from './successCard.jsx';
-import registerUser from '@/app/actions/auth/registerUser';
-import '@/app/login/style.scss';
-import './style.scss';
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import BannerMessage from "@/components/BannerMessage";
+import Banner from "@/components/BannerJS/banner";
+import registerUser from "@/app/actions/auth/registerUser";
+import RegisterSidebar from "./registerSidebar";
+import SuccessCard from "./successCard";
+import "@/app/login/style.scss";
+import "./style.scss";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [profile, setProfile] = useState({ year: 0, major: '' });
+  const [profile, setProfile] = useState({ year: 0, major: "" });
   const [disableForm, setDisableForm] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
   const profileValid = () => !!(profile.major && profile.year > 0);
 
-  const handleProfileChange = (name: 'year' | 'major', value: string | number) => {
+  const handleProfileChange = (name: "year" | "major", value: string | number) => {
     setProfile(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleProfileSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleProfileSubmit = async (e?: React.FormEvent | React.MouseEvent) => {
+    e?.preventDefault();
     if (disableForm || !profileValid()) return;
 
     setDisableForm(true);
@@ -33,9 +33,9 @@ export default function RegisterPage() {
     const ok = await registerUser(profile);
     if (ok) {
       setSuccess(true);
-      setTimeout(() => router.push('/home'), 1500);
+      setTimeout(() => router.push("/home"), 1500);
     } else {
-      setError('Registration failed. Please try again.');
+      setError("Registration failed. Please try again.");
       setDisableForm(false);
     }
   };

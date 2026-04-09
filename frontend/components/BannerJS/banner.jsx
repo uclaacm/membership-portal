@@ -67,6 +67,9 @@ const generateCols = (n, m, centerX, centerY, maskRadius, randomize, committee) 
     </div>
   ));
 
+/**
+ * @param {{ decorative?: boolean, sideCols?: number, height?: number, width?: number }} props
+ */
 function Banner({ decorative = false, sideCols: sideColsProp, height: heightProp, width: widthProp = 5 }) {
   const [randomize, setRandomize] = useState(false);
   const [color, setColor] = useState(0);
