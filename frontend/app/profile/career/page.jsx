@@ -1,11 +1,12 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useAtom, useAtomValue } from 'jotai';
-import Topbar from '@/components/Topbar';
-import CareerLanding from '@/app/profile/CareerLanding';
-import logoutUser from '@/app/actions/auth/logoutUser';
-import { authUserProfileAtom, isAdminAtom, isOfficerAtom, adminViewAtom } from '@/lib/atoms';
+import { useEffect, useState } from "react";
+import { useAtom, useAtomValue } from "jotai";
+import Topbar from "../../../components/Topbar";
+import CareerLanding from "../CareerLanding";
+import logoutUser from "../../actions/auth/logoutUser.ts";
+import fetchCareerProfile from "../../actions/user/fetchCareerProfile.ts";
+import { authUserProfileAtom, isAdminAtom, isOfficerAtom, adminViewAtom } from "../../../lib/atoms.ts";
 
 export default function CareerPage() {
   const userProfile = useAtomValue(authUserProfileAtom);
@@ -13,10 +14,26 @@ export default function CareerPage() {
   const isOfficer = useAtomValue(isOfficerAtom);
   const [adminView, setAdminView] = useAtom(adminViewAtom);
   const [mounted, setMounted] = useState(false);
+  const [careerProfile, setCareerProfile] = useState(userProfile || {});
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!userProfile) {
+      return;
+    }
+
+    (async () => {
+      const career = await fetchCareerProfile();
+      if (career) {
+        setCareerProfile({ ...(userProfile || {}), ...career });
+      } else {
+        setCareerProfile(userProfile || {});
+      }
+    })();
+  }, [userProfile]);
 
   const handleLogout = async () => {
     await logoutUser();
@@ -37,7 +54,7 @@ export default function CareerPage() {
         officerView={adminView}
         onToggleOfficerView={() => setAdminView(v => !v)}
       />
-      <CareerLanding profile={userProfile || {}} />
+      <CareerLanding profile={careerProfile} />
     </div>
   );
 }

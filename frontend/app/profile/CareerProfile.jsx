@@ -1,46 +1,46 @@
-'use client';
+"use client";
 
-import React from 'react';
-import PropTypes from 'prop-types';
-import Link from 'next/link';
-import './careerProfile.scss';
+import React from "react";
+import PropTypes from "prop-types";
+import Link from "next/link";
+import "./careerProfile.scss";
 
-const isValidLinkedInUrl = (url) => {
-  if (!url || url.trim() === '') return true;
+const isValidLinkedInUrl = url => {
+  if (!url || url.trim() === "") return true;
   const linkedInPattern = /^https?:\/\/(www\.)?linkedin\.com\/in\/.+/i;
   return linkedInPattern.test(url);
 };
 
-const isValidGitHubUrl = (url) => {
-  if (!url || url.trim() === '') return true;
+const isValidGitHubUrl = url => {
+  if (!url || url.trim() === "") return true;
   const gitHubPattern = /^https?:\/\/(www\.)?github\.com\/.+/i;
   return gitHubPattern.test(url);
 };
 
-const isValidUrl = (url) => {
-  if (!url || url.trim() === '') return true;
+const isValidUrl = url => {
+  if (!url || url.trim() === "") return true;
   try {
-    new URL(url);
-    return true;
+    const parsedUrl = new URL(url);
+    return !!parsedUrl;
   } catch (e) {
     return false;
   }
 };
 
-const getLinkedInUrlError = (url) => {
-  if (!url || url.trim() === '') return null;
-  if (!isValidUrl(url)) return 'Please enter a valid URL';
+const getLinkedInUrlError = url => {
+  if (!url || url.trim() === "") return null;
+  if (!isValidUrl(url)) return "Please enter a valid URL";
   if (!isValidLinkedInUrl(url)) {
-    return 'LinkedIn URL must be in the format: https://linkedin.com/in/username';
+    return "LinkedIn URL must be in the format: https://linkedin.com/in/username";
   }
   return null;
 };
 
-const getGitHubUrlError = (url) => {
-  if (!url || url.trim() === '') return null;
-  if (!isValidUrl(url)) return 'Please enter a valid URL';
+const getGitHubUrlError = url => {
+  if (!url || url.trim() === "") return null;
+  if (!isValidUrl(url)) return "Please enter a valid URL";
   if (!isValidGitHubUrl(url)) {
-    return 'GitHub URL must be in the format: https://github.com/username';
+    return "GitHub URL must be in the format: https://github.com/username";
   }
   return null;
 };
@@ -48,19 +48,20 @@ const getGitHubUrlError = (url) => {
 class CareerProfile extends React.Component {
   constructor(props) {
     super(props);
+    const { profile } = props;
     this.state = {
-      bio: props.profile.bio || '',
-      pronouns: props.profile.pronouns || '',
-      linkedinUrl: props.profile.linkedinUrl || '',
-      githubUrl: props.profile.githubUrl || '',
-      portfolioUrl: props.profile.portfolioUrl || '',
-      personalWebsite: props.profile.personalWebsite || '',
-      resumeUrl: props.profile.resumeUrl || '',
-      skills: props.profile.skills || [],
-      careerInterests: props.profile.careerInterests || [],
-      isProfilePublic: props.profile.isProfilePublic !== undefined ? props.profile.isProfilePublic : true,
-      skillInput: '',
-      careerInterestInput: '',
+      bio: profile.bio || "",
+      pronouns: profile.pronouns || "",
+      linkedinUrl: profile.linkedinUrl || "",
+      githubUrl: profile.githubUrl || "",
+      portfolioUrl: profile.portfolioUrl || "",
+      personalWebsite: profile.personalWebsite || "",
+      resumeUrl: profile.resumeUrl || "",
+      skills: profile.skills || [],
+      careerInterests: profile.careerInterests || [],
+      isProfilePublic: profile.isProfilePublic !== undefined ? profile.isProfilePublic : true,
+      skillInput: "",
+      careerInterestInput: "",
       saving: false,
       saveSuccess: false,
       saveError: null,
@@ -73,31 +74,31 @@ class CareerProfile extends React.Component {
     this.handleToggle = this.handleToggle.bind(this);
     this.addSkill = this.addSkill.bind(this);
     this.removeSkill = this.removeSkill.bind(this);
-    this.addCareerInterest = this.addCareerInterest.bind(this);
-    this.removeCareerInterest = this.removeCareerInterest.bind(this);
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.profile !== this.props.profile) {
+    const { profile } = this.props;
+    if (prevProps.profile !== profile) {
       this.setState({
-        bio: this.props.profile.bio || '',
-        pronouns: this.props.profile.pronouns || '',
-        linkedinUrl: this.props.profile.linkedinUrl || '',
-        githubUrl: this.props.profile.githubUrl || '',
-        portfolioUrl: this.props.profile.portfolioUrl || '',
-        personalWebsite: this.props.profile.personalWebsite || '',
-        resumeUrl: this.props.profile.resumeUrl || '',
-        skills: this.props.profile.skills || [],
-        careerInterests: this.props.profile.careerInterests || [],
+        bio: profile.bio || "",
+        pronouns: profile.pronouns || "",
+        linkedinUrl: profile.linkedinUrl || "",
+        githubUrl: profile.githubUrl || "",
+        portfolioUrl: profile.portfolioUrl || "",
+        personalWebsite: profile.personalWebsite || "",
+        resumeUrl: profile.resumeUrl || "",
+        skills: profile.skills || [],
+        careerInterests: profile.careerInterests || [],
       });
     }
   }
 
   handleInputChange(e) {
     const { name, value } = e.target;
+    const { validationErrors } = this.state;
     this.setState({ [name]: value });
 
-    if (this.state.validationErrors[name]) {
+    if (validationErrors[name]) {
       this.setState(prevState => ({
         validationErrors: { ...prevState.validationErrors, [name]: null },
       }));
@@ -109,13 +110,13 @@ class CareerProfile extends React.Component {
     const errors = {};
 
     // Validate LinkedIn URL
-    if (name === 'linkedinUrl') {
+    if (name === "linkedinUrl") {
       const error = getLinkedInUrlError(value);
       if (error) errors.linkedinUrl = error;
     }
 
     // Validate GitHub URL
-    if (name === 'githubUrl') {
+    if (name === "githubUrl") {
       const error = getGitHubUrlError(value);
       if (error) errors.githubUrl = error;
     }
@@ -131,14 +132,105 @@ class CareerProfile extends React.Component {
     this.setState(prevState => ({ isProfilePublic: !prevState.isProfilePublic }));
   }
 
-  addSkill(e) {
-    if (e.key === 'Enter' && this.state.skillInput.trim()) {
+  async handleSubmit(e) {
+    e.preventDefault();
+
+    const {
+      bio,
+      pronouns,
+      skills,
+      careerInterests,
+      isProfilePublic,
+      linkedinUrl,
+      githubUrl,
+      portfolioUrl,
+      personalWebsite,
+      resumeUrl,
+    } = this.state;
+
+    const validationErrors = {};
+    const linkedinError = getLinkedInUrlError(linkedinUrl);
+    const githubError = getGitHubUrlError(githubUrl);
+
+    if (linkedinError) validationErrors.linkedinUrl = linkedinError;
+    if (githubError) validationErrors.githubUrl = githubError;
+
+    if (Object.keys(validationErrors).length > 0) {
+      this.setState({ validationErrors, saveError: "Please fix the validation errors before saving." });
+      return;
+    }
+
+    this.setState({
+      saving: true,
+      saveError: null,
+      saveSuccess: false,
+      validationErrors: {},
+    });
+
+    const updates = {
+      bio,
+      pronouns,
+      skills,
+      careerInterests,
+      isProfilePublic,
+      // Required fields
+      linkedinUrl,
+      githubUrl,
+      // Optional URL fields that can be cleared
+      portfolioUrl,
+      personalWebsite,
+      resumeUrl,
+    };
+
+    try {
+      const { updateCareerProfile } = this.props;
+      const result = await updateCareerProfile(updates);
+      if (!result?.success) {
+        this.setState({ saving: false, saveError: result?.error || "Failed to save changes" });
+        return;
+      }
+
+      this.setState({ saving: false, saveSuccess: true });
+      setTimeout(() => {
+        this.setState({ saveSuccess: false });
+        if (typeof window !== "undefined") {
+          window.location.href = "/profile/career";
+        }
+      }, 2000);
+    } catch (error) {
+      this.setState({ saving: false, saveError: error.message || "Failed to save changes" });
+    }
+  }
+
+  addCareerInterest = e => {
+    const { careerInterestInput, careerInterests } = this.state;
+    if (e.key === "Enter" && careerInterestInput.trim()) {
       e.preventDefault();
-      const newSkill = this.state.skillInput.trim();
-      if (this.state.skills.length < 20 && !this.state.skills.includes(newSkill)) {
+      const newInterest = careerInterestInput.trim();
+      if (careerInterests.length < 20 && !careerInterests.includes(newInterest)) {
+        this.setState(prevState => ({
+          careerInterests: [...prevState.careerInterests, newInterest],
+          careerInterestInput: "",
+        }));
+      }
+    }
+  };
+
+  removeCareerInterest = interestToRemove => {
+    this.setState(prevState => ({
+      careerInterests: prevState.careerInterests.filter(interest => interest !== interestToRemove),
+    }));
+  };
+
+  addSkill(e) {
+    const { skillInput, skills } = this.state;
+    if (e.key === "Enter" && skillInput.trim()) {
+      e.preventDefault();
+      const newSkill = skillInput.trim();
+      if (skills.length < 20 && !skills.includes(newSkill)) {
         this.setState(prevState => ({
           skills: [...prevState.skills, newSkill],
-          skillInput: '',
+          skillInput: "",
         }));
       }
     }
@@ -150,87 +242,43 @@ class CareerProfile extends React.Component {
     }));
   }
 
-  addCareerInterest(e) {
-    if (e.key === 'Enter' && this.state.careerInterestInput.trim()) {
-      e.preventDefault();
-      const newInterest = this.state.careerInterestInput.trim();
-      if (this.state.careerInterests.length < 20 && !this.state.careerInterests.includes(newInterest)) {
-        this.setState(prevState => ({
-          careerInterests: [...prevState.careerInterests, newInterest],
-          careerInterestInput: '',
-        }));
-      }
-    }
-  }
-
-  removeCareerInterest(interestToRemove) {
-    this.setState(prevState => ({
-      careerInterests: prevState.careerInterests.filter(interest => interest !== interestToRemove),
-    }));
-  }
-
-  async handleSubmit(e) {
-    e.preventDefault();
-
-    const validationErrors = {};
-    const linkedinError = getLinkedInUrlError(this.state.linkedinUrl);
-    const githubError = getGitHubUrlError(this.state.githubUrl);
-
-    if (linkedinError) validationErrors.linkedinUrl = linkedinError;
-    if (githubError) validationErrors.githubUrl = githubError;
-
-    if (Object.keys(validationErrors).length > 0) {
-      this.setState({ validationErrors, saveError: 'Please fix the validation errors before saving.' });
-      return;
-    }
-
-    this.setState({
-      saving: true, saveError: null, saveSuccess: false, validationErrors: {},
-    });
-
-    const updates = {
-      bio: this.state.bio,
-      pronouns: this.state.pronouns,
-      skills: this.state.skills,
-      careerInterests: this.state.careerInterests,
-      isProfilePublic: this.state.isProfilePublic,
-      // Required fields
-      linkedinUrl: this.state.linkedinUrl,
-      githubUrl: this.state.githubUrl,
-      // Optional URL fields that can be cleared
-      portfolioUrl: this.state.portfolioUrl,
-      personalWebsite: this.state.personalWebsite,
-      resumeUrl: this.state.resumeUrl,
-    };
-
-    try {
-      await this.props.updateCareerProfile(updates);
-      this.setState({ saving: false, saveSuccess: true });
-      setTimeout(() => {
-        this.setState({ saveSuccess: false });
-        this.props.history.push('/profile/career');
-      }, 2000);
-    } catch (error) {
-      this.setState({ saving: false, saveError: error.message || 'Failed to save changes' });
-    }
-  }
-
   calculateCompleteness() {
+    const { bio, skills, careerInterests, linkedinUrl, githubUrl, portfolioUrl, personalWebsite, pronouns } =
+      this.state;
+
     let completed = 0;
     const total = 6;
 
-    if (this.state.bio && this.state.bio.length >= 50) completed++;
-    if (this.state.skills.length >= 3) completed++;
-    if (this.state.careerInterests.length >= 2) completed++;
-    if (this.state.linkedinUrl || this.state.githubUrl) completed++;
-    if (this.state.portfolioUrl || this.state.personalWebsite) completed++;
-    if (this.state.pronouns) completed++;
+    if (bio && bio.length >= 50) completed += 1;
+    if (skills.length >= 3) completed += 1;
+    if (careerInterests.length >= 2) completed += 1;
+    if (linkedinUrl || githubUrl) completed += 1;
+    if (portfolioUrl || personalWebsite) completed += 1;
+    if (pronouns) completed += 1;
 
     return Math.round((completed / total) * 100);
   }
 
   render() {
     const completeness = this.calculateCompleteness();
+    const {
+      pronouns,
+      bio,
+      linkedinUrl,
+      githubUrl,
+      portfolioUrl,
+      personalWebsite,
+      resumeUrl,
+      skills,
+      careerInterests,
+      isProfilePublic,
+      skillInput,
+      careerInterestInput,
+      saveError,
+      saveSuccess,
+      saving,
+      validationErrors,
+    } = this.state;
 
     return (
       <div className="career-profile-page">
@@ -252,35 +300,37 @@ class CareerProfile extends React.Component {
                 <h2>Basic Information</h2>
 
                 <div className="form-group">
-                  <label htmlFor="pronouns">Pronouns</label>
-                  <input
-                    type="text"
-                    id="pronouns"
-                    name="pronouns"
-                    value={this.state.pronouns}
-                    onChange={this.handleInputChange}
-                    placeholder="e.g., she/her, he/him, they/them"
-                    maxLength={50}
-                  />
+                  <label htmlFor="pronouns">
+                    Pronouns
+                    <input
+                      type="text"
+                      id="pronouns"
+                      name="pronouns"
+                      value={pronouns}
+                      onChange={this.handleInputChange}
+                      placeholder="e.g., she/her, he/him, they/them"
+                      maxLength={50}
+                    />
+                  </label>
                 </div>
 
                 <div className="form-group">
                   <label htmlFor="bio">
                     Bio
                     <span className="char-count">
-                      {this.state.bio.length}
+                      {bio.length}
                       /1000
                     </span>
+                    <textarea
+                      id="bio"
+                      name="bio"
+                      value={bio}
+                      onChange={this.handleInputChange}
+                      placeholder="Tell us about yourself, your interests, and what you're working on..."
+                      rows={6}
+                      maxLength={1000}
+                    />
                   </label>
-                  <textarea
-                    id="bio"
-                    name="bio"
-                    value={this.state.bio}
-                    onChange={this.handleInputChange}
-                    placeholder="Tell us about yourself, your interests, and what you're working on..."
-                    rows={6}
-                    maxLength={1000}
-                  />
                 </div>
               </div>
 
@@ -290,101 +340,89 @@ class CareerProfile extends React.Component {
 
                 <div className="form-group">
                   <label htmlFor="linkedinUrl">
-                    <i className="fab fa-linkedin" />
-                    {' '}
-                    LinkedIn
-                    {this.state.linkedinUrl && !this.state.validationErrors.linkedinUrl && <span className="valid-check"> ✓</span>}
+                    <i className="fab fa-linkedin" /> LinkedIn
+                    {linkedinUrl && !validationErrors.linkedinUrl && <span className="valid-check"> ✓</span>}
+                    <input
+                      type="url"
+                      id="linkedinUrl"
+                      name="linkedinUrl"
+                      value={linkedinUrl}
+                      onChange={this.handleInputChange}
+                      onBlur={this.handleBlur}
+                      placeholder="https://linkedin.com/in/yourprofile"
+                      required
+                      className={validationErrors.linkedinUrl ? "error" : ""}
+                    />
                   </label>
-                  <input
-                    type="url"
-                    id="linkedinUrl"
-                    name="linkedinUrl"
-                    value={this.state.linkedinUrl}
-                    onChange={this.handleInputChange}
-                    onBlur={this.handleBlur}
-                    placeholder="https://linkedin.com/in/yourprofile"
-                    required
-                    className={this.state.validationErrors.linkedinUrl ? 'error' : ''}
-                  />
-                  {this.state.validationErrors.linkedinUrl && (
-                    <span className="error-message">{this.state.validationErrors.linkedinUrl}</span>
+                  {validationErrors.linkedinUrl && (
+                    <span className="error-message">{validationErrors.linkedinUrl}</span>
                   )}
                   <p className="help-text">Example: https://linkedin.com/in/yourname</p>
                 </div>
 
                 <div className="form-group">
                   <label htmlFor="githubUrl">
-                    <i className="fab fa-github" />
-                    {' '}
-                    GitHub
-                    {this.state.githubUrl && !this.state.validationErrors.githubUrl && <span className="valid-check"> ✓</span>}
+                    <i className="fab fa-github" /> GitHub
+                    {githubUrl && !validationErrors.githubUrl && <span className="valid-check"> ✓</span>}
+                    <input
+                      type="url"
+                      id="githubUrl"
+                      name="githubUrl"
+                      value={githubUrl}
+                      onChange={this.handleInputChange}
+                      onBlur={this.handleBlur}
+                      placeholder="https://github.com/yourusername"
+                      required
+                      className={validationErrors.githubUrl ? "error" : ""}
+                    />
                   </label>
-                  <input
-                    type="url"
-                    id="githubUrl"
-                    name="githubUrl"
-                    value={this.state.githubUrl}
-                    onChange={this.handleInputChange}
-                    onBlur={this.handleBlur}
-                    placeholder="https://github.com/yourusername"
-                    required
-                    className={this.state.validationErrors.githubUrl ? 'error' : ''}
-                  />
-                  {this.state.validationErrors.githubUrl && (
-                    <span className="error-message">{this.state.validationErrors.githubUrl}</span>
-                  )}
+                  {validationErrors.githubUrl && <span className="error-message">{validationErrors.githubUrl}</span>}
                   <p className="help-text">Example: https://github.com/yourusername</p>
                 </div>
 
                 <div className="form-group">
                   <label htmlFor="portfolioUrl">
-                    <i className="fa fa-briefcase" />
-                    {' '}
-                    Portfolio
+                    <i className="fa fa-briefcase" /> Portfolio
                     <span className="optional-label"> (Optional)</span>
+                    <input
+                      type="url"
+                      id="portfolioUrl"
+                      name="portfolioUrl"
+                      value={portfolioUrl}
+                      onChange={this.handleInputChange}
+                      placeholder="https://yourportfolio.com"
+                    />
                   </label>
-                  <input
-                    type="url"
-                    id="portfolioUrl"
-                    name="portfolioUrl"
-                    value={this.state.portfolioUrl}
-                    onChange={this.handleInputChange}
-                    placeholder="https://yourportfolio.com"
-                  />
                 </div>
 
                 <div className="form-group">
                   <label htmlFor="personalWebsite">
-                    <i className="fa fa-globe" />
-                    {' '}
-                    Personal Website
+                    <i className="fa fa-globe" /> Personal Website
                     <span className="optional-label"> (Optional)</span>
+                    <input
+                      type="url"
+                      id="personalWebsite"
+                      name="personalWebsite"
+                      value={personalWebsite}
+                      onChange={this.handleInputChange}
+                      placeholder="https://yourwebsite.com"
+                    />
                   </label>
-                  <input
-                    type="url"
-                    id="personalWebsite"
-                    name="personalWebsite"
-                    value={this.state.personalWebsite}
-                    onChange={this.handleInputChange}
-                    placeholder="https://yourwebsite.com"
-                  />
                 </div>
 
                 <div className="form-group">
                   <label htmlFor="resumeUrl">
-                    <i className="fa fa-file-alt" />
-                    {' '}
-                    Resume URL
+                    <i className="fa fa-file-alt" /> Resume URL
                     <span className="optional-label"> (Optional)</span>
+                    <input
+                      type="url"
+                      id="resumeUrl"
+                      name="resumeUrl"
+                      value={resumeUrl}
+                      onChange={this.handleInputChange}
+                      placeholder="https://drive.google.com/..."
+                    />
                   </label>
-                  <input
-                    type="url"
-                    id="resumeUrl"
-                    name="resumeUrl"
-                    value={this.state.resumeUrl}
-                    onChange={this.handleInputChange}
-                    placeholder="https://drive.google.com/..."
-                  />
                 </div>
               </div>
 
@@ -393,7 +431,7 @@ class CareerProfile extends React.Component {
                 <h2>
                   Skills
                   <span className="count-badge">
-                    {this.state.skills.length}
+                    {skills.length}
                     /20
                   </span>
                 </h2>
@@ -403,20 +441,22 @@ class CareerProfile extends React.Component {
                   <input
                     type="text"
                     name="skillInput"
-                    value={this.state.skillInput}
+                    value={skillInput}
                     onChange={this.handleInputChange}
                     onKeyDown={this.addSkill}
                     placeholder="Type a skill and press Enter"
                     maxLength={50}
-                    disabled={this.state.skills.length >= 20}
+                    disabled={skills.length >= 20}
                   />
                 </div>
 
                 <div className="tags-container">
-                  {this.state.skills.map(skill => (
+                  {skills.map(skill => (
                     <span key={skill} className="tag">
                       {skill}
-                      <button type="button" onClick={() => this.removeSkill(skill)}>×</button>
+                      <button type="button" onClick={() => this.removeSkill(skill)}>
+                        ×
+                      </button>
                     </span>
                   ))}
                 </div>
@@ -427,30 +467,34 @@ class CareerProfile extends React.Component {
                 <h2>
                   Career Interests
                   <span className="count-badge">
-                    {this.state.careerInterests.length}
+                    {careerInterests.length}
                     /20
                   </span>
                 </h2>
-                <p className="section-help">What career fields or roles interest you? Press Enter to add each interest.</p>
+                <p className="section-help">
+                  What career fields or roles interest you? Press Enter to add each interest.
+                </p>
 
                 <div className="form-group">
                   <input
                     type="text"
                     name="careerInterestInput"
-                    value={this.state.careerInterestInput}
+                    value={careerInterestInput}
                     onChange={this.handleInputChange}
                     onKeyDown={this.addCareerInterest}
                     placeholder="Type a career interest and press Enter"
                     maxLength={50}
-                    disabled={this.state.careerInterests.length >= 20}
+                    disabled={careerInterests.length >= 20}
                   />
                 </div>
 
                 <div className="tags-container">
-                  {this.state.careerInterests.map(interest => (
+                  {careerInterests.map(interest => (
                     <span key={interest} className="tag">
                       {interest}
-                      <button type="button" onClick={() => this.removeCareerInterest(interest)}>×</button>
+                      <button type="button" onClick={() => this.removeCareerInterest(interest)}>
+                        ×
+                      </button>
                     </span>
                   ))}
                 </div>
@@ -461,10 +505,11 @@ class CareerProfile extends React.Component {
                 <h2>Privacy Settings</h2>
 
                 <div className="toggle-group">
-                  <label className="toggle-label">
+                  <label className="toggle-label" htmlFor="isProfilePublic">
                     <input
+                      id="isProfilePublic"
                       type="checkbox"
-                      checked={this.state.isProfilePublic}
+                      checked={isProfilePublic}
                       onChange={this.handleToggle}
                     />
                     <span className="toggle-switch" />
@@ -480,22 +525,18 @@ class CareerProfile extends React.Component {
 
               {/* Save Button */}
               <div className="form-actions">
-                {this.state.saveError && (
+                {saveError && (
                   <div className="error-message">
-                    <i className="fa fa-exclamation-circle" />
-                    {' '}
-                    {this.state.saveError}
+                    <i className="fa fa-exclamation-circle" /> {saveError}
                   </div>
                 )}
-                {this.state.saveSuccess && (
+                {saveSuccess && (
                   <div className="success-message">
-                    <i className="fa fa-check-circle" />
-                    {' '}
-                    Profile saved successfully!
+                    <i className="fa fa-check-circle" /> Profile saved successfully!
                   </div>
                 )}
-                <button type="submit" className="save-button" disabled={this.state.saving}>
-                  {this.state.saving ? 'Saving...' : 'Save Changes'}
+                <button type="submit" className="save-button" disabled={saving}>
+                  {saving ? "Saving..." : "Save Changes"}
                 </button>
               </div>
             </form>
@@ -508,41 +549,24 @@ class CareerProfile extends React.Component {
               <div className="progress-bar">
                 <div className="progress-fill" style={{ width: `${completeness}%` }} />
               </div>
-              <p className="progress-text">
-                {completeness}
-                % Complete
-              </p>
+              <p className="progress-text">{completeness}% Complete</p>
               <ul className="completeness-checklist">
-                <li className={this.state.bio && this.state.bio.length >= 50 ? 'complete' : ''}>
-                  {this.state.bio && this.state.bio.length >= 50 ? '✓' : '○'}
-                  {' '}
-                  Bio (50+ characters)
+                <li className={bio && bio.length >= 50 ? "complete" : ""}>
+                  {bio && bio.length >= 50 ? "✓" : "○"} Bio (50+ characters)
                 </li>
-                <li className={this.state.skills.length >= 3 ? 'complete' : ''}>
-                  {this.state.skills.length >= 3 ? '✓' : '○'}
-                  {' '}
-                  At least 3 skills
+                <li className={skills.length >= 3 ? "complete" : ""}>
+                  {skills.length >= 3 ? "✓" : "○"} At least 3 skills
                 </li>
-                <li className={this.state.careerInterests.length >= 2 ? 'complete' : ''}>
-                  {this.state.careerInterests.length >= 2 ? '✓' : '○'}
-                  {' '}
-                  At least 2 career interests
+                <li className={careerInterests.length >= 2 ? "complete" : ""}>
+                  {careerInterests.length >= 2 ? "✓" : "○"} At least 2 career interests
                 </li>
-                <li className={this.state.linkedinUrl || this.state.githubUrl ? 'complete' : ''}>
-                  {this.state.linkedinUrl || this.state.githubUrl ? '✓' : '○'}
-                  {' '}
-                  Professional link
+                <li className={linkedinUrl || githubUrl ? "complete" : ""}>
+                  {linkedinUrl || githubUrl ? "✓" : "○"} Professional link
                 </li>
-                <li className={this.state.portfolioUrl || this.state.personalWebsite ? 'complete' : ''}>
-                  {this.state.portfolioUrl || this.state.personalWebsite ? '✓' : '○'}
-                  {' '}
-                  Portfolio/website
+                <li className={portfolioUrl || personalWebsite ? "complete" : ""}>
+                  {portfolioUrl || personalWebsite ? "✓" : "○"} Portfolio/website
                 </li>
-                <li className={this.state.pronouns ? 'complete' : ''}>
-                  {this.state.pronouns ? '✓' : '○'}
-                  {' '}
-                  Pronouns
-                </li>
+                <li className={pronouns ? "complete" : ""}>{pronouns ? "✓" : "○"} Pronouns</li>
               </ul>
             </div>
 
@@ -565,7 +589,18 @@ class CareerProfile extends React.Component {
 export default CareerProfile;
 
 CareerProfile.propTypes = {
-  profile: PropTypes.object,
+  profile: PropTypes.shape({
+    bio: PropTypes.string,
+    pronouns: PropTypes.string,
+    linkedinUrl: PropTypes.string,
+    githubUrl: PropTypes.string,
+    portfolioUrl: PropTypes.string,
+    personalWebsite: PropTypes.string,
+    resumeUrl: PropTypes.string,
+    skills: PropTypes.arrayOf(PropTypes.string),
+    careerInterests: PropTypes.arrayOf(PropTypes.string),
+    isProfilePublic: PropTypes.bool,
+  }),
   updateCareerProfile: PropTypes.func.isRequired,
 };
 

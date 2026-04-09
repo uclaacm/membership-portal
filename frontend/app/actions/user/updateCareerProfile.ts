@@ -17,11 +17,29 @@ export default async function updateCareerProfile(profile: object): Promise<{ su
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(profile),
+      body: JSON.stringify({ user: profile }),
     });
+    const { status } = response;
 
-    const data = await response.json();
-    if (!data || data.error) return { success: false, error: data?.error ?? "Update failed" };
+    let data: any = null;
+    try {
+      data = await response.json();
+    } catch {
+      // ignore JSON parse errors; we'll fall back to generic messages
+    }
+
+    if (!response.ok) {
+      const validationMessage = Array.isArray(data?.errors) && data.errors.length > 0 ? data.errors[0]?.msg : undefined;
+      const errorMessage =
+        data?.error?.message || data?.message || validationMessage || `Update failed with status ${status}`;
+      return { success: false, error: errorMessage };
+    }
+
+    if (data?.error) {
+      const errVal = data.error;
+      const msg = typeof errVal === "string" ? errVal : errVal?.message;
+      return { success: false, error: msg ?? "Update failed" };
+    }
 
     return { success: true };
   } catch (err) {

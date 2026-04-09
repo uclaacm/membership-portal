@@ -1,12 +1,13 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useAtom, useAtomValue } from 'jotai';
-import Topbar from '@/components/Topbar';
-import CareerProfile from '@/app/profile/CareerProfile';
-import logoutUser from '@/app/actions/auth/logoutUser';
-import updateCareerProfile from '@/app/actions/user/updateCareerProfile';
-import { authUserProfileAtom, isAdminAtom, isOfficerAtom, adminViewAtom } from '@/lib/atoms';
+import { useEffect, useState } from "react";
+import { useAtom, useAtomValue } from "jotai";
+import Topbar from "../../../../components/Topbar";
+import CareerProfile from "../../CareerProfile.jsx";
+import logoutUser from "../../../actions/auth/logoutUser";
+import updateCareerProfile from "../../../actions/user/updateCareerProfile";
+import fetchCareerProfile from "../../../actions/user/fetchCareerProfile";
+import { authUserProfileAtom, isAdminAtom, isOfficerAtom, adminViewAtom } from "../../../../lib/atoms";
 
 export default function CareerEditPage() {
   const userProfile = useAtomValue(authUserProfileAtom);
@@ -14,10 +15,26 @@ export default function CareerEditPage() {
   const isOfficer = useAtomValue(isOfficerAtom);
   const [adminView, setAdminView] = useAtom(adminViewAtom);
   const [mounted, setMounted] = useState(false);
+  const [careerProfile, setCareerProfile] = useState(userProfile || {});
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!userProfile) {
+      return;
+    }
+
+    (async () => {
+      const career = await fetchCareerProfile();
+      if (career) {
+        setCareerProfile({ ...(userProfile || {}), ...career });
+      } else {
+        setCareerProfile(userProfile || {});
+      }
+    })();
+  }, [userProfile]);
 
   const handleLogout = async () => {
     await logoutUser();
@@ -38,10 +55,7 @@ export default function CareerEditPage() {
         officerView={adminView}
         onToggleOfficerView={() => setAdminView(v => !v)}
       />
-      <CareerProfile
-        profile={userProfile || {}}
-        updateCareerProfile={updateCareerProfile}
-      />
+      <CareerProfile profile={careerProfile} updateCareerProfile={updateCareerProfile} />
     </div>
   );
 }
