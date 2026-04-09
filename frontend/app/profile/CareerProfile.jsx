@@ -8,13 +8,13 @@ import "./careerProfile.scss";
 const isValidLinkedInUrl = url => {
   if (!url || url.trim() === "") return true;
   const linkedInPattern = /^https?:\/\/(www\.)?linkedin\.com\/in\/.+/i;
-  return linkedInPattern.test(url);
+  return linkedInPattern.test(normalizeUrl(url));
 };
 
 const isValidGitHubUrl = url => {
   if (!url || url.trim() === "") return true;
   const gitHubPattern = /^https?:\/\/(www\.)?github\.com\/.+/i;
-  return gitHubPattern.test(url);
+  return gitHubPattern.test(normalizeUrl(url));
 };
 
 const isValidUrl = url => {

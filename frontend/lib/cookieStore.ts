@@ -7,7 +7,9 @@ class CookieStore {
     if (!document.cookie || document.cookie.length === 0) return undefined;
     const cookies: Record<string, string> = {};
     document.cookie.split(";").forEach(cookie => {
-      cookies[cookie.split("=")[0].trim()] = cookie.split("=")[1].trim();
+      const idx = cookie.indexOf("=");
+      if (idx === -1) return;
+      cookies[cookie.slice(0, idx).trim()] = cookie.slice(idx + 1).trim();
     });
     return cookies[key];
   }

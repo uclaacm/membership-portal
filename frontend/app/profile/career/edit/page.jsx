@@ -10,6 +10,7 @@ import fetchCareerProfile from "../../../actions/user/fetchCareerProfile";
 import { authUserProfileAtom, isAdminAtom, isOfficerAtom, adminViewAtom } from "../../../../lib/atoms";
 
 export default function CareerEditPage() {
+  const router = useRouter();
   const userProfile = useAtomValue(authUserProfileAtom);
   const isAdmin = useAtomValue(isAdminAtom);
   const isOfficer = useAtomValue(isOfficerAtom);
@@ -38,6 +39,22 @@ export default function CareerEditPage() {
 
   const handleLogout = async () => {
     await logoutUser();
+  };
+
+  const handleUpdateCareerProfile = async (profile) => {
+    const token = CookieStore.get('token');
+    const response = await fetch(Config.API_URL + Config.routes.user.career, {
+      method: 'PATCH',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ user: profile }),
+    });
+    const data = await response.json();
+    if (!data || data.error) return { success: false, error: data?.error?.message ?? data?.error ?? 'Update failed' };
+    return { success: true };
   };
 
   if (!mounted) return null;
