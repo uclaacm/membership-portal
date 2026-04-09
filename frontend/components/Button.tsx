@@ -1,3 +1,4 @@
+import type { MouseEvent } from "react";
 import Image from "next/image";
 import Loader from "@/components/Loader";
 import "./Button.scss";
@@ -27,10 +28,10 @@ export default function Button({
   text: string;
   type: "submit" | "reset" | "button";
 }>) {
-  const handleClick = () => {
+  const handleClick = (e: MouseEvent<HTMLDivElement>) => {
     if (loading) return;
-    if (onClick) onClick();
-    else if (action) action();
+    if (onClick) onClick(e);
+    else if (action) action(e);
   };
 
   const buttonClass = `button-component ${className ?? ""}`;
