@@ -11,8 +11,12 @@ export default async function fetchCareerProfile(): Promise<Record<string, unkno
     if (!token) return null;
 
     const response = await fetch(Config.API_URL + Config.routes.user.career, {
+      cache: "no-store",
+      next: { revalidate: 0 },
       headers: {
         Accept: "application/json",
+        "Cache-Control": "no-cache, no-store, max-age=0",
+        Pragma: "no-cache",
         Authorization: `Bearer ${token}`,
       },
     });

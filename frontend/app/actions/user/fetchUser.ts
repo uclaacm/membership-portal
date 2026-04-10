@@ -12,8 +12,12 @@ export default async function fetchUser(): Promise<UserExtendedProfile | null> {
     if (!token) return null;
 
     const response = await fetch(Config.API_URL + Config.routes.user.user, {
+      cache: "no-store",
+      next: { revalidate: 0 },
       headers: {
         Accept: "application/json",
+        "Cache-Control": "no-cache, no-store, max-age=0",
+        Pragma: "no-cache",
         Authorization: `Bearer ${token}`,
       },
     });
@@ -24,8 +28,12 @@ export default async function fetchUser(): Promise<UserExtendedProfile | null> {
     let careerData: Partial<UserExtendedProfile> = {};
     try {
       const careerResponse = await fetch(Config.API_URL + Config.routes.user.career, {
+        cache: "no-store",
+        next: { revalidate: 0 },
         headers: {
           Accept: "application/json",
+          "Cache-Control": "no-cache, no-store, max-age=0",
+          Pragma: "no-cache",
           Authorization: `Bearer ${token}`,
         },
       });
