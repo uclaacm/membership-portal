@@ -5,10 +5,14 @@ import "./globals.css";
 import AuthLayer from "@/components/AuthLayer";
 import Provider from "@/components/Provider";
 
-import { config } from "@fortawesome/fontawesome-svg-core";
-import "@fortawesome/fontawesome-svg-core/styles.css";
+// @TODO:   Eventually, we need to migrate to using the SVG icons instead of the CSS icons,
+//          but for now this is a quick fix to get the icons working without having to
+//          migrate all of our icons across all files.
 
-config.autoAddCss = false;
+// import { config } from '@fortawesome/fontawesome-svg-core';
+// import "@fortawesome/fontawesome-svg-core/styles.css";
+// config.autoAddCss = false;
+import "@fortawesome/fontawesome-free/css/all.min.css";
 
 const latoSans = Lato({
   variable: "--font-lato",

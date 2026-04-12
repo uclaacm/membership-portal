@@ -74,7 +74,6 @@ module.exports = {
     modules: [path.resolve(__dirname, 'src'), 'node_modules'],
     extensions: ['.js', '.jsx'],
     alias: {
-      'chart.js': 'chart.js/dist/Chart.min.js',
       dexie: 'dexie/dist/dexie.min.js',
     },
   },
