@@ -101,7 +101,7 @@ class AdminEventCard extends React.Component {
       <div className="admin-event-tile" onClick={this.editEvent}>
         <div className="main-content">
           <div className="top">
-            <div className="cover" style={{ backgroundImage: `url(${event.cover})` }} />
+            <div className="cover" style={{ backgroundImage: `url(${event.cover || '/logo.png'})` }} />
             <div className="event-header">
               <span className="event-title Headline-2Primary">{event.title}</span>
               <br />

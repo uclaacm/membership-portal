@@ -182,6 +182,20 @@
     input {
       background-color: #f0f0f0;
     }
+
+    .sheets-url-input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 9px 12px;
+      border: 1px solid #c8c8c8;
+      border-radius: 6px;
+      font-size: 14px;
+      outline: none;
+
+      &:focus {
+        border-color: #7eaed4;
+      }
+    }
   }
 
   .small-input-modal-container {

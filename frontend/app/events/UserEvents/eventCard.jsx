@@ -145,7 +145,7 @@ class EventCard extends React.Component {
                             <div className="image-container">
                                 <div 
                                     className="cover" 
-                                    style={{backgroundImage: `url(${event.cover})`}}
+                                    style={{backgroundImage: `url(${event.cover || '/logo.png'})`}}
                                     onClick={this.handleFlip}
                                 > </div>
                                 <div className="pill-shape points-container">{event.attendancePoints} PTS</div>

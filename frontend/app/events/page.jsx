@@ -7,10 +7,9 @@ import Topbar from '@/components/Topbar';
 import UserEvents from './UserEvents';
 import AdminEvents from './AdminEvents';
 import logoutUser from '@/app/actions/auth/logoutUser';
-import fetchFutureEvents from '@/app/actions/events/fetchFutureEvents';
+import fetchAllEvents from '@/app/actions/events/fetchAllEvents';
 import createEvent from '@/app/actions/events/createEvent';
 import updateEvent from '@/app/actions/events/updateEvent';
-import syncEventsAction from '@/app/actions/events/syncEvents';
 import fetchUserRSVPs from '@/app/actions/rsvp/fetchUserRSVPs';
 import checkInAction from '@/app/actions/attendance/checkIn';
 import { authUserProfileAtom, isAdminAtom, isOfficerAtom, adminViewAtom, officerViewAtom } from '@/lib/atoms';
@@ -37,7 +36,7 @@ export default function EventsPage() {
     const loadEvents = async () => {
       try {
         const [eventsArray, rsvpResult] = await Promise.all([
-          fetchFutureEvents(),
+          fetchAllEvents(),
           fetchUserRSVPs(),
         ]);
 
@@ -88,7 +87,7 @@ export default function EventsPage() {
     try {
       await createEvent(normalizeEventForServer(event));
       // Reload events after creation
-      const eventsArray = await fetchFutureEvents();
+      const eventsArray = await fetchAllEvents();
       setEvents(eventsArray.map(e => ({
         ...e,
         startDate: moment(e.startDate),
@@ -103,7 +102,7 @@ export default function EventsPage() {
   const handleUpdateEvent = async (event) => {
     try {
       await updateEvent(normalizeEventForServer(event));
-      const eventsArray = await fetchFutureEvents();
+      const eventsArray = await fetchAllEvents();
       setEvents(eventsArray.map(e => ({
         ...e,
         startDate: moment(e.startDate),
@@ -112,21 +111,6 @@ export default function EventsPage() {
     } catch (err) {
       console.error('Failed to update event:', err);
       setError('Failed to update event');
-    }
-  };
-
-  const handleSyncEvents = async () => {
-    try {
-      await syncEventsAction();
-      const eventsArray = await fetchFutureEvents();
-      setEvents(eventsArray.map(e => ({
-        ...e,
-        startDate: moment(e.startDate),
-        endDate: moment(e.endDate),
-      })));
-    } catch (err) {
-      console.error('Failed to sync events:', err);
-      setError('Failed to sync events');
     }
   };
 
@@ -155,7 +139,6 @@ export default function EventsPage() {
           isOfficer={isOfficer}
           addEvent={handleAddEvent}
           updateEvent={handleUpdateEvent}
-          syncEvents={handleSyncEvents}
         />
       ) : (
         <UserEvents

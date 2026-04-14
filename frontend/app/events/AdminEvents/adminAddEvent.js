@@ -23,7 +23,6 @@ export default class AdminAddEvent extends React.Component {
     this.handleChangeTime = this.handleChangeTime.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleSync = this.handleSync.bind(this);
   }
 
   resizeTextArea(e) {
@@ -142,12 +141,6 @@ export default class AdminAddEvent extends React.Component {
     });
   }
 
-  handleSync() {
-    if (this.props.onClickSync) {
-      this.props.onClickSync();
-    }
-  }
-
   render() {
     const committeeColorMap = Object.fromEntries(Config.committeeColors);
 
@@ -163,18 +156,6 @@ export default class AdminAddEvent extends React.Component {
             )}
           </div>
           <div className="editor">
-            <div className="button-area">
-              <Button onClick={this.handleSync} style="blue" text="Sync" icon="" />
-              <span> from </span>
-              <a
-                href="https://docs.google.com/spreadsheets/d/1iANP5StqWwmRBWXRekl8Q90ssLk9hnqxaH778l7e3dE"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Sheets
-              </a>
-            </div>
-            <div className="text-divider">OR</div>
             <div className="input-row">
               <div className="input-field half-width">
                 <p>Image URL or Upload</p>
@@ -309,7 +290,6 @@ AdminAddEvent.propTypes = {
   event: PropTypes.object,
   onClickAdd: PropTypes.func,
   onClickCancel: PropTypes.func,
-  onClickSync: PropTypes.func,
   isEdit: PropTypes.bool,
   showing: PropTypes.bool,
 };
@@ -317,7 +297,6 @@ AdminAddEvent.propTypes = {
 AdminAddEvent.defaultProps = {
   onClickAdd: null,
   onClickCancel: null,
-  onClickSync: null,
   isEdit: false,
   showing: false,
 };

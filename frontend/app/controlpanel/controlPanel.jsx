@@ -9,6 +9,7 @@ import AdminsModal from '@/components/Modal/adminsModal';
 import ReassignModal from '@/components/Modal/reassignModal';
 import OneClickPasswordModal from '@/components/Modal/oneClickPasswordModal';
 import ConfirmationModal from '@/components/Modal/confirmationModal';
+import SyncSheetsModal from '@/components/Modal/syncSheetsModal';
 import ChangeToAdmin from '../profile/ChangeToAdmin';
 import PropTypes from 'prop-types';
 import '@/components/Modal/style.scss';
@@ -33,6 +34,7 @@ class ControlPanel extends React.Component {
       reassignEmail: null,
 
       showOneClickPasswordModal: false,
+      showSyncSheetsModal: false,
     };
   }
 
@@ -63,6 +65,9 @@ class ControlPanel extends React.Component {
 
   openOneClickPasswordModal = () => this.setState({ showOneClickPasswordModal: true });
   closeOneClickPasswordModal = () => this.setState({ showOneClickPasswordModal: false });
+
+  openSyncSheetsModal = () => this.setState({ showSyncSheetsModal: true });
+  closeSyncSheetsModal = () => this.setState({ showSyncSheetsModal: false });
 
   triggerDeleteEvent = () => {
     this.props.deleteEvent(this.state.deleteUUID);
@@ -110,7 +115,7 @@ class ControlPanel extends React.Component {
       showImagesModal, showImagesConfirmationModal,
       showAdminsModal, showReassignModal,
       showRemoveAdminConfirmationModal, showReassignAdminConfirmationModal,
-      showOneClickPasswordModal,
+      showOneClickPasswordModal, showSyncSheetsModal,
     } = this.state;
 
     const isCommitteeScopedOfficer = isOfficer && !isAdmin;
@@ -196,6 +201,12 @@ class ControlPanel extends React.Component {
               <span className="card-desc">Update the password for the one-click attendance API.</span>
               <Button color="red" text="Update Password" onClick={this.openOneClickPasswordModal} />
             </div>
+
+            <div className="panel-card">
+              <span className="card-title">Sync Events from Sheets</span>
+              <span className="card-desc">Import events from a Google Sheets spreadsheet.</span>
+              <Button color="blue" text="Sync from Sheets" onClick={this.openSyncSheetsModal} />
+            </div>
           </div>
         </div>
 
@@ -259,6 +270,13 @@ class ControlPanel extends React.Component {
           opened={showOneClickPasswordModal}
           onClose={this.closeOneClickPasswordModal}
           onChange={this.triggerChangePassword}
+        />
+
+        <SyncSheetsModal
+          opened={showSyncSheetsModal}
+          onClose={this.closeSyncSheetsModal}
+          onSync={this.props.syncEvents}
+          serviceAccountEmail={this.props.serviceAccountEmail}
         />
 
         {isSuperAdmin && (
@@ -325,6 +343,8 @@ ControlPanel.propTypes = {
   imageDeleteError: PropTypes.string,
   adminView: PropTypes.bool.isRequired,
   toggleAdminView: PropTypes.func.isRequired,
+  syncEvents: PropTypes.func.isRequired,
+  serviceAccountEmail: PropTypes.string,
 };
 
 export default ControlPanel;

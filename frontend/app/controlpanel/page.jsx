@@ -15,6 +15,8 @@ import addAdmin from '@/app/actions/user/addAdmin';
 import removeAdmin from '@/app/actions/user/removeAdmin';
 import reassignAdmin from '@/app/actions/user/reassignAdmin';
 import changeOneClickPassword from '@/app/actions/auth/changeOneClickPassword';
+import syncEventsAction from '@/app/actions/events/syncEvents';
+import Config from '@/lib/config';
 import { authUserProfileAtom, isAdminAtom, isOfficerAtom, adminViewAtom } from '@/lib/atoms';
 import './style.scss';
 import { isTokenSuperAdmin } from '@/lib/token';
@@ -36,6 +38,7 @@ export default function ControlPanelPage() {
 
   const [eventDeleteError, setEventDeleteError] = useState(null);
   const [imageDeleteError, setImageDeleteError] = useState(null);
+  const [serviceAccountEmail, setServiceAccountEmail] = useState('');
 
   const [mounted, setMounted] = useState(false);
 
@@ -43,6 +46,16 @@ export default function ControlPanelPage() {
     setMounted(true);
     fetchAllEvents().then(evts => setEvents(evts.map(e => ({ ...e, startDate: moment(e.startDate) }))));
     fetchImages().then(setImages);
+
+    const token = CookieStore.get('token');
+    if (token) {
+      fetch(`${Config.API_URL}/api/v1/sheets/info`, {
+        headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+      })
+        .then(r => r.json())
+        .then(data => { if (data.serviceAccountEmail) setServiceAccountEmail(data.serviceAccountEmail); })
+        .catch(() => {});
+    }
   }, []);
 
   useEffect(() => {
@@ -90,6 +103,10 @@ export default function ControlPanelPage() {
   const handleReassignAdmin = async (email) => {
     await reassignAdmin(email);
     await logoutUser();
+  };
+
+  const handleSyncEvents = async (sheetUrl) => {
+    return await syncEventsAction(sheetUrl);
   };
 
   const handleChangeOneClickPassword = async (oldPassword, newPassword) => {
@@ -142,6 +159,8 @@ export default function ControlPanelPage() {
         imageDeleteError={imageDeleteError}
         adminView={adminView}
         toggleAdminView={() => setAdminView(v => !v)}
+        syncEvents={handleSyncEvents}
+        serviceAccountEmail={serviceAccountEmail}
       />
     </div>
   );
