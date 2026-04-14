@@ -3,19 +3,37 @@ const express = require('express');
 const error = require('../../../../error');
 const syncEventsFromSheets = require('../../../../../scripts/sheets-event-writer');
 const { Event } = require('../../../../db');
+const Config = require('../../../../config');
 
 const router = express.Router();
 
-/* Path: POST /api/v1/sheets/event */
-router.post('/event', async (req, res, next) => {
-  // User must be admin to sync events.
-  if (!req.user || !req.user.isAdmin()) {
+/* Path: GET /api/v1/sheets/info */
+router.get('/info', async (req, res, next) => {
+  if (!req.user) {
     return next(new error.Forbidden());
   }
 
   try {
+    const serviceAccount = JSON.parse(Config.sheets.serviceAcct);
+    return res.json({ error: null, serviceAccountEmail: serviceAccount.client_email });
+  } catch (err) {
+    return next(new error.Internal('Failed to read service account info'));
+  }
+});
+
+/* Path: POST /api/v1/sheets/event */
+router.post('/event', async (req, res, next) => {
+  // User must be admin or officer to sync events.
+  if (!req.user || (!req.user.isAdmin() && !req.user.isOfficer())) {
+    return next(new error.Forbidden());
+  }
+
+  try {
+    // Optional: caller can supply a spreadsheet ID or URL; fall back to env var.
+    const { spreadsheetId } = req.body ?? {};
+
     // Sync events from Google Sheets to database.
-    const results = await syncEventsFromSheets(Event);
+    const results = await syncEventsFromSheets(Event, spreadsheetId || undefined);
 
     // Treat as success if any events were synced, even with some errors.
     const totalSynced = results.created + results.updated;

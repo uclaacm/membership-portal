@@ -3,14 +3,15 @@ const Config = require('../app/config');
 
 // .env config
 const SERVICE_ACCOUNT = Config.sheets.serviceAcct;
-const SPREADSHEET_ID = Config.sheets.eventsSheetId;
+const DEFAULT_SPREADSHEET_ID = Config.sheets.eventsSheetId;
 
 /**
  * Read data from Google Sheets using the Google Sheets API.
  * @param {string} range - sheet range (e.g., 'Week 1!A:I')
+ * @param {string} spreadsheetId - spreadsheet ID to read from
  * @returns {Array} - array of rows
  */
-async function getGoogleSheetData(range) {
+async function getGoogleSheetData(range, spreadsheetId) {
   const sheets = google.sheets({ version: 'v4' });
 
   // Get JWT Token to access sheet.
@@ -31,7 +32,7 @@ async function getGoogleSheetData(range) {
   // Get data from Google spreadsheets.
   const res = await sheets.spreadsheets.values.get({
     auth: jwtClient,
-    spreadsheetId: SPREADSHEET_ID,
+    spreadsheetId,
     range,
   });
 
@@ -130,11 +131,12 @@ function generateAttendanceCode(title, dateStr) {
 /**
  * Read events from a specific week sheet.
  * @param {number} weekNumber - week number (1-10)
+ * @param {string} spreadsheetId - spreadsheet ID to read from
  * @returns {Array} - array of event objects
  */
-async function getEventsFromWeek(weekNumber) {
+async function getEventsFromWeek(weekNumber, spreadsheetId) {
   const range = `Week ${weekNumber}!A:I`;
-  const rows = await getGoogleSheetData(range);
+  const rows = await getGoogleSheetData(range, spreadsheetId);
 
   const events = [];
 
@@ -168,16 +170,21 @@ async function getEventsFromWeek(weekNumber) {
     const eventLink = (row[7] && row[7].trim()) || '';
     const cover = (row[8] && row[8].trim()) || '';
 
+    // Support multi-day events: "1/15/2026 - 1/17/2026" or single day "1/15/2026".
+    const dateParts = dateStr.split(' - ');
+    const startDateStr = dateParts[0].trim();
+    const endDateStr = dateParts.length > 1 ? dateParts[1].trim() : startDateStr;
+
     // Parse start and end dates.
-    const startDate = parseDateTime(dateStr, startTime);
-    const endDate = parseDateTime(dateStr, endTime);
+    const startDate = parseDateTime(startDateStr, startTime);
+    const endDate = parseDateTime(endDateStr, endTime);
 
     if (!startDate || !endDate) {
       throw new Error(`Invalid date/time format for event "${title}"`);
     }
 
-    // Generate attendance code from title and date.
-    const attendanceCode = generateAttendanceCode(title, dateStr);
+    // Generate attendance code from title and start date.
+    const attendanceCode = generateAttendanceCode(title, startDateStr);
 
     // Default attendance points.
     const attendancePoints = 10;
@@ -205,9 +212,10 @@ async function getEventsFromWeek(weekNumber) {
  * Sync events from Google Sheets to the database.
  * Reads from Week 1-10 sheets and creates/updates events.
  * @param {Object} Event - sequelize Event model
+ * @param {string} [spreadsheetId] - spreadsheet ID to sync from (falls back to env var)
  * @returns {Object} - { success: boolean, created: number, updated: number, errors: array }
  */
-async function syncEventsFromSheets(Event) {
+async function syncEventsFromSheets(Event, spreadsheetId = DEFAULT_SPREADSHEET_ID) {
   const results = {
     success: true,
     created: 0,
@@ -224,7 +232,7 @@ async function syncEventsFromSheets(Event) {
     for (let week = 1; week <= 10; week++) {
       try {
         // eslint-disable-next-line no-await-in-loop
-        const weekEvents = await getEventsFromWeek(week);
+        const weekEvents = await getEventsFromWeek(week, spreadsheetId);
         allEvents.push(...weekEvents);
       } catch (err) {
         results.errors.push(`Error reading Week ${week}: ${err.message}`);
