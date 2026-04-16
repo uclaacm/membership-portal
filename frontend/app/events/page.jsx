@@ -25,6 +25,10 @@ export default function EventsPage() {
   const [userRsvps, setUserRsvps] = useState([]);
   const [error, setError] = useState(null);
   const [mounted, setMounted] = useState(false);
+  const [eventCreated, setEventCreated] = useState(false);
+  const [createSuccess, setCreateSuccess] = useState(false);
+  const [eventUpdated, setEventUpdated] = useState(false);
+  const [updateSuccess, setUpdateSuccess] = useState(false);
   const [checkInSubmitted, setCheckInSubmitted] = useState(false);
   const [checkInSuccess, setCheckInSuccess] = useState(false);
   const [checkInPoints, setCheckInPoints] = useState(0);
@@ -84,33 +88,42 @@ export default function EventsPage() {
   });
 
   const handleAddEvent = async (event) => {
-    try {
-      await createEvent(normalizeEventForServer(event));
-      // Reload events after creation
+    setEventCreated(false);
+    setCreateSuccess(false);
+    setError(null);
+
+    const result = await createEvent(normalizeEventForServer(event));
+    setEventCreated(true);
+    setCreateSuccess(result.success);
+    if (!result.success) {
+      setError(result.error ?? 'Failed to create event');
+    } else {
       const eventsArray = await fetchAllEvents();
       setEvents(eventsArray.map(e => ({
         ...e,
         startDate: moment(e.startDate),
         endDate: moment(e.endDate),
       })));
-    } catch (err) {
-      console.error('Failed to create event:', err);
-      setError('Failed to create event');
     }
   };
 
   const handleUpdateEvent = async (event) => {
-    try {
-      await updateEvent(normalizeEventForServer(event));
+    setEventUpdated(false);
+    setUpdateSuccess(false);
+    setError(null);
+
+    const result = await updateEvent(normalizeEventForServer(event));
+    setEventUpdated(true);
+    setUpdateSuccess(result.success);
+    if (!result.success) {
+      setError(result.error ?? 'Failed to update event');
+    } else {
       const eventsArray = await fetchAllEvents();
       setEvents(eventsArray.map(e => ({
         ...e,
         startDate: moment(e.startDate),
         endDate: moment(e.endDate),
       })));
-    } catch (err) {
-      console.error('Failed to update event:', err);
-      setError('Failed to update event');
     }
   };
 
@@ -139,6 +152,10 @@ export default function EventsPage() {
           isOfficer={isOfficer}
           addEvent={handleAddEvent}
           updateEvent={handleUpdateEvent}
+          created={eventCreated}
+          createSuccess={createSuccess}
+          updated={eventUpdated}
+          updateSuccess={updateSuccess}
         />
       ) : (
         <UserEvents

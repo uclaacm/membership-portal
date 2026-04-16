@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import BannerMessage from "@/components/BannerMessage";
+import Toast from "@/components/Toast";
 import Banner from "@/components/BannerJS/banner";
 import registerUser from "@/app/actions/auth/registerUser";
 import RegisterSidebar from "./registerSidebar";
@@ -42,7 +42,7 @@ export default function RegisterPage() {
 
   return (
     <div>
-      <BannerMessage showing={!!error} success={false} message={error} />
+      <Toast showing={!!error} success={false} message={error} />
       <div className="login">
         {success ? (
           <SuccessCard />

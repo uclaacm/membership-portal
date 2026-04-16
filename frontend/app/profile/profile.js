@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Button from '@/components/Button';
-import BannerMessage from '@/components/BannerMessage';
+import Toast from '@/components/Toast';
 import Config from '@/lib/config';
 
 import Activities from './activities';
@@ -89,7 +89,7 @@ export default class Profile extends React.Component {
 
     return (
       <div>
-        <BannerMessage
+        <Toast
           ref={this.bannerRef}
           showing={this.props.updated}
           success={this.props.updateSuccess}

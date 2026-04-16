@@ -141,12 +141,11 @@ class EventCard extends React.Component {
                 <div className={`event-container ${isFlipped ? 'is-flipped' : ''}`}>
                     <div className="card-flipper">
                         {/* Front of card */}
-                        <div className="card-front">
+                        <div className="card-front" onClick={this.handleFlip} style={{ cursor: 'pointer' }}>
                             <div className="image-container">
-                                <div 
-                                    className="cover" 
+                                <div
+                                    className="cover"
                                     style={{backgroundImage: `url(${event.cover || '/logo.png'})`}}
-                                    onClick={this.handleFlip}
                                 > </div>
                                 <div className="pill-shape points-container">{event.attendancePoints} PTS</div>
                             </div>
@@ -154,36 +153,50 @@ class EventCard extends React.Component {
                             <div className="text-container">
                                 <p className="event-title">{event.title}</p>
                                 <p className="text">
-                                    <a 
+                                    <a
                                         href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${event.startDate?.format("YYYYMMDDTHHmmss")}/${event.endDate?.format("YYYYMMDDTHHmmss")}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="calendar-link"
+                                        onClick={e => e.stopPropagation()}
                                     >
-                                        🗓️ {event.startDate?.format("MMMM D, YYYY")}, {event.startDate?.format("h:mm a")}&mdash;{event.endDate?.format("h:mm a")} 
+                                        🗓️ {event.startDate?.format("MMMM D, YYYY")}, {event.startDate?.format("h:mm a")}&mdash;{event.endDate?.format("h:mm a")}
                                     </a>
                                 </p>
                                 <p className="text">
-                                    <a 
+                                    <a
                                         className="location-link"
-                                        href={this.getGoogleMapsUrl(event.location)} 
-                                        target="_blank" 
+                                        href={this.getGoogleMapsUrl(event.location)}
+                                        target="_blank"
                                         rel="noopener noreferrer"
+                                        onClick={e => e.stopPropagation()}
                                     >
-                                        📍 {event.location} 
+                                        📍 {event.location}
                                     </a>
                                 </p>
                                 <p className="text" style={{color: committeeColorMap[event.committee]}}>{event.committee}</p>
-                                <div
-                                    className={`pill-shape rsvp ${currentState.toLowerCase()} ${isDisabled ? 'disabled' : ''}`}
-                                    onClick={this.handleRSVP}
-                                    style={{
-                                        opacity: isDisabled ? 0.6 : 1,
-                                        cursor: isDisabled ? 'not-allowed' : 'pointer',
-                                    }}
-                                >
-                                    {buttonText}
-                                </div>
+                                {event.eventLink ? (
+                                    <a
+                                        className="pill-shape rsvp external-rsvp"
+                                        href={event.eventLink}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        onClick={e => e.stopPropagation()}
+                                    >
+                                        RSVP <i className="fa fa-external-link-alt" />
+                                    </a>
+                                ) : (
+                                    <div
+                                        className={`pill-shape rsvp ${currentState.toLowerCase()} ${isDisabled ? 'disabled' : ''}`}
+                                        onClick={e => { e.stopPropagation(); this.handleRSVP(); }}
+                                        style={{
+                                            opacity: isDisabled ? 0.6 : 1,
+                                            cursor: isDisabled ? 'not-allowed' : 'pointer',
+                                        }}
+                                    >
+                                        {buttonText}
+                                    </div>
+                                )}
                             </div>
                         </div>
 

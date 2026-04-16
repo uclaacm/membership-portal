@@ -4,7 +4,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import Button from '@/components/Button';
-import BannerMessage from '@/components/BannerMessage';
+import Toast from '@/components/Toast';
 import EarlierEventsIcon from '@/app/events/earlierEventsIcon';
 import EventMonth from './eventMonth';
 import AdminAddEvent from './adminAddEvent';
@@ -136,7 +136,7 @@ export default class AdminEvents extends React.Component {
 
     return (
       <div className="events-dashboard admin-dashboard">
-        <BannerMessage
+        <Toast
           showing={this.props.updated || this.props.created || this.props.synced}
           success={this.props.updateSuccess || this.props.createSuccess || this.props.syncSuccess}
           message={bannerMessage}

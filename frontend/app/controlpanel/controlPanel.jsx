@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Button from '@/components/Button';
-import BannerMessage from '@/components/BannerMessage';
+import Toast from '@/components/Toast';
 import EventsModal from '@/components/Modal/eventsModal';
 import ImagesModal from '@/components/Modal/imagesModal';
 import AdminsModal from '@/components/Modal/adminsModal';
@@ -147,13 +147,13 @@ class ControlPanel extends React.Component {
 
     return (
       <div className="control-panel-wrapper">
-        <BannerMessage
+        <Toast
           showing={!!deleteErrorMessage}
           success={false}
           message={deleteErrorMessage}
         />
 
-        <BannerMessage
+        <Toast
           showing={oneClickUpdated}
           success={oneClickUpdateSuccess}
           message={oneClickUpdateSuccess ? 'Password updated successfully' : oneClickError}

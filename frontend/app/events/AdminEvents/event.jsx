@@ -90,6 +90,8 @@ class AdminEventCard extends React.Component {
       rsvps, showRsvpData, rsvpData, loading, emailsCopied,
     } = this.state;
 
+    const hasExternalRsvp = !!event.eventLink;
+
     let buttonText = 'View All RSVPs';
     if (loading) {
       buttonText = 'Loading...';
@@ -109,19 +111,33 @@ class AdminEventCard extends React.Component {
             </div>
           </div>
           <div className="rsvp-section">
-            <div className="rsvp-count">
-              RSVPs:
-              {' '}
-              {rsvps || 0}
-            </div>
-            <button
-              type="button"
-              className="view-rsvps-btn"
-              onClick={this.handleViewRsvps}
-              disabled={loading}
-            >
-              {buttonText}
-            </button>
+            {hasExternalRsvp ? (
+              <a
+                className="external-rsvp-link"
+                href={event.eventLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={e => e.stopPropagation()}
+              >
+                External RSVP <i className="fa fa-external-link-alt" />
+              </a>
+            ) : (
+              <>
+                <div className="rsvp-count">
+                  RSVPs:
+                  {' '}
+                  {rsvps || 0}
+                </div>
+                <button
+                  type="button"
+                  className="view-rsvps-btn"
+                  onClick={this.handleViewRsvps}
+                  disabled={loading}
+                >
+                  {buttonText}
+                </button>
+              </>
+            )}
           </div>
         </div>
 
