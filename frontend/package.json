@@ -56,5 +56,9 @@
     "prettier": "^3.6.2",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "optionalDependencies": {
+    "@tailwindcss/oxide-linux-arm64-musl": "^4.2.2",
+    "lightningcss-linux-arm64-musl": "^1.32.0"
   }
 }

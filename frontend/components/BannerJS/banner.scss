@@ -19,7 +19,6 @@
 
   &.decorative {
     height: 175px;
-    
   }
 
   .square-col-container {
@@ -40,7 +39,7 @@
     margin: -300px 10px;
     padding: 0 5px;
     transform: rotate(45deg);
-    width: 50px;
+    width: 60px;
 
     @media (max-width: 500px) {
       margin: -100px 10px;
@@ -48,7 +47,6 @@
 
     @media (max-height: 800px) {
       margin: -175px 10px;
-      
     }
   }
 
@@ -72,8 +70,6 @@
   .square.white {
     background-color: transparent !important;
   }
-
-  
 
   &.hack .square {
     background-color: vars.$hack-purple;
@@ -193,7 +189,7 @@
     width: 100%;
     animation: fadeIn 1.2s ease-out 0.8s forwards;
     opacity: 0; /* Start with opacity 0 to prevent flash before animation */
-    
+
     h1 {
       color: vars.$white;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;

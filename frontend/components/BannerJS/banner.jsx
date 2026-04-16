@@ -57,8 +57,7 @@ const generateCols = (n, m, centerX, centerY, maskRadius, randomize, committee) 
               />
             );
           }
-          if (r < 0.11)
-            classNames.push("white"); // %11- %3 chance to get empty
+          else if (r < 0.11) classNames.push("white"); // %11- %3 chance to get empty
           else if (r < 0.43) classNames.push("light"); // %43 - %11 chance to get light
         }
 
@@ -172,7 +171,7 @@ function Banner({ decorative = false, sideCols: sideColsProp, height: heightProp
 
   return (
     <div className={`banner ${decorative ? "decorative" : ""} ${currentCommittee}`}>
-      <div className="square-col-container">
+      <div key={`${sideCols}-${height}`} className="square-col-container">
         {!decorative && generateCols(sideCols, height, centerX, centerY, 2, randomize, currentCommittee)}
         {decorative && generateCols(8, 4, undefined, undefined, 2, randomize, currentCommittee)}
       </div>

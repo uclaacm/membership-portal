@@ -1,6 +1,6 @@
 import Config from '@/lib/config';
 import ResourceCard from './resourceCard';
-import OfficerTile from './officerTile';
+// import OfficerTile from './officerTile';
 
 export default function Resources() {
   return (
@@ -16,7 +16,8 @@ export default function Resources() {
           <ResourceCard resource={resource} key={resource.type || resource.name} />
         ))}
       </div>
-      {Config.organization.officers && Config.organization.officers.length > 0 && (
+      {/* We'll add this back in later once officer headshots are available */}
+      {/* {Config.organization.officers && Config.organization.officers.length > 0 && (
         <>
           <div className="divider" />
           <div className="officers">
@@ -25,7 +26,7 @@ export default function Resources() {
             ))}
           </div>
         </>
-      )}
+      )} */}
     </div>
   );
 }
