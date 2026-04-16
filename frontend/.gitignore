@@ -29,6 +29,12 @@ build/Release
 # Dependency directories
 node_modules
 jspm_packages
+/.pnp
+.pnp.*
+
+# Next.js
+/.next/
+/out/
 
 # Optional npm cache directory
 .npm
@@ -36,13 +42,23 @@ jspm_packages
 # Optional REPL history
 .node_repl_history
 
+# Stale artifacts
+let
+
 # OS-specific
 Thumbs.db
 desktop.ini
 .DS_Store
 .Trashes
 
-lib/
-public/
+# Typescript
+*.tsbuildinfo
+next-env.d.ts
+
+build/
 .cache-loader
 .vscode
+
+*.pem
+.env*
+certificates
