@@ -34,6 +34,11 @@ export default {
       create: "/api/v1/rsvp/add",
       cancel: "/api/v1/rsvp",
     },
+    internship: {
+      applications: "/api/v1/internship/applications",
+      ownApplication: "/api/v1/internship/applications/me",
+      committees: "/api/v1/internship/committees",
+    },
     leaderboard: "/api/v1/leaderboard",
     admin: {
       promote: "/api/v1/admin/promote",
