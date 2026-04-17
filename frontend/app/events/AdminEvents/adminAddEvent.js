@@ -143,7 +143,7 @@ export default class AdminAddEvent extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     this.setState((prev) => {
       const newState = Object.assign({}, prev);
       newState.event = nextProps.event;

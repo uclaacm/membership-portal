@@ -25,6 +25,7 @@ export default class ProfileCard extends React.Component {
     return (
       <div className="profile-card">
         <div className="profile-card-header">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={profile.picture || '/assets/images/unknown.png'}
             alt={`${profile.firstName} ${profile.lastName}`}

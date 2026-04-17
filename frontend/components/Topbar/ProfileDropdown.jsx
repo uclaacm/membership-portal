@@ -26,6 +26,7 @@ export default function ProfileDropdown({ picture, isAdmin, adminView, onToggleA
   return (
     <div className="profile-dropdown" ref={wrapperRef}>
       <div className="profile-dropdown-trigger" onClick={toggleDropdown}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={picture || '/unknown.png'}
           alt="Profile"

@@ -17,7 +17,7 @@ export default function CareerPage() {
   const [careerProfile, setCareerProfile] = useState(userProfile || {});
 
   useEffect(() => {
-    setMounted(true);
+    Promise.resolve().then(() => setMounted(true));
   }, []);
 
   useEffect(() => {

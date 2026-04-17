@@ -43,19 +43,22 @@ export default function ControlPanelPage() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    fetchAllEvents().then(evts => setEvents(evts.map(e => ({ ...e, startDate: moment(e.startDate) }))));
-    fetchImages().then(setImages);
+    const init = async () => {
+      setMounted(true);
+      fetchAllEvents().then(evts => setEvents(evts.map(e => ({ ...e, startDate: moment(e.startDate) }))));
+      fetchImages().then(setImages);
 
-    const token = CookieStore.get('token');
-    if (token) {
-      fetch(`${Config.API_URL}/api/v1/sheets/info`, {
-        headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
-      })
-        .then(r => r.json())
-        .then(data => { if (data.serviceAccountEmail) setServiceAccountEmail(data.serviceAccountEmail); })
-        .catch(() => {});
-    }
+      const token = CookieStore.get('token');
+      if (token) {
+        fetch(`${Config.API_URL}/api/v1/sheets/info`, {
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        })
+          .then(r => r.json())
+          .then(data => { if (data.serviceAccountEmail) setServiceAccountEmail(data.serviceAccountEmail); })
+          .catch(() => {});
+      }
+    };
+    init();
   }, []);
 
   useEffect(() => {

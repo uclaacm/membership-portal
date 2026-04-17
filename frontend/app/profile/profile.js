@@ -69,7 +69,7 @@ export default class Profile extends React.Component {
     });
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     this.setState({
       profile: Object.assign({}, nextProps.profile),
       originalProfile: Object.assign({}, nextProps.profile),

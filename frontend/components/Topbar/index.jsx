@@ -51,6 +51,7 @@ export default function Topbar({ isAdmin, picture, onLogout, isRealAdmin, adminV
     <div className="topbar">
       <div className="topbar-container">
         <div className="topbar-logo">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/new_acm_wordmark_chapter.png" alt={Config.organization.name} />
         </div>
 

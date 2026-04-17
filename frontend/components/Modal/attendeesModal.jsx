@@ -27,8 +27,9 @@ export default class AttendeesModal extends React.Component {
                 </thead>
                 <tbody>
                   {attendees.map(member => (
-                    <tr>
+                    <tr key={member.uuid || member.email}>
                       <td>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={member.picture} alt="Attendee" />
                       </td>
                       <td>

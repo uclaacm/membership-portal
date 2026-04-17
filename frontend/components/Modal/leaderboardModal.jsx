@@ -24,7 +24,8 @@ export default class LeaderboardModal extends React.Component {
             <h1>User Info</h1>
             <div className="content-container">
               <div className="image-container">
-                <img src={picture || '/assets/images/unknown.png'} />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={picture || '/assets/images/unknown.png'} alt={`${firstName} ${lastName}`} />
               </div>
               <div className="text-container">
                 <h2>

@@ -24,11 +24,17 @@ export default function ProfilePage() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    fetchActivity().then((data) => {
-      if (data) setActivity(data.map(a => ({ ...a, date: moment(a.date) })));
-      else setActivityError('Failed to load activity');
-    }).catch(() => setActivityError('Failed to load activity'));
+    const init = async () => {
+      setMounted(true);
+      try {
+        const data = await fetchActivity();
+        if (data) setActivity(data.map(a => ({ ...a, date: moment(a.date) })));
+        else setActivityError('Failed to load activity');
+      } catch {
+        setActivityError('Failed to load activity');
+      }
+    };
+    init();
   }, []);
 
   const handleSaveChanges = async (newProfile) => {

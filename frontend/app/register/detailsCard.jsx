@@ -20,6 +20,7 @@ export default class DetailsCard extends React.Component {
     const { disableForm, onSubmit, profileValid } = this.props;
     return (
       <div className={`card details-card${profileValid() ? ' confirm-details' : ''}`}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={Config.organization.logo} alt="ACM logo" />
         <div className="inner">
           <form onSubmit={onSubmit} autoComplete="off">
@@ -32,7 +33,7 @@ export default class DetailsCard extends React.Component {
               </p>
               <select className="input-major" name="major" onChange={this.handleChange}>
                 <option value="">--</option>
-                {Config.majors.map(major => <option value={major}>{major}</option>)}
+                {Config.majors.map(major => <option key={major} value={major}>{major}</option>)}
               </select>
             </div>
             <div className="align">

@@ -37,7 +37,7 @@ export default class Toast extends React.Component {
     this.setState(prev => Object.assign({}, prev, { showing: false }));
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.showing) {
       this.showToast(nextProps.message, nextProps.success, nextProps.duration);
     }

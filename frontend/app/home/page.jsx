@@ -43,9 +43,8 @@ export default function HomePage() {
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    setMounted(true);
-
     const loadData = async () => {
+      setMounted(true);
       try {
         const [leaderboardData, eventsData] = await Promise.all([
           fetchLeaderboard(),

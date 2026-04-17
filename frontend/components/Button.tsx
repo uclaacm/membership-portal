@@ -15,9 +15,7 @@ export default function Button({
   text,
   type,
 }: Partial<{
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   action: Function;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   onClick: Function;
   className: string;
   color: string;

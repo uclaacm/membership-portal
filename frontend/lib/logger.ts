@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 class Logger {
   static log(data: any): void {
     console.log(`[LOG]: ${data}`);

@@ -4,7 +4,8 @@ export default class Logo extends React.Component {
   render() {
     return (
       <div className="logo">
-        <img className="login-logo" src={this.props.pic} />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className="login-logo" src={this.props.pic} alt="" />
       </div>
     );
   }

@@ -92,7 +92,7 @@ export default class AdminEvents extends React.Component {
     }));
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     const isUpdateComplete = nextProps.updated && nextProps.updateSuccess;
     const isCreateComplete = nextProps.created && nextProps.createSuccess;
     const isSyncComplete = nextProps.synced && nextProps.syncSuccess;

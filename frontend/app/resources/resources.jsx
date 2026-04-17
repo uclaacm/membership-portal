@@ -6,6 +6,7 @@ export default function Resources() {
   return (
     <div className="resources-wrapper">
       <div className="org-info">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={Config.organization.logo} alt={Config.organization.name} />
         <h1>{Config.organization.name}</h1>
         <p>{Config.organization.mission}</p>

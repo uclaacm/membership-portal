@@ -45,9 +45,11 @@ export default function Provider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("light");
 
   useEffect(() => {
-    const initial = getPreferredTheme();
-    setThemeState(initial);
-    applyTheme(initial);
+    Promise.resolve().then(() => {
+      const initial = getPreferredTheme();
+      setThemeState(initial);
+      applyTheme(initial);
+    });
   }, []);
 
   const setTheme = (next: Theme) => {

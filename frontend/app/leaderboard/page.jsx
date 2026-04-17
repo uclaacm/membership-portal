@@ -19,9 +19,8 @@ export default function LeaderboardPage() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    
     const loadLeaderboard = async () => {
+      setMounted(true);
       try {
         const leaderboard = await fetchLeaderboard();
         setLeaderboard(leaderboard);

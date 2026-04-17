@@ -37,6 +37,7 @@ const WelcomeBanner = ({
           <h1>Welcome to ACM Membership Portal!</h1>
           <div className="footer">
             <p className="subheading">Brought to you by:</p>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/acm-dev-badge.png"
               alt="ACM.dev branding"
@@ -46,6 +47,7 @@ const WelcomeBanner = ({
         </div>
 
         <div className="profile-area">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img className="profile-picture" src={highRes} alt={displayName} />
           <div className="profile-name">
             <p className="chapter">{Config.organization.shortName}</p>

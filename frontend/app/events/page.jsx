@@ -35,9 +35,8 @@ export default function EventsPage() {
   const [checkInError, setCheckInError] = useState('');
 
   useEffect(() => {
-    setMounted(true);
-    
     const loadEvents = async () => {
+      setMounted(true);
       try {
         const [eventsArray, rsvpResult] = await Promise.all([
           fetchAllEvents(),

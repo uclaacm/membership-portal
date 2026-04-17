@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 "use client";
 
 import { FormEvent, useState } from "react";
@@ -142,7 +141,6 @@ export default function RegisterPage() {
                 <Link href="/events">
                   <Button
                     className="m-[1.5rem_0] w-full flex justify-center text-center self-center"
-                    // eslint-disable-next-line react/style-prop-object
                     style="green"
                     icon="fa fa-check"
                     text="Continue to Dashboard"

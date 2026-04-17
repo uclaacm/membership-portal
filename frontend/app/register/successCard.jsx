@@ -16,7 +16,7 @@ export default class SuccessCard extends React.Component {
           <Logo pic={'/acm_wordmark_chapter.svg'} />
           <h1 className="login-title">Registration Complete</h1>
           <p className="login-description">
-            You're a member of {Config.organization.shortName} now! You can now access all member resources and benefits.
+            You&apos;re a member of {Config.organization.shortName} now! You can now access all member resources and benefits.
           </p>
           
           <div className="sign-in">

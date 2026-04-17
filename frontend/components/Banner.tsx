@@ -17,6 +17,7 @@ function Square({
   randomize: boolean;
   committee: string;
 }) {
+  const [r] = useState(() => Math.random());
   const classNames = [
     // "bg-acm-cobalt",
     "w-[50px]",
@@ -56,7 +57,6 @@ function Square({
   if (isMasked) {
     classNames.push("bg-transparent");
   } else if (randomize) {
-    const r = Math.random();
     // 3% chance: render logo image
     if (r < 0.03) {
       classNames.push(`bg-${committee} logo-bg relative overflow-hidden`);

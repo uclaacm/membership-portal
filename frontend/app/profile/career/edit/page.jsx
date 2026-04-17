@@ -87,7 +87,7 @@ export default function CareerEditPage() {
   const [validationErrors, setValidationErrors] = useState({});
 
   useEffect(() => {
-    setMounted(true);
+    Promise.resolve().then(() => setMounted(true));
   }, []);
 
   useEffect(() => {
@@ -106,16 +106,19 @@ export default function CareerEditPage() {
   }, [userProfile]);
 
   useEffect(() => {
-    setBio(careerProfile.bio || "");
-    setPronouns(careerProfile.pronouns || "");
-    setLinkedinUrl(careerProfile.linkedinUrl || "");
-    setGithubUrl(careerProfile.githubUrl || "");
-    setPortfolioUrl(careerProfile.portfolioUrl || "");
-    setPersonalWebsite(careerProfile.personalWebsite || "");
-    setResumeUrl(careerProfile.resumeUrl || "");
-    setSkills(careerProfile.skills || []);
-    setCareerInterests(careerProfile.careerInterests || []);
-    setIsProfilePublic(careerProfile.isProfilePublic !== undefined ? careerProfile.isProfilePublic : true);
+    const syncFromProfile = () => {
+      setBio(careerProfile.bio || "");
+      setPronouns(careerProfile.pronouns || "");
+      setLinkedinUrl(careerProfile.linkedinUrl || "");
+      setGithubUrl(careerProfile.githubUrl || "");
+      setPortfolioUrl(careerProfile.portfolioUrl || "");
+      setPersonalWebsite(careerProfile.personalWebsite || "");
+      setResumeUrl(careerProfile.resumeUrl || "");
+      setSkills(careerProfile.skills || []);
+      setCareerInterests(careerProfile.careerInterests || []);
+      setIsProfilePublic(careerProfile.isProfilePublic !== undefined ? careerProfile.isProfilePublic : true);
+    };
+    syncFromProfile();
   }, [careerProfile]);
 
   const handleLogout = async () => {

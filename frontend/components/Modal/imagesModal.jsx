@@ -31,6 +31,7 @@ export default class ImagesModal extends React.Component {
                   {images.map(image => (
                     <tr key={image.uuid}>
                       <td>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={`${Config.API_URL + Config.routes.image.specific}/${image.uuid}`} alt="Image" />
                       </td>
                       <td>{image.mimetype}</td>

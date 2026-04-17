@@ -92,7 +92,8 @@ class Leaderboard extends React.Component {
                 <td>#</td>
                 <td className="name">
                   <div>
-                    <img />
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img alt="" />
                     <span>Name</span>
                   </div>
                 </td>

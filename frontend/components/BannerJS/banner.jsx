@@ -87,7 +87,7 @@ function Banner({ decorative = false, sideCols: sideColsProp, height: heightProp
     return { sideCols, height };
   });
 
-  const committees = React.useMemo(() => {
+  const [committees] = useState(() => {
     const base = ["studio", "icpc", "design", "cyber", "teachla", "w", "ai", "hack", "cloud"];
     // Shuffle base:
     for (let i = base.length - 1; i > 0; i--) {
@@ -95,11 +95,11 @@ function Banner({ decorative = false, sideCols: sideColsProp, height: heightProp
       [base[i], base[j]] = [base[j], base[i]];
     }
     return ["acm", ...base];
-  }, []);
+  });
 
   useEffect(() => {
     // Initialize randomize state
-    setRandomize(true);
+    Promise.resolve().then(() => setRandomize(true));
 
     // Get all banner elements
     const elements = document.querySelectorAll(".banner");
@@ -159,9 +159,11 @@ function Banner({ decorative = false, sideCols: sideColsProp, height: heightProp
       nextSideCols += 1;
     }
 
-    setDimensions(prev => {
-      if (prev.sideCols === nextSideCols && prev.height === nextHeight) return prev;
-      return { sideCols: nextSideCols, height: nextHeight };
+    Promise.resolve().then(() => {
+      setDimensions(prev => {
+        if (prev.sideCols === nextSideCols && prev.height === nextHeight) return prev;
+        return { sideCols: nextSideCols, height: nextHeight };
+      });
     });
   }, [decorative, heightProp, sideColsProp]);
 

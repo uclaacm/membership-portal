@@ -15,7 +15,7 @@ export default class YearSelector extends React.Component {
     this.setState({ value: e.target.value });
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     this.setState({
       value: nextProps.value,
     });

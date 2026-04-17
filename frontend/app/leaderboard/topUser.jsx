@@ -15,8 +15,10 @@ export default class TopUser extends React.Component {
       <div className={`top-user${place === 1 ? ' top-user-first' : ''}`}>
         <div className="rank">{userPlace}</div>
         <br />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={user.picture || '/assets/images/unknown.png'}
+          alt={`${user.firstName} ${user.lastName}`}
           onClick={onChange.bind(this, user.firstName, user.lastName, user.picture, user.major, user.year)}
         />
         <br />

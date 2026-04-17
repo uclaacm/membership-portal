@@ -45,7 +45,6 @@ class AdminEventCard extends React.Component {
     if (!rsvpData || rsvpData.length === 0) return;
     e.stopPropagation();
     const emails = rsvpData.map(rsvp => rsvp.user.email).join(', ');
-    // eslint-disable-next-line no-undef
     navigator.clipboard.writeText(emails);
     // Set copied state
     this.setState({ emailsCopied: true });
@@ -160,6 +159,7 @@ class AdminEventCard extends React.Component {
               <div className="rsvp-list">
                 {rsvpData.map(rsvp => (
                   <div key={rsvp.uuid} className="rsvp-card">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={rsvp.user.picture}
                       alt={`${rsvp.user.firstName} ${rsvp.user.lastName}`}

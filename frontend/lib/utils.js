@@ -14,4 +14,5 @@ const getLevel = (points) => {
 };
 
 export { getLevel };
-export default { getLevel };
+const utils = { getLevel };
+export default utils;

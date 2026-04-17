@@ -1,4 +1,4 @@
-export default {
+const config = {
   API_URL: typeof window === "undefined" ? "http://backend:8080/app" : "/app",
   CLIENT_ROOT_URL: "",
   google: {
@@ -353,3 +353,5 @@ export default {
     ["Cloud", "#9f97ff"],
   ],
 };
+
+export default config;
