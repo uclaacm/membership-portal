@@ -48,6 +48,7 @@ module.exports = (Sequelize, db) => {
       // URL for a (rectangular, larger) cover image
       cover: {
         type: Sequelize.STRING,
+        allowNull: true,
         validate: {
           len: {
             args: [3, 2048],
@@ -74,7 +75,7 @@ module.exports = (Sequelize, db) => {
       // event description
       description: {
         type: Sequelize.TEXT,
-        allowNull: false,
+        allowNull: true,
         validate: {
           notEmpty: {
             msg: 'The description field is required',
@@ -93,9 +94,10 @@ module.exports = (Sequelize, db) => {
         },
       },
 
-      // link to a FB event, evite, etc. (currently required)
+      // optional external RSVP link (FB event, Google Form, Evite, etc.)
       eventLink: {
         type: Sequelize.STRING,
+        allowNull: true,
         validate: {
           len: {
             args: [3, 2048],
@@ -269,13 +271,19 @@ module.exports = (Sequelize, db) => {
       'attendanceCode',
       'attendancePoints',
     ]);
+    if (sanitizedEvent.cover !== undefined && sanitizedEvent.cover.length === 0) {
+      sanitizedEvent.cover = null;
+    }
+    if (sanitizedEvent.eventLink !== undefined && sanitizedEvent.eventLink.length === 0) {
+      sanitizedEvent.eventLink = null;
+    }
+    if (sanitizedEvent.description !== undefined && sanitizedEvent.description.length === 0) {
+      sanitizedEvent.description = null;
+    }
     if (sanitizedEvent.committee !== undefined && sanitizedEvent.committee.length === 0) {
       delete sanitizedEvent.committee;
     }
-    if (
-      sanitizedEvent.attendanceCode !== undefined
-      && sanitizedEvent.attendanceCode.length === 0
-    ) {
+    if (sanitizedEvent.attendanceCode !== undefined && sanitizedEvent.attendanceCode.length === 0) {
       delete sanitizedEvent.attendanceCode;
     }
 
