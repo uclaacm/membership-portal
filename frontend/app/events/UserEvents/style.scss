@@ -196,7 +196,8 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-.rsvp {
+.rsvp,
+.rsvp:visited {
   background-color: rgba(30, 108, 255, 1);
   color: white;
   text-decoration: none;
