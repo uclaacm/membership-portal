@@ -39,3 +39,27 @@ export interface InternshipCommittee {
 }
 
 export type FetchCommitteeByIdResult = { success: true; data: InternshipCommittee } | { success: false; error: string };
+
+export interface InternshipCustomQuestion {
+  questionKey: string;
+  questionText: string;
+  questionType: "short_text" | "long_text" | "multiple_choice";
+  required?: boolean;
+  order?: number;
+  choices?: string[];
+}
+
+export type CreateInternshipCommitteePayload = {
+  name: string;
+  displayName: string;
+  description?: string;
+  subcommittees?: string[];
+  isActive?: boolean;
+  internLimit?: number;
+  applicationDeadline?: string | Date;
+  customQuestions?: InternshipCustomQuestion[];
+};
+
+export type CreateInternshipCommitteeResult =
+  | { success: true; data: InternshipCommittee }
+  | { success: false; error: string };
