@@ -272,7 +272,12 @@ async function getOwnApplication(req, res) {
     if (!application) {
       return res.status(404).json({ success: false, message: 'Application not found' });
     }
-    return res.status(200).json({ success: true, data: application });
+    // Always include submissionStatus in the response
+    return res.status(200).json({
+      success: true,
+      data: application,
+      submissionStatus: application.submissionStatus,
+    });
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Error fetching application', error: error.message });
   }
@@ -304,45 +309,68 @@ async function updateApplication(req, res) {
       'thirdChoiceStatus',
     ];
 
+    // Fetch the application to check ownership and status
+    const application = await InternshipApplication.findById(req.params.id);
+    if (!application) {
+      return res.status(404).json({
+        success: false,
+        message: 'Application not found',
+      });
+    }
+
+    const isAdmin = typeof req.user.isAdmin === 'function' && req.user.isAdmin();
+    const isOfficer = typeof req.user.isOfficer === 'function' && req.user.isOfficer();
+    const isApplicant = application.userId === req.user.uuid;
+
+    // If applicant and already submitted, forbid update
+    if (
+      application.submissionStatus === 'submitted'
+      && isApplicant
+      && !isOfficer
+      && !isAdmin
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: 'You cannot update a submitted application',
+      });
+    }
+
     // Build update object with only allowed fields
     const updateData = {};
     allowedFields.forEach((field) => {
       if (req.body[field] !== undefined) {
         updateData[field] = req.body[field];
       }
-    }); const application = await InternshipApplication.findByIdAndUpdate(
+    });
+
+    // Officers/admins can update status fields on submitted apps
+    // (already included in allowedFields)
+    updateData.lastModifiedAt = Date.now();
+
+    const updatedApp = await InternshipApplication.findByIdAndUpdate(
       req.params.id,
       updateData,
       { new: true, runValidators: true },
     );
 
-    if (!application) {
-      res.status(404).json({
-        success: false,
-        message: 'Application not found',
-      });
-      return;
-    }
-
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      data: application,
+      data: updatedApp,
       message: 'Application updated successfully',
     });
   } catch (error) {
     if (error.name === 'ValidationError') {
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         message: 'Validation error',
         errors: error.errors,
       });
-    } else {
-      res.status(500).json({
-        success: false,
-        message: 'Error updating application',
-        error: error.message,
-      });
     }
+    return res.status(500).json({
+      success: false,
+      message: 'Error updating application',
+      error: error.message,
+    });
   }
 }
 
