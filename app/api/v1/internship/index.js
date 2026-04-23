@@ -53,8 +53,8 @@ router.get('/committees/:id', auth, getCommitteeById);
 // CREATE committee (admin only)
 router.post('/committees', auth, admin, committeeRateLimiter, createCommittees);
 
-// UPDATE committee (admin only)
-router.put('/committees/:id', auth, admin, committeeRateLimiter, updateCommittee);
+// UPDATE committee
+router.put('/committees/:id', auth, adminOrOfficer, committeeRateLimiter, updateCommittee);
 
 // DELETE committee (admin only) - soft delete by setting isActive to false
 router.delete('/committees/:id', auth, admin, deleteCommittee);

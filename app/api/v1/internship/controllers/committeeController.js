@@ -38,15 +38,38 @@ async function createCommittees(req, res, next) {
 
 async function updateCommittee(req, res, next) {
   try {
-    const updatedCommittee = await Committee.findByIdAndUpdate(
+    const committee = await Committee.findById(req.params.id);
+    if (!committee) return res.status(404).json({ error: 'Committee not found' });
+
+    const isOfficer = req.user && typeof req.user.isOfficer === 'function' && req.user.isOfficer();
+    const isAdmin = req.user && typeof req.user.isAdmin === 'function' && req.user.isAdmin();
+
+    if (isOfficer && !isAdmin) {
+      // Officers may only update customQuestions for their own committee
+      const officerCommittees = (req.user.getDataValue && req.user.getDataValue('committees')) || req.user.committees || [];
+      if (!officerCommittees.map((c) => c.toLowerCase()).includes(committee.name.toLowerCase())) {
+        return res.status(403).json({ error: 'You can only edit your own committee' });
+      }
+      // Whitelist: only customQuestions allowed for officers
+      if (!('customQuestions' in req.body)) {
+        return res.status(400).json({ error: 'customQuestions is required' });
+      }
+      const { customQuestions } = req.body;
+      const updated = await Committee.findByIdAndUpdate(
+        req.params.id,
+        { customQuestions },
+        { new: true, runValidators: true },
+      );
+      return res.json({ error: null, updatedCommittee: updated });
+    }
+
+    // Admin: full update
+    const updated = await Committee.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true, runValidators: true },
     );
-    if (!updatedCommittee) {
-      return res.status(404).json({ error: 'Committee not found' });
-    }
-    return res.json({ error: null, updatedCommittee });
+    return res.json({ error: null, updatedCommittee: updated });
   } catch (error) {
     return next(error);
   }
