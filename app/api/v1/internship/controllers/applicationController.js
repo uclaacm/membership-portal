@@ -168,8 +168,12 @@ async function getApplicationById(req, res) {
 // Get the authenticated user's own application
 async function getOwnApplication(req, res) {
   try {
-    const userId = req.user.uuid;
-    const application = await InternshipApplication.findOne({ userId });
+    const applicationCycle = getCurrentApplicationCycle();
+    const application = await InternshipApplication.findOne({
+      userId: req.user.uuid,
+      applicationCycle,
+      deletedAt: null,
+    });
     if (!application) {
       return res.status(404).json({ success: false, message: 'Application not found' });
     }
