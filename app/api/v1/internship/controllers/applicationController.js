@@ -377,22 +377,26 @@ async function updateApplication(req, res) {
 // Delete an internship application
 async function deleteApplication(req, res) {
   try {
-    const application = await InternshipApplication.findByIdAndDelete(req.params.id);
-
+    const application = await InternshipApplication.findById(req.params.id);
     if (!application) {
-      res.status(404).json({
-        success: false,
-        message: 'Application not found',
-      });
-      return;
+      return res.status(404).json({ success: false, message: 'Not found' });
     }
 
-    res.status(200).json({
-      success: true,
-      message: 'Application deleted successfully',
-    });
+    const isAdmin = typeof req.user.isAdmin === 'function' && req.user.isAdmin();
+    const isOwner = application.userId === req.user.uuid;
+
+    // Only the owner can delete a draft; only admins can delete submitted applications
+    if (application.submissionStatus === 'submitted' && !isAdmin) {
+      return res.status(403).json({ success: false, message: 'Only admins can delete submitted applications' });
+    }
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({ success: false, message: 'Forbidden' });
+    }
+
+    await application.updateOne({ deletedAt: new Date(), deletedBy: req.user.uuid });
+    return res.status(200).json({ success: true, message: 'Application deleted successfully' });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error deleting application',
       error: error.message,
