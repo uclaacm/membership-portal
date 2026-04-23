@@ -141,6 +141,39 @@ async function getAllApplications(req, res) {
 
     // Build query object with validated parameters
     const query = {};
+
+    // Officer scoping logic
+    const isOfficer = typeof req.user.isOfficer === 'function' && req.user.isOfficer();
+    const isAdmin = typeof req.user.isAdmin === 'function' && req.user.isAdmin();
+    const includeDrafts = isAdmin && req.query.includeDrafts === 'true';
+
+    if (isOfficer && !isAdmin) {
+      const officerCommittees = req.user.getDataValue ? (req.user.getDataValue('committees') || []) : (req.user.committees || []);
+      if (!officerCommittees.length) {
+        return res.json({ success: true, data: [], pagination: { total: 0 } });
+      }
+
+      // Fetch committee ObjectIds matching officer's committee names (case-insensitive)
+      const committees = await Committee.find({
+        name: { $in: officerCommittees.map((c) => c.toLowerCase()) },
+      });
+      const committeeIds = committees.map((c) => c.id);
+
+      // Scope query: application must have at least one choice in officer's committees
+      query.$or = [
+        { firstChoiceCommittee: { $in: committeeIds } },
+        { secondChoiceCommittee: { $in: committeeIds } },
+        { thirdChoiceCommittee: { $in: committeeIds } },
+      ];
+    }
+
+    // Always exclude soft-deleted records
+    query.deletedAt = null;
+
+    // Officers should not see drafts; admins can opt in
+    if (!includeDrafts) {
+      query.submissionStatus = 'submitted';
+    }
     // Status filters are already validated by express-validator
     if (firstChoiceStatus && typeof firstChoiceStatus === 'string') {
       query.firstChoiceStatus = firstChoiceStatus;
@@ -182,7 +215,7 @@ async function getAllApplications(req, res) {
 
     const total = await InternshipApplication.countDocuments(query);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       data: applications,
       pagination: {
@@ -193,7 +226,7 @@ async function getAllApplications(req, res) {
       },
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error fetching applications',
       error: error.message,
