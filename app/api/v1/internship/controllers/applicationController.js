@@ -2,6 +2,7 @@ const {
   InternshipApplication,
   getCurrentApplicationCycle,
 } = require('../models/InternshipApplication');
+const { Committee } = require('../models/Committee');
 
 // Create a new internship application
 async function createApplication(req, res) {
@@ -11,6 +12,7 @@ async function createApplication(req, res) {
     const existingApplication = await InternshipApplication.findOne({
       userId: req.user.uuid,
       applicationCycle,
+      deletedAt: null,
     });
 
     if (existingApplication) {
@@ -21,6 +23,65 @@ async function createApplication(req, res) {
       return;
     }
 
+    const committeeChoiceFields = [
+      'firstChoiceCommittee',
+      'secondChoiceCommittee',
+      'thirdChoiceCommittee',
+    ];
+    const committeeIds = committeeChoiceFields
+      .map((field) => req.body[field])
+      .filter(Boolean);
+
+    if (committeeIds.length > 0) {
+      const committees = await Committee.find({ _id: { $in: committeeIds } })
+        .select('isActive applicationDeadline displayName name');
+
+      const committeeById = new Map(
+        committees.map((committee) => [committee.id, committee]),
+      );
+      const now = new Date();
+
+      const invalidChoice = committeeIds.find((committeeId) => {
+        const committee = committeeById.get(committeeId.toString());
+        return !committee;
+      });
+
+      if (invalidChoice) {
+        res.status(400).json({
+          success: false,
+          message: `Invalid committee selection: ${invalidChoice}`,
+        });
+        return;
+      }
+
+      const inactiveCommittee = committeeIds
+        .map((committeeId) => committeeById.get(committeeId.toString()))
+        .find((committee) => committee.isActive !== true);
+
+      if (inactiveCommittee) {
+        res.status(400).json({
+          success: false,
+          message: `Committee ${inactiveCommittee.displayName || inactiveCommittee.name} is not accepting applications`,
+        });
+        return;
+      }
+
+      const pastDeadlineCommittee = committeeIds
+        .map((committeeId) => committeeById.get(committeeId.toString()))
+        .find(
+          (committee) => committee.applicationDeadline
+            && new Date(committee.applicationDeadline) <= now,
+        );
+
+      if (pastDeadlineCommittee) {
+        res.status(400).json({
+          success: false,
+          message: `Committee ${pastDeadlineCommittee.displayName || pastDeadlineCommittee.name} is past its application deadline`,
+        });
+        return;
+      }
+    }
+
     // Autopopulate user info from authenticated user
     const applicationData = {
       ...req.body,
@@ -29,6 +90,7 @@ async function createApplication(req, res) {
       lastName: req.user.lastName,
       email: req.user.email,
       applicationCycle,
+      submissionStatus: 'draft',
     };
 
     const application = new InternshipApplication(applicationData);
