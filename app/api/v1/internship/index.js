@@ -12,6 +12,7 @@ const {
   updateApplication,
   deleteApplication,
   getOwnApplication,
+  submitApplication,
 } = require('./controllers/applicationController');
 const {
   getAllCommittees,
@@ -20,7 +21,12 @@ const {
   updateCommittee,
   deleteCommittee,
 } = require('./controllers/committeeController');
-const { validateCreateApplication, validateUpdateApplication, validateGetApplications } = require('./middleware/validation');
+const {
+  validateCreateApplication,
+  validateUpdateApplication,
+  validateGetApplications,
+  validateMongoId,
+} = require('./middleware/validation');
 const { strictCreateApplicationLimiter, getApplicationsLimiter, committeeRateLimiter } = require('./middleware/rateLimiter');
 
 const router = express.Router();
@@ -40,6 +46,9 @@ router.post('/applications', auth, strictCreateApplicationLimiter, validateCreat
 
 // PUT (update) an application by ID
 router.put('/applications/:id', auth, validateUpdateApplication, updateApplication);
+
+// POST submit a draft application (member+)
+router.post('/applications/:id/submit', auth, strictCreateApplicationLimiter, validateMongoId, submitApplication);
 
 // DELETE an application by ID
 router.delete('/applications/:id', auth, deleteApplication);
