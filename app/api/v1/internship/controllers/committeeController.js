@@ -91,8 +91,21 @@ async function deleteCommittee(req, res, next) {
   }
 }
 
+async function getAllCommitteesAdmin(req, res, next) {
+  try {
+    const committees = await Committee
+      .find({})
+      .sort({ displayName: 1 });
+
+    return res.json({ error: null, committees });
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   getAllCommittees,
+  getAllCommitteesAdmin,
   getCommitteeById,
   createCommittees,
   updateCommittee,

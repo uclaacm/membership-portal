@@ -15,6 +15,7 @@ const {
 } = require('./controllers/applicationController');
 const {
   getAllCommittees,
+  getAllCommitteesAdmin,
   getCommitteeById,
   createCommittees,
   updateCommittee,
@@ -46,6 +47,9 @@ router.delete('/applications/:id', auth, deleteApplication);
 
 // GET all committees
 router.get('/committees', getAllCommittees);
+
+// GET all committees including inactive (admin only) - must be before /:id
+router.get('/committees/admin', auth, admin, getAllCommitteesAdmin);
 
 // GET a single committee by ID
 router.get('/committees/:id', auth, getCommitteeById);
