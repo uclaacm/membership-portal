@@ -1,4 +1,6 @@
 const { Committee } = require('../models/Committee');
+const { canManageCommitteeResource } = require('../../auth/committeeScope');
+const error = require('../../../../error');
 
 async function getAllCommittees(req, res, next) {
   try {
@@ -36,7 +38,35 @@ async function createCommittees(req, res, next) {
   }
 }
 
-async function updateCommittee(req, res, next) {
+async function updateCommitteeQuestions(req, res, next) {
+  try {
+    const committee = await Committee.findById(req.params.id);
+    if(!committee) {
+      return res.status(404).json({error: "Committee not found"});
+    }
+    if(!canManageCommitteeResource(req.user, committee.name)) {
+      throw new error.Forbidden('You are not assigned to this committee.');
+    }
+
+    const { customQuestions } = req.body
+    if(!Array.isArray(customQuestions)) {
+      throw new error.BadRequest('customQuestions must be an array.');
+    }
+
+    const updatedCommittee = await Committee.findByIdAndUpdate(
+      req.params.id,
+      { $set: {customQuestions } },
+      { new: true, runValidators: true },
+    );
+
+    return res.json({ error: null, committee: updatedCommittee });
+  } catch (e) {
+    return next(e);
+  }
+}
+
+
+async function updateCommitteeAdmin(req, res, next) {
   try {
     const updatedCommittee = await Committee.findByIdAndUpdate(
       req.params.id,
@@ -46,7 +76,7 @@ async function updateCommittee(req, res, next) {
     if (!updatedCommittee) {
       return res.status(404).json({ error: 'Committee not found' });
     }
-    return res.json({ error: null, updatedCommittee });
+    return res.json({ error: null, committee: updatedCommittee });
   } catch (error) {
     return next(error);
   }
@@ -72,6 +102,7 @@ module.exports = {
   getAllCommittees,
   getCommitteeById,
   createCommittees,
-  updateCommittee,
+  updateCommitteeQuestions,
+  updateCommitteeAdmin,
   deleteCommittee,
 };

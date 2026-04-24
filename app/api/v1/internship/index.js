@@ -17,7 +17,8 @@ const {
   getAllCommittees,
   getCommitteeById,
   createCommittees,
-  updateCommittee,
+  updateCommitteeQuestions,
+  updateCommitteeAdmin,
   deleteCommittee,
 } = require('./controllers/committeeController');
 const { validateCreateApplication, validateUpdateApplication, validateGetApplications } = require('./middleware/validation');
@@ -54,7 +55,11 @@ router.get('/committees/:id', auth, getCommitteeById);
 router.post('/committees', auth, admin, committeeRateLimiter, createCommittees);
 
 // UPDATE committee (admin only)
-router.put('/committees/:id', auth, admin, committeeRateLimiter, updateCommittee);
+router.put('/committees/:id/admin', auth, admin, committeeRateLimiter, updateCommitteeAdmin);
+
+// UPDATE committee (admin or officer)
+// Only allows updating committee questions
+router.put('/committees/:id/questions', auth, adminOrOfficer, committeeRateLimiter, updateCommitteeQuestions);
 
 // DELETE committee (admin only) - soft delete by setting isActive to false
 router.delete('/committees/:id', auth, admin, deleteCommittee);
