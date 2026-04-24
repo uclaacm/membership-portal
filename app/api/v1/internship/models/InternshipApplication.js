@@ -152,6 +152,22 @@ const InternshipApplicationSchema = new Schema(
       index: true,
       default: getCurrentApplicationCycle,
     },
+    // Tracks member submission, not officer review
+    submissionStatus: {
+      type: String,
+      enum: ['draft', 'submitted'],
+      default: 'draft',
+      index: true,
+    },
+    deletedAt: {
+      type: Date,
+      default: null,
+      index: true,
+    },
+    deletedBy: {
+      type: String,
+      default: null,
+    },
     submittedAt: {
       type: Date,
       default: Date.now,
@@ -199,6 +215,8 @@ InternshipApplicationSchema.index({ userId: 1, submittedAt: -1 });
 InternshipApplicationSchema.index({ firstChoiceCommittee: 1, firstChoiceStatus: 1 });
 InternshipApplicationSchema.index({ secondChoiceCommittee: 1, secondChoiceStatus: 1 });
 InternshipApplicationSchema.index({ thirdChoiceCommittee: 1, thirdChoiceStatus: 1 });
+InternshipApplicationSchema.index({ userId: 1, applicationCycle: 1, deletedAt: 1 });
+InternshipApplicationSchema.index({ submissionStatus: 1, deletedAt: 1 });
 
 const InternshipApplication = mongoose.model(
   'InternshipApplication',
