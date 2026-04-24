@@ -4,6 +4,24 @@ const {
 } = require('../models/InternshipApplication');
 const { Committee } = require('../models/Committee');
 
+const CHOICE_FIELDS = [
+  {
+    label: 'first choice',
+    committeeField: 'firstChoiceCommittee',
+    responsesField: 'firstChoiceResponses',
+  },
+  {
+    label: 'second choice',
+    committeeField: 'secondChoiceCommittee',
+    responsesField: 'secondChoiceResponses',
+  },
+  {
+    label: 'third choice',
+    committeeField: 'thirdChoiceCommittee',
+    responsesField: 'thirdChoiceResponses',
+  },
+];
+
 // Create a new internship application
 async function createApplication(req, res) {
   try {
@@ -404,6 +422,110 @@ async function deleteApplication(req, res) {
   }
 }
 
+// Submit a draft application after validating ownership, state, committees,
+// deadlines, and completeness of required question answers.
+async function submitApplication(req, res) {
+  try {
+    const application = await InternshipApplication.findById(req.params.id);
+
+    if (!application || application.deletedAt) {
+      return res.status(404).json({
+        success: false,
+        message: 'Application not found',
+      });
+    }
+
+    if (application.userId !== req.user.uuid) {
+      return res.status(403).json({
+        success: false,
+        message: 'You do not have permission to submit this application',
+      });
+    }
+
+    if (application.submissionStatus !== 'draft') {
+      return res.status(409).json({
+        success: false,
+        message: 'Application has already been submitted',
+      });
+    }
+
+    const selectedChoices = CHOICE_FIELDS
+      .map((choice) => ({ ...choice, committeeId: application[choice.committeeField] }))
+      .filter((choice) => choice.committeeId);
+
+    if (selectedChoices.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Application must include at least one committee selection',
+      });
+    }
+
+    const committeeIds = selectedChoices.map((c) => c.committeeId);
+    const committees = await Committee.find({ _id: { $in: committeeIds } });
+    const committeeById = new Map(committees.map((c) => [c._id.toString(), c]));
+
+    const now = Date.now();
+
+    for (let i = 0; i < selectedChoices.length; i++) {
+      const { label, committeeId, responsesField } = selectedChoices[i];
+      const committee = committeeById.get(committeeId.toString());
+
+      if (!committee) {
+        return res.status(400).json({
+          success: false,
+          message: `${label} committee no longer exists`,
+        });
+      }
+
+      if (!committee.isActive) {
+        return res.status(400).json({
+          success: false,
+          message: `${label} committee is no longer accepting applications`,
+        });
+      }
+
+      if (!committee.applicationDeadline
+        || new Date(committee.applicationDeadline).getTime() <= now) {
+        return res.status(400).json({
+          success: false,
+          message: `${label} committee application deadline has passed`,
+        });
+      }
+
+      const requiredQuestions = committee.customQuestions.filter((q) => q.required);
+      const responses = application[responsesField] || [];
+      const answersByKey = new Map(
+        responses.map((r) => [r.questionKey, (r.answer || '').trim()]),
+      );
+
+      const missing = requiredQuestions.filter((q) => !answersByKey.get(q.questionKey));
+
+      if (missing.length > 0) {
+        const missingNames = missing.map((q) => q.questionText).join(', ');
+        return res.status(400).json({
+          success: false,
+          message: `Missing required answers for ${label} committee: ${missingNames}`,
+        });
+      }
+    }
+
+    application.submissionStatus = 'submitted';
+    application.submittedAt = Date.now();
+    await application.save();
+
+    return res.status(200).json({
+      success: true,
+      data: application,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Error submitting application',
+      error: error.message,
+    });
+  }
+}
+
 module.exports = {
   createApplication,
   getAllApplications,
@@ -411,4 +533,5 @@ module.exports = {
   updateApplication,
   deleteApplication,
   getOwnApplication,
+  submitApplication,
 };
