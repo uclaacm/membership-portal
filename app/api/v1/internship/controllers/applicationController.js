@@ -360,9 +360,6 @@ async function updateApplication(req, res) {
       'firstChoiceResponses',
       'secondChoiceResponses',
       'thirdChoiceResponses',
-      'firstChoiceStatus',
-      'secondChoiceStatus',
-      'thirdChoiceStatus',
     ];
 
     // Fetch the application to check ownership and status
@@ -587,7 +584,7 @@ async function submitApplication(req, res) {
     const committeeIds = selectedChoices.map((c) => c.committeeId);
     const committees = await Committee.find({ _id: { $in: committeeIds } })
       .select('isActive applicationDeadline customQuestions displayName name');
-    const committeeById = new Map(committees.map((c) => [c._id.toString(), c]));
+    const committeeById = new Map(committees.map((c) => [c.id.toString(), c]));
 
     const expiredCommittees = findCommitteesPastDeadline(committees);
     if (expiredCommittees.length > 0) {

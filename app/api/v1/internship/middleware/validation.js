@@ -248,18 +248,9 @@ const validateUpdateApplication = [
     .withMessage('Question text is required'),
   body('thirdChoiceResponses.*.answer').optional().trim().notEmpty()
     .withMessage('Answer is required'),
-  body('firstChoiceStatus')
-    .optional()
-    .isIn(STATUS_OPTIONS)
-    .withMessage('Invalid first choice status'),
-  body('secondChoiceStatus')
-    .optional()
-    .isIn(STATUS_OPTIONS)
-    .withMessage('Invalid second choice status'),
-  body('thirdChoiceStatus')
-    .optional()
-    .isIn(STATUS_OPTIONS)
-    .withMessage('Invalid third choice status'),
+  body('firstChoiceStatus').not().exists().withMessage('firstChoiceStatus is managed by reviewers'),
+  body('secondChoiceStatus').not().exists().withMessage('secondChoiceStatus is managed by reviewers'),
+  body('thirdChoiceStatus').not().exists().withMessage('thirdChoiceStatus is managed by reviewers'),
   handleValidationErrors,
 ];
 
