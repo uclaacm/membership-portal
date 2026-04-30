@@ -3,24 +3,62 @@ const {
   getCurrentApplicationCycle,
 } = require('../models/InternshipApplication');
 const { Committee } = require('../models/Committee');
+const {
+  buildDeadlineViolationMessage,
+  findCommitteesPastDeadline,
+  getCommitteeLabel,
+} = require('../utils/deadlineValidation');
 
 const CHOICE_FIELDS = [
   {
     label: 'first choice',
     committeeField: 'firstChoiceCommittee',
     responsesField: 'firstChoiceResponses',
+    statusField: 'firstChoiceStatus',
   },
   {
     label: 'second choice',
     committeeField: 'secondChoiceCommittee',
     responsesField: 'secondChoiceResponses',
+    statusField: 'secondChoiceStatus',
   },
   {
     label: 'third choice',
     committeeField: 'thirdChoiceCommittee',
     responsesField: 'thirdChoiceResponses',
+    statusField: 'thirdChoiceStatus',
   },
 ];
+
+function getOfficerCommittees(user) {
+  if (!user) {
+    return [];
+  }
+  if (user.getDataValue) {
+    return user.getDataValue('committees') || [];
+  }
+  return user.committees || [];
+}
+
+function normalizeCommitteeName(name) {
+  return typeof name === 'string' ? name.trim().toLowerCase() : '';
+}
+
+function officerCanManageCommittee(user, committee) {
+  const officerCommittees = getOfficerCommittees(user)
+    .map(normalizeCommitteeName)
+    .filter(Boolean);
+  const committeeNames = [
+    committee && committee.name,
+    committee && committee.displayName,
+  ].map(normalizeCommitteeName).filter(Boolean);
+
+  return committeeNames.some((name) => officerCommittees.includes(name));
+}
+
+function buildMissingFieldsMessage(missingFields) {
+  return `Missing required fields: ${missingFields.join(', ')}`;
+}
 
 // Create a new internship application
 async function createApplication(req, res) {
@@ -322,9 +360,6 @@ async function updateApplication(req, res) {
       'firstChoiceResponses',
       'secondChoiceResponses',
       'thirdChoiceResponses',
-      'firstChoiceStatus',
-      'secondChoiceStatus',
-      'thirdChoiceStatus',
     ];
 
     // Fetch the application to check ownership and status
@@ -422,6 +457,92 @@ async function deleteApplication(req, res) {
   }
 }
 
+// Update review status for one committee choice on a submitted application.
+async function updateApplicationStatus(req, res) {
+  try {
+    const { statusField, status } = req.body;
+    const choice = CHOICE_FIELDS.find((item) => item.statusField === statusField);
+
+    if (!choice) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid status field',
+      });
+    }
+
+    const application = await InternshipApplication.findById(req.params.id);
+    if (!application || application.deletedAt) {
+      return res.status(404).json({
+        success: false,
+        message: 'Application not found',
+      });
+    }
+
+    if (application.submissionStatus !== 'submitted') {
+      return res.status(400).json({
+        success: false,
+        message: 'Application status can only be updated after submission',
+      });
+    }
+
+    const committeeId = application[choice.committeeField];
+    if (!committeeId) {
+      return res.status(400).json({
+        success: false,
+        message: `Application does not include a ${choice.label} committee`,
+      });
+    }
+
+    const committee = await Committee.findById(committeeId)
+      .select('name displayName');
+    if (!committee) {
+      return res.status(400).json({
+        success: false,
+        message: `${choice.label} committee no longer exists`,
+      });
+    }
+
+    const isAdmin = typeof req.user.isAdmin === 'function' && req.user.isAdmin();
+    const isOfficer = typeof req.user.isOfficer === 'function' && req.user.isOfficer();
+
+    if (!isAdmin && (!isOfficer || !officerCanManageCommittee(req.user, committee))) {
+      return res.status(403).json({
+        success: false,
+        message: `You do not have permission to update ${choice.label} status`,
+      });
+    }
+
+    const lastModifiedAt = new Date();
+    const updatedApp = await InternshipApplication.findByIdAndUpdate(
+      req.params.id,
+      {
+        [statusField]: status,
+        lastModifiedAt,
+      },
+      { new: true, runValidators: true },
+    );
+
+    return res.status(200).json({
+      success: true,
+      data: updatedApp,
+      message: 'Application status updated successfully',
+    });
+  } catch (error) {
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation error',
+        errors: error.errors,
+      });
+    }
+    return res.status(500).json({
+      success: false,
+      message: 'Error updating application status',
+      error: error.message,
+    });
+  }
+}
+
 // Submit a draft application after validating ownership, state, committees,
 // deadlines, and completeness of required question answers.
 async function submitApplication(req, res) {
@@ -443,7 +564,7 @@ async function submitApplication(req, res) {
     }
 
     if (application.submissionStatus !== 'draft') {
-      return res.status(409).json({
+      return res.status(400).json({
         success: false,
         message: 'Application has already been submitted',
       });
@@ -461,10 +582,17 @@ async function submitApplication(req, res) {
     }
 
     const committeeIds = selectedChoices.map((c) => c.committeeId);
-    const committees = await Committee.find({ _id: { $in: committeeIds } });
-    const committeeById = new Map(committees.map((c) => [c._id.toString(), c]));
+    const committees = await Committee.find({ _id: { $in: committeeIds } })
+      .select('isActive applicationDeadline customQuestions displayName name');
+    const committeeById = new Map(committees.map((c) => [c.id.toString(), c]));
 
-    const now = Date.now();
+    const expiredCommittees = findCommitteesPastDeadline(committees);
+    if (expiredCommittees.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: buildDeadlineViolationMessage(expiredCommittees),
+      });
+    }
 
     for (let i = 0; i < selectedChoices.length; i++) {
       const { label, committeeId, responsesField } = selectedChoices[i];
@@ -484,14 +612,6 @@ async function submitApplication(req, res) {
         });
       }
 
-      if (!committee.applicationDeadline
-        || new Date(committee.applicationDeadline).getTime() <= now) {
-        return res.status(400).json({
-          success: false,
-          message: `${label} committee application deadline has passed`,
-        });
-      }
-
       const requiredQuestions = committee.customQuestions.filter((q) => q.required);
       const responses = application[responsesField] || [];
       const answersByKey = new Map(
@@ -501,21 +621,43 @@ async function submitApplication(req, res) {
       const missing = requiredQuestions.filter((q) => !answersByKey.get(q.questionKey));
 
       if (missing.length > 0) {
-        const missingNames = missing.map((q) => q.questionText).join(', ');
+        const missingNames = missing
+          .map((q) => `${getCommitteeLabel(committee)}: ${q.questionText}`);
         return res.status(400).json({
           success: false,
-          message: `Missing required answers for ${label} committee: ${missingNames}`,
+          message: buildMissingFieldsMessage(missingNames),
+          missingFields: missingNames,
         });
       }
     }
 
-    application.submissionStatus = 'submitted';
-    application.submittedAt = Date.now();
-    await application.save();
+    const submittedAt = new Date();
+    const updatedApp = await InternshipApplication.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        userId: req.user.uuid,
+        submissionStatus: 'draft',
+        deletedAt: null,
+      },
+      {
+        submissionStatus: 'submitted',
+        submittedAt,
+        lastModifiedAt: submittedAt,
+      },
+      { new: true, runValidators: true },
+    );
+
+    if (!updatedApp) {
+      return res.status(400).json({
+        success: false,
+        message: 'Application has already been submitted',
+      });
+    }
 
     return res.status(200).json({
       success: true,
-      data: application,
+      data: updatedApp,
+      message: 'Application submitted successfully',
     });
   } catch (error) {
     return res.status(500).json({
@@ -531,6 +673,7 @@ module.exports = {
   getAllApplications,
   getApplicationById,
   updateApplication,
+  updateApplicationStatus,
   deleteApplication,
   getOwnApplication,
   submitApplication,

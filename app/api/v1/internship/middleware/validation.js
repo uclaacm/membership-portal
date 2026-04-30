@@ -11,6 +11,12 @@ const STATUS_OPTIONS = [
   'rejected',
 ];
 
+const STATUS_FIELD_OPTIONS = [
+  'firstChoiceStatus',
+  'secondChoiceStatus',
+  'thirdChoiceStatus',
+];
+
 const EMAIL_REGEX = /^\S+@(ucla\.edu|g\.ucla\.edu)$/;
 
 async function validateCommitteeById(value, fieldLabel) {
@@ -242,18 +248,27 @@ const validateUpdateApplication = [
     .withMessage('Question text is required'),
   body('thirdChoiceResponses.*.answer').optional().trim().notEmpty()
     .withMessage('Answer is required'),
-  body('firstChoiceStatus')
-    .optional()
+  body('firstChoiceStatus').not().exists().withMessage('firstChoiceStatus is managed by reviewers'),
+  body('secondChoiceStatus').not().exists().withMessage('secondChoiceStatus is managed by reviewers'),
+  body('thirdChoiceStatus').not().exists().withMessage('thirdChoiceStatus is managed by reviewers'),
+  handleValidationErrors,
+];
+
+// Validate application review status update
+const validateUpdateApplicationStatus = [
+  param('id').isMongoId().withMessage('Invalid application ID'),
+  body('statusField')
+    .exists()
+    .withMessage('statusField is required')
+    .bail()
+    .isIn(STATUS_FIELD_OPTIONS)
+    .withMessage('statusField must be one of firstChoiceStatus, secondChoiceStatus, thirdChoiceStatus'),
+  body('status')
+    .exists()
+    .withMessage('status is required')
+    .bail()
     .isIn(STATUS_OPTIONS)
-    .withMessage('Invalid first choice status'),
-  body('secondChoiceStatus')
-    .optional()
-    .isIn(STATUS_OPTIONS)
-    .withMessage('Invalid second choice status'),
-  body('thirdChoiceStatus')
-    .optional()
-    .isIn(STATUS_OPTIONS)
-    .withMessage('Invalid third choice status'),
+    .withMessage('Invalid application status'),
   handleValidationErrors,
 ];
 
@@ -297,6 +312,7 @@ module.exports = {
   handleValidationErrors,
   validateCreateApplication,
   validateUpdateApplication,
+  validateUpdateApplicationStatus,
   validateGetApplications,
   validateMongoId,
 };
