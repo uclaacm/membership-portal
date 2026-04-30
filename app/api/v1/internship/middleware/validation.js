@@ -11,6 +11,12 @@ const STATUS_OPTIONS = [
   'rejected',
 ];
 
+const STATUS_FIELD_OPTIONS = [
+  'firstChoiceStatus',
+  'secondChoiceStatus',
+  'thirdChoiceStatus',
+];
+
 const EMAIL_REGEX = /^\S+@(ucla\.edu|g\.ucla\.edu)$/;
 
 async function validateCommitteeById(value, fieldLabel) {
@@ -257,6 +263,24 @@ const validateUpdateApplication = [
   handleValidationErrors,
 ];
 
+// Validate application review status update
+const validateUpdateApplicationStatus = [
+  param('id').isMongoId().withMessage('Invalid application ID'),
+  body('statusField')
+    .exists()
+    .withMessage('statusField is required')
+    .bail()
+    .isIn(STATUS_FIELD_OPTIONS)
+    .withMessage('statusField must be one of firstChoiceStatus, secondChoiceStatus, thirdChoiceStatus'),
+  body('status')
+    .exists()
+    .withMessage('status is required')
+    .bail()
+    .isIn(STATUS_OPTIONS)
+    .withMessage('Invalid application status'),
+  handleValidationErrors,
+];
+
 // Validate get all applications query
 const validateGetApplications = [
   query('firstChoiceStatus')
@@ -297,6 +321,7 @@ module.exports = {
   handleValidationErrors,
   validateCreateApplication,
   validateUpdateApplication,
+  validateUpdateApplicationStatus,
   validateGetApplications,
   validateMongoId,
 };
