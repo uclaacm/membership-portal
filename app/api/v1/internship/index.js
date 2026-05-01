@@ -23,6 +23,7 @@ const {
   updateCommitteeQuestions,
   updateCommitteeAdmin,
   deleteCommittee,
+  bulkUpdateCommitteeStatus,
 } = require('./controllers/committeeController');
 const {
   validateCreateApplication,
@@ -65,6 +66,9 @@ router.get('/committees', getAllCommittees);
 
 // GET all committees including inactive (admin only) - must be before /:id
 router.get('/committees/admin', auth, admin, getAllCommitteesAdmin);
+
+// PATCH bulk open/close committees (admin only) - must be before /:id routes
+router.patch('/committees/bulk-status', auth, admin, committeeRateLimiter, bulkUpdateCommitteeStatus);
 
 // GET a single committee by ID
 router.get('/committees/:id', auth, getCommitteeById);
