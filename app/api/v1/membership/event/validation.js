@@ -2,7 +2,13 @@ const { body, param } = require('express-validator');
 const { handleValidationErrors } = require('../../validation');
 
 const REPEATED_EVENT_SCOPES = ['all', 'fromInstance'];
-const REPEATED_EVENT_FREQUENCIES = ['daily', 'weekly', 'monthly'];
+const ISO_WEEKDAY_MIN = 1;
+const ISO_WEEKDAY_MAX = 7;
+
+const toDateOnlyKey = (value) => {
+  const date = new Date(value);
+  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+};
 
 const validateEventObject = body('event')
   .exists()
@@ -38,29 +44,41 @@ const validateCreateRepeatedEvent = [
   body('recurrence')
     .isObject()
     .withMessage('recurrence is required'),
-  body('recurrence.frequency')
-    .isIn(REPEATED_EVENT_FREQUENCIES)
-    .withMessage('recurrence.frequency must be one of daily, weekly, or monthly'),
+  body('recurrence.intervalWeeks')
+    .isInt({ min: 1 })
+    .withMessage('recurrence.intervalWeeks must be an integer greater than or equal to 1'),
+  body('recurrence.daysOfWeek')
+    .optional()
+    .isArray({ min: 1, max: 7 })
+    .withMessage('recurrence.daysOfWeek must be an array of ISO weekdays (1-7)'),
+  body('recurrence.daysOfWeek.*')
+    .optional()
+    .isInt({ min: ISO_WEEKDAY_MIN, max: ISO_WEEKDAY_MAX })
+    .withMessage('recurrence.daysOfWeek values must be integers in the range 1-7'),
+  body('recurrence.daysOfWeek')
+    .optional()
+    .custom((daysOfWeek = []) => new Set(daysOfWeek).size === daysOfWeek.length)
+    .withMessage('recurrence.daysOfWeek values must be unique'),
   body('recurrence.seriesEndDate')
     .isISO8601()
     .withMessage('recurrence.seriesEndDate must be a valid date'),
   body()
     .custom((_value, { req }) => {
-      const { evt, recurrence } = req.body;
-      if (!evt || !recurrence) return true;
+      const { event: eventPayload, recurrence } = req.body;
+      if (!eventPayload || !recurrence) return true;
 
       if (
-        evt.startDate
-        && evt.endDate
-        && new Date(evt.startDate) > new Date(evt.endDate)
+        eventPayload.startDate
+        && eventPayload.endDate
+        && new Date(eventPayload.startDate) > new Date(eventPayload.endDate)
       ) {
         throw new Error('Start date must be before end date');
       }
 
       if (
-        evt.startDate
+        eventPayload.startDate
         && recurrence.seriesEndDate
-        && new Date(recurrence.seriesEndDate) < new Date(evt.startDate)
+        && toDateOnlyKey(recurrence.seriesEndDate) < toDateOnlyKey(eventPayload.startDate)
       ) {
         throw new Error('recurrence.seriesEndDate must be on or after event.startDate');
       }
@@ -85,6 +103,8 @@ const validateRepeatedEventScope = [
   handleValidationErrors,
 ];
 
+const FORBIDDEN_PATCH_REPEATED_EVENT_KEYS = ['startDate', 'endDate', 'attendanceCode'];
+
 const validatePatchRepeatedEvent = [
   ...validateRepeatedEventScope.slice(0, -1),
   validateEventObject,
@@ -92,12 +112,13 @@ const validatePatchRepeatedEvent = [
     .custom((_value, { req }) => {
       const evt = req.body.event;
       if (!evt) return true;
-      if (
-        evt.startDate
-        && evt.endDate
-        && new Date(evt.startDate) > new Date(evt.endDate)
-      ) {
-        throw new Error('Start date must be before end date');
+      const forbiddenPresent = FORBIDDEN_PATCH_REPEATED_EVENT_KEYS.filter(
+        (key) => Object.prototype.hasOwnProperty.call(evt, key),
+      );
+      if (forbiddenPresent.length > 0) {
+        throw new Error(
+          'Repeated group PATCH cannot change startDate, endDate, or attendanceCode. Update a single instance with PATCH /event/:uuid.',
+        );
       }
       return true;
     }),

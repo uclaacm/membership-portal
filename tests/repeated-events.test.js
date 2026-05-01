@@ -69,7 +69,7 @@ describe('Repeated event routes', () => {
           attendancePoints: 1,
         },
         recurrence: {
-          frequency: 'weekly',
+          intervalWeeks: 1,
           seriesEndDate: '2026-05-15T18:00:00.000Z',
         },
       });
@@ -82,6 +82,10 @@ describe('Repeated event routes', () => {
     const createdEvents = repeatedCreateResponse.body.events;
     const createdCodes = createdEvents.map((event) => event.attendanceCode);
     expect(new Set(createdCodes).size).toBe(createdCodes.length);
+    const attendanceSuffix = /-[A-Za-z0-9]{4}$/;
+    createdCodes.forEach((code) => {
+      expect(code).toMatch(attendanceSuffix);
+    });
     createdEvents.forEach((event) => {
       expect(event.eventGroupId).toBe(eventGroupId);
     });

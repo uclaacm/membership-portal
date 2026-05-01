@@ -62,6 +62,9 @@ router.route('/repeated')
       }
 
       const { eventGroupId, rows } = buildRepeatedEventRows(eventData, req.body.recurrence);
+      if (rows.length === 0) {
+        throw new error.BadRequest('No repeated events fit within the requested date range.');
+      }
       const created = await db.transaction((transaction) => Event.bulkCreate(
         rows,
         {
@@ -115,11 +118,6 @@ router.route('/repeated/:eventGroupId')
         ))
       ) {
         throw new error.Forbidden('You do not have permission to move these events to another committee.');
-      }
-      if (updates.attendanceCode && targetEvents.length > 1) {
-        throw new error.BadRequest(
-          'attendanceCode is unique per event instance; update events individually to change attendance codes.',
-        );
       }
 
       const updated = await db.transaction(async (transaction) => Promise.all(
