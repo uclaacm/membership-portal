@@ -2,6 +2,8 @@ const express = require('express');
 const error = require('../../../../error');
 const { Event } = require('../../../../db');
 const { assertCanManageCommitteeResource, canManageCommitteeResource } = require('../../auth/committeeScope');
+const { validateCreateEvent } = require('./validation');
+const { router: repeatedRouter } = require('./repeated');
 
 const router = express.Router();
 
@@ -94,9 +96,7 @@ router
    * Adds an event, given an event object (see sanitize function for event DB schema)
    * Returns the newly created event upon success
    */
-  .post((req, res, next) => {
-    if (!req.body.event) return next(new error.BadRequest());
-
+  .post(...validateCreateEvent, (req, res, next) => {
     if (!req.user.isAdmin()) {
       const committee = typeof req.body.event.committee === 'string'
         ? req.body.event.committee.trim()
@@ -113,12 +113,6 @@ router
       }
     }
 
-    if (
-      req.body.event.startDate
-      && req.body.event.endDate
-      && new Date(req.body.event.startDate) > new Date(req.body.event.endDate)
-    ) return next(new error.BadRequest('Start date must be before end date'));
-
     return Event.create(Event.sanitize(req.body.event))
       .then((event) => {
         res.json(
@@ -128,6 +122,8 @@ router
       })
       .catch(next);
   });
+
+router.use('/', repeatedRouter);
 
 // Route with UUID - get single event by UUID
 router
