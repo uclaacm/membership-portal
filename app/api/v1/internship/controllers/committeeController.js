@@ -116,6 +116,7 @@ async function bulkUpdateCommitteeStatus(req, res, next) {
       : {};
 
     const result = await Committee.updateMany(filter, { $set: { isActive } });
+    // result.modifiedCount and result.nModified options are to support Mongoose 6+ and older versions of Mongoose
     const modified = (result && (result.modifiedCount !== undefined ? result.modifiedCount : result.nModified)) || 0;
 
     return res.json({ success: true, modified });
