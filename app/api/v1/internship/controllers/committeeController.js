@@ -98,6 +98,33 @@ async function deleteCommittee(req, res, next) {
   }
 }
 
+async function bulkUpdateCommitteeStatus(req, res, next) {
+  try {
+    const { action, committeeIds } = req.body;
+
+    if (action !== 'open' && action !== 'close') {
+      throw new error.BadRequest("action must be either 'open' or 'close'.");
+    }
+
+    if (committeeIds !== undefined && !Array.isArray(committeeIds)) {
+      throw new error.BadRequest('committeeIds must be an array of strings.');
+    }
+
+    const isActive = action === 'open';
+    const filter = (Array.isArray(committeeIds) && committeeIds.length > 0)
+      ? { _id: { $in: committeeIds } }
+      : {};
+
+    const result = await Committee.updateMany(filter, { $set: { isActive } });
+    // result.modifiedCount and result.nModified options are to support Mongoose 6+ and older versions of Mongoose
+    const modified = (result && (result.modifiedCount !== undefined ? result.modifiedCount : result.nModified)) || 0;
+
+    return res.json({ success: true, modified });
+  } catch (e) {
+    return next(e);
+  }
+}
+
 async function getAllCommitteesAdmin(req, res, next) {
   try {
     const committees = await Committee
@@ -118,4 +145,5 @@ module.exports = {
   updateCommitteeQuestions,
   updateCommitteeAdmin,
   deleteCommittee,
+  bulkUpdateCommitteeStatus,
 };
