@@ -1,6 +1,34 @@
 const { Committee } = require('../models/Committee');
+const { InternshipApplication } = require('../models/InternshipApplication');
 const { canManageCommitteeResource } = require('../../auth/committeeScope');
 const error = require('../../../../error');
+
+// Count submitted (non-deleted) applications per committee across all 3 choice slots.
+// $setUnion dedupes per application so a committee selected in multiple slots only counts once.
+async function getApplicationCountsByCommittee() {
+  const counts = await InternshipApplication.aggregate([
+    { $match: { deletedAt: null, submissionStatus: 'submitted' } },
+    {
+      $project: {
+        committees: {
+          $setUnion: [
+            { $cond: [{ $ifNull: ['$firstChoiceCommittee', false] }, ['$firstChoiceCommittee'], []] },
+            { $cond: [{ $ifNull: ['$secondChoiceCommittee', false] }, ['$secondChoiceCommittee'], []] },
+            { $cond: [{ $ifNull: ['$thirdChoiceCommittee', false] }, ['$thirdChoiceCommittee'], []] },
+          ],
+        },
+      },
+    },
+    { $unwind: '$committees' },
+    { $group: { _id: '$committees', count: { $sum: 1 } } },
+  ]);
+
+  const countByCommitteeId = new Map();
+  counts.forEach((row) => {
+    countByCommitteeId.set(row._id.toString(), row.count);
+  });
+  return countByCommitteeId;
+}
 
 async function getAllCommittees(req, res, next) {
   try {
@@ -127,11 +155,17 @@ async function bulkUpdateCommitteeStatus(req, res, next) {
 
 async function getAllCommitteesAdmin(req, res, next) {
   try {
-    const committees = await Committee
-      .find({})
-      .sort({ displayName: 1 });
+    const [committees, countByCommitteeId] = await Promise.all([
+      Committee.find({}).sort({ displayName: 1 }),
+      getApplicationCountsByCommittee(),
+    ]);
 
-    return res.json({ error: null, committees });
+    const committeesWithCounts = committees.map((committee) => ({
+      ...committee.toObject(),
+      applicationCount: countByCommitteeId.get(committee._id.toString()) || 0,
+    }));
+
+    return res.json({ error: null, committees: committeesWithCounts });
   } catch (error) {
     return next(error);
   }
