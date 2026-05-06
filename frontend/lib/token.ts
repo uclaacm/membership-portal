@@ -17,7 +17,7 @@ function tokenGetClaims(token: string) {
   return JSON.parse(decodedPayload);
 }
 
-export function isAuthenticated(token: string | undefined): boolean {
+export function isAuthenticated(token: string | undefined): token is string {
   return !!token;
 }
 
