@@ -1,7 +1,7 @@
 .career-landing {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 80px 20px;
 
   .career-landing-header {
     text-align: center;
@@ -351,6 +351,7 @@
 
 @media (max-width: 1024px) {
   .career-landing {
+    padding-top: 80px;
     .career-landing-content {
       grid-template-columns: 1fr;
     }
