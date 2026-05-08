@@ -133,4 +133,40 @@ describe('Repeated event routes', () => {
     await Event.destroy({ where: { eventGroupId } });
     await User.destroy({ where: { uuid: admin.uuid } });
   });
+
+  test('Repeated create succeeds across month boundary (calendar-day compare)', async () => {
+    const admin = await createUser({ accessType: 'ADMIN' });
+    const adminToken = await makeToken(admin);
+
+    const startDate = new Date('2026-10-14T18:00:00.000Z');
+    const endDate = new Date('2026-10-14T20:00:00.000Z');
+    const repeatedCreateResponse = await request(server)
+      .post(`${API_ROUTE}/event/repeated`)
+      .auth(adminToken, { type: 'bearer' })
+      .send({
+        event: {
+          committee: 'Hack',
+          title: unique('Repeated Cross Month'),
+          description: 'Series',
+          location: 'Boelter Hall',
+          eventLink: 'https://example.com/series',
+          cover: 'https://example.com/cover.png',
+          startDate,
+          endDate,
+          attendanceCode: unique('SERIESCM'),
+          attendancePoints: 1,
+        },
+        recurrence: {
+          intervalWeeks: 1,
+          daysOfWeek: [1, 3],
+          seriesEndDate: '2026-11-30T18:00:00.000Z',
+        },
+      });
+
+    expect(repeatedCreateResponse.statusCode).toBe(200);
+    expect(repeatedCreateResponse.body.events.length).toBeGreaterThan(0);
+
+    await Event.destroy({ where: { eventGroupId: repeatedCreateResponse.body.eventGroupId } });
+    await User.destroy({ where: { uuid: admin.uuid } });
+  });
 });

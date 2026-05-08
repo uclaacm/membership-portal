@@ -6,7 +6,10 @@ const normalizeDate = (value) => new Date(value);
 
 const toDateOnlyKey = (value) => {
   const date = normalizeDate(value);
-  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
 };
 
 const getISOWeekday = (date) => {
