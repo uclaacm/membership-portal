@@ -271,19 +271,19 @@ module.exports = (Sequelize, db) => {
       'attendanceCode',
       'attendancePoints',
     ]);
-    if (sanitizedEvent.cover !== undefined && sanitizedEvent.cover.length === 0) {
+    if (sanitizedEvent.cover != null && sanitizedEvent.cover.length === 0) {
       sanitizedEvent.cover = null;
     }
-    if (sanitizedEvent.eventLink !== undefined && sanitizedEvent.eventLink.length === 0) {
+    if (sanitizedEvent.eventLink != null && sanitizedEvent.eventLink.length === 0) {
       sanitizedEvent.eventLink = null;
     }
-    if (sanitizedEvent.description !== undefined && sanitizedEvent.description.length === 0) {
+    if (sanitizedEvent.description != null && sanitizedEvent.description.length === 0) {
       sanitizedEvent.description = null;
     }
-    if (sanitizedEvent.committee !== undefined && sanitizedEvent.committee.length === 0) {
+    if (sanitizedEvent.committee != null && sanitizedEvent.committee.length === 0) {
       delete sanitizedEvent.committee;
     }
-    if (sanitizedEvent.attendanceCode !== undefined && sanitizedEvent.attendanceCode.length === 0) {
+    if (sanitizedEvent.attendanceCode != null && sanitizedEvent.attendanceCode.length === 0) {
       delete sanitizedEvent.attendanceCode;
     }
 
