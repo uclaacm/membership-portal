@@ -352,6 +352,7 @@ const config = {
     ["W", "#01d4cb"],
     ["Cloud", "#9f97ff"],
   ],
+  platforms: ["Instagram Story", "Instagram Post", "Discord", "LinkTree", "Medium Article", "LinkedIn", "CS Newsletter"],
 };
 
 export default config;

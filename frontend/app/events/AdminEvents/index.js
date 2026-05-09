@@ -21,6 +21,7 @@ export default class AdminEvents extends React.Component {
       endDate: '',
       eventLink: '',
       location: '',
+      platforms: [],
       startDate: '',
       title: '',
       startTime: '',

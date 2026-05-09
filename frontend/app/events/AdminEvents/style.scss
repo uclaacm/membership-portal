@@ -289,6 +289,101 @@
         gap: 12px;
         align-items: flex-start;
       }
+
+      .multi-select {
+        position: relative;
+
+        .multi-select-trigger {
+          @include field-input;
+          position: relative;
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: 4px;
+          padding-right: 32px;
+          cursor: pointer;
+
+          &.is-placeholder { color: #bbb; }
+
+          i {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: vars.$primaryblack;
+          }
+        }
+
+        .multi-select-chip {
+          display: inline-flex;
+          align-items: stretch;
+          background: vars.$secondaryblue;
+          color: vars.$white;
+          border-radius: 4px;
+          font-size: 12px;
+          font-weight: 600;
+          overflow: hidden;
+
+          .chip-label {
+            padding: 4px;
+          }
+
+          button {
+            background: none;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            font-size: 15px;
+            line-height: 1;
+            padding: 2px 4px;
+            display: flex;
+            align-items: center;
+
+            &:hover {
+              background: rgba(255, 255, 255, 0.25);
+            }
+          }
+        }
+
+        .multi-select-menu {
+          position: absolute;
+          top: calc(100% + 4px);
+          left: 0;
+          right: 0;
+          background: #fff;
+          border: 1.5px solid #e2e4e8;
+          border-radius: 8px;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+          z-index: 20;
+          padding: 4px;
+          overflow-y: auto;
+
+          button {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 6px 12px;
+            background: none;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: "Lato", sans-serif;
+            color: vars.$primaryblack;
+            cursor: pointer;
+
+            &:hover {
+              background: #e8f0fe;
+              color: vars.$secondaryblue;
+            }
+
+            &.selected {
+              background: vars.$secondaryblue;
+              color: vars.$white;
+            }
+          }
+        }
+      }
     }
 
     // ── Right: preview panel ──────────────────────────────────
