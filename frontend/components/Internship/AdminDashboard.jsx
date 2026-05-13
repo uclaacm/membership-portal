@@ -1,8 +1,10 @@
 "use client";
 
+import "./style.scss";
+
 export default function AdminDashboard() {
   return (
-    <div>
+    <div className="admin-dashboard">
       <h2>Admin Dashboard</h2>
     </div>
   );
