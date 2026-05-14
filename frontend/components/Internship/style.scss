@@ -57,9 +57,123 @@
 }
 
 .admin-dashboard,
-.officer-dashboard,
-.member-dashboard {
+.officer-dashboard {
   padding: 2rem;
   max-width: 1100px;
   margin: 2rem auto;
+}
+.member-dashboard {
+  padding: 2rem;
+  margin-top: 61px;
+  height: calc(100vh - 61px);
+  overflow-y: auto;
+
+  &__container {
+    display: flex;
+    flex-direction: row;
+    gap: 1.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  &__left {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__right {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__right-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: vars.$primaryblack;
+  }
+
+  &__committee-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    padding-right: 0.5rem;
+  }
+
+  &__loading {
+    color: vars.$secondaryblack;
+    font-style: italic;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  &__empty-state {
+    padding: 3rem 2rem;
+    text-align: center;
+    background: vars.$tertiaryblue;
+    border-radius: 8px;
+  }
+
+  &__empty-message {
+    color: vars.$secondaryblack;
+    font-size: 1rem;
+    margin: 0;
+  }
+}
+
+.application-status-card {
+  background: vars.$white;
+  border: 1px solid vars.$gray1;
+  border-radius: 8px;
+  padding: 1.5rem;
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    color: vars.$primaryblack;
+  }
+
+  &__content {
+    color: vars.$secondaryblack;
+  }
+}
+
+.member-dashboard__committee-card {
+  border: 1px solid vars.$gray1;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.member-dashboard__committee-card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  color: vars.$primaryblack;
+}
+
+.committee-card {
+  background: vars.$white;
+  border: 1px solid vars.$gray1;
+  border-radius: 8px;
+  padding: 1rem;
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  &__name {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    color: vars.$primaryblack;
+  }
+
+  &__description {
+    font-size: 0.875rem;
+    color: vars.$secondaryblack;
+    margin: 0;
+    line-height: 1.4;
+  }
 }
