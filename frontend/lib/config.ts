@@ -38,6 +38,8 @@ const config = {
       applications: "/api/v1/internship/applications",
       ownApplication: "/api/v1/internship/applications/me",
       committees: "/api/v1/internship/committees",
+      committeesAdmin: "/api/v1/internship/committees/admin",
+      committeesBulkStatus: "/api/v1/internship/committees/bulk-status",
     },
     leaderboard: "/api/v1/leaderboard",
     admin: {

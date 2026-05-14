@@ -1,0 +1,206 @@
+@use "@/styles/vars";
+
+.admin-dashboard {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  &__tabs {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 1px solid vars.$gray1;
+    margin-bottom: 1.5rem;
+  }
+
+  &__tab {
+    appearance: none;
+    background: none;
+    border: none;
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: vars.$gray3;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+
+    &:hover {
+      color: vars.$primary-color;
+    }
+
+    &--active {
+      color: vars.$primary-color;
+      border-bottom-color: vars.$primary-color;
+    }
+  }
+
+  &__panel {
+    min-height: 200px;
+  }
+
+  &__placeholder {
+    padding: 2rem;
+    color: vars.$gray3;
+    text-align: center;
+  }
+}
+
+.committee-table-wrapper {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  &__bulk-btn {
+    appearance: none;
+    background: vars.$white;
+    color: vars.$primary-color;
+    border: 1px solid vars.$primary-color;
+    padding: 0.4rem 0.9rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: background 0.15s, color 0.15s;
+
+    &:hover:not(:disabled) {
+      background: vars.$primary-color;
+      color: vars.$white;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__error {
+    background: rgba(247, 78, 78, 0.1);
+    color: vars.$dark-red;
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+  }
+
+  &__empty {
+    padding: 2rem;
+    text-align: center;
+    color: vars.$gray3;
+  }
+}
+
+.committee-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+
+  th,
+  td {
+    text-align: left;
+    padding: 0.75rem 0.5rem;
+    border-bottom: 1px solid vars.$gray1;
+  }
+
+  th {
+    font-weight: 600;
+    color: vars.$gray3;
+    background: rgba(0, 0, 0, 0.02);
+  }
+
+  tr:hover td {
+    background: rgba(0, 0, 0, 0.02);
+  }
+
+  &__checkbox-col {
+    width: 32px;
+  }
+
+  &__status {
+    display: inline-block;
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    &--active {
+      background: rgba(52, 220, 106, 0.15);
+      color: vars.$dark-green;
+    }
+
+    &--inactive {
+      background: rgba(0, 0, 0, 0.08);
+      color: vars.$gray3;
+    }
+  }
+
+  &__edit-link {
+    color: vars.$secondary-color;
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.bulk-action-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: vars.$primary-color;
+  color: vars.$white;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+
+  &__count {
+    font-weight: 500;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: auto;
+  }
+
+  &__btn {
+    appearance: none;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: transparent;
+    color: vars.$white;
+    padding: 0.4rem 0.9rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__clear {
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: vars.$white;
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 0.85rem;
+  }
+}

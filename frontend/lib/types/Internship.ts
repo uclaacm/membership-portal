@@ -63,6 +63,25 @@ export interface InternshipCommittee {
 
 export type FetchCommitteeByIdResult = { success: true; data: InternshipCommittee } | { success: false; error: string };
 
+export interface InternshipCommitteeAdminListItem extends InternshipCommittee {
+  applicationCount: number;
+}
+
+export type FetchCommitteesResult =
+  | { success: true; data: InternshipCommitteeAdminListItem[] }
+  | { success: false; error: string };
+
+export type BulkCommitteeStatusAction = "open" | "close";
+
+export type BulkUpdateCommitteeStatusPayload = {
+  action: BulkCommitteeStatusAction;
+  committeeIds?: string[];
+};
+
+export type BulkUpdateCommitteeStatusResult =
+  | { success: true; modified: number }
+  | { success: false; error: string };
+
 export interface InternshipCustomQuestion {
   questionKey: string;
   questionText: string;
