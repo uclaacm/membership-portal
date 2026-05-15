@@ -164,6 +164,13 @@ module.exports = (Sequelize, db) => {
         },
       },
 
+      // platforms for the event to be marketed on (e.g. LinkedIn, Instagram Story, etc.)
+      platforms: {
+        type: Sequelize.ARRAY(Sequelize.STRING),
+        allowNull: false,
+        defaultValue: [],
+      },
+
       // starting in winter 2019, we want to soft-delete events by marking them as 'deleted'
       // and then not serving them to the user, vs. deleting them from the database entirely.
       deleted: {
