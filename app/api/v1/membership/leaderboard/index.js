@@ -1,6 +1,6 @@
 const express = require('express');
 const error = require('../../../../error');
-const { User } = require('../../../../db');
+const { User, Attendance } = require('../../../../db');
 
 const router = express.Router();
 
@@ -18,10 +18,31 @@ router.route('/').get((req, res, next) => {
 
   return User.getLeaderboard(offset, limit)
     .then((users) => {
-      // map the user objects to base profile (name, picture, points)
       res.json({
         error: null,
         leaderboard: users.map((u) => u.getBaseProfile()),
+      });
+      return null;
+    })
+    .catch(next);
+});
+
+router.route('/:committee').get((req, res, next) => {
+  if (req.user.isPending()) return next(new error.Forbidden());
+
+  const offset = parseInt(req.query.offset, 10);
+  const limit = parseInt(req.query.limit, 10);
+
+  return Attendance.getCommitteeLeaderboard(req.params.committee, offset, limit)
+    .then((results) => {
+      res.json({
+        error: null,
+        leaderboard: results
+          .filter((r) => r.user !== null)
+          .map((r) => ({
+            ...r.user.getBaseProfile(),
+            eventsAttended: r.eventsAttended,
+          })),
       });
       return null;
     })
