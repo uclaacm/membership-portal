@@ -67,8 +67,7 @@ router.post('/promote-officer', authenticated, async (req, res, next) => {
 });
 
 // DELETE /api/admin/promote-officer
-// Removes one or more committee assignments from an OFFICER. If the officer's
-// committees list becomes empty, demotes them back to STANDARD.
+// Removes an OFFICER from their single committee assignment and demotes them to STANDARD.
 // Requires admin JWT auth.
 router.delete('/promote-officer', authenticated, async (req, res, next) => {
   try {
@@ -79,9 +78,11 @@ router.delete('/promote-officer', authenticated, async (req, res, next) => {
     const { email, committees } = req.body;
 
     if (!email) return res.status(400).json({ error: 'Email is required' });
-    if (!Array.isArray(committees) || committees.length === 0) {
-      return res.status(400).json({ error: 'committees must be a non-empty array' });
+    if (!Array.isArray(committees) || committees.length !== 1) {
+      return res.status(400).json({ error: 'committees must contain exactly one committee to remove.' });
     }
+
+    const [committee] = committees;
 
     const user = await User.findOne({ where: { email } });
     if (!user) return res.status(404).json({ error: `No user found with email ${email}` });
@@ -91,27 +92,16 @@ router.delete('/promote-officer', authenticated, async (req, res, next) => {
     }
 
     const current = user.getDataValue('committees') || [];
-    const missing = committees.filter((c) => !current.includes(c));
-    if (missing.length > 0) {
+    if (!current.includes(committee)) {
       return res.status(404).json({
-        error: `${email} is not assigned to committee(s): ${missing.join(', ')}.`,
+        error: `${email} is not assigned to committee: ${committee}.`,
       });
     }
 
-    const remaining = current.filter((c) => !committees.includes(c));
-
-    if (remaining.length === 0) {
-      await user.update({ accessType: 'STANDARD', committees: [] });
-      return res.json({
-        error: null,
-        message: `${email} removed from ${committees.join(', ')}. Demoted to standard member (no committees remaining).`,
-      });
-    }
-
-    await user.update({ committees: remaining });
+    await user.update({ accessType: 'STANDARD', committees: [] });
     return res.json({
       error: null,
-      message: `${email} removed from ${committees.join(', ')}.`,
+      message: `${email} removed from ${committee}. Demoted to standard member.`,
     });
   } catch (err) {
     return next(err);
