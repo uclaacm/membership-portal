@@ -177,3 +177,121 @@
     line-height: 1.4;
   }
 }
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.4;
+
+  &--pending {
+    background-color: #fef3c7;
+    color: #92400e;
+  }
+
+  &--reviewing {
+    background-color: #dbeafe;
+    color: #1e40af;
+  }
+
+  &--interview_scheduled {
+    background-color: #e0e7ff;
+    color: #3730a3;
+  }
+
+  &--accepted {
+    background-color: #dcfce7;
+    color: #166534;
+  }
+
+  &--rejected {
+    background-color: #fee2e2;
+    color: #991b1b;
+  }
+
+  &--submitted {
+    background-color: #dcfce7;
+    color: #166534;
+  }
+}
+
+.application-status-card {
+  &__loading {
+    color: vars.$secondaryblack;
+    font-style: italic;
+  }
+
+  &__banner {
+    padding: 0.75rem 1rem;
+    background: vars.$tertiaryblue;
+    border-radius: 6px;
+    color: vars.$primaryblack;
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+
+  &__cta {
+    margin-top: 0.5rem;
+  }
+
+  &__button {
+    display: inline-block;
+    padding: 0.5rem 1.25rem;
+    background: vars.$secondaryblue;
+    color: vars.$white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.9375rem;
+    transition: background 0.15s ease;
+
+    &:visited {
+      color: vars.$white;
+    }
+
+    &:hover {
+      background: vars.$secondaryblue-dark;
+      color: vars.$white;
+    }
+  }
+
+  &__committee-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+
+    .committee-chip {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: vars.$quaternary-color;
+      color: vars.$primaryblack;
+      border-radius: 9999px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+    }
+  }
+
+  &__timestamp {
+    color: vars.$secondaryblack;
+    font-size: 0.8125rem;
+    margin: 0.75rem 0 0 0;
+  }
+
+  &__confirmation {
+    margin-bottom: 0.75rem;
+  }
+
+  &__status-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  &__closed {
+    color: vars.$secondaryblack;
+    margin: 0;
+  }
+}
