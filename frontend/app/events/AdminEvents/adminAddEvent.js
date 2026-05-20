@@ -19,6 +19,7 @@ export default class AdminAddEvent extends React.Component {
       startTimeStr: this.props.event?.startDate ? this.props.event.startDate.format('HH:mm') : '',
       endTimeStr: this.props.event?.endDate ? this.props.event.endDate.format('HH:mm') : '',
       coverImageFile: null,
+      coverImageURL: '', 
       coverMode: 'url', // 'url' | 'upload'
       isPreviewFlipped: false,
       isPlatformsOpen: false
@@ -35,6 +36,9 @@ export default class AdminAddEvent extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handlePreviewFlip = this.handlePreviewFlip.bind(this);
     this.handleTogglePlatform = this.handleTogglePlatform.bind(this);
+    this.handleCommiteeChange = this.handleCommiteeChange.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
+    this.resetState = this.resetState.bind(this);
   }
 
   // handle platforms dropdown behavior based on mouse clicks
@@ -65,6 +69,12 @@ export default class AdminAddEvent extends React.Component {
     });
   }
 
+  getDefaultBanner(committee){
+    const bannerImageURL = Config.committeeBanners[committee];
+    return bannerImageURL ? bannerImageURL : "/logo.png";
+  }
+
+
   handleChangeEndDate(date) {
     this.setState((prev) => {
       const newState = Object.assign({}, prev);
@@ -82,10 +92,50 @@ export default class AdminAddEvent extends React.Component {
     });
   }
 
+  //decide how to update the cover image based on whether custom image is already uploaded
+  //check if file uploaded first and then check url valid after
+  handleCommiteeChange(e) {
+    var coverImageTempCover = this.state.event.cover;
+    try {
+      new URL(this.state.coverImageURL);
+    } catch (error){
+      coverImageTempCover = this.getDefaultBanner(e.target.value);
+    }
+    this.setState((prev) => {
+      const newState = Object.assign({}, prev);
+      newState.event.committee = e.target.value;
+      if (!newState.coverImageFile) {
+            newState.event.cover = coverImageTempCover;
+      }      
+      return newState;
+    })
+  }
+
+  resetState(){
+    this.setState({
+      event: { ...this.props.event },
+      startTimeStr: this.props.event?.startDate ? this.props.event.startDate.format('HH:mm') : '',
+      endTimeStr: this.props.event?.endDate ? this.props.event.endDate.format('HH:mm') : '',
+      coverImageFile: null,
+      coverImageURL: '',
+      coverMode: 'url',
+      isPreviewFlipped: false,
+      isPlatformsOpen: false
+    });
+  }
+
+  handleCancel() {
+    this.resetState();
+    if (this.props.onClickCancel) this.props.onClickCancel();
+  }
+
   handleSubmit() {
     if (!this.state.event.title || !this.state.event.startDate || !this.state.event.endDate) return;
 
-    const callback = () => { if (this.props.onClickAdd) this.props.onClickAdd(this.state.event); };
+    const callback = () => {
+      if (this.props.onClickAdd) this.props.onClickAdd(this.state.event);
+      this.resetState();
+    };
 
     if (this.state.coverImageFile) {
       const formData = new FormData();
@@ -156,10 +206,29 @@ export default class AdminAddEvent extends React.Component {
     e.persist();
     const file = e.target.files?.[0];
 
-    if (!file) {
+    if (this.state.coverMode === 'url') {
+      const url = e.target.value;
+      var coverImageTempCover = url;
+      // check valid url before updating state
+      try {
+        new URL(url);
+      } catch (error){
+        console.log('Invalid URL:', url);
+        coverImageTempCover = this.getDefaultBanner(this.state.event.committee);
+      }
+
       this.setState((prev) => {
         const newState = Object.assign({}, prev);
-        newState.event.cover = e.target.value;
+        if (newState.coverImageFile == null){
+          newState.event.cover = coverImageTempCover;
+        }
+        newState.coverImageURL = url;
+        return newState;
+      })
+    } else if (this.state.coverMode === 'upload' && !file) {
+      this.setState((prev) => {
+        const newState = Object.assign({}, prev);
+        newState.event.cover = this.getDefaultBanner(newState.event.committee);
         newState.coverImageFile = null;
         return newState;
       });
@@ -219,9 +288,13 @@ export default class AdminAddEvent extends React.Component {
           {/* Front */}
           <div className="preview-card preview-card-front" onClick={this.handlePreviewFlip} style={{ cursor: 'pointer' }} title="Click to see description">
             <div className="preview-image-container">
-              <div
-                className="preview-cover"
-                style={{ backgroundImage: `url(${event.cover || '/logo.png'})` }}
+              <img
+                src={event.cover || '/logo.png'}
+                onError={(e) => {
+                  console.log('Image failed to load, using fallback');
+                  e.target.src = this.getDefaultBanner(event.committee) || '/logo.png';
+                }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
               <div className="preview-points-pill">{points} PTS</div>
             </div>
@@ -294,7 +367,7 @@ export default class AdminAddEvent extends React.Component {
                 {coverMode === 'url' ? (
                   <input
                     type="text"
-                    value={this.state.event.cover && !this.state.coverImageFile ? this.state.event.cover : ''}
+                    value={this.state.coverImageURL ? this.state.coverImageURL : ''}
                     name="cover"
                     placeholder="https://..."
                     onChange={this.handleChangeCover}
@@ -325,15 +398,15 @@ export default class AdminAddEvent extends React.Component {
                 <p className="section-label">Basic Info</p>
                 <div className="field-group">
                   <label>Title <span className="required-mark">*</span></label>
-                  <input type="text" value={this.state.event.title} name="title" onChange={this.handleChange} placeholder="My Awesome Event" />
+                  <input type="text" value={this.state.event.title || ''} name="title" onChange={this.handleChange} placeholder="My Awesome Event" />
                 </div>
                 <div className="field-row">
                   <div className="field-group">
                     <label>Committee <span className="required-mark">*</span></label>
                     <select
-                      value={this.state.event.committee}
+                      value={this.state.event.committee || 'ACM'}
                       name="committee"
-                      onChange={this.handleChange}
+                      onChange={this.handleCommiteeChange}
                       style={{ color: committeeColorMap[this.state.event.committee] }}
                     >
                       <option value="ACM" style={{ color: committeeColorMap['ACM'] }}>ACM</option>
@@ -344,7 +417,7 @@ export default class AdminAddEvent extends React.Component {
                   </div>
                   <div className="field-group">
                     <label>External RSVP Link <span className="optional-mark">optional — overrides built-in RSVP</span></label>
-                    <input type="text" value={this.state.event.eventLink} name="eventLink" onChange={this.handleChange} placeholder="https://forms.google.com/..." />
+                    <input type="text" value={this.state.event.eventLink || ''} name="eventLink" onChange={this.handleChange} placeholder="https://forms.google.com/..." />
                   </div>
                 </div>
               </div>
@@ -392,7 +465,7 @@ export default class AdminAddEvent extends React.Component {
                 </div>
                 <div className="field-group">
                   <label>Location <span className="required-mark">*</span></label>
-                  <input type="text" value={this.state.event.location} name="location" onChange={this.handleChange} placeholder="EBU3B B250" />
+                  <input type="text" value={this.state.event.location || ''} name="location" onChange={this.handleChange} placeholder="EBU3B B250" />
                 </div>
               </div>
 
@@ -404,7 +477,7 @@ export default class AdminAddEvent extends React.Component {
                     <label>Check-in Code <span className="required-mark">*</span></label>
                     <input
                       type="text"
-                      value={this.state.event.attendanceCode}
+                      value={this.state.event.attendanceCode || ''}
                       name="attendanceCode"
                       onChange={this.handleChange}
                       placeholder="e.g. HACK2025"
@@ -414,7 +487,7 @@ export default class AdminAddEvent extends React.Component {
                     <label>Points <span className="required-mark">*</span></label>
                     <input
                       type="text"
-                      value={this.state.event.attendancePoints}
+                      value={this.state.event.attendancePoints || ''}
                       name="attendancePoints"
                       onChange={this.handleChange}
                       placeholder="10"
@@ -495,7 +568,7 @@ export default class AdminAddEvent extends React.Component {
 
           {/* Footer */}
           <div className="modal-footer">
-            <Button onClick={this.props.onClickCancel} style="red" text="Cancel" icon="" />
+            <Button onClick={this.handleCancel} style="red" text="Cancel" icon="" />
             <Button onClick={this.handleSubmit} style="green" text={this.props.isEdit ? 'Update Event' : 'Create Event'} icon="" />
           </div>
 
