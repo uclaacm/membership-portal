@@ -12,3 +12,4 @@ export const adminViewAtom = atom<boolean>(false);
 export const officerViewAtom = atom<boolean>(false);
 export const myApplicationAtom = atom<InternshipApplication | null>(null);
 export const activeCommitteesAtom = atom<InternshipCommittee[] | null>(null);
+export const committeesAtom = atom<InternshipCommittee[]>([]);
