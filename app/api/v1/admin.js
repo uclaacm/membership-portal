@@ -66,4 +66,46 @@ router.post('/promote-officer', authenticated, async (req, res, next) => {
   }
 });
 
+// DELETE /api/admin/promote-officer
+// Removes an OFFICER from their single committee assignment and demotes them to STANDARD.
+// Requires admin JWT auth.
+router.delete('/promote-officer', authenticated, async (req, res, next) => {
+  try {
+    if (!req.user || !req.user.isAdmin()) {
+      return res.status(403).json({ error: 'Admin access required' });
+    }
+
+    const { email, committees } = req.body;
+
+    if (!email) return res.status(400).json({ error: 'Email is required' });
+    if (!Array.isArray(committees) || committees.length !== 1) {
+      return res.status(400).json({ error: 'committees must contain exactly one committee to remove.' });
+    }
+
+    const [committee] = committees;
+
+    const user = await User.findOne({ where: { email } });
+    if (!user) return res.status(404).json({ error: `No user found with email ${email}` });
+
+    if (!user.isOfficer()) {
+      return res.status(404).json({ error: `${email} is not an officer.` });
+    }
+
+    const current = user.getDataValue('committees') || [];
+    if (!current.includes(committee)) {
+      return res.status(404).json({
+        error: `${email} is not assigned to committee: ${committee}.`,
+      });
+    }
+
+    await user.update({ accessType: 'STANDARD', committees: [] });
+    return res.json({
+      error: null,
+      message: `${email} removed from ${committee}. Demoted to standard member.`,
+    });
+  } catch (err) {
+    return next(err);
+  }
+});
+
 module.exports = { router };
