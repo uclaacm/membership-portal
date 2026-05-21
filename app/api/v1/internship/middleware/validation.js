@@ -128,13 +128,13 @@ const validateCreateApplication = [
     .bail()
     .custom((value) => validateCommitteeById(value, 'first choice')),
   body('secondChoiceCommittee')
-    .optional()
+    .optional({ nullable: true })
     .isMongoId()
     .withMessage('Second choice committee must be a valid MongoDB ID')
     .bail()
     .custom((value) => validateCommitteeById(value, 'second choice')),
   body('thirdChoiceCommittee')
-    .optional()
+    .optional({ nullable: true })
     .isMongoId()
     .withMessage('Third choice committee must be a valid MongoDB ID')
     .bail()
@@ -207,19 +207,19 @@ const validateUpdateApplication = [
     .isInt({ min: MIN_GRADUATION_YEAR })
     .withMessage(`Graduation year must be ${MIN_GRADUATION_YEAR} or later`),
   body('firstChoiceCommittee')
-    .optional()
+    .optional({ nullable: true })
     .isMongoId()
     .withMessage('First choice committee must be a valid MongoDB ID')
     .bail()
     .custom((value) => validateCommitteeById(value, 'first choice')),
   body('secondChoiceCommittee')
-    .optional()
+    .optional({ nullable: true })
     .isMongoId()
     .withMessage('Second choice committee must be a valid MongoDB ID')
     .bail()
     .custom((value) => validateCommitteeById(value, 'second choice')),
   body('thirdChoiceCommittee')
-    .optional()
+    .optional({ nullable: true })
     .isMongoId()
     .withMessage('Third choice committee must be a valid MongoDB ID')
     .bail()
