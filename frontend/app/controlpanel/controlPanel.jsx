@@ -11,6 +11,7 @@ import OneClickPasswordModal from '@/components/Modal/oneClickPasswordModal';
 import ConfirmationModal from '@/components/Modal/confirmationModal';
 import SyncSheetsModal from '@/components/Modal/syncSheetsModal';
 import ChangeToAdmin from '../profile/ChangeToAdmin';
+import RemoveOfficerCard from '../profile/RemoveOfficerCard';
 import PropTypes from 'prop-types';
 import '@/components/Modal/style.scss';
 
@@ -170,6 +171,14 @@ class ControlPanel extends React.Component {
               <span className="card-desc">Promote a member to Officer or Admin. Officers get committee-scoped access; Admin requires a password.</span>
               <ChangeToAdmin />
             </div>
+
+            {isAdmin && (
+              <div className="panel-card">
+                <span className="card-title">Remove Officer from Committee</span>
+                <span className="card-desc">Revoke an officer&apos;s committee assignments. Removing the last committee demotes them to a standard member.</span>
+                <RemoveOfficerCard />
+              </div>
+            )}
 
             {isSuperAdmin && (
               <div className="panel-card">

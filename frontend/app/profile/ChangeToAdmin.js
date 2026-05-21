@@ -8,6 +8,15 @@ import './ChangeToAdmin.scss';
 
 const COMMITTEES = Config.committees;
 
+const getResponseMessage = (data, fallback) => {
+  const value = data?.message || data?.error;
+
+  if (typeof value === 'string') return value;
+  if (value && typeof value.message === 'string') return value.message;
+
+  return fallback;
+};
+
 const ChangeToAdmin = () => {
   const [showModal, setShowModal] = useState(false);
   const [email, setEmail] = useState('');
@@ -58,9 +67,9 @@ const ChangeToAdmin = () => {
 
       const data = await response.json();
       if (response.ok) {
-        setMessage({ text: data.message, success: true });
+        setMessage({ text: getResponseMessage(data, 'Role assigned.'), success: true });
       } else {
-        setMessage({ text: data.error || 'Something went wrong.', success: false });
+        setMessage({ text: getResponseMessage(data, 'Something went wrong.'), success: false });
       }
     } catch {
       setMessage({ text: 'Network error. Please try again.', success: false });
