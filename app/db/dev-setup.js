@@ -106,10 +106,10 @@ module.exports = (User, Event) => {
       points: 130,
       year: 2,
       major: 'Computer Science',
-      bio: 'Aspiring game developer.',
+      bio: 'Aspiring cloud developer.',
       githubUrl: 'https://github.com/justinliu',
-      skills: ['Game Development', 'Unity'],
-      careerInterests: ['Game Design'],
+      skills: ['Cloud Development', 'Unity'],
+      careerInterests: ['Cloud Design'],
       isProfilePublic: false,
       pronouns: 'He/Him',
     }),
@@ -362,15 +362,15 @@ module.exports = (User, Event) => {
     }),
 
     User.findOrCreate({
-      where: { email: 'officer.game@g.ucla.edu' },
+      where: { email: 'officer.cloud@g.ucla.edu' },
       defaults: {
         accessType: 'OFFICER',
         state: 'ACTIVE',
-        firstName: 'Game',
+        firstName: 'Cloud',
         lastName: 'Officer',
         year: 3,
         major: 'Computer Science',
-        committees: ['Game'],
+        committees: ['Cloud'],
       },
     }),
 

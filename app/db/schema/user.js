@@ -45,7 +45,7 @@ module.exports = (Sequelize, db) => {
         defaultValue: [],
         validate: {
           isValidCommittee(value) {
-            const validCommittees = ['Hack', 'AI', 'ICPC', 'Studio', 'Cyber', 'W', 'Game', 'Design', 'TeachLA'];
+            const validCommittees = ['Hack', 'AI', 'ICPC', 'Studio', 'Cyber', 'W', 'Cloud', 'Design', 'TeachLA'];
             if (!Array.isArray(value)) return;
             const invalid = value.filter((c) => !validCommittees.includes(c));
             if (invalid.length > 0) {
