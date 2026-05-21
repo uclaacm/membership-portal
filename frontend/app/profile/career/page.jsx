@@ -1,18 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAtom, useAtomValue } from "jotai";
-import Topbar from "../../../components/Topbar";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import Topbar from "@/components/Topbar";
 import CareerLanding from "../CareerLanding";
-import logoutUser from "../../actions/auth/logoutUser.ts";
-import fetchCareerProfile from "../../actions/user/fetchCareerProfile.ts";
-import { authUserProfileAtom, isAdminAtom, isOfficerAtom, adminViewAtom } from "../../../lib/atoms.ts";
+import logoutUser from "@/app/actions/auth/logoutUser";
+import fetchCareerProfile from "@/app/actions/user/fetchCareerProfile";
+import fetchAllCommittees from "@/app/actions/internship/fetchAllCommittees";
+import { authUserProfileAtom, isAdminAtom, isOfficerAtom, adminViewAtom, activeCommitteesAtom } from "@/lib/atoms";
 
 export default function CareerPage() {
   const userProfile = useAtomValue(authUserProfileAtom);
   const isAdmin = useAtomValue(isAdminAtom);
   const isOfficer = useAtomValue(isOfficerAtom);
   const [adminView, setAdminView] = useAtom(adminViewAtom);
+  const activeCommittees = useAtomValue(activeCommitteesAtom);
+  const setActiveCommittees = useSetAtom(activeCommitteesAtom);
   const [mounted, setMounted] = useState(false);
   const [careerProfile, setCareerProfile] = useState(userProfile || {});
 
@@ -21,10 +24,7 @@ export default function CareerPage() {
   }, []);
 
   useEffect(() => {
-    if (!userProfile) {
-      return;
-    }
-
+    if (!userProfile) return;
     (async () => {
       const career = await fetchCareerProfile();
       if (career) {
@@ -34,6 +34,16 @@ export default function CareerPage() {
       }
     })();
   }, [userProfile]);
+
+  useEffect(() => {
+    fetchAllCommittees().then(result => {
+      if (result.success) {
+        setActiveCommittees(result.data.filter(c => c.isActive));
+      } else {
+        setActiveCommittees([]);
+      }
+    });
+  }, [activeCommittees, setActiveCommittees]);
 
   const handleLogout = async () => {
     await logoutUser();
@@ -51,10 +61,13 @@ export default function CareerPage() {
         adminView={adminView}
         onToggleAdminView={() => setAdminView(v => !v)}
         isOfficer={isOfficer}
-        officerView={adminView}
-        onToggleOfficerView={() => setAdminView(v => !v)}
+        officerView={false}
+        onToggleOfficerView={() => {}}
       />
-      <CareerLanding profile={careerProfile} />
+      <CareerLanding
+        profile={careerProfile}
+        isInternshipOpen={activeCommittees === null ? null : activeCommittees.length > 0}
+      />
     </div>
   );
 }

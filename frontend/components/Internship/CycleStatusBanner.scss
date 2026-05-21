@@ -1,0 +1,39 @@
+@use "@/styles/vars";
+
+.cycle-status-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 2rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+
+  &--open {
+    background: rgba(vars.$light-green, 0.12);
+    color: vars.$dark-green;
+  }
+
+  &--closed {
+    background: rgba(vars.$gray1, 0.4);
+    color: vars.$gray3;
+  }
+
+  &__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+
+    .cycle-status-banner--open & {
+      background: vars.$dark-green;
+    }
+
+    .cycle-status-banner--closed & {
+      background: vars.$gray2;
+    }
+  }
+
+  &__text {
+    line-height: 1;
+  }
+}

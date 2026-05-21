@@ -288,6 +288,28 @@
         font-size: 0.8rem;
         font-weight: 500;
       }
+
+      .open-badge {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 4px 10px;
+        background: #d4f5e2;
+        color: #248a45;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 500;
+      }
+
+      .closed-badge {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 4px 10px;
+        background: #e9ecef;
+        color: #666;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 500;
+      }
     }
 
     .career-card-arrow {

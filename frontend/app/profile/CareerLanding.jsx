@@ -1,6 +1,6 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import Link from 'next/link';
+import React from "react";
+import PropTypes from "prop-types";
+import Link from "next/link";
 import './careerLanding.scss';
 
 export default class CareerLanding extends React.Component {
@@ -20,7 +20,7 @@ export default class CareerLanding extends React.Component {
   }
 
   render() {
-    const { profile } = this.props;
+    const { profile, isInternshipOpen } = this.props;
     const completeness = this.calculateCompleteness();
     const isPublic = profile.isProfilePublic !== undefined ? profile.isProfilePublic : true;
 
@@ -71,16 +71,30 @@ export default class CareerLanding extends React.Component {
               </div>
 
               {/* Committee Applications Card */}
-              <div className="career-card disabled">
-                <div className="career-card-icon">
-                  <i className="fa fa-users" />
+              {isInternshipOpen === false ? (
+                <div className="career-card disabled">
+                  <div className="career-card-icon">
+                    <i className="fa fa-users" />
+                  </div>
+                  <div className="career-card-content">
+                    <h2>Committee Applications</h2>
+                    <p>Apply to join ACM committees and officer positions</p>
+                    <span className="closed-badge">Closed</span>
+                  </div>
                 </div>
-                <div className="career-card-content">
-                  <h2>Committee Applications</h2>
-                  <p>Apply to join ACM committees and officer positions</p>
-                  <span className="coming-soon-badge">Coming Soon</span>
-                </div>
-              </div>
+              ) : (
+                <Link href="/internship" className="career-card">
+                  <div className="career-card-icon">
+                    <i className="fa fa-users" />
+                  </div>
+                  <div className="career-card-content">
+                    <h2>Committee Applications</h2>
+                    <p>Apply to join ACM committees and officer positions</p>
+                    {isInternshipOpen === true && <span className="open-badge">Open</span>}
+                  </div>
+                  <i className="fa fa-chevron-right career-card-arrow" />
+                </Link>
+              )}
 
               {/* Resources Card */}
               <div className="career-card disabled">
@@ -98,9 +112,7 @@ export default class CareerLanding extends React.Component {
             {completeness < 100 && (
               <div className="career-tips">
                 <h3>
-                  <i className="fa fa-lightbulb" />
-                  {' '}
-                  Complete Your Profile
+                  <i className="fa fa-lightbulb" /> Complete Your Profile
                 </h3>
                 <p>A complete profile helps recruiters and committee leads find you:</p>
                 <ul>
@@ -153,7 +165,9 @@ export default class CareerLanding extends React.Component {
                     <h3>Skills</h3>
                     <div className="tags">
                       {profile.skills.map((skill, index) => (
-                        <span key={index} className="tag">{skill}</span>
+                        <span key={index} className="tag">
+                          {skill}
+                        </span>
                       ))}
                     </div>
                   </div>
@@ -164,18 +178,29 @@ export default class CareerLanding extends React.Component {
                     <h3>Career Interests</h3>
                     <div className="tags">
                       {profile.careerInterests.map((interest, index) => (
-                        <span key={index} className="tag">{interest}</span>
+                        <span key={index} className="tag">
+                          {interest}
+                        </span>
                       ))}
                     </div>
                   </div>
                 )}
 
-                {(profile.linkedinUrl || profile.githubUrl || profile.portfolioUrl || profile.personalWebsite || profile.resumeUrl) && (
+                {(profile.linkedinUrl ||
+                  profile.githubUrl ||
+                  profile.portfolioUrl ||
+                  profile.personalWebsite ||
+                  profile.resumeUrl) && (
                   <div className="preview-section">
                     <h3>Links</h3>
                     <div className="preview-links">
                       {profile.linkedinUrl && (
-                        <a href={profile.linkedinUrl} target="_blank" rel="noopener noreferrer" className="preview-link">
+                        <a
+                          href={profile.linkedinUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="preview-link"
+                        >
                           <i className="fab fa-linkedin" /> LinkedIn
                         </a>
                       )}
@@ -185,12 +210,22 @@ export default class CareerLanding extends React.Component {
                         </a>
                       )}
                       {profile.portfolioUrl && (
-                        <a href={profile.portfolioUrl} target="_blank" rel="noopener noreferrer" className="preview-link">
+                        <a
+                          href={profile.portfolioUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="preview-link"
+                        >
                           <i className="fa fa-folder" /> Portfolio
                         </a>
                       )}
                       {profile.personalWebsite && (
-                        <a href={profile.personalWebsite} target="_blank" rel="noopener noreferrer" className="preview-link">
+                        <a
+                          href={profile.personalWebsite}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="preview-link"
+                        >
                           <i className="fa fa-globe" /> Website
                         </a>
                       )}
@@ -213,8 +248,10 @@ export default class CareerLanding extends React.Component {
 
 CareerLanding.propTypes = {
   profile: PropTypes.object,
+  isInternshipOpen: PropTypes.bool,
 };
 
 CareerLanding.defaultProps = {
   profile: {},
+  isInternshipOpen: null,
 };

@@ -1,16 +1,30 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import NavigationItem from './NavigationItem';
-import ProfileDropdown from './ProfileDropdown';
-import Config from '@/lib/config';
-import './styles.scss';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useAtomValue } from "jotai";
+import NavigationItem from "./NavigationItem";
+import ProfileDropdown from "./ProfileDropdown";
+import Config from "@/lib/config";
+import { activeCommitteesAtom } from "@/lib/atoms";
+import "./styles.scss";
 
-export default function Topbar({ isAdmin, picture, onLogout, isRealAdmin, adminView, onToggleAdminView, isOfficer, officerView, onToggleOfficerView }) {
+export default function Topbar({
+  isAdmin,
+  picture,
+  onLogout,
+  isRealAdmin,
+  adminView,
+  onToggleAdminView,
+  isOfficer,
+  officerView,
+  onToggleOfficerView,
+}) {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+  const activeCommittees = useAtomValue(activeCommitteesAtom);
+  const showInternship = isRealAdmin || isOfficer || (activeCommittees !== null && activeCommittees.length > 0);
 
   useEffect(() => {
     const handleResize = () => {
@@ -19,8 +33,8 @@ export default function Topbar({ isAdmin, picture, onLogout, isRealAdmin, adminV
       }
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [menuOpen]);
 
   const toggleMenu = () => {
@@ -29,21 +43,26 @@ export default function Topbar({ isAdmin, picture, onLogout, isRealAdmin, adminV
 
   const sharedLinks = (
     <>
-      <Link href="/home" className={pathname === '/home' ? 'selected' : ''}>
+      <Link href="/home" className={pathname === "/home" ? "selected" : ""}>
         <NavigationItem text="Home" />
       </Link>
-      <Link href="/events" className={pathname === '/events' ? 'selected' : ''}>
+      <Link href="/events" className={pathname === "/events" ? "selected" : ""}>
         <NavigationItem text="Events" />
       </Link>
-      <Link href="/leaderboard" className={pathname === '/leaderboard' ? 'selected' : ''}>
-        <NavigationItem text={isAdmin ? 'Members' : 'Leaderboard'} />
+      <Link href="/leaderboard" className={pathname === "/leaderboard" ? "selected" : ""}>
+        <NavigationItem text={isAdmin ? "Members" : "Leaderboard"} />
       </Link>
-      <Link href="/profile/career" className={pathname.startsWith('/profile/career') ? 'selected' : ''}>
+      <Link href="/profile/career" className={pathname.startsWith("/profile/career") ? "selected" : ""}>
         <NavigationItem text="Career Hub" />
       </Link>
-      <Link href="/resources" className={pathname === '/resources' ? 'selected' : ''}>
-        <NavigationItem text={isAdmin ? 'Organization' : 'Resources'} />
+      <Link href="/resources" className={pathname === "/resources" ? "selected" : ""}>
+        <NavigationItem text={isAdmin ? "Organization" : "Resources"} />
       </Link>
+      {showInternship && (
+        <Link href="/internship" className={pathname.startsWith("/internship") ? "selected" : ""}>
+          <NavigationItem text="Internship" />
+        </Link>
+      )}
     </>
   );
 
@@ -55,20 +74,19 @@ export default function Topbar({ isAdmin, picture, onLogout, isRealAdmin, adminV
           <img src="/new_acm_wordmark_chapter.png" alt={Config.organization.name} />
         </div>
 
-        <div className={`topbar-links ${menuOpen ? 'open' : ''}`}>
+        <div className={`topbar-links ${menuOpen ? "open" : ""}`}>
           {sharedLinks}
 
           {(isRealAdmin || isOfficer) && adminView && (
-            <Link href="/controlpanel" className={pathname === '/controlpanel' ? 'selected' : ''}>
+            <Link href="/controlpanel" className={pathname === "/controlpanel" ? "selected" : ""}>
               <NavigationItem text="Control Panel" />
             </Link>
           )}
-
         </div>
 
         {/* Hamburger Button (Mobile only) */}
-        <div className={`hamburger ${menuOpen ? 'open' : ''}`} onClick={toggleMenu}>
-          <i className={`fa ${menuOpen ? 'fa-times' : 'fa-bars'}`} />
+        <div className={`hamburger ${menuOpen ? "open" : ""}`} onClick={toggleMenu}>
+          <i className={`fa ${menuOpen ? "fa-times" : "fa-bars"}`} />
         </div>
 
         {/* Profile Icon (Desktop only) */}
