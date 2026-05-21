@@ -213,13 +213,13 @@ const validateUpdateApplication = [
     .bail()
     .custom((value) => validateCommitteeById(value, 'first choice')),
   body('secondChoiceCommittee')
-    .optional()
+    .optional({ values: 'null' })
     .isMongoId()
     .withMessage('Second choice committee must be a valid MongoDB ID')
     .bail()
     .custom((value) => validateCommitteeById(value, 'second choice')),
   body('thirdChoiceCommittee')
-    .optional()
+    .optional({ values: 'null' })
     .isMongoId()
     .withMessage('Third choice committee must be a valid MongoDB ID')
     .bail()
