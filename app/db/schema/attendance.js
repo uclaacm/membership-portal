@@ -118,6 +118,37 @@ module.exports = (Sequelize, db) => {
     return this.create({ user, event });
   };
 
+  Attendance.getCommitteeLeaderboard = function (committee, offset, limit) {
+    const safeOffset = (!offset || offset < 0) ? 0 : offset;
+    const safeLimit = (!limit || limit < 0) ? undefined : limit;
+    const Event = db.models.event;
+    const User = db.models.user;
+
+    return Event.getCommitteeEvents(committee)
+      .then((events) => {
+        const eventUuids = events.map((e) => e.getDataValue('uuid'));
+        return Promise.all(eventUuids.map((uuid) => Attendance.getAttendanceForEvent(uuid)));
+      })
+      .then((attendanceLists) => {
+        const countsByUser = {};
+        attendanceLists.forEach((attendances) => {
+          attendances.forEach((a) => {
+            const userUuid = a.getDataValue('user');
+            countsByUser[userUuid] = (countsByUser[userUuid] || 0) + 1;
+          });
+        });
+
+        const sorted = Object.entries(countsByUser)
+          .sort((a, b) => b[1] - a[1])
+          .slice(safeOffset, safeLimit !== undefined ? safeOffset + safeLimit : undefined);
+
+        return Promise.all(
+          sorted.map(([uuid, count]) => User.findByUUID(uuid)
+            .then((u) => ({ user: u, eventsAttended: count }))),
+        );
+      });
+  };
+
   Attendance.prototype.getPublic = function () {
     return {
       uuid: this.getDataValue('uuid'),
