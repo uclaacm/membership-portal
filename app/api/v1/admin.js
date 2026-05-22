@@ -124,24 +124,26 @@ router.get('/officers/emails', authenticated, exportRateLimit, async (req, res, 
       return res.status(403).json({ error: 'Admin access required' });
     }
 
+    // get optional parameters in endpoint
     const { committee, format } = req.query;
+    const committees = committee ? [].concat(committee) : null;
 
     const officers = await User.findAll({ where: { accessType: 'OFFICER' } });
 
-    // filter officers by committee
+    // filter officers by one or more committees
     let filtered;
-    if (committee) {
-      filtered = officers.filter((u) => (u.getDataValue('committees') || []).includes(committee));
+    if (committees) {
+      filtered = officers.filter((u) => (u.getDataValue('committees') || []).some((c) => committees.includes(c)));
     } else {
       filtered = officers;
     }
-    
+
     const emails = filtered.map((u) => u.getDataValue('email'));
 
     // logs activity in Activity table in database
     Activity.createMilestone(
       req.user.getDataValue('uuid'),
-      `Admin exported officer emails${committee ? ` for committee: ${committee}` : ''} (${emails.length} results)`,
+      `Admin exported officer emails${committees ? ` for committees: ${committees.join(', ')}` : ''} (${emails.length} results)`,
     );
 
     // optional csv format
