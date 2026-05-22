@@ -5,7 +5,7 @@ const error = require('../../../../error');
 async function getAllCommittees(req, res, next) {
   try {
     const includeInactive = req.query.includeInactive === 'true' && req.user && req.user.isAdmin();
-    const filter = includeInactive ? {} : { isActive: true };
+    const filter = {};
 
     const committees = await Committee.find(filter).select('-__v').sort({ displayName: 1 });
 
