@@ -60,9 +60,19 @@
     text-align: center;
   }
 
+  .officer-section-title {
+    padding-left: 60px;
+    padding-right: 40px;
+    padding-top: 12px;
+    padding-bottom: 20px;
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
   .officers {
     padding-left: 40px;
     padding-right: 40px;
+    padding-bottom: 15px;
     text-align: center;
   }
 
@@ -125,9 +135,9 @@
 }
 
 .officer-tile {
-  display: inline-block;
-  vertical-align: top;
-  text-align: left;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
   width: 280px;
   margin: 10px;
   transition: 0.125s ease-in-out;
@@ -137,17 +147,15 @@
     height: 70px;
     border-radius: 50px;
     border: 3px solid #dadada;
-    display: inline-block;
-    vertical-align: middle;
-    background-position: center center;
-    background-attachment: fixed;
-    background-size: cover;
+    object-fit: cover;
+    object-position: center;
+    flex-shrink: 0;
   }
 
   .content {
-    display: inline-block;
+    flex: 1;
     margin-left: 8px;
-    vertical-align: middle;
+    text-align: center;
 
     span {
       display: block;

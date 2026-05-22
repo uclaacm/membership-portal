@@ -1,6 +1,6 @@
 import Config from '@/lib/config';
 import ResourceCard from './resourceCard';
-// import OfficerTile from './officerTile';
+import OfficerTile from './officerTile';
 
 export default function Resources() {
   return (
@@ -17,17 +17,23 @@ export default function Resources() {
           <ResourceCard resource={resource} key={resource.type || resource.name} />
         ))}
       </div>
-      {/* We'll add this back in later once officer headshots are available */}
-      {/* {Config.organization.officers && Config.organization.officers.length > 0 && (
-        <>
-          <div className="divider" />
-          <div className="officers">
-            {Config.organization.officers.map(officer => (
-              <OfficerTile officer={officer} key={officer.name} />
-            ))}
+      {[
+        { title: 'Current Dev Team', key: 'currentDevTeam' },
+        { title: 'Dev Team Directors', key: 'devTeamDirectors' },
+        { title: 'Founding Team', key: 'foundingTeam' },
+      ].map(({ title, key }) =>
+        Config.organization[key]?.length > 0 ? (
+          <div key={key}>
+            <div className="divider" />
+            <h2 className="officer-section-title">{title}</h2>
+            <div className="officers">
+              {Config.organization[key].map(officer => (
+                <OfficerTile officer={officer} key={officer.name} />
+              ))}
+            </div>
           </div>
-        </>
-      )} */}
+        ) : null,
+      )}
     </div>
   );
 }

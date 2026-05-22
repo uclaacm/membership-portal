@@ -3,7 +3,7 @@ export default function OfficerTile({ officer }) {
   return (
     <div className="officer-tile">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={picture} alt={name} />
+      <img src={picture || '/unknown.png'} alt={name} />
       <div className="content">
         {name && <span className="name">{name}</span>}
         {position && <span className="position">{position}</span>}
