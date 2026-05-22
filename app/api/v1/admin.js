@@ -124,16 +124,19 @@ router.get('/officers/emails', authenticated, exportRateLimit, async (req, res, 
       return res.status(403).json({ error: 'Admin access required' });
     }
 
-    // get optional parameters in endpoint
+    // get optional query parameters in endpoint
     const { committee, format } = req.query;
-    const committees = committee ? [].concat(committee) : null;
+    const committees = committee ? [].concat(committee).map((c) => c.toLowerCase()) : null;
 
     const officers = await User.findAll({ where: { accessType: 'OFFICER' } });
 
     // filter officers by one or more committees
     let filtered;
     if (committees) {
-      filtered = officers.filter((u) => (u.getDataValue('committees') || []).some((c) => committees.includes(c)));
+      filtered = officers.filter((u) => {
+        const officerCommittees = u.getDataValue('committees') || [];
+        return officerCommittees.some((c) => committees.includes(c.toLowerCase()));
+      });
     } else {
       filtered = officers;
     }
