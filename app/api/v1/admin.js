@@ -108,4 +108,20 @@ router.delete('/promote-officer', authenticated, async (req, res, next) => {
   }
 });
 
+// GET /app/api/v1/admin/officers/emails
+router.get('/officers/emails', authenticated, async (req, res, next) => {
+  try {
+    if (!req.user || !req.user.isAdmin()) {
+      return res.status(403).json({ error: 'Admin access required' });
+    }
+
+    const officers = await User.findAll({ where: { accessType: 'OFFICER' } });
+    const emails = officers.map((u) => u.getDataValue('email'));
+
+    return res.json({ error: null, emails });
+  } catch (err) {
+    return next(err);
+  }
+});
+
 module.exports = { router };
