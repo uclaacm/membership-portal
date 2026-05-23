@@ -26,25 +26,29 @@ export default function MemberDashboard() {
     const loadData = async () => {
       setIsLoading(true);
 
-      const [applicationResult, committeesResult] = await Promise.all([
-        fetchOwnApplication(),
-        fetchAllCommittees(),
-      ]);
+      try {
+        const [applicationResult, committeesResult] = await Promise.all([
+          fetchOwnApplication(),
+          fetchAllCommittees(),
+        ]);
 
-      if (applicationResult.success) {
-        setMyApplication(applicationResult.data);
-      } else if (applicationResult.notFound) {
-        setMyApplication(null);
-      }
+        if (applicationResult.success) {
+          setMyApplication(applicationResult.data);
+        } else if (applicationResult.notFound) {
+          setMyApplication(null);
+        }
 
-      if (committeesResult.success) {
-        const active = committeesResult.data.filter((c) => c.isActive);
-        setActiveCommittees(active);
-      } else {
+        if (committeesResult.success) {
+          const active = committeesResult.data;
+          setActiveCommittees(active);
+        } else {
+          setActiveCommittees([]);
+        }
+      } catch {
         setActiveCommittees([]);
+      } finally {
+        setIsLoading(false);
       }
-
-      setIsLoading(false);
     };
 
     loadData();

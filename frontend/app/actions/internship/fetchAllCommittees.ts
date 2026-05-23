@@ -27,7 +27,17 @@ export default async function fetchAllCommittees(): Promise<FetchAllCommitteesRe
     const data = await response.json();
     if (!data || data.error) return { success: false, error: data?.error?.message ?? "Failed to fetch committees." };
 
-    const committees: InternshipCommittee[] = data.committees ?? [];
+    const raw: unknown[] = Array.isArray(data.committees)
+      ? data.committees
+      : Array.isArray(data.data)
+        ? data.data
+        : [];
+
+    const committees: InternshipCommittee[] = raw.map((c) => {
+      const rec = c as InternshipCommittee & { _id?: string };
+      return { ...rec, id: rec.id ?? rec._id ?? "" };
+    });
+
     return { success: true, data: committees };
   } catch (err) {
     Logger.error(`fetchAllCommittees failed: ${(err as Error).message}`);

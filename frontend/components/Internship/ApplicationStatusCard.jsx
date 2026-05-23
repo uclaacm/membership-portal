@@ -8,7 +8,9 @@ import "./style.scss";
 
 function getCommitteeName(committees, committeeId) {
   if (!committeeId) return null;
-  const committee = committees.find((c) => c.id === committeeId);
+  const committee = committees.find(
+    (c) => c.id === committeeId || String(c._id) === committeeId,
+  );
   return committee?.displayName ?? committeeId;
 }
 
