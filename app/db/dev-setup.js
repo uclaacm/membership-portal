@@ -1,5 +1,91 @@
+const { Committee } = require('../api/v1/internship/models/Committee');
+
 module.exports = (User, Event) => {
+  const committeeSeeds = [
+    {
+      name: 'AI',
+      displayName: 'AI',
+      description: 'Explore machine learning, applied AI, and research-inspired projects.',
+      internLimit: 10,
+      applicationDeadline: new Date('2030-10-15T23:59:59.000Z'),
+    },
+    {
+      name: 'Hack',
+      displayName: 'Hack',
+      description: 'Build web apps, developer tools, and polished product prototypes.',
+      internLimit: 12,
+      applicationDeadline: new Date('2030-10-15T23:59:59.000Z'),
+    },
+    {
+      name: 'Design',
+      displayName: 'Design',
+      description: 'Create user-centered design systems, visuals, and product experiences.',
+      internLimit: 8,
+      applicationDeadline: new Date('2030-10-15T23:59:59.000Z'),
+    },
+    {
+      name: 'Studio',
+      displayName: 'Studio',
+      description: 'Ship creative technical projects with a focus on craft and collaboration.',
+      internLimit: 6,
+      applicationDeadline: new Date('2030-10-15T23:59:59.000Z'),
+    },
+    {
+      name: 'Cyber',
+      displayName: 'Cyber',
+      description: 'Learn practical security through workshops, labs, and CTF-style projects.',
+      internLimit: 8,
+      applicationDeadline: new Date('2030-10-15T23:59:59.000Z'),
+    },
+    {
+      name: 'ICPC',
+      displayName: 'ICPC',
+      description: 'Competitive programming, algorithms, and interview prep.',
+      internLimit: 10,
+      applicationDeadline: new Date('2030-10-15T23:59:59.000Z'),
+    },
+    {
+      name: 'W',
+      displayName: 'W',
+      description: 'ACM-W community, mentorship, and professional development.',
+      internLimit: 10,
+      applicationDeadline: new Date('2030-10-15T23:59:59.000Z'),
+    },
+    {
+      name: 'TeachLA',
+      displayName: 'TeachLA',
+      description: 'Education outreach and curriculum development for K-12 CS.',
+      internLimit: 12,
+      applicationDeadline: new Date('2030-10-15T23:59:59.000Z'),
+    },
+    {
+      name: 'Cloud',
+      displayName: 'Cloud',
+      description: 'Cloud infrastructure, DevOps, and reliability engineering projects.',
+      internLimit: 8,
+      applicationDeadline: new Date('2030-10-15T23:59:59.000Z'),
+    },
+  ];
+
+  const committeeSeedPromises = committeeSeeds.map((seed) => {
+    const nameVariants = [seed.name, seed.name.toLowerCase()];
+    return Committee.updateOne(
+      { name: { $in: nameVariants } },
+      {
+        $set: {
+          name: seed.name,
+          displayName: seed.displayName,
+          description: seed.description,
+          internLimit: seed.internLimit,
+          applicationDeadline: seed.applicationDeadline,
+        },
+      },
+      { upsert: true },
+    );
+  });
+
   Promise.all([
+    ...committeeSeedPromises,
     User.upsert({
       email: 'acm@g.ucla.edu',
       accessType: 'SUPERADMIN',
