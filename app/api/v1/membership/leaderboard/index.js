@@ -1,6 +1,8 @@
 const express = require('express');
 const error = require('../../../../error');
 const { User, Attendance } = require('../../../../db');
+const { isOfficerOrAdmin } = require('../../auth');
+const { buildAdminLeaderboardQuery } = require('./admin-filters');
 
 const router = express.Router();
 
@@ -23,6 +25,29 @@ router.route('/').get((req, res, next) => {
         leaderboard: users.map((u) => u.getBaseProfile()),
       });
       return null;
+    })
+    .catch(next);
+});
+
+/**
+ * Filtered leaderboard for officers and admins.
+ * Returns user profiles sorted by points, filtered by the caller's
+ * permissions (see buildAdminLeaderboardQuery).
+ *
+ * Query params: ?year, ?role, ?committee
+ */
+router.route('/admin').get(isOfficerOrAdmin, (req, res, next) => {
+  const where = buildAdminLeaderboardQuery(req.query, req.user);
+
+  return User.findAll({
+    where,
+    order: [['points', 'DESC']],
+  })
+    .then((users) => {
+      res.json({
+        error: null,
+        leaderboard: users.map((u) => u.getBaseProfile()),
+      });
     })
     .catch(next);
 });
