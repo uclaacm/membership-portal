@@ -191,6 +191,20 @@
       }
     }
 
+    &.admin-view {
+      thead tr td.name div {
+        text-align: left;
+
+        img {
+          display: none;
+        }
+      }
+
+      tr td.name .inner-name .profile-pic {
+        display: none;
+      }
+    }
+
     @media (max-width: 450px) {
       tr td.name div img {
         display: none;

@@ -62,7 +62,16 @@ class Leaderboard extends React.Component {
   };
 
   render() {
-    if (!this.props.leaderboard || !this.props.leaderboard.length || this.props.leaderboard.length < 3) return null;
+    const adminView = this.props.showAdminView;
+    if (!adminView && (!this.props.leaderboard || !this.props.leaderboard.length || this.props.leaderboard.length < 3)) return null;
+    if (adminView && (!this.props.leaderboard || !this.props.leaderboard.length)) {
+      return (
+        <div className="leaderboard-wrapper">
+          {this.props.filterBar}
+          <p style={{ color: '#666', marginTop: 20 }}>No members found matching the selected filters.</p>
+        </div>
+      );
+    }
     if (this.props.error) {
       return (
         <div className="leaderboard-wrapper">
@@ -81,12 +90,16 @@ class Leaderboard extends React.Component {
             opened={this.state.openedModal}
             onChange={this.modalToggle}
           />
-          <div className="top-users">
-            <TopUser user={this.props.leaderboard[1]} place={2} onChange={this.updateModalInfo} />
-            <TopUser user={this.props.leaderboard[0]} place={1} onChange={this.updateModalInfo} />
-            <TopUser user={this.props.leaderboard[2]} place={3} onChange={this.updateModalInfo} />
-          </div>
-          <table className="leaderboard-table">
+          {adminView ? (
+            this.props.filterBar
+          ) : (
+            <div className="top-users">
+              <TopUser user={this.props.leaderboard[1]} place={2} onChange={this.updateModalInfo} />
+              <TopUser user={this.props.leaderboard[0]} place={1} onChange={this.updateModalInfo} />
+              <TopUser user={this.props.leaderboard[2]} place={3} onChange={this.updateModalInfo} />
+            </div>
+          )}
+          <table className={`leaderboard-table${adminView ? ' admin-view' : ''}`}>
             <thead>
               <tr>
                 <td>#</td>
@@ -102,9 +115,9 @@ class Leaderboard extends React.Component {
               </tr>
             </thead>
             <tbody>
-              {this.props.leaderboard.slice(3, 3 + this.state.maxItems).map((user, i) => (
+              {this.props.leaderboard.slice(adminView ? 0 : 3, (adminView ? 0 : 3) + this.state.maxItems).map((user, i) => (
                 <tr className={user.firstName === this.props.user?.firstName && user.lastName === this.props.user?.lastName ? "current-user" : ""} key={i}>
-                  <td>{i + 4}</td>
+                  <td>{i + (adminView ? 1 : 4)}</td>
                   <td className="name">
                     <div className="inner-name">
                       <LeaderboardPicture

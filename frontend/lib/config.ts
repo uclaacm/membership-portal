@@ -42,6 +42,7 @@ const config = {
       committeesBulkStatus: "/api/v1/internship/committees/bulk-status",
     },
     leaderboard: "/api/v1/leaderboard",
+    leaderboardAdmin: "/api/v1/leaderboard/admin",
     admin: {
       promote: "/api/v1/admin/promote",
       promoteOfficer: "/api/v1/admin/promote-officer",
