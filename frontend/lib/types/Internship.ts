@@ -28,6 +28,7 @@ export interface InternshipApplication {
   applicationCycle: string;
   submittedAt: string;
   lastModifiedAt: string;
+  submissionStatus?: "draft" | "submitted";
   createdAt: string;
   updatedAt: string;
 }

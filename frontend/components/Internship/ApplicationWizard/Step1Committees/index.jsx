@@ -156,7 +156,8 @@ export default function Step1Committees({ onValidityChange, flushPendingRef }) {
       <div className="text-xs text-slate-500 text-right">
         {saveState === "pending" && "Saving…"}
         {saveState === "saving" && "Saving…"}
-        {saveState === "idle" && myApplication?._id && "Saved"}
+        {saveState === "idle" && myApplication?._id &&
+          `Saved${myApplication.lastModifiedAt ? ` ${new Date(myApplication.lastModifiedAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}` : ""}`}
         {saveState === "error" && (
           <span className="text-red-600">
             {error || "Save failed"}{" "}

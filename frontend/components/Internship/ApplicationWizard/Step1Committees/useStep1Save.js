@@ -5,21 +5,37 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import createApplicationDraft from "@/app/actions/internship/createApplicationDraft";
 import updateApplication from "@/app/actions/internship/updateApplication";
-import { myApplicationAtom } from "@/lib/atoms";
+import { myApplicationAtom, responsesByCommitteeAtom } from "@/lib/atoms";
 
 const DEBOUNCE_MS = 500;
 
-function buildBody(ids) {
+function buildBody(ids, responsesMap) {
   const [first, second, third] = ids;
-  return {
+  const body = {
     firstChoiceCommittee: first,
     secondChoiceCommittee: second ?? null,
     thirdChoiceCommittee: third ?? null,
   };
+  const hasMapEntries = responsesMap && Object.keys(responsesMap).length > 0;
+  if (hasMapEntries) {
+    const cleanResponses = (committeeId) => {
+      if (!committeeId) return [];
+      const arr = responsesMap[committeeId];
+      if (!Array.isArray(arr)) return [];
+      return arr
+        .filter((r) => r && typeof r.answer === "string" && r.answer.trim() !== "")
+        .map((r) => ({ questionKey: r.questionKey, question: r.question, answer: r.answer }));
+    };
+    body.firstChoiceResponses = cleanResponses(first);
+    body.secondChoiceResponses = cleanResponses(second);
+    body.thirdChoiceResponses = cleanResponses(third);
+  }
+  return body;
 }
 
 export default function useStep1Save(selectedCommitteeIds, profileData) {
   const [myApplication, setMyApplication] = useAtom(myApplicationAtom);
+  const [responsesByCommittee] = useAtom(responsesByCommitteeAtom);
   const [saveState, setSaveState] = useState("idle");
   const [error, setError] = useState(null);
   const [errorKind, setErrorKind] = useState(null);
@@ -31,6 +47,7 @@ export default function useStep1Save(selectedCommitteeIds, profileData) {
   const profileDataRef = useRef(profileData);
   const saveStateRef = useRef(saveState);
   const errorRef = useRef(error);
+  const responsesByCommitteeRef = useRef(responsesByCommittee);
   const hasEverSelectedRef = useRef(selectedCommitteeIds.length > 0);
 
   useEffect(() => {
@@ -53,6 +70,10 @@ export default function useStep1Save(selectedCommitteeIds, profileData) {
     errorRef.current = error;
   }, [error]);
 
+  useEffect(() => {
+    responsesByCommitteeRef.current = responsesByCommittee;
+  }, [responsesByCommittee]);
+
   const doSave = useCallback(async () => {
     const ids = latestIdsRef.current;
     const app = appRef.current;
@@ -69,8 +90,7 @@ export default function useStep1Save(selectedCommitteeIds, profileData) {
     setErrorKind(null);
 
     try {
-      const payload = buildBody(ids);
-      //console.log("Step1 committees payload:", payload);
+      const payload = buildBody(ids, responsesByCommitteeRef.current);
       if (!app || !app._id) {
         const pd = profileDataRef.current;
         if (!pd || !pd.university || !pd.major || typeof pd.graduationYear !== "number") {
@@ -96,7 +116,7 @@ export default function useStep1Save(selectedCommitteeIds, profileData) {
 
         const freshIds = latestIdsRef.current;
         if (freshIds.length > 1) {
-          const r2 = await updateApplication(result.data._id, buildBody(freshIds));
+          const r2 = await updateApplication(result.data._id, buildBody(freshIds, responsesByCommitteeRef.current));
           if (!r2.success) {
             if (r2.notFound) {
               setError("Application not found");
