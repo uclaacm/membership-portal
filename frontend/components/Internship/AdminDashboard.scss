@@ -154,6 +154,127 @@
   }
 }
 
+.application-table-wrapper {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  &__count {
+    color: vars.$gray3;
+    font-size: 0.85rem;
+  }
+
+  &__empty {
+    padding: 2rem;
+    text-align: center;
+    color: vars.$gray3;
+  }
+}
+
+.application-filters {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+
+  &__search {
+    flex: 1 1 220px;
+    min-width: 200px;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid vars.$gray1;
+    border-radius: 4px;
+    font-size: 0.9rem;
+
+    &:focus {
+      outline: none;
+      border-color: vars.$primary-color;
+    }
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.85rem;
+
+    select {
+      padding: 0.45rem 0.6rem;
+      border: 1px solid vars.$gray1;
+      border-radius: 4px;
+      background: vars.$white;
+      font-size: 0.9rem;
+      min-width: 160px;
+
+      &:focus {
+        outline: none;
+        border-color: vars.$primary-color;
+      }
+    }
+  }
+
+  &__label {
+    color: vars.$gray3;
+    font-weight: 500;
+  }
+}
+
+.application-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+
+  th,
+  td {
+    text-align: left;
+    padding: 0.75rem 0.5rem;
+    border-bottom: 1px solid vars.$gray1;
+    vertical-align: top;
+  }
+
+  th {
+    font-weight: 600;
+    color: vars.$gray3;
+    background: rgba(0, 0, 0, 0.02);
+  }
+
+  tr:hover td {
+    background: rgba(0, 0, 0, 0.02);
+  }
+
+  &__committees,
+  &__status-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  &__committee,
+  &__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+  }
+
+  &__rank {
+    display: inline-block;
+    min-width: 28px;
+    padding: 0.1rem 0.35rem;
+    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.06);
+    color: vars.$gray3;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-align: center;
+  }
+}
+
 .bulk-action-bar {
   display: flex;
   align-items: center;

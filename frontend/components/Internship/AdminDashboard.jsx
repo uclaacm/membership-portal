@@ -2,7 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 import CommitteeTable from "@/components/Internship/CommitteeTable";
+import ApplicationTable from "@/components/Internship/ApplicationTable";
 import fetchCommittees from "@/app/actions/internship/fetchCommittees";
+import fetchAllApplications from "@/app/actions/internship/fetchAllApplications";
 import "./AdminDashboard.scss";
 
 const TABS = [
@@ -15,6 +17,9 @@ export default function AdminDashboard() {
   const [committees, setCommittees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [applications, setApplications] = useState([]);
+  const [applicationsStatus, setApplicationsStatus] = useState("idle");
+  const [applicationsError, setApplicationsError] = useState(null);
 
   const loadCommittees = useCallback(async () => {
     setLoading(true);
@@ -28,9 +33,28 @@ export default function AdminDashboard() {
     setLoading(false);
   }, []);
 
+  const loadApplications = useCallback(async () => {
+    setApplicationsStatus("loading");
+    const result = await fetchAllApplications();
+    if (result.success) {
+      setApplications(result.data);
+      setApplicationsError(null);
+      setApplicationsStatus("success");
+    } else {
+      setApplicationsError(result.error);
+      setApplicationsStatus("error");
+    }
+  }, []);
+
   useEffect(() => {
     Promise.resolve().then(loadCommittees);
   }, [loadCommittees]);
+
+  useEffect(() => {
+    if (activeTab === "applications" && applicationsStatus === "idle") {
+      Promise.resolve().then(loadApplications);
+    }
+  }, [activeTab, applicationsStatus, loadApplications]);
 
   return (
     <div className="admin-dashboard">
@@ -65,9 +89,25 @@ export default function AdminDashboard() {
           </>
         )}
         {activeTab === "applications" && (
-          <div className="admin-dashboard__placeholder">
-            Application oversight will appear here in Phase 2.
-          </div>
+          <>
+            {applicationsStatus === "loading" && (
+              <div className="admin-dashboard__placeholder">Loading applications…</div>
+            )}
+            {applicationsStatus === "error" && (
+              <div className="committee-table-wrapper__error">
+                {applicationsError}
+                <button
+                  type="button"
+                  onClick={() => setApplicationsStatus("idle")}
+                >
+                  Retry
+                </button>
+              </div>
+            )}
+            {applicationsStatus === "success" && (
+              <ApplicationTable applications={applications} committees={committees} />
+            )}
+          </>
         )}
       </div>
     </div>
