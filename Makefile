@@ -25,6 +25,9 @@ setup:
 	fi
 	$(MAKE) migrate
 
+seed-internship-test-data:
+	node scripts/seed-internship-test-data.js
+
 ash:
 	docker run -v $(pwd):/app -p "8080:8080" $(APP_NAME) /bin/ash
 
