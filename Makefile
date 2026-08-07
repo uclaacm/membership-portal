@@ -28,6 +28,9 @@ setup:
 seed-internship-test-data:
 	node scripts/seed-internship-test-data.js
 
+seed-officer-test-applications:
+	node scripts/seed-officer-test-applications.js
+
 ash:
 	docker run -v $(pwd):/app -p "8080:8080" $(APP_NAME) /bin/ash
 

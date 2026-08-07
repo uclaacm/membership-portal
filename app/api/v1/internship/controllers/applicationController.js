@@ -204,16 +204,18 @@ async function getAllApplications(req, res) {
     const includeDrafts = isAdmin && req.query.includeDrafts === 'true';
 
     if (isOfficer && !isAdmin) {
-      const officerCommittees = req.user.getDataValue ? (req.user.getDataValue('committees') || []) : (req.user.committees || []);
+      const officerCommittees = getOfficerCommittees(req.user);
       if (!officerCommittees.length) {
         return res.json({ success: true, data: [], pagination: { total: 0 } });
       }
 
-      // Fetch committee ObjectIds matching officer's committee names (case-insensitive)
-      const committees = await Committee.find({
-        name: { $in: officerCommittees.map((c) => c.toLowerCase()) },
-      });
-      const committeeIds = committees.map((c) => c.id);
+      // Fetch committee ObjectIds matching officer's committee names (case-insensitive).
+      // Comparing lowercased names directly against Committee.name would silently match
+      // nothing, since committee names are stored in display casing (e.g. "ICPC").
+      const allCommittees = await Committee.find({}).select('name displayName');
+      const committeeIds = allCommittees
+        .filter((committee) => officerCanManageCommittee(req.user, committee))
+        .map((committee) => committee.id);
 
       // Scope query: application must have at least one choice in officer's committees
       query.$or = [
