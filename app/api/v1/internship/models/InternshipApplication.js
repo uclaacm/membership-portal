@@ -170,7 +170,7 @@ const InternshipApplicationSchema = new Schema(
     },
     submittedAt: {
       type: Date,
-      default: Date.now,
+      default: null,
     },
     lastModifiedAt: {
       type: Date,
