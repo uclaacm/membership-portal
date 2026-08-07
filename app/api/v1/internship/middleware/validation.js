@@ -50,19 +50,13 @@ async function validateCommitteeResponses(committeeId, responses, fieldLabel) {
     throw new Error(`Invalid ${fieldLabel} committee selection`);
   }
 
-  const requiredQuestions = committee.customQuestions.filter((q) => q.required);
   const responseList = Array.isArray(responses) ? responses : [];
   const answeredQuestionKeys = responseList.map((r) => r.questionKey);
 
-  if (requiredQuestions.length > 0) {
-    const missingQuestions = requiredQuestions.filter(
-      (q) => !answeredQuestionKeys.includes(q.questionKey),
-    );
-    if (missingQuestions.length > 0) {
-      const missing = missingQuestions.map((q) => q.questionText).join(', ');
-      throw new Error(`Missing required questions for ${fieldLabel} committee: ${missing}`);
-    }
-  }
+  // Required-question completeness is enforced at submission time (see
+  // submitApplication in applicationController.js), not at draft creation —
+  // Step 1 of the wizard creates the draft from just a committee choice,
+  // before the user has answered any custom questions in Step 2.
 
   const validQuestionMap = new Map(
     committee.customQuestions.map((q) => [q.questionKey, q]),

@@ -10,7 +10,7 @@ const {
 } = require('../app/api/v1/internship/models/InternshipApplication');
 
 const mongoHost = process.env.MONGO_HOST;
-const mongoPort = process.env.MONGO_PORT; 
+const mongoPort = process.env.MONGO_PORT;
 const mongoDatabase = process.env.MONGO_DATABASE;
 const mongoUser = process.env.MONGO_ROOT_USERNAME;
 const mongoPassword = process.env.MONGO_ROOT_PASSWORD;
@@ -20,10 +20,13 @@ const seedEmail = process.env.SEED_EMAIL || process.env.SEED_USER_EMAIL || '';
 const seedUuid = process.env.SEED_USER_UUID || '';
 const applicationCycle = process.env.SEED_APPLICATION_CYCLE || getCurrentApplicationCycle();
 const applicationStatus = (process.env.SEED_STATUS || 'draft').toLowerCase();
-const committeeNames = (process.env.SEED_COMMITTEES || 'Hack,AI,Design')
+const defaultCommitteeNames = 'Hack,AI,Design,Cyber,ICPC,Studio,TeachLA,W,Cloud';
+const committeeNames = (process.env.SEED_COMMITTEES || defaultCommitteeNames)
   .split(',')
   .map((name) => name.trim())
   .filter(Boolean);
+const shouldSeedApplication = process.env.SEED_APPLICATION === 'true'
+  || process.env.SEED_CREATE_APPLICATION === 'true';
 
 const QUESTION_SETS_BY_SLUG = {
   ai: [
@@ -308,6 +311,10 @@ function getCustomQuestions(name) {
   ];
 }
 
+function shouldCommitteeBeActive(index) {
+  return process.env.SEED_ACTIVE_COMMITTEES === 'false' ? index === 0 : true;
+}
+
 function getCommitteeSeed(name, index) {
   const normalized = name.trim();
   const displayName = normalized.charAt(0).toUpperCase() + normalized.slice(1);
@@ -317,7 +324,7 @@ function getCommitteeSeed(name, index) {
       name: displayName,
       displayName,
       subcommittees: [],
-      isActive: process.env.SEED_ACTIVE_COMMITTEES === 'false' ? index === 0 : true,
+      isActive: shouldCommitteeBeActive(index),
       internLimit: Number(process.env.SEED_INTERN_LIMIT || 10),
       applicationDeadline: new Date(process.env.SEED_APPLICATION_DEADLINE || '2030-10-15T23:59:59.000Z'),
       customQuestions: getCustomQuestions(displayName),
@@ -341,6 +348,25 @@ async function seedCommittee(seed) {
   );
 
   return committee;
+}
+
+async function refreshExistingCommittees() {
+  const existingCommittees = await Committee.find({});
+
+  await Promise.all(existingCommittees.map((committee, index) => (
+    Committee.findByIdAndUpdate(
+      committee.id,
+      {
+        $set: {
+          isActive: shouldCommitteeBeActive(index),
+          customQuestions: getCustomQuestions(committee.displayName || committee.name),
+          applicationDeadline: new Date(process.env.SEED_APPLICATION_DEADLINE || '2030-10-15T23:59:59.000Z'),
+          updatedAt: new Date(),
+        },
+      },
+      { new: true, runValidators: true },
+    )
+  )));
 }
 
 async function resolveSeedUser() {
@@ -377,15 +403,24 @@ async function main() {
     const committees = await Promise.all(
       committeeNames.map((name, index) => seedCommittee(getCommitteeSeed(name, index))),
     );
+    await refreshExistingCommittees();
 
     await InternshipApplication.deleteOne({
       userId: user.uuid,
       applicationCycle,
     });
 
-    const firstChoiceCommittee = committees[0]?._id;
-    const secondChoiceCommittee = committees[1]?._id || undefined;
-    const thirdChoiceCommittee = committees[2]?._id || undefined;
+    if (!shouldSeedApplication) {
+      console.log(`Seeded internship committees for ${user.email} (${user.uuid})`);
+      console.log(`- application cycle: ${applicationCycle}`);
+      console.log(`- committees: ${committees.map((committee) => committee.displayName).join(', ')}`);
+      console.log('- application: none (frontend will create and save selections)');
+      return;
+    }
+
+    const firstChoiceCommittee = committees[0] && committees[0].id;
+    const secondChoiceCommittee = (committees[1] && committees[1].id) || undefined;
+    const thirdChoiceCommittee = (committees[2] && committees[2].id) || undefined;
 
     const baseApplication = {
       userId: user.uuid,
@@ -425,7 +460,7 @@ async function main() {
     console.log(`- application cycle: ${applicationCycle}`);
     console.log(`- application status: ${applicationStatus}`);
     console.log(`- committees: ${committees.map((committee) => committee.displayName).join(', ')}`);
-    console.log(`- application id: ${application._id}`);
+    console.log(`- application id: ${application.id}`);
   } finally {
     await mongoose.disconnect().catch(() => {});
   }
