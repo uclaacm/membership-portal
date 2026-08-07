@@ -11,6 +11,7 @@ const {
   getApplicationById,
   updateApplication,
   updateApplicationStatus,
+  updateApplicationReview,
   deleteApplication,
   getOwnApplication,
   submitApplication,
@@ -29,6 +30,7 @@ const {
   validateCreateApplication,
   validateUpdateApplication,
   validateUpdateApplicationStatus,
+  validateUpdateApplicationReview,
   validateGetApplications,
   validateMongoId,
 } = require('./middleware/validation');
@@ -54,6 +56,9 @@ router.put('/applications/:id', auth, validateUpdateApplication, updateApplicati
 
 // PUT update review status for one committee choice (officers/admins only)
 router.put('/applications/:id/status', auth, adminOrOfficer, validateUpdateApplicationStatus, updateApplicationStatus);
+
+// PUT update an officer review field (yes/no rating or notes) for one committee choice
+router.put('/applications/:id/review', auth, adminOrOfficer, validateUpdateApplicationReview, updateApplicationReview);
 
 // POST submit a draft application (member+)
 router.post('/applications/:id/submit', auth, strictCreateApplicationLimiter, validateMongoId, submitApplication);

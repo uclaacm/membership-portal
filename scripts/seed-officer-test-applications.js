@@ -47,6 +47,24 @@ function buildResponses(committee, index) {
   });
 }
 
+const LONG_NOTE = 'Candidate showed strong problem-solving skills during the technical portion of the '
+  + 'interview, communicated their thought process clearly, and asked thoughtful clarifying '
+  + 'questions. Slightly less confident when discussing team collaboration experience, but '
+  + 'overall a promising applicant who would likely ramp up quickly.';
+
+// Vary officer ratings/notes so the dashboard has a mix of unrated, partially
+// rated, and fully rated rows (including a "maybe") — including one
+// long-note case to exercise the notes column's read-more/truncation
+// behavior.
+function buildReviewFields(index) {
+  const variant = index % 5;
+  if (variant === 1) return { officer1Rating: 'yes', officer2Rating: null, notes: 'Solid answers, worth a follow-up.' };
+  if (variant === 2) return { officer1Rating: 'yes', officer2Rating: 'yes', notes: LONG_NOTE };
+  if (variant === 3) return { officer1Rating: 'no', officer2Rating: 'no', notes: '' };
+  if (variant === 4) return { officer1Rating: 'maybe', officer2Rating: 'yes', notes: 'Undecided — want to compare against the rest of the pool first.' };
+  return { officer1Rating: null, officer2Rating: null, notes: '' };
+}
+
 function buildApplicant(index, targetCommittee, otherCommittees) {
   const firstName = pick(FIRST_NAMES, index);
   const lastName = pick(LAST_NAMES, index);
@@ -70,6 +88,16 @@ function buildApplicant(index, targetCommittee, otherCommittees) {
 
   const choiceResponses = choiceCommittees.map((committee) => buildResponses(committee, index));
 
+  // Officer review fields only make sense on the target committee's own
+  // slot — that's the only slot this seed run's officer would be reviewing.
+  const officer1Ratings = [null, null, null];
+  const officer2Ratings = [null, null, null];
+  const notes = ['', '', ''];
+  const reviewFields = buildReviewFields(index);
+  officer1Ratings[rank - 1] = reviewFields.officer1Rating;
+  officer2Ratings[rank - 1] = reviewFields.officer2Rating;
+  notes[rank - 1] = reviewFields.notes;
+
   return {
     userId: `officer-test-applicant-${index}`,
     firstName,
@@ -89,6 +117,15 @@ function buildApplicant(index, targetCommittee, otherCommittees) {
     firstChoiceStatus: choiceStatuses[0],
     secondChoiceStatus: choiceStatuses[1],
     thirdChoiceStatus: choiceStatuses[2],
+    firstChoiceOfficer1Rating: officer1Ratings[0],
+    secondChoiceOfficer1Rating: officer1Ratings[1],
+    thirdChoiceOfficer1Rating: officer1Ratings[2],
+    firstChoiceOfficer2Rating: officer2Ratings[0],
+    secondChoiceOfficer2Rating: officer2Ratings[1],
+    thirdChoiceOfficer2Rating: officer2Ratings[2],
+    firstChoiceNotes: notes[0],
+    secondChoiceNotes: notes[1],
+    thirdChoiceNotes: notes[2],
     applicationCycle,
     submissionStatus: 'submitted',
     submittedAt: new Date(),

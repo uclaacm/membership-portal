@@ -17,6 +17,21 @@ const STATUS_FIELD_OPTIONS = [
   'thirdChoiceStatus',
 ];
 
+const REVIEW_FIELD_OPTIONS = [
+  'firstChoiceOfficer1Rating',
+  'secondChoiceOfficer1Rating',
+  'thirdChoiceOfficer1Rating',
+  'firstChoiceOfficer2Rating',
+  'secondChoiceOfficer2Rating',
+  'thirdChoiceOfficer2Rating',
+  'firstChoiceNotes',
+  'secondChoiceNotes',
+  'thirdChoiceNotes',
+];
+
+const RATING_OPTIONS = ['yes', 'no', 'maybe'];
+const NOTES_MAX_LENGTH = 2000;
+
 const EMAIL_REGEX = /^\S+@(ucla\.edu|g\.ucla\.edu)$/;
 
 async function validateCommitteeById(value, fieldLabel) {
@@ -266,6 +281,37 @@ const validateUpdateApplicationStatus = [
   handleValidationErrors,
 ];
 
+// Validate officer review field update (yes/no ratings and notes)
+const validateUpdateApplicationReview = [
+  param('id').isMongoId().withMessage('Invalid application ID'),
+  body('reviewField')
+    .exists()
+    .withMessage('reviewField is required')
+    .bail()
+    .isIn(REVIEW_FIELD_OPTIONS)
+    .withMessage(`reviewField must be one of: ${REVIEW_FIELD_OPTIONS.join(', ')}`),
+  body('value').custom((value, { req }) => {
+    const { reviewField } = req.body;
+    const isNotesField = typeof reviewField === 'string' && reviewField.endsWith('Notes');
+
+    if (isNotesField) {
+      if (value !== undefined && value !== null && typeof value !== 'string') {
+        throw new Error('Notes value must be a string');
+      }
+      if (typeof value === 'string' && value.length > NOTES_MAX_LENGTH) {
+        throw new Error(`Notes must be ${NOTES_MAX_LENGTH} characters or fewer`);
+      }
+      return true;
+    }
+
+    if (value !== null && value !== undefined && !RATING_OPTIONS.includes(value)) {
+      throw new Error('Rating value must be "yes", "no", or null');
+    }
+    return true;
+  }),
+  handleValidationErrors,
+];
+
 // Validate get all applications query
 const validateGetApplications = [
   query('firstChoiceStatus')
@@ -307,6 +353,7 @@ module.exports = {
   validateCreateApplication,
   validateUpdateApplication,
   validateUpdateApplicationStatus,
+  validateUpdateApplicationReview,
   validateGetApplications,
   validateMongoId,
 };

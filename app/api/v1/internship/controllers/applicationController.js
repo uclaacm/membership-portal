@@ -15,20 +15,37 @@ const CHOICE_FIELDS = [
     committeeField: 'firstChoiceCommittee',
     responsesField: 'firstChoiceResponses',
     statusField: 'firstChoiceStatus',
+    officer1RatingField: 'firstChoiceOfficer1Rating',
+    officer2RatingField: 'firstChoiceOfficer2Rating',
+    notesField: 'firstChoiceNotes',
   },
   {
     label: 'second choice',
     committeeField: 'secondChoiceCommittee',
     responsesField: 'secondChoiceResponses',
     statusField: 'secondChoiceStatus',
+    officer1RatingField: 'secondChoiceOfficer1Rating',
+    officer2RatingField: 'secondChoiceOfficer2Rating',
+    notesField: 'secondChoiceNotes',
   },
   {
     label: 'third choice',
     committeeField: 'thirdChoiceCommittee',
     responsesField: 'thirdChoiceResponses',
     statusField: 'thirdChoiceStatus',
+    officer1RatingField: 'thirdChoiceOfficer1Rating',
+    officer2RatingField: 'thirdChoiceOfficer2Rating',
+    notesField: 'thirdChoiceNotes',
   },
 ];
+
+function getChoiceForReviewField(reviewField) {
+  return CHOICE_FIELDS.find((choice) => (
+    choice.officer1RatingField === reviewField
+    || choice.officer2RatingField === reviewField
+    || choice.notesField === reviewField
+  ));
+}
 
 function getOfficerCommittees(user) {
   if (!user) {
@@ -72,6 +89,9 @@ function scrubResponsesForOfficer(application, ownedCommitteeIds) {
     const isOwned = committeeId && ownedIds.has(committeeId.toString());
     if (!isOwned) {
       plain[choice.responsesField] = [];
+      plain[choice.officer1RatingField] = null;
+      plain[choice.officer2RatingField] = null;
+      plain[choice.notesField] = '';
     }
   });
 
@@ -603,6 +623,104 @@ async function updateApplicationStatus(req, res) {
   }
 }
 
+// Update one officer-review field (either officer's yes/no rating, or the
+// shared notes) for one committee choice on a submitted application.
+async function updateApplicationReview(req, res) {
+  try {
+    const { reviewField, value } = req.body;
+    const choice = getChoiceForReviewField(reviewField);
+
+    if (!choice) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid review field',
+      });
+    }
+
+    const application = await InternshipApplication.findById(req.params.id);
+    if (!application || application.deletedAt) {
+      return res.status(404).json({
+        success: false,
+        message: 'Application not found',
+      });
+    }
+
+    if (application.submissionStatus !== 'submitted') {
+      return res.status(400).json({
+        success: false,
+        message: 'Application review fields can only be set after submission',
+      });
+    }
+
+    const committeeId = application[choice.committeeField];
+    if (!committeeId) {
+      return res.status(400).json({
+        success: false,
+        message: `Application does not include a ${choice.label} committee`,
+      });
+    }
+
+    const committee = await Committee.findById(committeeId)
+      .select('name displayName');
+    if (!committee) {
+      return res.status(400).json({
+        success: false,
+        message: `${choice.label} committee no longer exists`,
+      });
+    }
+
+    const isAdmin = typeof req.user.isAdmin === 'function' && req.user.isAdmin();
+    const isOfficer = typeof req.user.isOfficer === 'function' && req.user.isOfficer();
+
+    if (!isAdmin && (!isOfficer || !officerCanManageCommittee(req.user, committee))) {
+      return res.status(403).json({
+        success: false,
+        message: `You do not have permission to update ${choice.label} review details`,
+      });
+    }
+
+    let normalizedValue;
+    if (reviewField === choice.notesField) {
+      normalizedValue = typeof value === 'string' ? value.trim() : '';
+    } else {
+      normalizedValue = value || null;
+    }
+
+    const lastModifiedAt = new Date();
+    const updatedApp = await InternshipApplication.findByIdAndUpdate(
+      req.params.id,
+      {
+        [reviewField]: normalizedValue,
+        lastModifiedAt,
+      },
+      { new: true, runValidators: true },
+    );
+
+    const data = (isOfficer && !isAdmin)
+      ? scrubResponsesForOfficer(updatedApp, [committee.id])
+      : updatedApp;
+
+    return res.status(200).json({
+      success: true,
+      data,
+      message: 'Application review updated successfully',
+    });
+  } catch (error) {
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation error',
+        errors: error.errors,
+      });
+    }
+    return res.status(500).json({
+      success: false,
+      message: 'Error updating application review',
+      error: error.message,
+    });
+  }
+}
+
 // Submit a draft application after validating ownership, state, committees,
 // deadlines, and completeness of required question answers.
 async function submitApplication(req, res) {
@@ -734,6 +852,7 @@ module.exports = {
   getApplicationById,
   updateApplication,
   updateApplicationStatus,
+  updateApplicationReview,
   deleteApplication,
   getOwnApplication,
   submitApplication,
