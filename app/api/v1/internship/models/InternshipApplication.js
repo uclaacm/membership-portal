@@ -145,6 +145,55 @@ const InternshipApplicationSchema = new Schema(
       default: 'pending',
     },
 
+    // Per-committee officer review: two independent yes/no ratings plus a
+    // shared notes field, filled in by whichever officers on that committee
+    // review the candidate.
+    firstChoiceOfficer1Rating: {
+      type: String,
+      enum: ['yes', 'no', 'maybe', null],
+      default: null,
+    },
+    firstChoiceOfficer2Rating: {
+      type: String,
+      enum: ['yes', 'no', 'maybe', null],
+      default: null,
+    },
+    firstChoiceNotes: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    secondChoiceOfficer1Rating: {
+      type: String,
+      enum: ['yes', 'no', 'maybe', null],
+      default: null,
+    },
+    secondChoiceOfficer2Rating: {
+      type: String,
+      enum: ['yes', 'no', 'maybe', null],
+      default: null,
+    },
+    secondChoiceNotes: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    thirdChoiceOfficer1Rating: {
+      type: String,
+      enum: ['yes', 'no', 'maybe', null],
+      default: null,
+    },
+    thirdChoiceOfficer2Rating: {
+      type: String,
+      enum: ['yes', 'no', 'maybe', null],
+      default: null,
+    },
+    thirdChoiceNotes: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+
     // Metadata
     applicationCycle: {
       type: String,

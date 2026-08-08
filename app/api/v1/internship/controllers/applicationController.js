@@ -15,20 +15,37 @@ const CHOICE_FIELDS = [
     committeeField: 'firstChoiceCommittee',
     responsesField: 'firstChoiceResponses',
     statusField: 'firstChoiceStatus',
+    officer1RatingField: 'firstChoiceOfficer1Rating',
+    officer2RatingField: 'firstChoiceOfficer2Rating',
+    notesField: 'firstChoiceNotes',
   },
   {
     label: 'second choice',
     committeeField: 'secondChoiceCommittee',
     responsesField: 'secondChoiceResponses',
     statusField: 'secondChoiceStatus',
+    officer1RatingField: 'secondChoiceOfficer1Rating',
+    officer2RatingField: 'secondChoiceOfficer2Rating',
+    notesField: 'secondChoiceNotes',
   },
   {
     label: 'third choice',
     committeeField: 'thirdChoiceCommittee',
     responsesField: 'thirdChoiceResponses',
     statusField: 'thirdChoiceStatus',
+    officer1RatingField: 'thirdChoiceOfficer1Rating',
+    officer2RatingField: 'thirdChoiceOfficer2Rating',
+    notesField: 'thirdChoiceNotes',
   },
 ];
+
+function getChoiceForReviewField(reviewField) {
+  return CHOICE_FIELDS.find((choice) => (
+    choice.officer1RatingField === reviewField
+    || choice.officer2RatingField === reviewField
+    || choice.notesField === reviewField
+  ));
+}
 
 function getOfficerCommittees(user) {
   if (!user) {
@@ -58,6 +75,34 @@ function officerCanManageCommittee(user, committee) {
 
 function buildMissingFieldsMessage(missingFields) {
   return `Missing required fields: ${missingFields.join(', ')}`;
+}
+
+// Strip response arrays for any committee choice the officer doesn't manage,
+// so answers written for other committees never reach an officer's browser
+// (not just hidden in the UI — removed from the API response itself).
+function scrubResponsesForOfficer(application, ownedCommitteeIds) {
+  const plain = typeof application.toObject === 'function' ? application.toObject() : { ...application };
+  const ownedIds = new Set(ownedCommitteeIds.map((id) => id.toString()));
+
+  CHOICE_FIELDS.forEach((choice) => {
+    const committeeId = plain[choice.committeeField];
+    const isOwned = committeeId && ownedIds.has(committeeId.toString());
+    if (!isOwned) {
+      plain[choice.responsesField] = [];
+      plain[choice.officer1RatingField] = null;
+      plain[choice.officer2RatingField] = null;
+      plain[choice.notesField] = '';
+    }
+  });
+
+  return plain;
+}
+
+async function getOfficerCommitteeIds(user) {
+  const allCommittees = await Committee.find({}).select('name displayName');
+  return allCommittees
+    .filter((committee) => officerCanManageCommittee(user, committee))
+    .map((committee) => committee.id);
 }
 
 // Create a new internship application
@@ -203,23 +248,24 @@ async function getAllApplications(req, res) {
     const isAdmin = typeof req.user.isAdmin === 'function' && req.user.isAdmin();
     const includeDrafts = isAdmin && req.query.includeDrafts === 'true';
 
+    let officerCommitteeIds = null;
+
     if (isOfficer && !isAdmin) {
-      const officerCommittees = req.user.getDataValue ? (req.user.getDataValue('committees') || []) : (req.user.committees || []);
+      const officerCommittees = getOfficerCommittees(req.user);
       if (!officerCommittees.length) {
         return res.json({ success: true, data: [], pagination: { total: 0 } });
       }
 
-      // Fetch committee ObjectIds matching officer's committee names (case-insensitive)
-      const committees = await Committee.find({
-        name: { $in: officerCommittees.map((c) => c.toLowerCase()) },
-      });
-      const committeeIds = committees.map((c) => c.id);
+      // Fetch committee ObjectIds matching officer's committee names (case-insensitive).
+      // Comparing lowercased names directly against Committee.name would silently match
+      // nothing, since committee names are stored in display casing (e.g. "ICPC").
+      officerCommitteeIds = await getOfficerCommitteeIds(req.user);
 
       // Scope query: application must have at least one choice in officer's committees
       query.$or = [
-        { firstChoiceCommittee: { $in: committeeIds } },
-        { secondChoiceCommittee: { $in: committeeIds } },
-        { thirdChoiceCommittee: { $in: committeeIds } },
+        { firstChoiceCommittee: { $in: officerCommitteeIds } },
+        { secondChoiceCommittee: { $in: officerCommitteeIds } },
+        { thirdChoiceCommittee: { $in: officerCommitteeIds } },
       ];
     }
 
@@ -271,9 +317,13 @@ async function getAllApplications(req, res) {
 
     const total = await InternshipApplication.countDocuments(query);
 
+    const data = officerCommitteeIds
+      ? applications.map((app) => scrubResponsesForOfficer(app, officerCommitteeIds))
+      : applications;
+
     return res.status(200).json({
       success: true,
-      data: applications,
+      data,
       pagination: {
         page: pageNum,
         limit: limitNum,
@@ -299,6 +349,32 @@ async function getApplicationById(req, res) {
       res.status(404).json({
         success: false,
         message: 'Application not found',
+      });
+      return;
+    }
+
+    const isAdmin = typeof req.user.isAdmin === 'function' && req.user.isAdmin();
+    const isOfficer = typeof req.user.isOfficer === 'function' && req.user.isOfficer();
+
+    if (isOfficer && !isAdmin) {
+      const officerCommitteeIds = await getOfficerCommitteeIds(req.user);
+      const ownedIds = new Set(officerCommitteeIds.map((id) => id.toString()));
+      const hasAccess = CHOICE_FIELDS.some((choice) => {
+        const committeeId = application[choice.committeeField];
+        return committeeId && ownedIds.has(committeeId.toString());
+      });
+
+      if (!hasAccess) {
+        res.status(403).json({
+          success: false,
+          message: 'You do not have permission to view this application',
+        });
+        return;
+      }
+
+      res.status(200).json({
+        success: true,
+        data: scrubResponsesForOfficer(application, officerCommitteeIds),
       });
       return;
     }
@@ -522,9 +598,13 @@ async function updateApplicationStatus(req, res) {
       { new: true, runValidators: true },
     );
 
+    const data = (isOfficer && !isAdmin)
+      ? scrubResponsesForOfficer(updatedApp, [committee.id])
+      : updatedApp;
+
     return res.status(200).json({
       success: true,
-      data: updatedApp,
+      data,
       message: 'Application status updated successfully',
     });
   } catch (error) {
@@ -538,6 +618,104 @@ async function updateApplicationStatus(req, res) {
     return res.status(500).json({
       success: false,
       message: 'Error updating application status',
+      error: error.message,
+    });
+  }
+}
+
+// Update one officer-review field (either officer's yes/no rating, or the
+// shared notes) for one committee choice on a submitted application.
+async function updateApplicationReview(req, res) {
+  try {
+    const { reviewField, value } = req.body;
+    const choice = getChoiceForReviewField(reviewField);
+
+    if (!choice) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid review field',
+      });
+    }
+
+    const application = await InternshipApplication.findById(req.params.id);
+    if (!application || application.deletedAt) {
+      return res.status(404).json({
+        success: false,
+        message: 'Application not found',
+      });
+    }
+
+    if (application.submissionStatus !== 'submitted') {
+      return res.status(400).json({
+        success: false,
+        message: 'Application review fields can only be set after submission',
+      });
+    }
+
+    const committeeId = application[choice.committeeField];
+    if (!committeeId) {
+      return res.status(400).json({
+        success: false,
+        message: `Application does not include a ${choice.label} committee`,
+      });
+    }
+
+    const committee = await Committee.findById(committeeId)
+      .select('name displayName');
+    if (!committee) {
+      return res.status(400).json({
+        success: false,
+        message: `${choice.label} committee no longer exists`,
+      });
+    }
+
+    const isAdmin = typeof req.user.isAdmin === 'function' && req.user.isAdmin();
+    const isOfficer = typeof req.user.isOfficer === 'function' && req.user.isOfficer();
+
+    if (!isAdmin && (!isOfficer || !officerCanManageCommittee(req.user, committee))) {
+      return res.status(403).json({
+        success: false,
+        message: `You do not have permission to update ${choice.label} review details`,
+      });
+    }
+
+    let normalizedValue;
+    if (reviewField === choice.notesField) {
+      normalizedValue = typeof value === 'string' ? value.trim() : '';
+    } else {
+      normalizedValue = value || null;
+    }
+
+    const lastModifiedAt = new Date();
+    const updatedApp = await InternshipApplication.findByIdAndUpdate(
+      req.params.id,
+      {
+        [reviewField]: normalizedValue,
+        lastModifiedAt,
+      },
+      { new: true, runValidators: true },
+    );
+
+    const data = (isOfficer && !isAdmin)
+      ? scrubResponsesForOfficer(updatedApp, [committee.id])
+      : updatedApp;
+
+    return res.status(200).json({
+      success: true,
+      data,
+      message: 'Application review updated successfully',
+    });
+  } catch (error) {
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation error',
+        errors: error.errors,
+      });
+    }
+    return res.status(500).json({
+      success: false,
+      message: 'Error updating application review',
       error: error.message,
     });
   }
@@ -674,6 +852,7 @@ module.exports = {
   getApplicationById,
   updateApplication,
   updateApplicationStatus,
+  updateApplicationReview,
   deleteApplication,
   getOwnApplication,
   submitApplication,
