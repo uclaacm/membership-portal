@@ -9,6 +9,19 @@ const { recordAudit } = require('../../../../audit');
 const router = express.Router();
 
 /**
+ * Rewrites a Google Drive share link into a directly embeddable thumbnail URL.
+ *
+ * A /file/d/<id>/view link is an HTML page, not an image, so rendering it in an <img> or as a
+ * background produces nothing. Only /file/d/<id>/ links carry an extractable id; anything else
+ * (including an already-rewritten thumbnail URL) is returned untouched.
+ */
+const normalizeCover = (cover) => {
+  if (!cover || !cover.includes('drive.google.com')) return cover;
+  const match = cover.match(/\/file\/d\/([^/?#]+)/);
+  return match ? `https://drive.google.com/thumbnail?id=${match[1]}&sz=s1000` : cover;
+};
+
+/**
  * Get all past events
  *
  * Supports pagination with 'offset' and 'limit' query parameters
@@ -40,7 +53,9 @@ router.route('/future').get((req, res, next) => {
   const limit = parseInt(req.query.limit, 10);
   return Event.getFutureEvents(offset, limit)
     .then((events) => {
-      res.json({ error: null, events: events.map((e) => e.getPublic()) });
+      const serialized = events.map((e) => e.getPublic());
+      serialized.forEach((e) => { e.cover = normalizeCover(e.cover); });
+      res.json({ error: null, events: serialized });
       return null;
     })
     .catch(next);
@@ -70,16 +85,7 @@ router
       : Event.getAll(offset, limit);
     return getEvents
       .then(async (events) => {
-        events.forEach((e) => {
-          // Reformat google drive file links.
-          // Only /file/d/<id>/ share links carry an extractable id. A cover that is already a
-          // thumbnail URL (or any other drive link) does not match, and indexing [1] on the
-          // null result used to throw and fail the whole request with a 500.
-          if (e.cover && e.cover.includes('drive.google.com')) {
-            const match = e.cover.match(/\/file\/d\/(.+?)\//);
-            if (match) e.cover = `https://drive.google.com/thumbnail?id=${match[1]}&sz=s1000`;
-          }
-        });
+        events.forEach((e) => { e.cover = normalizeCover(e.cover); });
 
         const serialized = events.map((e) => e.getPublic(canViewAttendanceCode));
 

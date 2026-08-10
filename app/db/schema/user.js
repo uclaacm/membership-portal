@@ -315,15 +315,42 @@ module.exports = (Sequelize, db) => {
     return this.findOne({ where: { email } });
   };
 
+  /**
+   * Ranks every active member, not just STANDARD ones.
+   *
+   * Officers and admins earn points by attending events like anyone else, and excluding them
+   * meant they could never see themselves on their own dashboard — the pinned "your rank" row
+   * had nothing to pin.
+   */
   User.getLeaderboard = function (offset, limit) {
     const safeOffset = (!offset || offset < 0) ? 0 : offset;
     const safeLimit = (!limit || limit < 0) ? undefined : limit;
     return this.findAll({
-      where: { accessType: 'STANDARD' },
+      where: { state: 'ACTIVE' },
       offset: safeOffset,
       limit: safeLimit,
-      order: [['points', 'DESC']],
+      order: [['points', 'DESC'], ['lastName', 'ASC']],
     });
+  };
+
+  /**
+   * The given user's position on the leaderboard, 1-indexed.
+   *
+   * Counts how many members outrank them rather than paging through the board, so it stays a
+   * single indexed COUNT no matter how far down someone sits. Ties share a rank, matching how
+   * the ordered list actually renders.
+   *
+   * Returns null only for someone the board does not list at all (a pending or blocked
+   * account), so the UI can say "not ranked" rather than invent a position.
+   */
+  User.getRank = function (user) {
+    if (user.getDataValue('state') !== 'ACTIVE') return Promise.resolve(null);
+    return this.count({
+      where: {
+        state: 'ACTIVE',
+        points: { [Sequelize.Op.gt]: user.getDataValue('points') },
+      },
+    }).then((ahead) => ahead + 1);
   };
 
   User.getAdmins = function () {
