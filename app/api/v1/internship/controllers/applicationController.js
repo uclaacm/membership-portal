@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const {
   InternshipApplication,
   getCurrentApplicationCycle,
@@ -108,7 +109,7 @@ async function getOfficerCommitteeIds(user) {
 // Create a new internship application
 async function createApplication(req, res) {
   try {
-    const applicationCycle = getCurrentApplicationCycle();
+    const applicationCycle = await getCurrentApplicationCycle();
 
     const existingApplication = await InternshipApplication.findOne({
       userId: req.user.uuid,
@@ -236,12 +237,21 @@ async function getAllApplications(req, res) {
       thirdChoiceCommittee,
       applicationCycle,
       userId,
+      search,
+      archived,
+      committeeId,
+      status,
+      choiceRank,
       page = 1,
       limit = 10,
     } = req.query;
 
     // Build query object with validated parameters
     const query = {};
+    // Committee-scope (officer auto-scope, or an explicit committeeId
+    // filter) and free-text search each need their own $or clause; collect
+    // them here and combine via $and so neither clobbers the other.
+    const andConditions = [];
 
     // Officer scoping logic
     const isOfficer = typeof req.user.isOfficer === 'function' && req.user.isOfficer();
@@ -249,6 +259,7 @@ async function getAllApplications(req, res) {
     const includeDrafts = isAdmin && req.query.includeDrafts === 'true';
 
     let officerCommitteeIds = null;
+    let committeeCondition = null;
 
     if (isOfficer && !isAdmin) {
       const officerCommittees = getOfficerCommittees(req.user);
@@ -260,17 +271,68 @@ async function getAllApplications(req, res) {
       // Comparing lowercased names directly against Committee.name would silently match
       // nothing, since committee names are stored in display casing (e.g. "ICPC").
       officerCommitteeIds = await getOfficerCommitteeIds(req.user);
+      committeeCondition = { $in: officerCommitteeIds };
+    } else if (committeeId && typeof committeeId === 'string') {
+      // "This application chose committee X in any of its 3 choice slots" —
+      // distinct from the strict per-slot firstChoiceCommittee/etc. filters
+      // below, which match one specific slot. Since the 3 slots can never
+      // repeat the same committee, an equality filter on all 3 at once would
+      // never match anything; this is the correct "any slot" filter.
+      committeeCondition = committeeId;
+    }
 
-      // Scope query: application must have at least one choice in officer's committees
-      query.$or = [
-        { firstChoiceCommittee: { $in: officerCommitteeIds } },
-        { secondChoiceCommittee: { $in: officerCommitteeIds } },
-        { thirdChoiceCommittee: { $in: officerCommitteeIds } },
-      ];
+    // "This application's committee-matching slot (see committeeCondition
+    // above) also has status X" — status must be paired with committee
+    // scope PER SLOT, not as an independent "any slot has status X" clause.
+    // Otherwise "committee A, status reviewing" could wrongly match an
+    // application where committee A's own slot is "accepted" but some other,
+    // unrelated slot happens to be "reviewing".
+    const hasStatusFilter = status && typeof status === 'string';
+    // choiceRank ("1"|"2"|"3") restricts matching to one specific slot
+    // instead of "any slot" — used by the officer dashboard's choice-rank
+    // filter, since an officer only cares about the single slot (if any)
+    // that's their own committee.
+    const choiceSlots = ['1', '2', '3'].includes(choiceRank)
+      ? [CHOICE_FIELDS[Number(choiceRank) - 1]]
+      : CHOICE_FIELDS;
+    const hasChoiceRankFilter = choiceSlots.length < CHOICE_FIELDS.length;
+    if (committeeCondition !== null || hasStatusFilter || hasChoiceRankFilter) {
+      andConditions.push({
+        $or: choiceSlots.map(({ committeeField, statusField }) => {
+          const clause = {};
+          if (committeeCondition !== null) clause[committeeField] = committeeCondition;
+          if (hasStatusFilter) clause[statusField] = status;
+          return clause;
+        }),
+      });
+    }
+
+    // Free-text search over applicant name/email
+    if (search && typeof search === 'string') {
+      const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const searchRegex = new RegExp(escapedSearch, 'i');
+      andConditions.push({
+        $or: [
+          { firstName: searchRegex },
+          { lastName: searchRegex },
+          { email: searchRegex },
+        ],
+      });
+    }
+
+    if (andConditions.length === 1) {
+      Object.assign(query, andConditions[0]);
+    } else if (andConditions.length > 1) {
+      query.$and = andConditions;
     }
 
     // Always exclude soft-deleted records
     query.deletedAt = null;
+
+    // Archived applications (a past, closed cycle) are hidden from the
+    // default view; ?archived=true switches to the read-only past-cycles
+    // view showing only archived applications.
+    query.archivedAt = archived === true || archived === 'true' ? { $ne: null } : null;
 
     // Officers should not see drafts; admins can opt in
     if (!includeDrafts) {
@@ -340,6 +402,79 @@ async function getAllApplications(req, res) {
   }
 }
 
+// Per-status counts across ALL of a committee's current, non-archived,
+// submitted applications (not just one page) — "my status" is whichever
+// slot's committee matches, mirroring the officer dashboard's
+// enrichForCommittee logic. Powers the officer dashboard's stats pills,
+// which need true totals independent of the current page/filters.
+async function getApplicationStatusCounts(req, res) {
+  try {
+    const isOfficer = typeof req.user.isOfficer === 'function' && req.user.isOfficer();
+    const isAdmin = typeof req.user.isAdmin === 'function' && req.user.isAdmin();
+
+    let committeeIds;
+    if (isOfficer && !isAdmin) {
+      committeeIds = await getOfficerCommitteeIds(req.user);
+    } else if (isAdmin && req.query.committeeId) {
+      committeeIds = [req.query.committeeId];
+    } else {
+      return res.status(400).json({ success: false, message: 'committeeId is required for admin requests' });
+    }
+
+    if (!committeeIds.length) {
+      return res.json({ success: true, counts: {} });
+    }
+
+    const committeeObjectIds = committeeIds.map(
+      (id) => (typeof id === 'string' ? new mongoose.Types.ObjectId(id) : id),
+    );
+
+    const results = await InternshipApplication.aggregate([
+      {
+        $match: {
+          deletedAt: null,
+          archivedAt: null,
+          submissionStatus: 'submitted',
+          $or: [
+            { firstChoiceCommittee: { $in: committeeObjectIds } },
+            { secondChoiceCommittee: { $in: committeeObjectIds } },
+            { thirdChoiceCommittee: { $in: committeeObjectIds } },
+          ],
+        },
+      },
+      {
+        $addFields: {
+          myStatus: {
+            $switch: {
+              branches: [
+                { case: { $in: ['$firstChoiceCommittee', committeeObjectIds] }, then: '$firstChoiceStatus' },
+                { case: { $in: ['$secondChoiceCommittee', committeeObjectIds] }, then: '$secondChoiceStatus' },
+                { case: { $in: ['$thirdChoiceCommittee', committeeObjectIds] }, then: '$thirdChoiceStatus' },
+              ],
+              default: null,
+            },
+          },
+        },
+      },
+      { $match: { myStatus: { $ne: null } } },
+      { $group: { _id: '$myStatus', count: { $sum: 1 } } },
+    ]);
+
+    const counts = {};
+    results.forEach((row) => {
+      counts[row._id] = row.count;
+    });
+
+    return res.json({ success: true, counts });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Error fetching application status counts',
+      error: error.message,
+    });
+  }
+}
+
 // Get a single internship application by ID
 async function getApplicationById(req, res) {
   try {
@@ -395,7 +530,7 @@ async function getApplicationById(req, res) {
 // Get the authenticated user's own application
 async function getOwnApplication(req, res) {
   try {
-    const applicationCycle = getCurrentApplicationCycle();
+    const applicationCycle = await getCurrentApplicationCycle();
     const application = await InternshipApplication.findOne({
       userId: req.user.uuid,
       applicationCycle,
@@ -849,6 +984,7 @@ async function submitApplication(req, res) {
 module.exports = {
   createApplication,
   getAllApplications,
+  getApplicationStatusCounts,
   getApplicationById,
   updateApplication,
   updateApplicationStatus,

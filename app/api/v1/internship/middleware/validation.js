@@ -334,6 +334,15 @@ const validateGetApplications = [
     .withMessage('Third choice committee must be a valid MongoDB ID'),
   query('applicationCycle').optional().trim(),
   query('userId').optional().trim(),
+  query('search').optional().trim()
+    .isLength({ max: 100 })
+    .withMessage('Search must be 100 characters or fewer'),
+  query('archived').optional().isBoolean()
+    .withMessage('archived must be a boolean')
+    .toBoolean(),
+  query('committeeId').optional().isMongoId().withMessage('committeeId must be a valid MongoDB ID'),
+  query('status').optional().isIn(STATUS_OPTIONS).withMessage('Invalid status filter'),
+  query('choiceRank').optional().isIn(['1', '2', '3']).withMessage('choiceRank must be 1, 2, or 3'),
   query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
   query('limit')
     .optional()

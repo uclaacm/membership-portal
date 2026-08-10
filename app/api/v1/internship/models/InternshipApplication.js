@@ -1,11 +1,20 @@
 const mongoose = require('mongoose');
 const { MIN_GRADUATION_YEAR } = require('../config/constants');
+const { computeDefaultCycleLabel, getCurrentCycle } = require('./InternshipSettings');
 
 const { Schema } = mongoose;
 
-function getCurrentApplicationCycle(referenceDate = new Date()) {
-  const year = referenceDate.getFullYear();
-  return `${year}-${year + 1}`;
+// Used only as the Mongoose schema default below (a synchronous fallback for
+// direct `new InternshipApplication()` construction outside request context,
+// e.g. tests/seed scripts). Real request flows call the async
+// getCurrentApplicationCycle() below instead, which reads the admin-settable
+// stored cycle.
+function getCurrentApplicationCycleDefault(referenceDate = new Date()) {
+  return computeDefaultCycleLabel(referenceDate);
+}
+
+async function getCurrentApplicationCycle() {
+  return getCurrentCycle();
 }
 
 const InternshipApplicationSchema = new Schema(
@@ -199,7 +208,7 @@ const InternshipApplicationSchema = new Schema(
       type: String,
       required: true,
       index: true,
-      default: getCurrentApplicationCycle,
+      default: getCurrentApplicationCycleDefault,
     },
     // Tracks member submission, not officer review
     submissionStatus: {
@@ -214,6 +223,19 @@ const InternshipApplicationSchema = new Schema(
       index: true,
     },
     deletedBy: {
+      type: String,
+      default: null,
+    },
+    // Set when an admin archives this application's cycle (either via a
+    // per-committee archive or a global "start new cycle" action). Distinct
+    // from deletedAt/deletedBy: archived applications persist and remain
+    // visible in past-cycle views, they're just excluded from current views.
+    archivedAt: {
+      type: Date,
+      default: null,
+      index: true,
+    },
+    archivedBy: {
       type: String,
       default: null,
     },
