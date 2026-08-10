@@ -16,6 +16,10 @@ const {
 const router = express.Router();
 const MAX_PAGE_LIMIT = 100;
 
+// Upper bound on one bulk role/committee call. Each target is a separate lookup and update,
+// so an unbounded paste would hold a request open indefinitely.
+const MAX_BULK_TARGETS = 200;
+
 const getUpdateFields = (req) => {
   // matchedData will only extract the fields that were validated.
   const validatedData = matchedData(req).user;
@@ -317,6 +321,169 @@ router.get('/officers', async (req, res, next) => {
  *
  * Body: { role: 'Member'|'Officer'|'Admin', committees?: string[], position?: string }
  */
+/**
+ * Bulk role and committee assignment.
+ *
+ * Accepts uuids (the Users table's selection) or emails (a pasted list), so both the
+ * "assign committee" bulk action and the "add users by email" flow use one endpoint.
+ *
+ * Partial success is the normal case: a pasted list routinely contains an address that never
+ * registered. Every identifier is reported as either updated or failed-with-a-reason rather
+ * than failing the whole request on the first bad one.
+ *
+ * Body: {
+ *   uuids?: string[], emails?: string[],
+ *   role?: 'Member'|'Officer'|'Admin',
+ *   committees?: string[],
+ *   committeeMode?: 'add'|'remove'|'replace'   // default 'add'
+ * }
+ */
+router.patch('/bulk', async (req, res, next) => {
+  if (!req.user.isAdmin()) return next(new error.Forbidden());
+
+  const {
+    uuids = [], emails = [], role, committees, committeeMode = 'add',
+  } = req.body || {};
+
+  if (!Array.isArray(uuids) || !Array.isArray(emails)) {
+    return next(new error.BadRequest('uuids and emails must be arrays'));
+  }
+  if (uuids.length === 0 && emails.length === 0) {
+    return next(new error.BadRequest('Provide at least one uuid or email.'));
+  }
+  if (uuids.length + emails.length > MAX_BULK_TARGETS) {
+    return next(new error.BadRequest(`At most ${MAX_BULK_TARGETS} users can be updated at once.`));
+  }
+
+  const ROLE_TO_ACCESS = { Member: 'STANDARD', Officer: 'OFFICER', Admin: 'ADMIN' };
+  if (role !== undefined && !ROLE_TO_ACCESS[role]) {
+    return next(new error.BadRequest("role must be one of 'Member', 'Officer', 'Admin'"));
+  }
+  if (!['add', 'remove', 'replace'].includes(committeeMode)) {
+    return next(new error.BadRequest("committeeMode must be 'add', 'remove' or 'replace'"));
+  }
+  if (committees !== undefined) {
+    if (!Array.isArray(committees)) return next(new error.BadRequest('committees must be an array'));
+    const invalid = committees.filter((c) => !COMMITTEES.includes(c));
+    if (invalid.length > 0) {
+      return next(new error.BadRequest(`Invalid committee(s): ${invalid.join(', ')}`));
+    }
+  }
+  if (role === undefined && committees === undefined) {
+    return next(new error.BadRequest('Provide a role, committees, or both.'));
+  }
+
+  const updated = [];
+  const failed = [];
+
+  const applyTo = async (target, identifier) => {
+    if (!target) {
+      failed.push({ identifier, reason: 'No account found with that email.' });
+      return;
+    }
+    if (target.uuid === req.user.uuid) {
+      failed.push({ identifier, reason: 'You cannot change your own role.' });
+      return;
+    }
+    if (target.isSuperAdmin() && !req.user.isSuperAdmin()) {
+      failed.push({ identifier, reason: 'Only a super admin can change a super admin.' });
+      return;
+    }
+
+    const current = target.committees || [];
+    let nextCommittees = current;
+    if (committees !== undefined) {
+      if (committeeMode === 'replace') nextCommittees = [...new Set(committees)];
+      else if (committeeMode === 'remove') nextCommittees = current.filter((c) => !committees.includes(c));
+      else nextCommittees = [...new Set([...current, ...committees])];
+    }
+
+    const nextRole = role ?? (target.isAdmin() ? 'Admin' : (target.isOfficer() ? 'Officer' : 'Member'));
+
+    if (nextRole === 'Member') {
+      // `committees` is officer/admin scope; a standard member has none. Only object when the
+      // caller explicitly asked to assign some — carrying committees over from the previous
+      // role during a demotion is not a contradiction, it just clears them.
+      const explicitlyAssigning = committees !== undefined
+        && committeeMode !== 'remove'
+        && committees.length > 0;
+
+      if (explicitlyAssigning) {
+        failed.push({
+          identifier,
+          reason: 'Committees apply to officers and admins. Set a role as well.',
+        });
+        return;
+      }
+      nextCommittees = [];
+    }
+
+    // Same invariant as the single-user route: officer scope cannot be empty.
+    if (nextRole === 'Officer' && nextCommittees.length === 0) {
+      failed.push({
+        identifier,
+        reason: 'An officer must belong to at least one committee.',
+      });
+      return;
+    }
+
+    try {
+      await target.update({
+        accessType: ROLE_TO_ACCESS[nextRole],
+        committees: nextCommittees,
+        roleGrantedBy: nextRole === 'Member' ? null : req.user.email,
+        roleGrantedAt: nextRole === 'Member' ? null : new Date(),
+      });
+    } catch (updateError) {
+      // A validation failure on one user must not abort the rest of the batch.
+      failed.push({ identifier, reason: updateError.message });
+      return;
+    }
+
+    updated.push({
+      uuid: target.uuid,
+      email: target.email,
+      role: nextRole,
+      committees: nextCommittees,
+    });
+
+    const scope = nextCommittees.length > 0 ? ` · ${nextCommittees.join(', ')}` : '';
+    recordAudit(AuditLog, req, {
+      action: nextRole === 'Member' ? 'role.revoke' : 'role.grant',
+      target: target.email,
+      detail: `Bulk: ${nextRole.toLowerCase()}${scope}`,
+      committee: nextCommittees[0] || null,
+    });
+  };
+
+  try {
+    // Sequential so the audit entries land in a predictable order and a large paste cannot
+    // open one connection per address.
+    for (let i = 0; i < uuids.length; i += 1) {
+      // eslint-disable-next-line no-await-in-loop
+      await applyTo(await User.findByUUID(uuids[i]), uuids[i]);
+    }
+    for (let i = 0; i < emails.length; i += 1) {
+      const email = String(emails[i]).trim().toLowerCase();
+      if (!email) continue; // eslint-disable-line no-continue
+      // Compared case-insensitively via lower() rather than iLike: an underscore is legal in
+      // an email address but is a single-character wildcard to LIKE, which could match the
+      // wrong account.
+      // eslint-disable-next-line no-await-in-loop
+      await applyTo(
+        await User.findOne({
+          where: Sequelize.where(Sequelize.fn('lower', Sequelize.col('email')), email),
+        }),
+        emails[i],
+      );
+    }
+
+    return res.json({ error: null, updated, failed });
+  } catch (bulkError) {
+    return next(bulkError);
+  }
+});
+
 router.patch('/:uuid/role', async (req, res, next) => {
   if (!req.user.isAdmin()) return next(new error.Forbidden());
 
@@ -351,6 +518,13 @@ router.patch('/:uuid/role', async (req, res, next) => {
     const accessType = ROLE_TO_ACCESS[role];
     const nextCommittees = role === 'Member' ? [] : (committees ?? target.committees ?? []);
 
+    // The officer role *is* committee scope — every permission it grants is "within your own
+    // committee". Without one, an officer can act on nothing yet still reads the member
+    // roster and uploads media, which is a half-privileged account nobody intended.
+    if (role === 'Officer' && nextCommittees.length === 0) {
+      return next(new error.BadRequest('An officer must belong to at least one committee.'));
+    }
+
     await target.update({
       accessType,
       committees: nextCommittees,
@@ -377,14 +551,27 @@ router.patch('/:uuid/role', async (req, res, next) => {
 
 router
   .route('/admins')
+  /**
+   * Reading the admin list is allowed for any admin — knowing who else holds elevated access
+   * is part of doing the job, and the permission matrix scopes admins portal-wide rather than
+   * by committee. Only the mutating verbs below stay super-admin-only.
+   */
+  .get((req, res, next) => {
+    if (!req.user.isAdmin()) return next(new error.Forbidden());
+    return User.getAdmins()
+      // getRosterProfile keeps this to display fields; the raw model was being serialized whole.
+      .then((admins) => res.json({ error: null, admins: admins.map((a) => a.getRosterProfile()) }))
+      .catch(next);
+  })
+  /**
+   * Granting and revoking admin through *this* route stays super-admin-only. The audited,
+   * uuid-keyed PATCH /user/:uuid/role is the supported path for an ordinary admin, and it is
+   * what the Control Panel uses.
+   */
   .all((req, res, next) => {
     if (!req.user.isSuperAdmin()) return next(new error.Forbidden());
     return next();
   })
-  .get((req, res, next) => User.getAdmins()
-    // getRosterProfile keeps this to display fields; the raw model was being serialized whole.
-    .then((admins) => res.json({ error: null, admins: admins.map((a) => a.getRosterProfile()) }))
-    .catch(next))
   .post((req, res, next) => {
     // add admins
     if (!req.body.email || typeof req.body.email !== 'string') return next(new error.BadRequest('Invalid email'));
