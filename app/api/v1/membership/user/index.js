@@ -167,20 +167,19 @@ router.get('/directory', ...validateDirectoryLookup, async (req, res, next) => {
     state: 'ACTIVE',
   };
 
-  // Filter by skills
+  // Filter by skills.
+  // No explicit cast: `skills` is varchar[], so casting the bound array to text[] leaves
+  // Postgres with `varchar[] && text[]`, for which no operator exists — every filtered
+  // request 500ed. Passing the plain array lets Sequelize render it against the column type.
   if (req.query.skills) {
     const skills = req.query.skills.split(',').map((s) => s.trim());
-    where.skills = {
-      [Sequelize.Op.overlap]: Sequelize.cast(skills, 'text[]'),
-    };
+    where.skills = { [Sequelize.Op.overlap]: skills };
   }
 
-  // Filter by career interests
+  // Filter by career interests (varchar[] as well — same reasoning as skills above)
   if (req.query.careerInterests) {
     const interests = req.query.careerInterests.split(',').map((i) => i.trim());
-    where.careerInterests = {
-      [Sequelize.Op.overlap]: Sequelize.cast(interests, 'text[]'),
-    };
+    where.careerInterests = { [Sequelize.Op.overlap]: interests };
   }
 
   // Search by name
