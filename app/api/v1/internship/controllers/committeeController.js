@@ -2,6 +2,8 @@ const { Committee } = require('../models/Committee');
 const { InternshipApplication } = require('../models/InternshipApplication');
 const { canManageCommitteeResource } = require('../../auth/committeeScope');
 const error = require('../../../../error');
+const { AuditLog } = require('../../../../db');
+const { recordAudit } = require('../../../../audit');
 
 // Count submitted (non-deleted) applications per committee across all 3 choice slots.
 // $setUnion dedupes per application so a committee selected in multiple slots only counts once.
@@ -143,9 +145,19 @@ async function bulkUpdateCommitteeStatus(req, res, next) {
       ? { _id: { $in: committeeIds } }
       : {};
 
+    // Read the affected names before the write so the audit entry can name them; afterwards
+    // the filter no longer identifies which committees actually changed.
+    const affected = await Committee.find(filter).select('displayName');
+
     const result = await Committee.updateMany(filter, { $set: { isActive } });
     // result.modifiedCount and result.nModified options are to support Mongoose 6+ and older versions of Mongoose
     const modified = (result && (result.modifiedCount !== undefined ? result.modifiedCount : result.nModified)) || 0;
+
+    recordAudit(AuditLog, req, {
+      action: isActive ? 'committee.open' : 'committee.close',
+      target: affected.map((c) => c.displayName).join(', ') || 'All committees',
+      detail: `Recruitment ${isActive ? 'opened' : 'closed'} for ${modified} committee(s)`,
+    });
 
     return res.json({ success: true, modified });
   } catch (e) {

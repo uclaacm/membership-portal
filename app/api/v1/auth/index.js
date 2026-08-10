@@ -11,6 +11,21 @@ const client = new OAuth2Client(config.google.clientId);
 
 const TOKEN_EXPIRES = 86400; // 1 day in seconds
 
+// How stale lastActiveAt may get before it is refreshed. Every authenticated request would
+// otherwise mean a write, turning read-only endpoints into writes for a column whose only
+// consumer displays it as "2 hours ago".
+const ACTIVITY_REFRESH_MS = 60 * 60 * 1000; // 1 hour
+
+/**
+ * Refreshes the user's lastActiveAt if it has gone stale. Fire-and-forget: this is presence
+ * telemetry, so a failed write must not fail the request that triggered it.
+ */
+const touchLastActive = (user) => {
+  const last = user.getDataValue('lastActiveAt');
+  if (last && Date.now() - new Date(last).getTime() < ACTIVITY_REFRESH_MS) return;
+  user.update({ lastActiveAt: new Date() }).catch(() => {});
+};
+
 /**
  * Middleware function that determines whether or not a user is authenticated
  * and assigns the req.user object to their user info from the db
@@ -43,6 +58,7 @@ const authenticated = (req, res, next) => {
       .then((user) => {
         if (!user) return next(new error.Unauthorized());
         req.user = user;
+        touchLastActive(user);
         return next();
       })
       .catch(next);

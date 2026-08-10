@@ -30,6 +30,17 @@ module.exports = (Sequelize, db) => {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
+
+      // Pixel dimensions, parsed from the file header at upload time. Nullable because images
+      // uploaded before this column existed have no stored dimensions, and because the parser
+      // returns nothing for formats it does not recognize.
+      width: {
+        type: Sequelize.INTEGER,
+      },
+
+      height: {
+        type: Sequelize.INTEGER,
+      },
     },
     {
       // creating indices on frequently accessed fields improves efficiency
@@ -60,6 +71,8 @@ module.exports = (Sequelize, db) => {
       uuid: this.getDataValue('uuid'),
       mimetype: this.getDataValue('mimetype'),
       size: this.getDataValue('size'),
+      width: this.getDataValue('width'),
+      height: this.getDataValue('height'),
     };
   };
 

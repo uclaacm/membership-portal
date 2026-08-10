@@ -2,8 +2,9 @@ const express = require('express');
 
 const error = require('../../../../error');
 const syncEventsFromSheets = require('../../../../../scripts/sheets-event-writer');
-const { Event } = require('../../../../db');
+const { Event, AuditLog } = require('../../../../db');
 const Config = require('../../../../config');
+const { recordAudit } = require('../../../../audit');
 
 const router = express.Router();
 
@@ -23,8 +24,9 @@ router.get('/info', async (req, res, next) => {
 
 /* Path: POST /api/v1/sheets/event */
 router.post('/event', async (req, res, next) => {
-  // User must be admin or officer to sync events.
-  if (!req.user || (!req.user.isAdmin() && !req.user.isOfficer())) {
+  // Admin-only. A sheet sync writes events across every committee, so it cannot be a
+  // committee-scoped capability — the permission matrix denies it to officers for that reason.
+  if (!req.user || !req.user.isAdmin()) {
     return next(new error.Forbidden());
   }
 
@@ -48,6 +50,12 @@ router.post('/event', async (req, res, next) => {
     } else {
       message = `Successfully synced ${totalSynced} event(s) (${results.created} created, ${results.updated} updated).`;
     }
+
+    recordAudit(AuditLog, req, {
+      action: 'events.sync',
+      target: 'Google Sheets',
+      detail: `${results.created} events imported, ${results.updated} updated, ${results.errors.length} failed`,
+    });
 
     return res.json({
       error: null,

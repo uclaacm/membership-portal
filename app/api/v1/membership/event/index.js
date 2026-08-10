@@ -1,7 +1,10 @@
 const express = require('express');
 const error = require('../../../../error');
-const { Event } = require('../../../../db');
+const {
+  Event, AuditLog, RSVP, Attendance, db: Sequelize,
+} = require('../../../../db');
 const { assertCanManageCommitteeResource, canManageCommitteeResource } = require('../../auth/committeeScope');
+const { recordAudit } = require('../../../../audit');
 
 const router = express.Router();
 
@@ -66,7 +69,7 @@ router
       ? Event.getCommitteeEvents(committee, offset, limit)
       : Event.getAll(offset, limit);
     return getEvents
-      .then((events) => {
+      .then(async (events) => {
         events.forEach((e) => {
           // reformat google drive file links
           if (e.cover && e.cover.includes('drive.google.com')) {
@@ -75,10 +78,32 @@ router
           }
         });
 
-        res.json({
-          error: null,
-          events: events.map((e) => e.getPublic(canViewAttendanceCode)),
-        });
+        const serialized = events.map((e) => e.getPublic(canViewAttendanceCode));
+
+        // Staff-only engagement counts, used by the Control Panel's Events table. Two grouped
+        // COUNT queries rather than one pair per event, which was N+1 for a 27-event list.
+        if (canViewAttendanceCode && serialized.length > 0) {
+          const uuids = serialized.map((e) => e.uuid);
+          const tally = (rows) => new Map(
+            rows.map((row) => [row.get('event'), Number(row.get('count'))]),
+          );
+          const groupBy = (model) => model.findAll({
+            attributes: ['event', [Sequelize.fn('COUNT', Sequelize.col('id')), 'count']],
+            where: { event: { [Sequelize.Op.in]: uuids } },
+            group: ['event'],
+          });
+
+          const [rsvps, attendances] = await Promise.all([groupBy(RSVP), groupBy(Attendance)]);
+          const rsvpCounts = tally(rsvps);
+          const attendanceCounts = tally(attendances);
+
+          serialized.forEach((e) => {
+            e.rsvpCount = rsvpCounts.get(e.uuid) || 0;
+            e.attendanceCount = attendanceCounts.get(e.uuid) || 0;
+          });
+        }
+
+        res.json({ error: null, events: serialized });
         return null;
       })
       .catch(next);
@@ -124,6 +149,12 @@ router
         res.json(
           { error: null, event: event.getPublic(req.user.isAdmin() || req.user.isOfficer()) },
         );
+        recordAudit(AuditLog, req, {
+          action: 'event.create',
+          target: event.title,
+          detail: `${event.committee || 'ACM'} · ${event.pointValue} pts`,
+          committee: event.committee,
+        });
         return null;
       })
       .catch(next);
@@ -194,6 +225,12 @@ router
         res.json(
           { error: null, event: event.getPublic(req.user.isAdmin() || req.user.isOfficer()) },
         );
+        recordAudit(AuditLog, req, {
+          action: 'event.update',
+          target: event.title,
+          detail: `Updated ${Object.keys(Event.sanitize(req.body.event)).join(', ')}`,
+          committee: event.committee,
+        });
         return null;
       })
       .catch(next);
@@ -217,6 +254,12 @@ router
         return Event.destroyByUUID(req.params.uuid)
           .then((numDeleted) => {
             res.json({ error: null, numDeleted });
+            recordAudit(AuditLog, req, {
+              action: 'event.delete',
+              target: event.title,
+              detail: event.committee || 'ACM',
+              committee: event.committee,
+            });
             return null;
           });
       })
