@@ -71,10 +71,13 @@ router
     return getEvents
       .then(async (events) => {
         events.forEach((e) => {
-          // reformat google drive file links
+          // Reformat google drive file links.
+          // Only /file/d/<id>/ share links carry an extractable id. A cover that is already a
+          // thumbnail URL (or any other drive link) does not match, and indexing [1] on the
+          // null result used to throw and fail the whole request with a 500.
           if (e.cover && e.cover.includes('drive.google.com')) {
-            const fileID = e.cover.match(/\/file\/d\/(.+?)\//)[1];
-            e.cover = `https://drive.google.com/thumbnail?id=${fileID}&sz=s1000`;
+            const match = e.cover.match(/\/file\/d\/(.+?)\//);
+            if (match) e.cover = `https://drive.google.com/thumbnail?id=${match[1]}&sz=s1000`;
           }
         });
 

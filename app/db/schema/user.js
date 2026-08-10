@@ -348,20 +348,22 @@ module.exports = (Sequelize, db) => {
   /**
    * Paginated, searchable roster backing the Control Panel's Users table.
    *
-   * @param {object} opts {search, role, committee, offset, limit, extraWhere}
-   *   extraWhere is merged last and is how the officer-scoped committee union is applied.
+   * @param {object} opts {search, searchEmail, role, committee, offset, limit}
    * @returns {Promise<{rows: User[], count: number}>}
    */
   User.getRoster = function (opts = {}) {
-    const where = { ...(opts.extraWhere || {}) };
+    const where = {};
 
     if (opts.search) {
       const term = `%${opts.search}%`;
-      where[Sequelize.Op.or] = [
+      const matchers = [
         { firstName: { [Sequelize.Op.iLike]: term } },
         { lastName: { [Sequelize.Op.iLike]: term } },
-        { email: { [Sequelize.Op.iLike]: term } },
       ];
+      // Searching by email is admin-only. Without this, an officer could recover a redacted
+      // address by probing the search box one substring at a time.
+      if (opts.searchEmail) matchers.push({ email: { [Sequelize.Op.iLike]: term } });
+      where[Sequelize.Op.or] = matchers;
     }
 
     if (opts.role === 'Admin') where.accessType = { [Sequelize.Op.or]: ['ADMIN', 'SUPERADMIN'] };
@@ -440,13 +442,41 @@ module.exports = (Sequelize, db) => {
   };
 
   /**
-   * The row shape used by the Control Panel roster tables. Includes email and role, so it is
-   * only ever returned from admin- or officer-scoped endpoints — never a public one.
+   * The row shape used by the Control Panel roster tables. Only ever returned from admin- or
+   * officer-scoped endpoints, never a public one.
+   *
+   * @param {object} opts {sensitive} — when false, contact details and role-grant metadata are
+   *   omitted entirely rather than sent and hidden client-side. Officers get this for members
+   *   outside their own committees.
    */
-  User.prototype.getRosterProfile = function () {
+  User.prototype.getRosterProfile = function ({ sensitive = true } = {}) {
     let role = 'Member';
     if (this.isAdmin()) role = 'Admin';
     else if (this.isOfficer()) role = 'Officer';
+
+    if (!sensitive) {
+      return {
+        uuid: this.getDataValue('uuid'),
+        firstName: this.getDataValue('firstName'),
+        lastName: this.getDataValue('lastName'),
+        picture: this.getDataValue('picture'),
+        email: null,
+        role,
+        accessType: this.getDataValue('accessType'),
+        level: this.isAdmin() ? this.getAdminLevel() : null,
+        position: this.getDataValue('position') || (this.isOfficer() ? 'Officer' : null),
+        committees: this.getDataValue('committees') || [],
+        year: this.getDataValue('year'),
+        major: this.getDataValue('major'),
+        points: this.getDataValue('points'),
+        state: this.getDataValue('state'),
+        roleGrantedBy: null,
+        roleGrantedAt: null,
+        joinedAt: this.getDataValue('createdAt'),
+        lastActiveAt: null,
+        redacted: true,
+      };
+    }
 
     return {
       uuid: this.getDataValue('uuid'),

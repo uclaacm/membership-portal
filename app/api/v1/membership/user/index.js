@@ -254,9 +254,12 @@ router
 /**
  * Paginated roster backing the Control Panel's Users table.
  *
- * Admins see every member. Officers see only members of their own committees — the permission
- * matrix grants "view members of own committee" but denies viewing emails portal-wide, and
- * scoping the query is what enforces the difference.
+ * Both admins and officers see every member — an officer needs the full chapter roster to do
+ * anything useful. What differs is the sensitive columns: the permission matrix grants
+ * "view members of own committee" but denies "view member emails portal-wide", so an officer
+ * sees contact and role-grant details only for members of their own committees. Everyone
+ * else's are redacted server-side rather than hidden in the UI, so the data never leaves the
+ * API in the first place.
  */
 router.get('/roster', async (req, res, next) => {
   const isAdmin = req.user.isAdmin();
@@ -266,48 +269,23 @@ router.get('/roster', async (req, res, next) => {
   const page = Math.max(1, Math.floor(Number(req.query.page) || 1));
   const limit = Math.min(MAX_PAGE_LIMIT, Math.max(1, Math.floor(Number(req.query.limit) || 25)));
 
-  // An officer may only ever filter within their own committees. If they ask for one they do
-  // not belong to, the request is refused rather than silently widened or silently emptied.
-  let { committee } = req.query;
-  if (!isAdmin) {
-    const own = req.user.committees || [];
-    if (committee && !own.includes(committee)) {
-      return next(new error.Forbidden('You may only view members of your own committees.'));
-    }
-    if (!committee) {
-      if (own.length === 0) {
-        return res.json({
-          error: null,
-          users: [],
-          total: 0,
-          page,
-          limit,
-          pages: 0,
-        });
-      }
-      // Officers in several committees see the union of them.
-      committee = null;
-    }
-  }
+  const ownCommittees = req.user.committees || [];
+  const canSeeSensitive = (user) => isAdmin
+    || (user.committees || []).some((c) => ownCommittees.includes(c));
 
   try {
-    const where = {};
-    if (!isAdmin && !committee) {
-      where.committees = { [Sequelize.Op.overlap]: Sequelize.cast(req.user.committees, 'text[]') };
-    }
-
     const { rows, count } = await User.getRoster({
       search: req.query.search,
+      searchEmail: isAdmin,
       role: req.query.role,
-      committee,
+      committee: req.query.committee,
       offset: (page - 1) * limit,
       limit,
-      extraWhere: where,
     });
 
     return res.json({
       error: null,
-      users: rows.map((user) => user.getRosterProfile()),
+      users: rows.map((user) => user.getRosterProfile({ sensitive: canSeeSensitive(user) })),
       total: count,
       page,
       limit,
