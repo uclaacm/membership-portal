@@ -12,7 +12,37 @@ const { getImageDimensions } = require('../../../../image-dimensions');
 
 const router = express.Router();
 
-const upload = multer({ storage: multer.memoryStorage() });
+// Images are held in memory and written to a BYTEA column, so an unbounded upload is a
+// straight path to exhausting the container's memory. 5 MB comfortably fits an event banner.
+const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: MAX_UPLOAD_BYTES, files: 1 },
+  fileFilter: (req, file, cb) => {
+    if (!file.mimetype || !file.mimetype.startsWith('image/')) {
+      cb(new error.BadRequest('Only image files can be uploaded.'));
+      return;
+    }
+    cb(null, true);
+  },
+});
+
+/**
+ * Turns multer's own errors into the API's error shape.
+ *
+ * Without this, exceeding the limit surfaces as an opaque 500 rather than telling the caller
+ * what the limit is.
+ */
+const handleUploadErrors = (err, req, res, next) => {
+  if (err && err.code === 'LIMIT_FILE_SIZE') {
+    return next(new error.BadRequest(`Image is too large. The limit is ${MAX_UPLOAD_BYTES / (1024 * 1024)} MB.`));
+  }
+  if (err && err.code === 'LIMIT_FILE_COUNT') {
+    return next(new error.BadRequest('Only one image may be uploaded per request.'));
+  }
+  return next(err);
+};
 
 router
   .route('/raw/:uuid')
@@ -102,7 +132,7 @@ router
       })
       .catch(next);
   })
-  .post([auth, upload.single('image')], (req, res, next) => {
+  .post([auth, upload.single('image'), handleUploadErrors], (req, res, next) => {
     if (!req.user.isAdmin() && !req.user.isOfficer()) {
       return next(new error.Forbidden());
     }
