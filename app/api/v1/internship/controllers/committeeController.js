@@ -1,13 +1,15 @@
 const { Committee } = require('../models/Committee');
 const { InternshipApplication } = require('../models/InternshipApplication');
 const { canManageCommitteeResource } = require('../../auth/committeeScope');
+const { getCurrentCycle } = require('../models/InternshipSettings');
 const error = require('../../../../error');
 
-// Count submitted (non-deleted) applications per committee across all 3 choice slots.
-// $setUnion dedupes per application so a committee selected in multiple slots only counts once.
+// Count submitted (non-deleted, non-archived) applications per committee across all 3 choice
+// slots. $setUnion dedupes per application so a committee selected in multiple slots only
+// counts once.
 async function getApplicationCountsByCommittee() {
   const counts = await InternshipApplication.aggregate([
-    { $match: { deletedAt: null, submissionStatus: 'submitted' } },
+    { $match: { deletedAt: null, archivedAt: null, submissionStatus: 'submitted' } },
     {
       $project: {
         committees: {
@@ -33,7 +35,7 @@ async function getApplicationCountsByCommittee() {
 async function getAllCommittees(req, res, next) {
   try {
     const includeInactive = req.query.includeInactive === 'true' && req.user && req.user.isAdmin();
-    const filter = {};
+    const filter = includeInactive ? {} : { isActive: true };
 
     const committees = await Committee.find(filter).select('-__v').sort({ displayName: 1 });
 
@@ -126,6 +128,41 @@ async function deleteCommittee(req, res, next) {
   }
 }
 
+// Archives this committee's current-cycle applications. The committee
+// document itself is never modified — it persists exactly as-is; it just
+// has no current-cycle applications after this runs.
+async function archiveCommittee(req, res, next) {
+  try {
+    const committee = await Committee.findById(req.params.id);
+    if (!committee) {
+      return res.status(404).json({ error: 'Committee not found' });
+    }
+
+    const currentCycle = await getCurrentCycle();
+
+    const result = await InternshipApplication.updateMany(
+      {
+        $or: [
+          { firstChoiceCommittee: committee._id },
+          { secondChoiceCommittee: committee._id },
+          { thirdChoiceCommittee: committee._id },
+        ],
+        applicationCycle: currentCycle,
+        deletedAt: null,
+        archivedAt: null,
+      },
+      { $set: { archivedAt: new Date(), archivedBy: req.user.uuid } },
+    );
+    const archivedCount = (result && (
+      result.modifiedCount !== undefined ? result.modifiedCount : result.nModified
+    )) || 0;
+
+    return res.json({ error: null, archivedCount });
+  } catch (e) {
+    return next(e);
+  }
+}
+
 async function bulkUpdateCommitteeStatus(req, res, next) {
   try {
     const { action, committeeIds } = req.body;
@@ -179,5 +216,6 @@ module.exports = {
   updateCommitteeQuestions,
   updateCommitteeAdmin,
   deleteCommittee,
+  archiveCommittee,
   bulkUpdateCommitteeStatus,
 };

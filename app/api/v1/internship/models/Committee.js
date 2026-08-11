@@ -31,10 +31,6 @@ const CommitteeSchema = new Schema(
       type: String,
       required: false,
     },
-    subcommittees: {
-      type: [String],
-      default: [],
-    },
     isActive: {
       type: Boolean,
       default: true,

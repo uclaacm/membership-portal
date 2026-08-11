@@ -8,6 +8,7 @@ const adminOrOfficer = require('../auth').isOfficerOrAdmin;
 const {
   createApplication,
   getAllApplications,
+  getApplicationStatusCounts,
   getApplicationById,
   updateApplication,
   updateApplicationStatus,
@@ -24,8 +25,10 @@ const {
   updateCommitteeQuestions,
   updateCommitteeAdmin,
   deleteCommittee,
+  archiveCommittee,
   bulkUpdateCommitteeStatus,
 } = require('./controllers/committeeController');
+const { getCycleInfo, advanceCycle } = require('./controllers/cycleController');
 const {
   validateCreateApplication,
   validateUpdateApplication,
@@ -43,6 +46,9 @@ router.get('/applications', auth, adminOrOfficer, getApplicationsLimiter, valida
 
 // GET own application (authenticated non-admin user)
 router.get('/applications/me', auth, getApplicationsLimiter, getOwnApplication);
+
+// GET per-status application counts for a committee (officers and admins) - must be before /:id
+router.get('/applications/status-counts', auth, adminOrOfficer, getApplicationsLimiter, getApplicationStatusCounts);
 
 // GET a single application by ID (officers only)
 router.get('/applications/:id', auth, officer, getApplicationsLimiter, getApplicationById);
@@ -90,5 +96,14 @@ router.put('/committees/:id/questions', auth, adminOrOfficer, committeeRateLimit
 
 // DELETE committee (admin only) - soft delete by setting isActive to false
 router.delete('/committees/:id', auth, admin, deleteCommittee);
+
+// ARCHIVE a committee's current-cycle applications (admin only)
+router.post('/committees/:id/archive', auth, admin, committeeRateLimiter, archiveCommittee);
+
+// GET the current/past application cycle info (admin only)
+router.get('/cycle', auth, admin, getCycleInfo);
+
+// POST advance to a new application cycle, archiving the outgoing cycle (admin only)
+router.post('/cycle/advance', auth, admin, committeeRateLimiter, advanceCycle);
 
 module.exports = { router };

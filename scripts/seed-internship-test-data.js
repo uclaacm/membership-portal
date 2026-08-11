@@ -18,7 +18,6 @@ const mongoUri = process.env.MONGODB_URI
   || `mongodb://${mongoUser}:${mongoPassword}@${mongoHost}:${mongoPort}/${mongoDatabase}?authSource=admin`;
 const seedEmail = process.env.SEED_EMAIL || process.env.SEED_USER_EMAIL || '';
 const seedUuid = process.env.SEED_USER_UUID || '';
-const applicationCycle = process.env.SEED_APPLICATION_CYCLE || getCurrentApplicationCycle();
 const applicationStatus = (process.env.SEED_STATUS || 'draft').toLowerCase();
 const defaultCommitteeNames = 'Hack,AI,Design,Cyber,ICPC,Studio,TeachLA,W,Cloud';
 const committeeNames = (process.env.SEED_COMMITTEES || defaultCommitteeNames)
@@ -323,7 +322,6 @@ function getCommitteeSeed(name, index) {
     update: {
       name: displayName,
       displayName,
-      subcommittees: [],
       isActive: shouldCommitteeBeActive(index),
       internLimit: Number(process.env.SEED_INTERN_LIMIT || 10),
       applicationDeadline: new Date(process.env.SEED_APPLICATION_DEADLINE || '2030-10-15T23:59:59.000Z'),
@@ -393,6 +391,9 @@ async function main() {
 
     await db.authenticate();
     await mongoose.connect(mongoUri);
+
+    const applicationCycle = process.env.SEED_APPLICATION_CYCLE
+      || await getCurrentApplicationCycle();
 
     const user = await resolveSeedUser();
 

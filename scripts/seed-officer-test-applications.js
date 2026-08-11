@@ -17,7 +17,7 @@ const mongoUri = process.env.MONGODB_URI
   || `mongodb://${mongoUser}:${mongoPassword}@${mongoHost}:${mongoPort}/${mongoDatabase}?authSource=admin`;
 
 const targetCommitteeName = process.argv[2] || process.env.SEED_OFFICER_COMMITTEE || 'ICPC';
-const applicationCycle = process.env.SEED_APPLICATION_CYCLE || getCurrentApplicationCycle();
+let applicationCycle;
 
 const STATUS_OPTIONS = ['pending', 'reviewing', 'interview_scheduled', 'accepted', 'rejected'];
 const MAJORS = ['Computer Science', 'Computer Science and Engineering', 'Electrical Engineering', 'Statistics and Data Science', 'Mathematics', 'Cognitive Science'];
@@ -135,6 +135,8 @@ function buildApplicant(index, targetCommittee, otherCommittees) {
 
 async function main() {
   await mongoose.connect(mongoUri);
+
+  applicationCycle = process.env.SEED_APPLICATION_CYCLE || await getCurrentApplicationCycle();
 
   const targetCommittee = await Committee.findOne({
     $or: [{ name: targetCommitteeName }, { displayName: targetCommitteeName }],

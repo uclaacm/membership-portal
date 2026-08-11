@@ -313,7 +313,7 @@ describe('getAllCommitteesAdmin (applicationCount)', () => {
     expect(InternshipApplication.aggregate).toHaveBeenCalledTimes(1);
     const pipeline = InternshipApplication.aggregate.mock.calls[0][0];
     expect(pipeline[0]).toEqual({
-      $match: { deletedAt: null, submissionStatus: 'submitted' },
+      $match: { deletedAt: null, archivedAt: null, submissionStatus: 'submitted' },
     });
     // $setUnion across the three choice fields ensures one application doesn't double-count
     // a committee selected in multiple slots.
