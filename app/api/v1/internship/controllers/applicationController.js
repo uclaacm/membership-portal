@@ -425,6 +425,13 @@ async function getApplicationStatusCounts(req, res) {
       return res.json({ success: true, counts: {} });
     }
 
+    const invalidCommitteeId = committeeIds.find(
+      (id) => typeof id === 'string' && !mongoose.isValidObjectId(id),
+    );
+    if (invalidCommitteeId) {
+      return res.status(400).json({ success: false, message: 'committeeId must be a valid MongoDB ID' });
+    }
+
     const committeeObjectIds = committeeIds.map(
       (id) => (typeof id === 'string' ? new mongoose.Types.ObjectId(id) : id),
     );
