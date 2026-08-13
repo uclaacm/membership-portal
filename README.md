@@ -39,7 +39,7 @@ Useful overrides:
 * `SEED_EMAIL` - Postgres user email to seed for.
 * `SEED_USER_UUID` - Postgres user UUID to seed for. Use this if you already know the database UUID.
 * `SEED_STATUS` - `draft` or `submitted`.
-* `SEED_COMMITTEES` - Comma-separated committee names, default `Hack,AI,Design`.
+* `SEED_COMMITTEES` - Comma-separated committee names, default `Hack,AI,Design,Cyber,ICPC,Studio,TeachLA,W,Cloud`.
 * `SEED_APPLICATION_CYCLE` - Target application cycle, default current cycle.
 
 If you do not pass `SEED_EMAIL` or `SEED_USER_UUID`, the script will fail instead of silently seeding a different user.
