@@ -25,9 +25,14 @@ const InternshipSettingsSchema = new Schema(
 
 const InternshipSettings = mongoose.model('InternshipSettings', InternshipSettingsSchema);
 
+// Fixed _id so concurrent upserts race on Mongo's unique _id index instead of
+// on an unconstrained {} filter, which could otherwise create duplicate
+// singleton documents (and make "current cycle" reads/writes nondeterministic).
+const SETTINGS_ID = new mongoose.Types.ObjectId('000000000000000000000001');
+
 async function getCurrentCycle() {
   const settings = await InternshipSettings.findOneAndUpdate(
-    {},
+    { _id: SETTINGS_ID },
     { $setOnInsert: { currentApplicationCycle: computeDefaultCycleLabel() } },
     { new: true, upsert: true },
   );
@@ -36,7 +41,7 @@ async function getCurrentCycle() {
 
 async function setCurrentCycle(newCycle) {
   const settings = await InternshipSettings.findOneAndUpdate(
-    {},
+    { _id: SETTINGS_ID },
     { $set: { currentApplicationCycle: newCycle } },
     { new: true, upsert: true },
   );

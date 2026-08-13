@@ -295,8 +295,10 @@ async function getAllApplications(req, res) {
     const choiceSlots = ['1', '2', '3'].includes(choiceRank)
       ? [CHOICE_FIELDS[Number(choiceRank) - 1]]
       : CHOICE_FIELDS;
-    const hasChoiceRankFilter = choiceSlots.length < CHOICE_FIELDS.length;
-    if (committeeCondition !== null || hasStatusFilter || hasChoiceRankFilter) {
+    // choiceRank only narrows which slot committeeCondition/status apply to;
+    // on its own it has nothing to filter by, so it must not trigger this
+    // branch alone (that would produce a vacuous $or: [{}] matching everything).
+    if (committeeCondition !== null || hasStatusFilter) {
       andConditions.push({
         $or: choiceSlots.map(({ committeeField, statusField }) => {
           const clause = {};
