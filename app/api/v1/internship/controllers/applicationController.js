@@ -559,6 +559,14 @@ async function getOwnApplication(req, res) {
   }
 }
 
+const UPDATE_APPLICATION_RESPONSE_EXCLUDED_FIELDS = [
+  'firstChoiceStatus', 'secondChoiceStatus', 'thirdChoiceStatus',
+  'firstChoiceOfficer1Rating', 'firstChoiceOfficer2Rating', 'firstChoiceNotes',
+  'secondChoiceOfficer1Rating', 'secondChoiceOfficer2Rating', 'secondChoiceNotes',
+  'thirdChoiceOfficer1Rating', 'thirdChoiceOfficer2Rating', 'thirdChoiceNotes',
+  'deletedAt', 'deletedBy', 'archivedAt', 'archivedBy', '__v',
+].map((field) => `-${field}`).join(' ');
+
 // Update an internship application
 async function updateApplication(req, res) {
   try {
@@ -592,16 +600,17 @@ async function updateApplication(req, res) {
     }
 
     const isAdmin = typeof req.user.isAdmin === 'function' && req.user.isAdmin();
-    const isOfficer = typeof req.user.isOfficer === 'function' && req.user.isOfficer();
     const isApplicant = application.userId === req.user.uuid;
 
+    if (!isApplicant && !isAdmin) {
+      return res.status(403).json({
+        success: false,
+        message: 'You do not have permission to update this application',
+      });
+    }
+
     // If applicant and already submitted, forbid update
-    if (
-      application.submissionStatus === 'submitted'
-      && isApplicant
-      && !isOfficer
-      && !isAdmin
-    ) {
+    if (application.submissionStatus === 'submitted' && isApplicant && !isAdmin) {
       return res.status(403).json({
         success: false,
         message: 'You cannot update a submitted application',
@@ -616,15 +625,13 @@ async function updateApplication(req, res) {
       }
     });
 
-    // Officers/admins can update status fields on submitted apps
-    // (already included in allowedFields)
     updateData.lastModifiedAt = Date.now();
 
     const updatedApp = await InternshipApplication.findByIdAndUpdate(
       req.params.id,
       updateData,
       { new: true, runValidators: true },
-    );
+    ).select(UPDATE_APPLICATION_RESPONSE_EXCLUDED_FIELDS);
 
     return res.status(200).json({
       success: true,

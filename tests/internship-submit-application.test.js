@@ -283,4 +283,86 @@ describe('updateApplication submitted locking', () => {
     }));
     expect(InternshipApplication.findByIdAndUpdate).not.toHaveBeenCalled();
   });
+
+  test('rejects a non-owner, non-admin user from reading or editing someone else\'s application', async () => {
+    InternshipApplication.findById.mockResolvedValue(mockApplication());
+    const req = {
+      params: { id: 'application-1' },
+      user: mockUser('someone-else-uuid'),
+      body: { major: 'Math' },
+    };
+    const res = mockResponse();
+
+    await updateApplication(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(403);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+      success: false,
+      message: 'You do not have permission to update this application',
+    }));
+    expect(InternshipApplication.findByIdAndUpdate).not.toHaveBeenCalled();
+  });
+
+  test('rejects an officer (non-owner, non-admin) from editing someone else\'s application', async () => {
+    InternshipApplication.findById.mockResolvedValue(mockApplication());
+    const officerUser = mockUser('officer-uuid');
+    officerUser.isOfficer = jest.fn(() => true);
+    const req = {
+      params: { id: 'application-1' },
+      user: officerUser,
+      body: { major: 'Math' },
+    };
+    const res = mockResponse();
+
+    await updateApplication(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(403);
+    expect(InternshipApplication.findByIdAndUpdate).not.toHaveBeenCalled();
+  });
+
+  test('allows an admin to update someone else\'s application', async () => {
+    InternshipApplication.findById.mockResolvedValue(mockApplication());
+    InternshipApplication.findByIdAndUpdate.mockReturnValue({
+      select: jest.fn().mockResolvedValue(mockApplication({ major: 'Math' })),
+    });
+    const adminUser = mockUser('admin-uuid');
+    adminUser.isAdmin = jest.fn(() => true);
+    const req = {
+      params: { id: 'application-1' },
+      user: adminUser,
+      body: { major: 'Math' },
+    };
+    const res = mockResponse();
+
+    await updateApplication(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(InternshipApplication.findByIdAndUpdate).toHaveBeenCalled();
+  });
+
+  test('excludes officer/admin-only and internal fields from the response', async () => {
+    InternshipApplication.findById.mockResolvedValue(mockApplication());
+    const selectMock = jest.fn().mockResolvedValue(mockApplication({ major: 'Math' }));
+    InternshipApplication.findByIdAndUpdate.mockReturnValue({ select: selectMock });
+    const req = {
+      params: { id: 'application-1' },
+      user: mockUser(),
+      body: { major: 'Math' },
+    };
+    const res = mockResponse();
+
+    await updateApplication(req, res);
+
+    expect(selectMock).toHaveBeenCalledTimes(1);
+    const selectArg = selectMock.mock.calls[0][0];
+    [
+      'firstChoiceStatus', 'secondChoiceStatus', 'thirdChoiceStatus',
+      'firstChoiceOfficer1Rating', 'firstChoiceOfficer2Rating', 'firstChoiceNotes',
+      'secondChoiceOfficer1Rating', 'secondChoiceOfficer2Rating', 'secondChoiceNotes',
+      'thirdChoiceOfficer1Rating', 'thirdChoiceOfficer2Rating', 'thirdChoiceNotes',
+      'deletedAt', 'deletedBy', 'archivedAt', 'archivedBy', '__v',
+    ].forEach((field) => {
+      expect(selectArg).toContain(`-${field}`);
+    });
+  });
 });
