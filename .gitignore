@@ -10,3 +10,4 @@ pg_bkup*
 .vscode
 postman
 .postman*
+Makefile
