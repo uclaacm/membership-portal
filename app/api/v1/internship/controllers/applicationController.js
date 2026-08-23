@@ -40,6 +40,21 @@ const CHOICE_FIELDS = [
   },
 ];
 
+const REVIEWER_ONLY_AND_INTERNAL_FIELDS = [
+  'firstChoiceOfficer1Rating', 'firstChoiceOfficer2Rating', 'firstChoiceNotes',
+  'secondChoiceOfficer1Rating', 'secondChoiceOfficer2Rating', 'secondChoiceNotes',
+  'thirdChoiceOfficer1Rating', 'thirdChoiceOfficer2Rating', 'thirdChoiceNotes',
+  'deletedAt', 'deletedBy', 'archivedAt', 'archivedBy', '__v',
+];
+
+const OWN_APPLICATION_RESPONSE_EXCLUDED_FIELDS = REVIEWER_ONLY_AND_INTERNAL_FIELDS
+  .map((field) => `-${field}`).join(' ');
+
+const UPDATE_APPLICATION_RESPONSE_EXCLUDED_FIELDS = [
+  'firstChoiceStatus', 'secondChoiceStatus', 'thirdChoiceStatus',
+  ...REVIEWER_ONLY_AND_INTERNAL_FIELDS,
+].map((field) => `-${field}`).join(' ');
+
 function getChoiceForReviewField(reviewField) {
   return CHOICE_FIELDS.find((choice) => (
     choice.officer1RatingField === reviewField
@@ -544,7 +559,7 @@ async function getOwnApplication(req, res) {
       userId: req.user.uuid,
       applicationCycle,
       deletedAt: null,
-    });
+    }).select(OWN_APPLICATION_RESPONSE_EXCLUDED_FIELDS);
     if (!application) {
       return res.status(404).json({ success: false, message: 'Application not found' });
     }
@@ -559,20 +574,11 @@ async function getOwnApplication(req, res) {
   }
 }
 
-const UPDATE_APPLICATION_RESPONSE_EXCLUDED_FIELDS = [
-  'firstChoiceStatus', 'secondChoiceStatus', 'thirdChoiceStatus',
-  'firstChoiceOfficer1Rating', 'firstChoiceOfficer2Rating', 'firstChoiceNotes',
-  'secondChoiceOfficer1Rating', 'secondChoiceOfficer2Rating', 'secondChoiceNotes',
-  'thirdChoiceOfficer1Rating', 'thirdChoiceOfficer2Rating', 'thirdChoiceNotes',
-  'deletedAt', 'deletedBy', 'archivedAt', 'archivedBy', '__v',
-].map((field) => `-${field}`).join(' ');
-
 // Update an internship application
 async function updateApplication(req, res) {
   try {
     // Extract and validate allowed fields from req.body
     const allowedFields = [
-      'userId',
       'firstName',
       'lastName',
       'email',

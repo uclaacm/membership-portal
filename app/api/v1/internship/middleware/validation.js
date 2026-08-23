@@ -197,7 +197,7 @@ const validateCreateApplication = [
 // Validate application update
 const validateUpdateApplication = [
   param('id').isMongoId().withMessage('Invalid application ID'),
-  body('userId').optional().trim(),
+  body('userId').not().exists().withMessage('userId cannot be changed'),
   body('firstName').optional().trim().notEmpty()
     .withMessage('First name cannot be empty'),
   body('lastName').optional().trim().notEmpty()

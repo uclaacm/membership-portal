@@ -1,6 +1,7 @@
 jest.mock('../app/api/v1/internship/models/InternshipApplication', () => ({
   InternshipApplication: {
     findById: jest.fn(),
+    findOne: jest.fn(),
     findOneAndUpdate: jest.fn(),
     findByIdAndUpdate: jest.fn(),
   },
@@ -20,6 +21,7 @@ const { Committee } = require('../app/api/v1/internship/models/Committee');
 const {
   submitApplication,
   updateApplication,
+  getOwnApplication,
 } = require('../app/api/v1/internship/controllers/applicationController');
 
 function mockResponse() {
@@ -364,5 +366,64 @@ describe('updateApplication submitted locking', () => {
     ].forEach((field) => {
       expect(selectArg).toContain(`-${field}`);
     });
+  });
+
+  test('drops userId from the update payload even if the owner sends one', async () => {
+    InternshipApplication.findById.mockResolvedValue(mockApplication());
+    const selectMock = jest.fn().mockResolvedValue(mockApplication());
+    InternshipApplication.findByIdAndUpdate.mockReturnValue({ select: selectMock });
+    const req = {
+      params: { id: 'application-1' },
+      user: mockUser(),
+      body: { major: 'Math', userId: 'attacker-uuid' },
+    };
+    const res = mockResponse();
+
+    await updateApplication(req, res);
+
+    const updatePayload = InternshipApplication.findByIdAndUpdate.mock.calls[0][1];
+    expect(updatePayload).not.toHaveProperty('userId');
+    expect(updatePayload.major).toBe('Math');
+  });
+});
+
+describe('getOwnApplication', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('excludes reviewer-only and internal fields, but keeps status fields', async () => {
+    const selectMock = jest.fn().mockResolvedValue(mockApplication());
+    InternshipApplication.findOne.mockReturnValue({ select: selectMock });
+    const req = { user: mockUser() };
+    const res = mockResponse();
+
+    await getOwnApplication(req, res);
+
+    expect(selectMock).toHaveBeenCalledTimes(1);
+    const selectArg = selectMock.mock.calls[0][0];
+    [
+      'firstChoiceOfficer1Rating', 'firstChoiceOfficer2Rating', 'firstChoiceNotes',
+      'secondChoiceOfficer1Rating', 'secondChoiceOfficer2Rating', 'secondChoiceNotes',
+      'thirdChoiceOfficer1Rating', 'thirdChoiceOfficer2Rating', 'thirdChoiceNotes',
+      'deletedAt', 'deletedBy', 'archivedAt', 'archivedBy', '__v',
+    ].forEach((field) => {
+      expect(selectArg).toContain(`-${field}`);
+    });
+    // Status fields must stay visible — ApplicationStatusCard.jsx reads them
+    // to show the applicant their own per-committee decision once submitted.
+    ['firstChoiceStatus', 'secondChoiceStatus', 'thirdChoiceStatus'].forEach((field) => {
+      expect(selectArg).not.toContain(`-${field}`);
+    });
+  });
+
+  test('returns 404 when the caller has no application this cycle', async () => {
+    InternshipApplication.findOne.mockReturnValue({ select: jest.fn().mockResolvedValue(null) });
+    const req = { user: mockUser() };
+    const res = mockResponse();
+
+    await getOwnApplication(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(404);
   });
 });
