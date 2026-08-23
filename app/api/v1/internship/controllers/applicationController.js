@@ -63,6 +63,21 @@ function getChoiceForReviewField(reviewField) {
   ));
 }
 
+const APPLICANT_EDITABLE_FIELDS = [
+  'phone',
+  'university',
+  'major',
+  'graduationYear',
+  'firstChoiceCommittee',
+  'secondChoiceCommittee',
+  'thirdChoiceCommittee',
+  'resumeUrl',
+  'coverLetter',
+  'firstChoiceResponses',
+  'secondChoiceResponses',
+  'thirdChoiceResponses',
+];
+
 function getOfficerCommittees(user) {
   if (!user) {
     return [];
@@ -199,16 +214,25 @@ async function createApplication(req, res) {
       }
     }
 
+    // Build from an explicit allowlist rather than spreading req.body —
+    // fails closed on any field (reviewer-only or otherwise) that isn't
+    // meant to be client-settable
+    const applicationData = {};
+    APPLICANT_EDITABLE_FIELDS.forEach((field) => {
+      if (req.body[field] !== undefined) {
+        applicationData[field] = req.body[field];
+      }
+    });
+
     // Autopopulate user info from authenticated user
-    const applicationData = {
-      ...req.body,
+    Object.assign(applicationData, {
       userId: req.user.uuid,
       firstName: req.user.firstName,
       lastName: req.user.lastName,
       email: req.user.email,
       applicationCycle,
       submissionStatus: 'draft',
-    };
+    });
 
     const application = new InternshipApplication(applicationData);
     await application.save();
@@ -578,23 +602,7 @@ async function getOwnApplication(req, res) {
 async function updateApplication(req, res) {
   try {
     // Extract and validate allowed fields from req.body
-    const allowedFields = [
-      'firstName',
-      'lastName',
-      'email',
-      'phone',
-      'university',
-      'major',
-      'graduationYear',
-      'firstChoiceCommittee',
-      'secondChoiceCommittee',
-      'thirdChoiceCommittee',
-      'resumeUrl',
-      'coverLetter',
-      'firstChoiceResponses',
-      'secondChoiceResponses',
-      'thirdChoiceResponses',
-    ];
+    const allowedFields = [...APPLICANT_EDITABLE_FIELDS, 'firstName', 'lastName', 'email'];
 
     // Fetch the application to check ownership and status
     const application = await InternshipApplication.findById(req.params.id);
