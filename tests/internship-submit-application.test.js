@@ -66,6 +66,7 @@ function mockApplication(overrides = {}) {
     university: 'UCLA',
     major: 'Computer Science',
     graduationYear: 2027,
+    resumeUrl: 'https://example.com/resume.pdf',
     firstChoiceCommittee: 'committee-1',
     firstChoiceResponses: [
       {
@@ -132,6 +133,48 @@ describe('submitApplication', () => {
       message: 'Application deadline has passed for: ACM Dev',
     }));
     expect(InternshipApplication.findOneAndUpdate).not.toHaveBeenCalled();
+  });
+
+  test('rejects submission when resume is missing', async () => {
+    InternshipApplication.findById.mockResolvedValue(mockApplication({
+      resumeUrl: undefined,
+    }));
+    mockCommitteeFind([mockCommittee()]);
+    const req = {
+      params: { id: 'application-1' },
+      user: mockUser(),
+    };
+    const res = mockResponse();
+
+    await submitApplication(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+      success: false,
+      message: 'Missing required fields: Resume',
+      missingFields: ['Resume'],
+    }));
+    expect(InternshipApplication.findOneAndUpdate).not.toHaveBeenCalled();
+  });
+
+  test('rejects submission when resume is a blank string', async () => {
+    InternshipApplication.findById.mockResolvedValue(mockApplication({
+      resumeUrl: '   ',
+    }));
+    mockCommitteeFind([mockCommittee()]);
+    const req = {
+      params: { id: 'application-1' },
+      user: mockUser(),
+    };
+    const res = mockResponse();
+
+    await submitApplication(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+      success: false,
+      message: 'Missing required fields: Resume',
+    }));
   });
 
   test('rejects submission when required committee answers are missing', async () => {

@@ -903,6 +903,14 @@ async function submitApplication(req, res) {
       });
     }
 
+    if (!application.resumeUrl || !application.resumeUrl.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: buildMissingFieldsMessage(['Resume']),
+        missingFields: ['Resume'],
+      });
+    }
+
     const committeeIds = selectedChoices.map((c) => c.committeeId);
     const committees = await Committee.find({ _id: { $in: committeeIds } })
       .select('isActive applicationDeadline customQuestions displayName name');
