@@ -25,7 +25,6 @@ const {
   updateCommitteeQuestions,
   updateCommitteeAdmin,
   deleteCommittee,
-  archiveCommittee,
   bulkUpdateCommitteeStatus,
 } = require('./controllers/committeeController');
 const { getCycleInfo, advanceCycle } = require('./controllers/cycleController');
@@ -96,9 +95,6 @@ router.put('/committees/:id/questions', auth, adminOrOfficer, committeeRateLimit
 
 // DELETE committee (admin only) - soft delete by setting isActive to false
 router.delete('/committees/:id', auth, admin, deleteCommittee);
-
-// ARCHIVE a committee's current-cycle applications (admin only)
-router.post('/committees/:id/archive', auth, admin, committeeRateLimiter, archiveCommittee);
 
 // GET the current/past application cycle info (admin only)
 router.get('/cycle', auth, admin, getCycleInfo);

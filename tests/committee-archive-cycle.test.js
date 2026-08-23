@@ -39,7 +39,6 @@ jest.mock('../app/api/v1/internship/models/InternshipSettings', () => ({
 const { Committee } = require('../app/api/v1/internship/models/Committee');
 const { InternshipApplication } = require('../app/api/v1/internship/models/InternshipApplication');
 const { getCurrentCycle, setCurrentCycle } = require('../app/api/v1/internship/models/InternshipSettings');
-const { archiveCommittee } = require('../app/api/v1/internship/controllers/committeeController');
 const { getCycleInfo, advanceCycle } = require('../app/api/v1/internship/controllers/cycleController');
 const { getAllApplications, getApplicationStatusCounts } = require('../app/api/v1/internship/controllers/applicationController');
 const error = require('../app/error');
@@ -60,60 +59,6 @@ const adminUser = {
 
 beforeEach(() => {
   jest.clearAllMocks();
-});
-
-describe('archiveCommittee', () => {
-  test('returns 404 when the committee does not exist', async () => {
-    Committee.findById.mockResolvedValue(null);
-
-    const req = { params: { id: 'missing' }, user: adminUser };
-    const res = mockRes();
-    const next = jest.fn();
-
-    await archiveCommittee(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.json).toHaveBeenCalledWith({ error: 'Committee not found' });
-    expect(InternshipApplication.updateMany).not.toHaveBeenCalled();
-  });
-
-  test('archives only the current cycle\'s applications for this committee, leaving the committee doc untouched', async () => {
-    const committeeDoc = { _id: 'c1' };
-    Committee.findById.mockResolvedValue(committeeDoc);
-    getCurrentCycle.mockResolvedValue('2026-2027');
-    InternshipApplication.updateMany.mockResolvedValue({ modifiedCount: 7 });
-
-    const req = { params: { id: 'c1' }, user: adminUser };
-    const res = mockRes();
-    const next = jest.fn();
-
-    await archiveCommittee(req, res, next);
-
-    expect(InternshipApplication.updateMany).toHaveBeenCalledWith(
-      {
-        $or: [
-          { firstChoiceCommittee: 'c1' },
-          { secondChoiceCommittee: 'c1' },
-          { thirdChoiceCommittee: 'c1' },
-        ],
-        applicationCycle: '2026-2027',
-        deletedAt: null,
-        archivedAt: null,
-      },
-      { $set: { archivedAt: expect.any(Date), archivedBy: 'admin-uuid' } },
-    );
-    expect(res.json).toHaveBeenCalledWith({ error: null, archivedCount: 7 });
-    expect(next).not.toHaveBeenCalled();
-  });
-
-  test('forwards errors to next()', async () => {
-    Committee.findById.mockRejectedValue(new Error('mongo down'));
-    const next = jest.fn();
-
-    await archiveCommittee({ params: { id: 'c1' }, user: adminUser }, mockRes(), next);
-
-    expect(next).toHaveBeenCalledWith(expect.any(Error));
-  });
 });
 
 describe('getCycleInfo', () => {
