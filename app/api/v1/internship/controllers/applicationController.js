@@ -1020,6 +1020,7 @@ async function submitApplication(req, res) {
 }
 
 module.exports = {
+  CHOICE_FIELDS,
   createApplication,
   getAllApplications,
   getApplicationStatusCounts,
