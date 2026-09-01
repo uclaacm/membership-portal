@@ -1,13 +1,15 @@
 const { Committee } = require('../models/Committee');
 const { InternshipApplication } = require('../models/InternshipApplication');
 const { canManageCommitteeResource } = require('../../auth/committeeScope');
+const { CHOICE_FIELDS } = require('./applicationController');
 const error = require('../../../../error');
 
-// Count submitted (non-deleted) applications per committee across all 3 choice slots.
-// $setUnion dedupes per application so a committee selected in multiple slots only counts once.
+// Count submitted (non-deleted, non-archived) applications per committee across all 3 choice
+// slots. $setUnion dedupes per application so a committee selected in multiple slots only
+// counts once.
 async function getApplicationCountsByCommittee() {
   const counts = await InternshipApplication.aggregate([
-    { $match: { deletedAt: null, submissionStatus: 'submitted' } },
+    { $match: { deletedAt: null, archivedAt: null, submissionStatus: 'submitted' } },
     {
       $project: {
         committees: {
@@ -33,7 +35,7 @@ async function getApplicationCountsByCommittee() {
 async function getAllCommittees(req, res, next) {
   try {
     const includeInactive = req.query.includeInactive === 'true' && req.user && req.user.isAdmin();
-    const filter = {};
+    const filter = includeInactive ? {} : { isActive: true };
 
     const committees = await Committee.find(filter).select('-__v').sort({ displayName: 1 });
 
@@ -110,17 +112,72 @@ async function updateCommitteeAdmin(req, res, next) {
   }
 }
 
+// Hard-deletes a committee and cascades to every application that chose it.
+// An application can list this committee as just one of up to 3 choices, so
+// deleting the committee shouldn't necessarily destroy the whole application
+// — only if this was the applicant's only choice. 
+async function cascadeDeleteCommitteeFromApplications(committeeId) {
+  const affectedApplications = await InternshipApplication.find({
+    $or: CHOICE_FIELDS.map(({ committeeField }) => ({ [committeeField]: committeeId })),
+  });
+
+  let deletedApplications = 0;
+  let updatedApplications = 0;
+
+  await Promise.all(affectedApplications.map(async (application) => {
+    const remainingChoices = CHOICE_FIELDS
+      .map((choice) => ({
+        committeeId: application[choice.committeeField],
+        responses: application[choice.responsesField],
+        status: application[choice.statusField],
+        officer1Rating: application[choice.officer1RatingField],
+        officer2Rating: application[choice.officer2RatingField],
+        notes: application[choice.notesField],
+      }))
+      .filter((choice) => choice.committeeId && choice.committeeId.toString() !== committeeId.toString());
+
+    if (remainingChoices.length === 0) {
+      await application.deleteOne();
+      deletedApplications += 1;
+      return;
+    }
+
+    const update = { lastModifiedAt: new Date() };
+    CHOICE_FIELDS.forEach((choice, index) => {
+      const remaining = remainingChoices[index] ?? null;
+      update[choice.committeeField] = remaining ? remaining.committeeId : null;
+      update[choice.responsesField] = remaining ? remaining.responses : [];
+      update[choice.statusField] = remaining ? remaining.status : 'pending';
+      update[choice.officer1RatingField] = remaining ? remaining.officer1Rating : null;
+      update[choice.officer2RatingField] = remaining ? remaining.officer2Rating : null;
+      update[choice.notesField] = remaining ? remaining.notes : '';
+    });
+
+    await InternshipApplication.findByIdAndUpdate(application._id, { $set: update }, { runValidators: true });
+    updatedApplications += 1;
+  }));
+
+  return { deletedApplications, updatedApplications };
+}
+
 async function deleteCommittee(req, res, next) {
   try {
-    const committee = await Committee.findByIdAndUpdate(
-      req.params.id,
-      { isActive: false },
-      { new: true },
-    );
+    const committee = await Committee.findById(req.params.id);
     if (!committee) {
       return res.status(404).json({ error: 'Committee not found' });
     }
-    return res.json({ error: null, message: 'Committee deactivated' });
+
+    const { deletedApplications, updatedApplications } =
+      await cascadeDeleteCommitteeFromApplications(committee._id);
+
+    await Committee.findByIdAndDelete(committee._id);
+
+    return res.json({
+      error: null,
+      message: 'Committee deleted',
+      deletedApplications,
+      updatedApplications,
+    });
   } catch (error) {
     return next(error);
   }

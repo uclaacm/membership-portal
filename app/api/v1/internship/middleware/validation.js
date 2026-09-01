@@ -17,6 +17,21 @@ const STATUS_FIELD_OPTIONS = [
   'thirdChoiceStatus',
 ];
 
+const REVIEW_FIELD_OPTIONS = [
+  'firstChoiceOfficer1Rating',
+  'secondChoiceOfficer1Rating',
+  'thirdChoiceOfficer1Rating',
+  'firstChoiceOfficer2Rating',
+  'secondChoiceOfficer2Rating',
+  'thirdChoiceOfficer2Rating',
+  'firstChoiceNotes',
+  'secondChoiceNotes',
+  'thirdChoiceNotes',
+];
+
+const RATING_OPTIONS = ['yes', 'no', 'maybe'];
+const NOTES_MAX_LENGTH = 2000;
+
 const EMAIL_REGEX = /^\S+@(ucla\.edu|g\.ucla\.edu)$/;
 
 async function validateCommitteeById(value, fieldLabel) {
@@ -50,19 +65,13 @@ async function validateCommitteeResponses(committeeId, responses, fieldLabel) {
     throw new Error(`Invalid ${fieldLabel} committee selection`);
   }
 
-  const requiredQuestions = committee.customQuestions.filter((q) => q.required);
   const responseList = Array.isArray(responses) ? responses : [];
   const answeredQuestionKeys = responseList.map((r) => r.questionKey);
 
-  if (requiredQuestions.length > 0) {
-    const missingQuestions = requiredQuestions.filter(
-      (q) => !answeredQuestionKeys.includes(q.questionKey),
-    );
-    if (missingQuestions.length > 0) {
-      const missing = missingQuestions.map((q) => q.questionText).join(', ');
-      throw new Error(`Missing required questions for ${fieldLabel} committee: ${missing}`);
-    }
-  }
+  // Required-question completeness is enforced at submission time (see
+  // submitApplication in applicationController.js), not at draft creation —
+  // Step 1 of the wizard creates the draft from just a committee choice,
+  // before the user has answered any custom questions in Step 2.
 
   const validQuestionMap = new Map(
     committee.customQuestions.map((q) => [q.questionKey, q]),
@@ -111,6 +120,15 @@ const validateCreateApplication = [
   body('firstChoiceStatus').not().exists().withMessage('firstChoiceStatus is managed by reviewers'),
   body('secondChoiceStatus').not().exists().withMessage('secondChoiceStatus is managed by reviewers'),
   body('thirdChoiceStatus').not().exists().withMessage('thirdChoiceStatus is managed by reviewers'),
+  body('firstChoiceOfficer1Rating').not().exists().withMessage('firstChoiceOfficer1Rating is managed by reviewers'),
+  body('firstChoiceOfficer2Rating').not().exists().withMessage('firstChoiceOfficer2Rating is managed by reviewers'),
+  body('firstChoiceNotes').not().exists().withMessage('firstChoiceNotes is managed by reviewers'),
+  body('secondChoiceOfficer1Rating').not().exists().withMessage('secondChoiceOfficer1Rating is managed by reviewers'),
+  body('secondChoiceOfficer2Rating').not().exists().withMessage('secondChoiceOfficer2Rating is managed by reviewers'),
+  body('secondChoiceNotes').not().exists().withMessage('secondChoiceNotes is managed by reviewers'),
+  body('thirdChoiceOfficer1Rating').not().exists().withMessage('thirdChoiceOfficer1Rating is managed by reviewers'),
+  body('thirdChoiceOfficer2Rating').not().exists().withMessage('thirdChoiceOfficer2Rating is managed by reviewers'),
+  body('thirdChoiceNotes').not().exists().withMessage('thirdChoiceNotes is managed by reviewers'),
   body('phone').optional().trim(),
   body('university').trim().notEmpty().withMessage('University is required'),
   body('major').trim().notEmpty().withMessage('Major is required'),
@@ -188,7 +206,7 @@ const validateCreateApplication = [
 // Validate application update
 const validateUpdateApplication = [
   param('id').isMongoId().withMessage('Invalid application ID'),
-  body('userId').optional().trim(),
+  body('userId').not().exists().withMessage('userId cannot be changed'),
   body('firstName').optional().trim().notEmpty()
     .withMessage('First name cannot be empty'),
   body('lastName').optional().trim().notEmpty()
@@ -251,6 +269,15 @@ const validateUpdateApplication = [
   body('firstChoiceStatus').not().exists().withMessage('firstChoiceStatus is managed by reviewers'),
   body('secondChoiceStatus').not().exists().withMessage('secondChoiceStatus is managed by reviewers'),
   body('thirdChoiceStatus').not().exists().withMessage('thirdChoiceStatus is managed by reviewers'),
+  body('firstChoiceOfficer1Rating').not().exists().withMessage('firstChoiceOfficer1Rating is managed by reviewers'),
+  body('firstChoiceOfficer2Rating').not().exists().withMessage('firstChoiceOfficer2Rating is managed by reviewers'),
+  body('firstChoiceNotes').not().exists().withMessage('firstChoiceNotes is managed by reviewers'),
+  body('secondChoiceOfficer1Rating').not().exists().withMessage('secondChoiceOfficer1Rating is managed by reviewers'),
+  body('secondChoiceOfficer2Rating').not().exists().withMessage('secondChoiceOfficer2Rating is managed by reviewers'),
+  body('secondChoiceNotes').not().exists().withMessage('secondChoiceNotes is managed by reviewers'),
+  body('thirdChoiceOfficer1Rating').not().exists().withMessage('thirdChoiceOfficer1Rating is managed by reviewers'),
+  body('thirdChoiceOfficer2Rating').not().exists().withMessage('thirdChoiceOfficer2Rating is managed by reviewers'),
+  body('thirdChoiceNotes').not().exists().withMessage('thirdChoiceNotes is managed by reviewers'),
   handleValidationErrors,
 ];
 
@@ -269,6 +296,37 @@ const validateUpdateApplicationStatus = [
     .bail()
     .isIn(STATUS_OPTIONS)
     .withMessage('Invalid application status'),
+  handleValidationErrors,
+];
+
+// Validate officer review field update (yes/no ratings and notes)
+const validateUpdateApplicationReview = [
+  param('id').isMongoId().withMessage('Invalid application ID'),
+  body('reviewField')
+    .exists()
+    .withMessage('reviewField is required')
+    .bail()
+    .isIn(REVIEW_FIELD_OPTIONS)
+    .withMessage(`reviewField must be one of: ${REVIEW_FIELD_OPTIONS.join(', ')}`),
+  body('value').custom((value, { req }) => {
+    const { reviewField } = req.body;
+    const isNotesField = typeof reviewField === 'string' && reviewField.endsWith('Notes');
+
+    if (isNotesField) {
+      if (value !== undefined && value !== null && typeof value !== 'string') {
+        throw new Error('Notes value must be a string');
+      }
+      if (typeof value === 'string' && value.length > NOTES_MAX_LENGTH) {
+        throw new Error(`Notes must be ${NOTES_MAX_LENGTH} characters or fewer`);
+      }
+      return true;
+    }
+
+    if (value !== null && value !== undefined && !RATING_OPTIONS.includes(value)) {
+      throw new Error('Rating value must be "yes", "no", or null');
+    }
+    return true;
+  }),
   handleValidationErrors,
 ];
 
@@ -294,6 +352,15 @@ const validateGetApplications = [
     .withMessage('Third choice committee must be a valid MongoDB ID'),
   query('applicationCycle').optional().trim(),
   query('userId').optional().trim(),
+  query('search').optional().trim()
+    .isLength({ max: 100 })
+    .withMessage('Search must be 100 characters or fewer'),
+  query('archived').optional().isBoolean()
+    .withMessage('archived must be a boolean')
+    .toBoolean(),
+  query('committeeId').optional().isMongoId().withMessage('committeeId must be a valid MongoDB ID'),
+  query('status').optional().isIn(STATUS_OPTIONS).withMessage('Invalid status filter'),
+  query('choiceRank').optional().isIn(['1', '2', '3']).withMessage('choiceRank must be 1, 2, or 3'),
   query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
   query('limit')
     .optional()
@@ -313,6 +380,7 @@ module.exports = {
   validateCreateApplication,
   validateUpdateApplication,
   validateUpdateApplicationStatus,
+  validateUpdateApplicationReview,
   validateGetApplications,
   validateMongoId,
 };
