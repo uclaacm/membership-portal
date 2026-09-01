@@ -3,11 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { useAtomValue } from "jotai";
 import NavigationItem from "./NavigationItem";
 import ProfileDropdown from "./ProfileDropdown";
 import Config from "@/lib/config";
-import { activeCommitteesAtom } from "@/lib/atoms";
 import "./styles.scss";
 
 export default function Topbar({
@@ -23,8 +21,6 @@ export default function Topbar({
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
-  const activeCommittees = useAtomValue(activeCommitteesAtom);
-  const showInternship = isRealAdmin || isOfficer || (activeCommittees !== null && activeCommittees.length > 0);
 
   useEffect(() => {
     const handleResize = () => {
@@ -58,11 +54,9 @@ export default function Topbar({
       <Link href="/resources" className={pathname === "/resources" ? "selected" : ""}>
         <NavigationItem text={isAdmin ? "Organization" : "Resources"} />
       </Link>
-      {showInternship && (
-        <Link href="/internship" className={pathname.startsWith("/internship") ? "selected" : ""}>
-          <NavigationItem text="Internship" />
-        </Link>
-      )}
+      <Link href="/internship" className={pathname.startsWith("/internship") ? "selected" : ""}>
+        <NavigationItem text="Internship" />
+      </Link>
     </>
   );
 

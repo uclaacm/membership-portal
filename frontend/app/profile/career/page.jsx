@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import Topbar from "@/components/Topbar";
 import CareerLanding from "../CareerLanding";
@@ -17,6 +17,7 @@ export default function CareerPage() {
   const activeCommittees = useAtomValue(activeCommitteesAtom);
   const setActiveCommittees = useSetAtom(activeCommitteesAtom);
   const [mounted, setMounted] = useState(false);
+  const hasRequestedCommitteesRef = useRef(false);
   const [careerProfile, setCareerProfile] = useState(userProfile || {});
 
   useEffect(() => {
@@ -35,7 +36,13 @@ export default function CareerPage() {
     })();
   }, [userProfile]);
 
+  // Guarded to run once per mount — without hasRequestedCommitteesRef, this
+  // would loop forever: setActiveCommittees below always produces a new
+  // array, which re-triggers this effect since activeCommittees is a dep.
   useEffect(() => {
+    if (hasRequestedCommitteesRef.current) return;
+    hasRequestedCommitteesRef.current = true;
+
     fetchAllCommittees().then(result => {
       if (result.success) {
         setActiveCommittees(result.data.filter(c => c.isActive));
@@ -43,7 +50,7 @@ export default function CareerPage() {
         setActiveCommittees([]);
       }
     });
-  }, [activeCommittees, setActiveCommittees]);
+  }, [setActiveCommittees]);
 
   const handleLogout = async () => {
     await logoutUser();

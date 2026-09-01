@@ -36,10 +36,13 @@ const config = {
     },
     internship: {
       applications: "/api/v1/internship/applications",
+      applicationStatusCounts: "/api/v1/internship/applications/status-counts",
       ownApplication: "/api/v1/internship/applications/me",
       committees: "/api/v1/internship/committees",
       committeesAdmin: "/api/v1/internship/committees/admin",
       committeesBulkStatus: "/api/v1/internship/committees/bulk-status",
+      cycle: "/api/v1/internship/cycle",
+      cycleAdvance: "/api/v1/internship/cycle/advance",
     },
     leaderboard: "/api/v1/leaderboard",
     leaderboardAdmin: "/api/v1/leaderboard/admin",

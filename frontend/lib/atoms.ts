@@ -11,6 +11,7 @@ export const isOfficerAtom = atom<boolean>(false);
 export const adminViewAtom = atom<boolean>(false);
 export const officerViewAtom = atom<boolean>(false);
 export const myApplicationAtom = atom<InternshipApplication | null>(null);
+export const officerApplicationsAtom = atom<InternshipApplication[]>([]);1
 export const activeCommitteesAtom = atom<InternshipCommittee[] | null>(null);
 export const committeesAtom = atom<InternshipCommittee[]>([]);
 export const responsesByCommitteeAtom = atom<Record<string, InternshipQuestionResponse[]>>({});

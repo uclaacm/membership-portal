@@ -1,0 +1,577 @@
+@use "@/styles/vars";
+
+.officer-dashboard {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  &__header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+
+    h2 {
+      margin: 0;
+    }
+  }
+
+  &__cycle {
+    color: vars.$gray3;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  &__committee-select {
+    appearance: none;
+    background: vars.$white;
+    border: 1px solid vars.$gray1;
+    border-radius: 4px;
+    padding: 0.35rem 0.6rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:focus {
+      outline: none;
+      border-color: vars.$primary-color;
+    }
+  }
+
+  &__edit-questions {
+    margin-left: auto;
+    appearance: none;
+    background: vars.$white;
+    border: 1px solid vars.$primary-color;
+    color: vars.$primary-color;
+    border-radius: 4px;
+    padding: 0.45rem 0.9rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+
+    &:hover {
+      background: vars.$primary-color;
+      color: vars.$white;
+    }
+  }
+
+  &__placeholder,
+  &__error {
+    padding: 2rem;
+    text-align: center;
+    color: vars.$gray3;
+  }
+
+  &__error {
+    color: vars.$dark-red;
+  }
+
+  &__count {
+    color: vars.$gray3;
+    font-size: 0.85rem;
+  }
+
+  &__toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  &__pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: vars.$gray3;
+
+    button {
+      appearance: none;
+      background: vars.$white;
+      border: 1px solid vars.$gray1;
+      border-radius: 4px;
+      padding: 0.4rem 0.9rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+
+      &:hover:not(:disabled) {
+        border-color: vars.$primary-color;
+        color: vars.$primary-color;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+.copy-emails-button {
+  appearance: none;
+  background: vars.$white;
+  color: vars.$primary-color;
+  border: 1px solid vars.$primary-color;
+  padding: 0.4rem 0.9rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover:not(:disabled) {
+    background: vars.$primary-color;
+    color: vars.$white;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.officer-stats-bar {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+
+  &__pill {
+    appearance: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid vars.$gray1;
+    background: vars.$white;
+    border-radius: 999px;
+    padding: 0.4rem 1rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: border-color 0.15s, background 0.15s;
+
+    &:hover {
+      border-color: vars.$primary-color;
+    }
+  }
+
+  &__pill--active {
+    border-color: vars.$primary-color;
+    background: rgba(33, 77, 133, 0.08);
+  }
+
+  &__count {
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+
+  &__label {
+    color: vars.$gray3;
+  }
+
+  &__pill--active &__label {
+    color: vars.$primary-color;
+  }
+
+  &__pill--pending &__count {
+    color: #92400e;
+  }
+
+  &__pill--reviewing &__count {
+    color: #1e40af;
+  }
+
+  &__pill--interview_scheduled &__count {
+    color: #3730a3;
+  }
+
+  &__pill--accepted &__count {
+    color: vars.$dark-green;
+  }
+
+  &__pill--rejected &__count {
+    color: vars.$dark-red;
+  }
+}
+
+.officer-filter-bar {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+
+  &__search {
+    flex: 1 1 240px;
+    min-width: 200px;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid vars.$gray1;
+    border-radius: 4px;
+    font-size: 0.9rem;
+
+    &:focus {
+      outline: none;
+      border-color: vars.$primary-color;
+    }
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.85rem;
+
+    select {
+      padding: 0.45rem 0.6rem;
+      border: 1px solid vars.$gray1;
+      border-radius: 4px;
+      background: vars.$white;
+      font-size: 0.9rem;
+      min-width: 170px;
+
+      &:focus {
+        outline: none;
+        border-color: vars.$primary-color;
+      }
+    }
+  }
+
+  &__label {
+    color: vars.$gray3;
+    font-weight: 500;
+  }
+}
+
+.officer-application-table__scroll {
+  overflow-x: auto;
+  // Keep the horizontal scrollbar visible (not just on hover/scroll) as a
+  // fallback for narrow windows, since the table can still exceed the
+  // container width even after tightening column widths below.
+  scrollbar-width: auto; // Firefox
+  scrollbar-color: vars.$gray3 vars.$gray1; // Firefox
+
+  &::-webkit-scrollbar {
+    height: 10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: vars.$gray1;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: vars.$gray3;
+    border-radius: 999px;
+  }
+}
+
+.officer-application-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+
+  &__empty {
+    padding: 2rem;
+    text-align: center;
+    color: vars.$gray3;
+  }
+
+  th,
+  td {
+    text-align: left;
+    padding: 0.75rem 0.5rem;
+    border-bottom: 1px solid vars.$gray1;
+    vertical-align: middle;
+  }
+
+  th {
+    font-weight: 600;
+    color: vars.$gray3;
+    background: rgba(0, 0, 0, 0.02);
+  }
+
+  tr:hover td {
+    background: rgba(0, 0, 0, 0.02);
+  }
+
+  &__row {
+    cursor: pointer;
+  }
+
+  &__email-col {
+    max-width: 400px;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  &__notes-col {
+    min-width: 100px;
+    max-width: 200px;
+    vertical-align: top;
+  }
+}
+
+.rating-dropdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  &__select {
+    width: 84px;
+    padding: 0.35rem 0.6rem;
+    border-radius: 999px;
+    border: 1px solid vars.$gray1;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    background: vars.$white;
+    color: vars.$gray3;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    &--yes {
+      background: #dcfce7;
+      color: vars.$dark-green;
+    }
+
+    &--no {
+      background: #fee2e2;
+      color: vars.$dark-red;
+    }
+
+    &--maybe {
+      background: #fef3c7;
+      color: #92400e;
+    }
+  }
+
+  &__error {
+    color: vars.$dark-red;
+    font-size: 0.75rem;
+  }
+}
+
+.notes-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  &__preview {
+    margin: 0;
+    font-size: 0.85rem;
+    color: vars.$primaryblack;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  &__textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.4rem 0.5rem;
+    border: 1px solid vars.$gray1;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-family: inherit;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    // Height is driven by NotesCell's auto-grow effect (scrollHeight), not
+    // manual resize — resize/overflow must stay off so the two don't fight
+    // and so the full note is always visible without an inner scrollbar.
+    resize: none;
+    overflow: hidden;
+
+    &:focus {
+      outline: none;
+      border-color: vars.$primary-color;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  &__toggle {
+    appearance: none;
+    background: none;
+    border: none;
+    padding: 0;
+    align-self: flex-start;
+    color: vars.$secondary-color;
+    font-size: 0.78rem;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  &__error {
+    color: vars.$dark-red;
+    font-size: 0.75rem;
+  }
+}
+
+.application-detail-drawer {
+  width: min(960px, 92vw);
+  max-height: 85vh;
+  background: vars.$white;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+  padding: 2rem;
+  overflow-y: auto;
+  z-index: 1000;
+
+  &__overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+
+    h3 {
+      margin: 0;
+    }
+  }
+
+  &__close {
+    appearance: none;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    color: vars.$gray3;
+
+    &:hover {
+      color: vars.$primaryblack;
+    }
+  }
+
+  &__section {
+    margin-bottom: 1.5rem;
+
+    h4 {
+      margin: 0 0 0.5rem;
+      font-size: 0.95rem;
+    }
+  }
+
+  &__profile {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem 1rem;
+    margin: 0;
+
+    dt {
+      font-size: 0.75rem;
+      color: vars.$gray3;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    dd {
+      margin: 0;
+      font-size: 0.9rem;
+    }
+  }
+
+  &__status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  &__responses {
+    margin: 0;
+
+    dt {
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    dd {
+      margin: 0 0 1rem;
+      font-size: 0.9rem;
+      white-space: pre-wrap;
+    }
+  }
+
+  &__empty {
+    color: vars.$gray3;
+    font-size: 0.85rem;
+  }
+}
+
+.status-update-dropdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  &__select {
+    width: 118px;
+    padding: 0.35rem 0.6rem;
+    border-radius: 999px;
+    border: 1px solid vars.$gray1;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    &--pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    &--reviewing {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    &--interview_scheduled {
+      background: #e0e7ff;
+      color: #3730a3;
+    }
+
+    &--accepted {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    &--rejected {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+  }
+
+  &__error {
+    color: vars.$dark-red;
+    font-size: 0.75rem;
+  }
+}

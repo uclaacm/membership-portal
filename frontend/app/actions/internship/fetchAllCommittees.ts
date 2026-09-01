@@ -17,7 +17,7 @@ export default async function fetchAllCommittees(): Promise<FetchAllCommitteesRe
 
     if (!isAuthenticated(token)) return { success: false, error: "Not authenticated" };
 
-    const response = await fetch(`${Config.API_URL}${Config.routes.internship.committees}`, {
+    const response = await fetch(`${Config.API_URL}${Config.routes.internship.committees}?includeInactive=true`, {
       headers: {
         Accept: "application/json",
         Authorization: `Bearer ${token}`,

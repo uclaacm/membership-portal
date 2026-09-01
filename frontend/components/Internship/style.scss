@@ -56,17 +56,12 @@
   }
 }
 
-.admin-dashboard,
-.officer-dashboard {
-  padding: 2rem;
-  max-width: 1100px;
-  margin: 2rem auto;
+.internship-layout {
+  padding-top: vars.$topbar-height;
 }
+
 .member-dashboard {
   padding: 2rem;
-  margin-top: 61px;
-  height: calc(100vh - 61px);
-  overflow-y: auto;
 
   &__container {
     display: flex;

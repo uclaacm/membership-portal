@@ -22,7 +22,7 @@ export default function CommitteeGrid({ selectedCommitteeIds, onToggle }) {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {committees.map(committee => {
+      {committees.map((committee) => {
         const idx = selectedCommitteeIds.indexOf(committee.id);
         const rank = idx === -1 ? null : idx + 1;
         return (
@@ -31,6 +31,7 @@ export default function CommitteeGrid({ selectedCommitteeIds, onToggle }) {
             committee={committee}
             rank={rank}
             isFullySelected={isFullySelected}
+            isInactive={!committee.isActive}
             onToggle={() => onToggle(committee.id)}
           />
         );

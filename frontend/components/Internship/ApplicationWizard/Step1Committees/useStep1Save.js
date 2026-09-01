@@ -5,31 +5,57 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import createApplicationDraft from "@/app/actions/internship/createApplicationDraft";
 import updateApplication from "@/app/actions/internship/updateApplication";
+import deleteApplication from "@/app/actions/internship/deleteApplication";
 import { myApplicationAtom, responsesByCommitteeAtom } from "@/lib/atoms";
 
 const DEBOUNCE_MS = 500;
 
-function buildBody(ids, responsesMap) {
+function getSelectedCommitteeIds(app) {
+  if (!app) return [];
+  return [app.firstChoiceCommittee, app.secondChoiceCommittee, app.thirdChoiceCommittee].filter(Boolean);
+}
+
+function getSlotResponses(app, slot) {
+  if (!app) return [];
+  if (slot === 0) return Array.isArray(app.firstChoiceResponses) ? app.firstChoiceResponses : [];
+  if (slot === 1) return Array.isArray(app.secondChoiceResponses) ? app.secondChoiceResponses : [];
+  if (slot === 2) return Array.isArray(app.thirdChoiceResponses) ? app.thirdChoiceResponses : [];
+  return [];
+}
+
+function cleanResponses(responses) {
+  if (!Array.isArray(responses)) return [];
+  return responses
+    .filter((r) => r && typeof r.answer === "string" && r.answer.trim() !== "")
+    .map((r) => ({ questionKey: r.questionKey, question: r.question, answer: r.answer }));
+}
+
+function buildResponsesByCommittee(app, responsesMap) {
+  const merged = {};
+  getSelectedCommitteeIds(app).forEach((committeeId, slot) => {
+    merged[committeeId] = cleanResponses(getSlotResponses(app, slot));
+  });
+
+  Object.entries(responsesMap || {}).forEach(([committeeId, responses]) => {
+    merged[committeeId] = cleanResponses(responses);
+  });
+
+  return merged;
+}
+
+function buildBody(ids, responsesMap, app = null) {
   const [first, second, third] = ids;
+  const responsesByCommittee = buildResponsesByCommittee(app, responsesMap);
+
   const body = {
     firstChoiceCommittee: first,
     secondChoiceCommittee: second ?? null,
     thirdChoiceCommittee: third ?? null,
+    firstChoiceResponses: first ? (responsesByCommittee[first] || []) : [],
+    secondChoiceResponses: second ? (responsesByCommittee[second] || []) : [],
+    thirdChoiceResponses: third ? (responsesByCommittee[third] || []) : [],
   };
-  const hasMapEntries = responsesMap && Object.keys(responsesMap).length > 0;
-  if (hasMapEntries) {
-    const cleanResponses = (committeeId) => {
-      if (!committeeId) return [];
-      const arr = responsesMap[committeeId];
-      if (!Array.isArray(arr)) return [];
-      return arr
-        .filter((r) => r && typeof r.answer === "string" && r.answer.trim() !== "")
-        .map((r) => ({ questionKey: r.questionKey, question: r.question, answer: r.answer }));
-    };
-    body.firstChoiceResponses = cleanResponses(first);
-    body.secondChoiceResponses = cleanResponses(second);
-    body.thirdChoiceResponses = cleanResponses(third);
-  }
+
   return body;
 }
 
@@ -79,9 +105,32 @@ export default function useStep1Save(selectedCommitteeIds, profileData) {
     const app = appRef.current;
 
     if (ids.length === 0) {
-      setSaveState("idle");
+      if (!app || !app._id) {
+        setSaveState("idle");
+        setError(null);
+        setErrorKind(null);
+        return;
+      }
+      setSaveState("saving");
       setError(null);
       setErrorKind(null);
+      try {
+        const result = await deleteApplication(app._id);
+        if (!result.success) {
+          setError(result.error || "Couldn't clear application");
+          setSaveState("error");
+          setErrorKind("network");
+          return;
+        }
+        setMyApplication(null);
+        appRef.current = null;
+        setSaveState("idle");
+        setErrorKind(null);
+      } catch (err) {
+        setError((err && err.message) || "Couldn't clear application");
+        setSaveState("error");
+        setErrorKind("network");
+      }
       return;
     }
 
@@ -90,7 +139,7 @@ export default function useStep1Save(selectedCommitteeIds, profileData) {
     setErrorKind(null);
 
     try {
-      const payload = buildBody(ids, responsesByCommitteeRef.current);
+      const payload = buildBody(ids, responsesByCommitteeRef.current, app);
       if (!app || !app._id) {
         const pd = profileDataRef.current;
         if (!pd || !pd.university || !pd.major || typeof pd.graduationYear !== "number") {
@@ -116,7 +165,10 @@ export default function useStep1Save(selectedCommitteeIds, profileData) {
 
         const freshIds = latestIdsRef.current;
         if (freshIds.length > 1) {
-          const r2 = await updateApplication(result.data._id, buildBody(freshIds, responsesByCommitteeRef.current));
+          const r2 = await updateApplication(
+            result.data._id,
+            buildBody(freshIds, responsesByCommitteeRef.current, result.data),
+          );
           if (!r2.success) {
             if (r2.notFound) {
               setError("Application not found");
@@ -184,12 +236,9 @@ export default function useStep1Save(selectedCommitteeIds, profileData) {
       hasEverSelectedRef.current = true;
     }
 
-    if (selectedCommitteeIds.length === 0 && !hasEverSelectedRef.current) {
-      setSaveState("idle");
-      return undefined;
-    }
-
-    if (selectedCommitteeIds.length === 0) {
+    const app = appRef.current;
+    const hasDraft = Boolean(app && app._id);
+    if (selectedCommitteeIds.length === 0 && !hasDraft) {
       setSaveState("idle");
       if (timerRef.current) {
         clearTimeout(timerRef.current);
@@ -198,8 +247,7 @@ export default function useStep1Save(selectedCommitteeIds, profileData) {
       return undefined;
     }
 
-    const app = appRef.current;
-    if (app && app._id) {
+    if (hasDraft && selectedCommitteeIds.length > 0) {
       const persisted = [
         app.firstChoiceCommittee,
         app.secondChoiceCommittee,
@@ -230,7 +278,8 @@ export default function useStep1Save(selectedCommitteeIds, profileData) {
   }, [selectedCommitteeIds, runSave]);
 
   const flushPending = useCallback(async () => {
-    if (latestIdsRef.current.length === 0) return;
+    const hasDraft = Boolean(appRef.current && appRef.current._id);
+    if (latestIdsRef.current.length === 0 && !hasDraft) return;
 
     if (timerRef.current) {
       clearTimeout(timerRef.current);

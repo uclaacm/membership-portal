@@ -17,6 +17,14 @@ export default async function updateApplication(
     firstChoiceCommittee?: string;
     secondChoiceCommittee?: string | null;
     thirdChoiceCommittee?: string | null;
+    phone?: string;
+    major?: string;
+    graduationYear?: number;
+    firstChoiceResponses?: { questionKey: string; question: string; answer: string }[];
+    secondChoiceResponses?: { questionKey: string; question: string; answer: string }[];
+    thirdChoiceResponses?: { questionKey: string; question: string; answer: string }[];
+    resumeUrl?: string;
+    coverLetter?: string;
   },
 ): Promise<UpdateApplicationResult> {
   try {

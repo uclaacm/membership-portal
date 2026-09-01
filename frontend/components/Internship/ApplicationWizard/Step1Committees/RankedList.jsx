@@ -61,7 +61,7 @@ function SortableRow({ id, rank, committeeName, onRemove }) {
   );
 }
 
-export default function RankedList({ selectedCommitteeIds, onReorder, onRemove }) {
+export default function RankedList({ selectedCommitteeIds, resolvedNames, onReorder, onRemove }) {
   const committees = useAtomValue(committeesAtom);
 
   const sensors = useSensors(
@@ -78,8 +78,9 @@ export default function RankedList({ selectedCommitteeIds, onReorder, onRemove }
   }
 
   const lookupName = id => {
-    const match = committees ? committees.find(c => c.id === id) : null;
-    return match ? match.displayName : id;
+    const match = committees ? committees.find(c => c.id === id || String(c._id) === id) : null;
+    if (match) return match.displayName;
+    return resolvedNames?.[id] ?? id;
   };
 
   const handleDragEnd = event => {

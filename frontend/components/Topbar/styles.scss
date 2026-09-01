@@ -2,7 +2,7 @@
 
 .topbar {
   position: fixed;
-  height: 61px;
+  height: vars.$topbar-height;
   width: 100%;
   top: 0px;
   left: 0;
@@ -83,7 +83,7 @@
   &.open {
     flex-direction: column;
     position: absolute;
-    top: 61px;
+    top: vars.$topbar-height;
     left: 0;
     width: 100%;
     background-color: white;

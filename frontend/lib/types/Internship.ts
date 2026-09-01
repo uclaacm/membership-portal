@@ -25,6 +25,15 @@ export interface InternshipApplication {
   firstChoiceStatus: string;
   secondChoiceStatus: string;
   thirdChoiceStatus: string;
+  firstChoiceOfficer1Rating?: "yes" | "no" | "maybe" | null;
+  secondChoiceOfficer1Rating?: "yes" | "no" | "maybe" | null;
+  thirdChoiceOfficer1Rating?: "yes" | "no" | "maybe" | null;
+  firstChoiceOfficer2Rating?: "yes" | "no" | "maybe" | null;
+  secondChoiceOfficer2Rating?: "yes" | "no" | "maybe" | null;
+  thirdChoiceOfficer2Rating?: "yes" | "no" | "maybe" | null;
+  firstChoiceNotes?: string;
+  secondChoiceNotes?: string;
+  thirdChoiceNotes?: string;
   applicationCycle: string;
   submittedAt: string;
   lastModifiedAt: string;
@@ -55,7 +64,6 @@ export interface InternshipCommittee {
   name: string;
   displayName: string;
   description?: string;
-  subcommittees: string[];
   isActive: boolean;
   internLimit?: number;
   applicationDeadline?: string;
@@ -96,7 +104,6 @@ export type CreateInternshipCommitteePayload = {
   name: string;
   displayName: string;
   description?: string;
-  subcommittees?: string[];
   isActive?: boolean;
   internLimit?: number;
   applicationDeadline?: string | Date;
@@ -105,4 +112,51 @@ export type CreateInternshipCommitteePayload = {
 
 export type CreateInternshipCommitteeResult =
   | { success: true; data: InternshipCommittee }
+  | { success: false; error: string };
+
+export type UpdateInternshipCommitteePayload = Partial<CreateInternshipCommitteePayload>;
+
+export type UpdateInternshipCommitteeResult =
+  | { success: true; data: InternshipCommittee }
+  | { success: false; error: string };
+
+export type DeleteInternshipCommitteeResult =
+  | { success: true; deletedApplications: number; updatedApplications: number }
+  | { success: false; error: string };
+
+export interface InternshipCycleInfo {
+  currentCycle: string;
+  suggestedNextCycle: string;
+  pastCycles: string[];
+}
+
+export type FetchCycleInfoResult =
+  | { success: true; data: InternshipCycleInfo }
+  | { success: false; error: string };
+
+export type AdvanceCycleResult =
+  | { success: true; previousCycle: string; newCycle: string; archivedCount: number }
+  | { success: false; error: string };
+
+export interface FetchApplicationsOptions {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: string;
+  committeeId?: string;
+  choiceRank?: "1" | "2" | "3";
+  applicationCycle?: string;
+  archived?: boolean;
+  includeDrafts?: boolean;
+}
+
+export interface InternshipApplicationsPagination {
+  page: number;
+  limit: number;
+  total: number;
+  pages: number;
+}
+
+export type InternshipApplicationsListResult =
+  | { success: true; data: InternshipApplication[]; pagination: InternshipApplicationsPagination }
   | { success: false; error: string };

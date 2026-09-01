@@ -3,20 +3,31 @@
 import { useAtomValue } from "jotai";
 import Link from "next/link";
 import { myApplicationAtom, activeCommitteesAtom } from "@/lib/atoms";
+import useResolvedCommitteeNames, { getCommitteeDisplayName } from "@/lib/hooks/useResolvedCommitteeNames";
 import ApplicationStatusBadge from "./ApplicationStatusBadge";
 import "./style.scss";
-
-function getCommitteeName(committees, committeeId) {
-  if (!committeeId) return null;
-  const committee = committees.find(
-    (c) => c.id === committeeId || String(c._id) === committeeId,
-  );
-  return committee?.displayName ?? committeeId;
-}
 
 export default function ApplicationStatusCard() {
   const myApplication = useAtomValue(myApplicationAtom);
   const activeCommittees = useAtomValue(activeCommitteesAtom);
+  const committees = activeCommittees ?? [];
+
+  const applicationCommitteeIds = myApplication
+    ? [
+        myApplication.firstChoiceCommittee,
+        myApplication.secondChoiceCommittee,
+        myApplication.thirdChoiceCommittee,
+      ].filter(Boolean)
+    : [];
+  const resolvedNames = useResolvedCommitteeNames(applicationCommitteeIds, committees);
+
+  function renderApplicationWizardLink(label) {
+    return (
+      <Link href="/internship/apply" className="application-status-card__button">
+        {label}
+      </Link>
+    );
+  }
 
   // Branch 0: Loading
   if (activeCommittees === null) {
@@ -30,8 +41,6 @@ export default function ApplicationStatusCard() {
     );
   }
 
-  const committees = activeCommittees ?? [];
-
   // Branch 1: Open, no application
   if (!myApplication && committees.length > 0) {
     return (
@@ -42,9 +51,7 @@ export default function ApplicationStatusCard() {
             Applications are open
           </div>
           <div className="application-status-card__cta">
-            <Link href="/internship/apply" className="application-status-card__button">
-              Start Application
-            </Link>
+            {renderApplicationWizardLink("Start Application")}
           </div>
         </div>
       </div>
@@ -52,10 +59,10 @@ export default function ApplicationStatusCard() {
   }
 
   // Branch 2: Draft
-  if (myApplication && !myApplication.submittedAt) {
-    const firstName = getCommitteeName(committees, myApplication.firstChoiceCommittee);
-    const secondName = getCommitteeName(committees, myApplication.secondChoiceCommittee);
-    const thirdName = getCommitteeName(committees, myApplication.thirdChoiceCommittee);
+  if (myApplication && myApplication.submissionStatus !== "submitted") {
+    const firstName = getCommitteeDisplayName(committees, resolvedNames, myApplication.firstChoiceCommittee);
+    const secondName = getCommitteeDisplayName(committees, resolvedNames, myApplication.secondChoiceCommittee);
+    const thirdName = getCommitteeDisplayName(committees, resolvedNames, myApplication.thirdChoiceCommittee);
 
     return (
       <div className="application-status-card">
@@ -67,9 +74,7 @@ export default function ApplicationStatusCard() {
             {thirdName && <span className="committee-chip">{thirdName}</span>}
           </div>
           <div className="application-status-card__cta">
-            <Link href="/internship/apply" className="application-status-card__button">
-              Continue Application
-            </Link>
+            {renderApplicationWizardLink("Continue Application")}
           </div>
           {myApplication.lastModifiedAt && (
             <p className="application-status-card__timestamp">
@@ -82,7 +87,7 @@ export default function ApplicationStatusCard() {
   }
 
   // Branch 3: Submitted
-  if (myApplication && myApplication.submittedAt) {
+  if (myApplication && myApplication.submissionStatus === "submitted") {
     const choices = [
       {
         committeeId: myApplication.firstChoiceCommittee,
@@ -112,7 +117,7 @@ export default function ApplicationStatusCard() {
               <ApplicationStatusBadge
                 key={index}
                 status={choice.status}
-                committeeName={getCommitteeName(committees, choice.committeeId)}
+                committeeName={getCommitteeDisplayName(committees, resolvedNames, choice.committeeId)}
               />
             ))}
           </div>

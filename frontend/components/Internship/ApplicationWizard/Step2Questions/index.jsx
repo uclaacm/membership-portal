@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAtom, useAtomValue } from "jotai";
 
 import CommitteeTabBar from "./CommitteeTabBar";
@@ -25,43 +25,50 @@ function isAnswered(value) {
   return typeof value === "string" && value.trim() !== "";
 }
 
+function getValidResponsesForCommittee(committee, responses) {
+  if (!committee || !Array.isArray(committee.customQuestions) || !Array.isArray(responses)) return [];
+  const validQuestionKeys = new Set(committee.customQuestions.map((q) => q.questionKey));
+  return responses.filter((response) => validQuestionKeys.has(response.questionKey));
+}
+
 export default function Step2Questions({ onValidityChange, flushPendingRef }) {
   const myApplication = useAtomValue(myApplicationAtom);
   const committees = useAtomValue(committeesAtom);
   const [responsesByCommittee, setResponsesByCommittee] = useAtom(responsesByCommitteeAtom);
 
   const [activeTabIndex, setActiveTabIndex] = useState(0);
-  const hydratedRef = useRef(false);
 
   const selectedCommitteeIds = useMemo(() => getSelectedCommitteeIds(myApplication), [myApplication]);
-
-  useEffect(() => {
-    if (hydratedRef.current) return;
-    if (!myApplication) return;
-    const ids = getSelectedCommitteeIds(myApplication);
-    if (ids.length === 0) return;
-    setResponsesByCommittee((prev) => {
-      const next = { ...prev };
-      ids.forEach((id, slot) => {
-        if (!next[id] || next[id].length === 0) {
-          next[id] = getSlotResponses(myApplication, slot);
-        }
-      });
-      return next;
-    });
-    hydratedRef.current = true;
-  }, [myApplication, setResponsesByCommittee]);
-
-  const safeActiveTabIndex =
-    activeTabIndex >= selectedCommitteeIds.length && selectedCommitteeIds.length > 0
-      ? 0
-      : activeTabIndex;
 
   const committeeById = useMemo(() => {
     const map = new Map();
     committees.forEach((c) => { map.set(c.id, c); });
     return map;
   }, [committees]);
+
+  useEffect(() => {
+    if (!myApplication) return;
+    const ids = getSelectedCommitteeIds(myApplication);
+    if (ids.length === 0) return;
+    setResponsesByCommittee((prev) => {
+      const next = { ...prev };
+      ids.forEach((id, slot) => {
+        const slotResponses = getValidResponsesForCommittee(
+          committeeById.get(id),
+          getSlotResponses(myApplication, slot),
+        );
+        if ((!next[id] || next[id].length === 0) && slotResponses.length > 0) {
+          next[id] = slotResponses;
+        }
+      });
+      return next;
+    });
+  }, [committeeById, myApplication, setResponsesByCommittee]);
+
+  const safeActiveTabIndex =
+    activeTabIndex >= selectedCommitteeIds.length && selectedCommitteeIds.length > 0
+      ? 0
+      : activeTabIndex;
 
   const isTabIncomplete = useCallback((committeeId) => {
     const committee = committeeById.get(committeeId);
@@ -80,6 +87,8 @@ export default function Step2Questions({ onValidityChange, flushPendingRef }) {
       incomplete: isTabIncomplete(id),
     };
   }), [selectedCommitteeIds, committeeById, isTabIncomplete]);
+
+  const incompleteTabs = useMemo(() => tabs.filter((tab) => tab.incomplete), [tabs]);
 
   const step2Valid = useMemo(() => {
     if (selectedCommitteeIds.length === 0) return false;
@@ -135,10 +144,18 @@ export default function Step2Questions({ onValidityChange, flushPendingRef }) {
     <section className="space-y-6">
       <div>
         <h2 className="text-xl font-semibold text-slate-900">Application questions</h2>
-        <p className="text-sm text-slate-600">Required questions are marked with a red asterisk.</p>
+        <p className="text-sm text-slate-600">
+          Complete the required questions for each selected committee before moving on.
+        </p>
       </div>
 
       <CommitteeTabBar tabs={tabs} activeIndex={safeActiveTabIndex} onChange={setActiveTabIndex} />
+
+      {incompleteTabs.length > 0 && (
+        <div className="rounded border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+          Still needed: {incompleteTabs.map((tab) => tab.displayName).join(", ")}
+        </div>
+      )}
 
       {activeCommittee && (
         <QuestionForm

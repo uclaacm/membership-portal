@@ -6,6 +6,7 @@ import Topbar from "@/components/Topbar";
 import CycleStatusBanner from "@/components/Internship/CycleStatusBanner";
 import logoutUser from "@/app/actions/auth/logoutUser";
 import { authUserProfileAtom, isAdminAtom, isOfficerAtom, adminViewAtom, officerViewAtom } from "@/lib/atoms";
+import "@/components/Internship/style.scss";
 
 export default function InternshipLayout({ children }) {
   const userProfile = useAtomValue(authUserProfileAtom);
@@ -38,8 +39,10 @@ export default function InternshipLayout({ children }) {
         officerView={officerView}
         onToggleOfficerView={() => setOfficerView(v => !v)}
       />
-      <CycleStatusBanner />
-      {children}
+      <div className="internship-layout">
+        <CycleStatusBanner />
+        {children}
+      </div>
     </>
   );
 }
