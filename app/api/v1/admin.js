@@ -43,7 +43,7 @@ router.post('/promote', async (req, res) => {
 });
 
 // POST /api/admin/promote-officer
-// Promotes an existing user to OFFICER with optional committee assignments.
+// Promotes an existing user to OFFICER with committee assignments.
 // Requires admin JWT auth.
 router.post('/promote-officer', authenticated, async (req, res, next) => {
   try {
@@ -55,10 +55,17 @@ router.post('/promote-officer', authenticated, async (req, res, next) => {
 
     if (!email) return res.status(400).json({ error: 'Email is required' });
 
+    // The officer role is committee scope — every permission it grants is "within your own
+    // committee". A committee-less officer can act on nothing yet still reads the member
+    // roster and uploads media, so the assignment is required rather than optional.
+    if (!Array.isArray(committees) || committees.length === 0) {
+      return res.status(400).json({ error: 'An officer must belong to at least one committee.' });
+    }
+
     const user = await User.findOne({ where: { email } });
     if (!user) return res.status(404).json({ error: `No user found with email ${email}` });
 
-    await user.update({ accessType: 'OFFICER', committees: committees || [] });
+    await user.update({ accessType: 'OFFICER', committees });
 
     return res.json({ error: null, message: `${email} promoted to officer.` });
   } catch (err) {

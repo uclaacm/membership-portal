@@ -1,3 +1,5 @@
+const { COMMITTEES } = require('../../committees');
+
 module.exports = (Sequelize, db) => {
   const User = db.define(
     'user',
@@ -39,17 +41,41 @@ module.exports = (Sequelize, db) => {
         defaultValue: 'STANDARD',
       },
 
+      // Title shown next to an elevated user in the Control Panel.
+      //   admins   - the level label: 'Dev Team' or 'President' ('Super admin' is derived
+      //              from accessType and is never stored here)
+      //   officers - their role in the committee, defaulting to 'Officer'
+      // Free text rather than an enum so chapter-specific titles don't need a migration.
+      position: {
+        type: Sequelize.STRING,
+      },
+
+      // email of the user who granted the current elevated role, for the audit trail.
+      // Stored as an email rather than a FK so it survives the granter being removed.
+      roleGrantedBy: {
+        type: Sequelize.STRING,
+      },
+
+      // when the current elevated role was granted (also the officer 'since' date)
+      roleGrantedAt: {
+        type: Sequelize.DATE,
+      },
+
+      // last time this user made an authenticated request, refreshed at most hourly
+      lastActiveAt: {
+        type: Sequelize.DATE,
+      },
+
       // committees the officer belongs to (only relevant when accessType is OFFICER)
       committees: {
         type: Sequelize.ARRAY(Sequelize.STRING),
         defaultValue: [],
         validate: {
           isValidCommittee(value) {
-            const validCommittees = ['Hack', 'AI', 'ICPC', 'Studio', 'Cyber', 'W', 'Cloud', 'Design', 'TeachLA'];
             if (!Array.isArray(value)) return;
-            const invalid = value.filter((c) => !validCommittees.includes(c));
+            const invalid = value.filter((c) => !COMMITTEES.includes(c));
             if (invalid.length > 0) {
-              throw new Error(`Invalid committee(s): ${invalid.join(', ')}. Must be one of: ${validCommittees.join(', ')}`);
+              throw new Error(`Invalid committee(s): ${invalid.join(', ')}. Must be one of: ${COMMITTEES.join(', ')}`);
             }
           },
         },
@@ -307,6 +333,53 @@ module.exports = (Sequelize, db) => {
           [Sequelize.Op.or]: ['ADMIN', 'SUPERADMIN'],
         },
       },
+      // Super admin first, then by grant date, so the most privileged row is never buried.
+      order: [['accessType', 'DESC'], ['roleGrantedAt', 'ASC']],
+    });
+  };
+
+  User.getOfficers = function () {
+    return this.findAll({
+      where: { accessType: 'OFFICER' },
+      order: [['roleGrantedAt', 'ASC'], ['lastName', 'ASC']],
+    });
+  };
+
+  /**
+   * Paginated, searchable roster backing the Control Panel's Users table.
+   *
+   * @param {object} opts {search, searchEmail, role, committee, offset, limit}
+   * @returns {Promise<{rows: User[], count: number}>}
+   */
+  User.getRoster = function (opts = {}) {
+    const where = {};
+
+    if (opts.search) {
+      const term = `%${opts.search}%`;
+      const matchers = [
+        { firstName: { [Sequelize.Op.iLike]: term } },
+        { lastName: { [Sequelize.Op.iLike]: term } },
+      ];
+      // Searching by email is admin-only. Without this, an officer could recover a redacted
+      // address by probing the search box one substring at a time.
+      if (opts.searchEmail) matchers.push({ email: { [Sequelize.Op.iLike]: term } });
+      where[Sequelize.Op.or] = matchers;
+    }
+
+    if (opts.role === 'Admin') where.accessType = { [Sequelize.Op.or]: ['ADMIN', 'SUPERADMIN'] };
+    else if (opts.role === 'Officer') where.accessType = 'OFFICER';
+    else if (opts.role === 'Member') where.accessType = { [Sequelize.Op.or]: ['STANDARD', 'RESTRICTED'] };
+
+    if (opts.committee) {
+      where.committees = { [Sequelize.Op.contains]: [opts.committee] };
+    }
+
+    return this.findAndCountAll({
+      where,
+      offset: opts.offset || 0,
+      limit: opts.limit || 25,
+      // Elevated users first, then most points, so the table opens on the interesting rows.
+      order: [['accessType', 'DESC'], ['points', 'DESC'], ['lastName', 'ASC']],
     });
   };
 
@@ -355,6 +428,75 @@ module.exports = (Sequelize, db) => {
       isProfilePublic: this.getDataValue('isProfilePublic'),
       isOfficer: this.isOfficer(),
       committees: this.getDataValue('committees') || [],
+    };
+  };
+
+  /**
+   * The label shown in the Admins table's "Level" column. Super admin is derived from
+   * accessType so it can never disagree with the actual privilege; everything else falls
+   * back to 'President', which is what a committee admin is.
+   */
+  User.prototype.getAdminLevel = function () {
+    if (this.isSuperAdmin()) return 'Super admin';
+    return this.getDataValue('position') || 'President';
+  };
+
+  /**
+   * The row shape used by the Control Panel roster tables. Only ever returned from admin- or
+   * officer-scoped endpoints, never a public one.
+   *
+   * @param {object} opts {sensitive} — when false, contact details and role-grant metadata are
+   *   omitted entirely rather than sent and hidden client-side. Officers get this for members
+   *   outside their own committees.
+   */
+  User.prototype.getRosterProfile = function ({ sensitive = true } = {}) {
+    let role = 'Member';
+    if (this.isAdmin()) role = 'Admin';
+    else if (this.isOfficer()) role = 'Officer';
+
+    if (!sensitive) {
+      return {
+        uuid: this.getDataValue('uuid'),
+        firstName: this.getDataValue('firstName'),
+        lastName: this.getDataValue('lastName'),
+        picture: this.getDataValue('picture'),
+        email: null,
+        role,
+        accessType: this.getDataValue('accessType'),
+        level: this.isAdmin() ? this.getAdminLevel() : null,
+        position: this.getDataValue('position') || (this.isOfficer() ? 'Officer' : null),
+        committees: this.getDataValue('committees') || [],
+        year: this.getDataValue('year'),
+        major: this.getDataValue('major'),
+        points: this.getDataValue('points'),
+        state: this.getDataValue('state'),
+        roleGrantedBy: null,
+        roleGrantedAt: null,
+        joinedAt: this.getDataValue('createdAt'),
+        lastActiveAt: null,
+        redacted: true,
+      };
+    }
+
+    return {
+      uuid: this.getDataValue('uuid'),
+      firstName: this.getDataValue('firstName'),
+      lastName: this.getDataValue('lastName'),
+      picture: this.getDataValue('picture'),
+      email: this.getDataValue('email'),
+      role,
+      accessType: this.getDataValue('accessType'),
+      level: this.isAdmin() ? this.getAdminLevel() : null,
+      position: this.getDataValue('position') || (this.isOfficer() ? 'Officer' : null),
+      committees: this.getDataValue('committees') || [],
+      year: this.getDataValue('year'),
+      major: this.getDataValue('major'),
+      points: this.getDataValue('points'),
+      state: this.getDataValue('state'),
+      roleGrantedBy: this.getDataValue('roleGrantedBy'),
+      roleGrantedAt: this.getDataValue('roleGrantedAt'),
+      joinedAt: this.getDataValue('createdAt'),
+      lastActiveAt: this.getDataValue('lastActiveAt') || this.getDataValue('lastLogin'),
     };
   };
 

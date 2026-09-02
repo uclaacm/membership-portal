@@ -22,6 +22,7 @@ router.use('/attendance', auth, require('./membership/attendance').router);
 router.use('/leaderboard', auth, require('./membership/leaderboard').router);
 router.use('/rsvp', auth, require('./membership/rsvp').router);
 router.use('/sheets', auth, require('./membership/sheets').router);
+router.use('/audit', auth, require('./membership/audit').router);
 
 // Mount the admin routes
 router.use('/admin', require('./admin').router);

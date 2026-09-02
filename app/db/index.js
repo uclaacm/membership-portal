@@ -31,6 +31,7 @@ const Attendance = require('./schema/attendance')(Sequelize, db);
 const Secret = require('./schema/secret')(Sequelize, db);
 const RSVP = require('./schema/rsvp')(Sequelize, db);
 const Image = require('./schema/image')(Sequelize, db);
+const AuditLog = require('./schema/audit')(Sequelize, db);
 
 /**
  * DB setup function to sync tables and add admin if doesn't exist
@@ -88,5 +89,5 @@ const errorHandler = (err, req, res, next) => {
 };
 
 module.exports = {
-  db, User, Event, Activity, Attendance, Secret, RSVP, Image, setup, errorHandler,
+  db, User, Event, Activity, Attendance, Secret, RSVP, Image, AuditLog, setup, errorHandler,
 };
