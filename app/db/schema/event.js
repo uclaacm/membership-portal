@@ -16,6 +16,12 @@ module.exports = (Sequelize, db) => {
         defaultValue: Sequelize.UUIDV4,
       },
 
+      // eventGroupId: ties repeated event instances together
+      eventGroupId: {
+        type: Sequelize.UUID,
+        allowNull: true,
+      },
+
       // currently unused, but the organization that the event is for
       organization: {
         type: Sequelize.STRING,
@@ -158,6 +164,13 @@ module.exports = (Sequelize, db) => {
         },
       },
 
+      // platforms for the event to be marketed on (e.g. LinkedIn, Instagram Story, etc.)
+      platforms: {
+        type: Sequelize.ARRAY(Sequelize.STRING),
+        allowNull: false,
+        defaultValue: [],
+      },
+
       // starting in winter 2019, we want to soft-delete events by marking them as 'deleted'
       // and then not serving them to the user, vs. deleting them from the database entirely.
       deleted: {
@@ -193,6 +206,11 @@ module.exports = (Sequelize, db) => {
           method: 'BTREE',
           fields: ['committee'],
         },
+        {
+          name: 'events_event_group_id_index',
+          method: 'BTREE',
+          fields: ['eventGroupId'],
+        },
       ],
     },
   );
@@ -207,6 +225,18 @@ module.exports = (Sequelize, db) => {
 
   Event.findByUUID = function (uuid) {
     return this.findOne({ where: { uuid } });
+  };
+
+  Event.findByUUIDInGroup = function (uuid, eventGroupId) {
+    return this.findOne({ where: { uuid, eventGroupId } });
+  };
+
+  Event.findAllByEventGroupId = function (eventGroupId, transaction) {
+    return this.findAll({
+      where: { eventGroupId },
+      order: [['startDate', 'ASC']],
+      transaction,
+    });
   };
 
   Event.findByAttendanceCode = function (attendanceCode) {
@@ -271,19 +301,19 @@ module.exports = (Sequelize, db) => {
       'attendanceCode',
       'attendancePoints',
     ]);
-    if (sanitizedEvent.cover !== undefined && sanitizedEvent.cover.length === 0) {
+    if (typeof sanitizedEvent.cover === 'string' && sanitizedEvent.cover.length === 0) {
       sanitizedEvent.cover = null;
     }
-    if (sanitizedEvent.eventLink !== undefined && sanitizedEvent.eventLink.length === 0) {
+    if (typeof sanitizedEvent.eventLink === 'string' && sanitizedEvent.eventLink.length === 0) {
       sanitizedEvent.eventLink = null;
     }
-    if (sanitizedEvent.description !== undefined && sanitizedEvent.description.length === 0) {
+    if (typeof sanitizedEvent.description === 'string' && sanitizedEvent.description.length === 0) {
       sanitizedEvent.description = null;
     }
-    if (sanitizedEvent.committee !== undefined && sanitizedEvent.committee.length === 0) {
+    if (typeof sanitizedEvent.committee === 'string' && sanitizedEvent.committee.length === 0) {
       delete sanitizedEvent.committee;
     }
-    if (sanitizedEvent.attendanceCode !== undefined && sanitizedEvent.attendanceCode.length === 0) {
+    if (typeof sanitizedEvent.attendanceCode === 'string' && sanitizedEvent.attendanceCode.length === 0) {
       delete sanitizedEvent.attendanceCode;
     }
 
@@ -298,6 +328,7 @@ module.exports = (Sequelize, db) => {
   Event.prototype.getPublic = function (admin) {
     return {
       uuid: this.getDataValue('uuid'),
+      eventGroupId: this.getDataValue('eventGroupId'),
       organization: this.getDataValue('organization'),
       committee: this.getDataValue('committee'),
       cover: this.getDataValue('cover'),
