@@ -13,7 +13,13 @@ const config = {
       activity: "/api/v1/user/activity",
       admins: "/api/v1/user/admins",
       career: "/api/v1/user/career",
+      // Control Panel v2: paginated member roster, officer roster, and uuid-keyed role changes.
+      roster: "/api/v1/user/roster",
+      officers: "/api/v1/user/officers",
+      role: "/api/v1/user", // + /:uuid/role
+      bulk: "/api/v1/user/bulk",
     },
+    audit: "/api/v1/audit",
     activity: "/api/v1/activity",
     auth: {
       register: "/api/v1/register",
@@ -404,9 +410,14 @@ const config = {
     "Undeclared Social Sciences",
     "World Arts and Cultures",
   ],
-  committees: ["AI", "Cyber", "Design", "Hack", "ICPC", "Studio", "TeachLA", "W", "Cloud"],
+  // The canonical committee list — the single source of truth for officer assignment, event
+  // committees, and every Control Panel filter. "Dev Team" belongs here: officers are assigned
+  // to it, and leaving it out is what previously made the only committee with officers
+  // impossible to select. Mirrors COMMITTEES in the API's app/committees.js.
+  committees: ["Dev Team", "AI", "Cyber", "Design", "Hack", "ICPC", "Studio", "TeachLA", "W", "Cloud"],
   committeeColors: [
     ["ACM", "#1d6bff"],
+    ["Dev Team", "#3b59ed"],
     ["AI", "#28b2fd"],
     ["Cyber", "#ffba43"],
     ["Design", "#fe833d"],

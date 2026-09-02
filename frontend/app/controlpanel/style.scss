@@ -1,79 +1,1359 @@
 @use "../../styles/vars";
 
-.control-panel-wrapper {
-  padding: 60px;
-  max-width: 1100px;
+// Tokens for the Control Panel v2 surface. Everything that already exists in styles/vars.scss
+// is referenced from there; only the few values the shared file lacks are defined locally.
+$cp-rule: #eeeeee; // table row separators
+$cp-surface: #fbfbfb; // rail, table headers, row hover
+$cp-chip: #f2f2f2; // neutral chips and the code chip
+$cp-warning: #ffba43; // attention dots
+$cp-warning-wash: rgba(255, 186, 67, 0.25);
+$cp-success-wash: rgba(52, 220, 106, 0.15);
+$cp-danger-wash: rgba(247, 78, 78, 0.12);
+$cp-danger-hover: rgba(247, 78, 78, 0.06);
 
-  .panel-title {
-    margin-bottom: 6px;
+$cp-strong: rgba(0, 0, 0, 0.85);
+$cp-body: rgba(0, 0, 0, 0.75);
+$cp-secondary: rgba(0, 0, 0, 0.6);
+$cp-subtitle: rgba(0, 0, 0, 0.55);
+$cp-faint: rgba(0, 0, 0, 0.45);
+
+$cp-rail-width: 220px;
+$cp-topbar-height: 61px;
+
+.control-panel-v2 {
+  position: relative;
+  min-height: 100vh;
+  // Must be padding, not margin. A top margin on the first in-flow child collapses through this
+  // container and drags the absolutely-positioned topbar down with it, so the bar ends up
+  // covering the first 61px of content.
+  padding-top: $cp-topbar-height;
+  box-sizing: border-box;
+  font-family: "Lato", sans-serif;
+  color: #111;
+  background: vars.$white;
+
+  .cp-layout {
+    display: grid;
+    grid-template-columns: $cp-rail-width 1fr;
+    min-height: calc(100vh - #{$cp-topbar-height});
   }
 
-  .panel-subtitle {
-    color: vars.$secondaryblack;
-    font-size: 15px;
-    margin-bottom: 48px;
-    margin-top: 0;
+  // ---------------------------------------------------------------- left rail
+
+  // Pinned to the viewport so "Switch to member view" and "Sign out" are always reachable
+  // without scrolling. align-self: start stops the grid from stretching the rail to the row
+  // height, which is what gives `sticky` somewhere to stick.
+  .cp-rail {
+    position: sticky;
+    top: $cp-topbar-height;
+    align-self: start;
+    height: calc(100vh - #{$cp-topbar-height});
+    border-right: 1px solid vars.$gray1;
+    background: $cp-surface;
+    padding: 24px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    box-sizing: border-box;
   }
 
-  .panel-section {
-    margin-bottom: 44px;
+  // Only the section list scrolls; min-height: 0 lets it actually shrink inside the flex
+  // column instead of overflowing and pushing the footer out of view.
+  .cp-nav-items {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
   }
 
-  .section-title {
+  .cp-rail-label {
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 1.2px;
     text-transform: uppercase;
     color: vars.$gray2;
-    margin: 0 0 14px 0;
-    padding-bottom: 10px;
-    border-bottom: 1px solid vars.$gray1;
+    padding: 0 20px 10px;
+    margin: 0;
   }
 
-  .panel-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 16px;
-  }
-
-  .panel-card {
-    background: vars.$white;
-    border: 1px solid vars.$gray1;
-    border-radius: 10px;
-    padding: 20px 22px;
+  .cp-nav-item {
+    padding: 9px 20px;
     display: flex;
-    flex-direction: column;
-    gap: 6px;
-    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    border-left: 3px solid transparent;
+    background: transparent;
+    color: rgba(0, 0, 0, 0.7);
+    font-weight: 400;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    border-top: none;
+    border-right: none;
+    border-bottom: none;
+    width: 100%;
 
     &:hover {
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.07);
-      border-color: vars.$tertiaryblue;
+      background: $cp-chip;
     }
 
-    .card-title {
-      font-size: 15px;
+    &.active {
+      background: vars.$tertiaryblue;
+      border-left-color: vars.$secondaryblue;
+      color: vars.$secondaryblue-dark;
       font-weight: 700;
-      color: vars.$primaryblack;
     }
 
-    .card-desc {
+    .cp-nav-icon {
+      width: 16px;
       font-size: 13px;
-      color: vars.$secondaryblack;
-      line-height: 1.5;
-      margin-bottom: 12px;
+      flex-shrink: 0;
+    }
+
+    .cp-nav-label {
       flex-grow: 1;
     }
 
+    .cp-nav-count {
+      font-size: 11px;
+      color: vars.$gray2;
+      font-variant-numeric: tabular-nums;
+    }
   }
-}
 
-@media (max-width: 700px) {
-  .control-panel-wrapper {
-    padding: 30px 20px;
+  .cp-rail-footer {
+    margin-top: auto;
+    flex-shrink: 0;
+    border-top: 1px solid vars.$gray1;
+    padding: 16px 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 
-    .panel-grid {
+    button {
+      font-size: 13px;
+      font-family: inherit;
+      border: 1px solid vars.$gray1;
+      border-radius: 6px;
+      padding: 7px 10px;
+      background: vars.$white;
+      color: rgba(0, 0, 0, 0.8);
+      cursor: pointer;
+      text-align: center;
+
+      &:hover {
+        border-color: vars.$secondaryblue;
+        color: vars.$secondaryblue;
+      }
+
+      &.cp-signout {
+        color: vars.$dark-red;
+
+        &:hover {
+          border-color: vars.$light-red;
+          color: vars.$dark-red;
+          background: $cp-danger-hover;
+        }
+      }
+    }
+  }
+
+  // ------------------------------------------------------------ content region
+
+  .cp-main {
+    padding: 28px 36px 60px;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
+  }
+
+  .cp-page-header {
+    margin-bottom: 22px;
+
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: $cp-strong;
+      margin: 0 0 4px 0;
+    }
+
+    .cp-page-subtitle {
+      font-size: 13px;
+      color: $cp-subtitle;
+      margin: 0;
+    }
+  }
+
+  .cp-legend {
+    margin-top: 34px;
+    padding-top: 14px;
+    border-top: 1px solid $cp-rule;
+    font-size: 12px;
+    color: vars.$gray2;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    .cp-dagger {
+      color: vars.$secondaryblue;
+    }
+  }
+
+  // Marker for controls that exist but are not wired to a handler yet. Amber rather than
+  // blue so it reads as "unfinished", distinct from the blue dagger's "API gap".
+  .cp-pending-mark {
+    color: $cp-warning;
+    font-weight: 700;
+    margin-left: 4px;
+  }
+
+  button.pending,
+  .cp-btn.pending {
+    opacity: 0.65;
+    cursor: not-allowed;
+    border-style: dashed;
+
+    &:hover {
+      background: vars.$white;
+      color: rgba(0, 0, 0, 0.8);
+      border-color: vars.$gray1;
+    }
+  }
+
+  // Redacted cells: an officer may see the member but not their contact details.
+  .cp-redacted {
+    color: vars.$gray2;
+    font-style: italic;
+  }
+
+  // --------------------------------------------------------------- shared bits
+
+  .cp-section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid vars.$gray1;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+
+    &.baseline {
+      align-items: baseline;
+    }
+
+    h2 {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: vars.$gray2;
+      margin: 0;
+
+      .cp-head-count {
+        color: $cp-faint;
+        font-weight: 400;
+        margin-left: 6px;
+      }
+    }
+
+    .cp-head-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  }
+
+  // Text button used for "View audit log" and similar inline navigation.
+  .cp-text-button {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+    font-size: 12px;
+    color: vars.$secondaryblue;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .cp-btn {
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+
+    &.primary {
+      border: none;
+      background: vars.$secondaryblue;
+      color: vars.$white;
+      font-weight: 600;
+
+      &:hover {
+        background: vars.$secondaryblue-dark;
+      }
+    }
+
+    &.secondary {
+      border: 1px solid vars.$gray1;
+      background: vars.$white;
+      color: rgba(0, 0, 0, 0.8);
+
+      &:hover {
+        border-color: vars.$secondaryblue;
+        color: vars.$secondaryblue;
+      }
+    }
+
+    &.small {
+      height: 28px;
+      padding: 0 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    &.danger {
+      border: 1px solid vars.$gray1;
+      background: vars.$white;
+      color: vars.$dark-red;
+
+      &:hover {
+        border-color: vars.$light-red;
+        background: $cp-danger-hover;
+      }
+    }
+  }
+
+  // ------------------------------------------------------------------ toolbar
+
+  .cp-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+
+    .cp-search {
+      position: relative;
+      flex-grow: 1;
+      min-width: 220px;
+      max-width: 320px;
+
+      i {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 12px;
+        color: vars.$gray2;
+      }
+
+      input {
+        width: 100%;
+        height: 32px;
+        padding: 0 10px 0 30px;
+        border: 1px solid vars.$gray1;
+        border-radius: 6px;
+        font-size: 13px;
+        font-family: inherit;
+        box-sizing: border-box;
+      }
+    }
+
+    select {
+      height: 32px;
+      padding: 0 8px;
+      border: 1px solid vars.$gray1;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: inherit;
+      background: vars.$white;
+    }
+
+    .cp-toolbar-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cp-toolbar-meta {
+      font-size: 12px;
+      color: vars.$gray2;
+    }
+  }
+
+  // -------------------------------------------------------------------- table
+
+  // Required. width:100% fills wide viewports while min-width:max-content makes the table
+  // scroll inside this box when narrow; without it the nowrap cells widen the whole document
+  // and the right-hand columns are clipped off-screen.
+  .cp-table-scroll {
+    overflow-x: auto;
+    max-width: 100%;
+  }
+
+  table.cp-table {
+    width: 100%;
+    min-width: max-content;
+    border-collapse: collapse;
+    font-size: 13px;
+
+    th {
+      padding: 7px 8px;
+      text-align: left;
+      border-bottom: 1px solid vars.$gray1;
+      background: $cp-surface;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      color: vars.$gray2;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 6px 8px;
+      border-bottom: 1px solid $cp-rule;
+      color: $cp-secondary;
+      white-space: nowrap;
+    }
+
+    th.numeric,
+    td.numeric {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    td.identifier {
+      font-weight: 600;
+      color: $cp-strong;
+    }
+
+    tbody tr:hover {
+      background: $cp-surface;
+    }
+
+    tbody tr.selected {
+      background: rgba(210, 219, 231, 0.35);
+    }
+
+    .cp-avatar-cell {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cp-avatar {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: $cp-chip;
+      flex-shrink: 0;
+    }
+
+    td.cp-row-actions {
+      text-align: right;
+      white-space: nowrap;
+
+      button {
+        background: none;
+        border: none;
+        padding: 0;
+        font-family: inherit;
+        font-size: 12px;
+        cursor: pointer;
+        margin-right: 10px;
+
+        &:last-child {
+          margin-right: 0;
+        }
+
+        &.primary {
+          color: vars.$secondaryblue;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+
+        &.secondary {
+          color: vars.$gray2;
+
+          &:hover {
+            color: vars.$secondaryblue;
+          }
+        }
+
+        &.destructive {
+          color: vars.$dark-red;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+
+  // --------------------------------------------------------------------- pills
+
+  .cp-pill {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+
+    &.admin,
+    &.info {
+      background: vars.$tertiaryblue;
+      color: vars.$secondaryblue-dark;
+    }
+
+    &.superadmin {
+      background: vars.$secondaryblue;
+      color: vars.$white;
+    }
+
+    &.officer,
+    &.success {
+      background: $cp-success-wash;
+      color: vars.$dark-green;
+    }
+
+    &.member,
+    &.neutral {
+      background: $cp-rule;
+      color: #666666;
+    }
+
+    &.muted {
+      background: $cp-chip;
+      color: $cp-secondary;
+    }
+
+    &.warning {
+      background: $cp-warning-wash;
+      color: $cp-secondary;
+    }
+  }
+
+  // Square-ish tags: committee chips in tables and audit action tags.
+  .cp-tag {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    background: $cp-chip;
+    color: $cp-secondary;
+  }
+
+  .cp-tag-group {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  .cp-action-tag {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    background: $cp-chip;
+    color: $cp-secondary;
+
+    &.grant {
+      background: vars.$tertiaryblue;
+      color: vars.$secondaryblue-dark;
+    }
+
+    &.create {
+      background: $cp-success-wash;
+      color: vars.$dark-green;
+    }
+
+    &.destructive {
+      background: $cp-danger-wash;
+      color: vars.$dark-red;
+    }
+
+    &.settings {
+      background: rgba(255, 186, 67, 0.2);
+      color: $cp-secondary;
+    }
+  }
+
+  // ---------------------------------------------------------------- stat tiles
+
+  .cp-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .cp-stat-tile {
+    border: 1px solid vars.$gray1;
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    .cp-stat-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: vars.$gray2;
+    }
+
+    .cp-stat-value {
+      font-size: 26px;
+      font-weight: 700;
+      color: $cp-strong;
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .cp-stat-delta {
+      font-size: 12px;
+    }
+  }
+
+  // ------------------------------------------------------------ overview lower
+
+  .cp-overview-lower {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+
+  .cp-activity-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid $cp-rule;
+    font-size: 13px;
+
+    .cp-activity-icon {
+      width: 14px;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+
+    .cp-activity-text {
+      flex-grow: 1;
+      color: $cp-body;
+    }
+
+    .cp-activity-time {
+      font-size: 12px;
+      color: vars.$gray2;
+      white-space: nowrap;
+    }
+  }
+
+  .cp-attention-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid $cp-rule;
+
+    .cp-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .cp-attention-label {
+      font-size: 13px;
+      color: $cp-body;
+      flex-grow: 1;
+    }
+
+    .cp-attention-count {
+      font-size: 13px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    &.system {
+      .cp-attention-label {
+        color: $cp-secondary;
+      }
+
+      .cp-attention-count {
+        color: $cp-strong;
+        font-weight: 400;
+      }
+    }
+  }
+
+  // ------------------------------------------------------------------ sections
+
+  .cp-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 34px;
+  }
+
+  .cp-bulk-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    background: vars.$tertiaryblue;
+    border: 1px solid vars.$gray1;
+    font-size: 13px;
+
+    .cp-bulk-count {
+      font-weight: 700;
+      color: rgba(0, 0, 0, 0.8);
+    }
+
+    button {
+      border-radius: 5px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      background: vars.$white;
+      border: 1px solid vars.$secondaryblue;
+      color: vars.$secondaryblue;
+
+      &:hover {
+        background: vars.$secondaryblue;
+        color: vars.$white;
+      }
+
+      &.destructive {
+        border-color: #f0b4b4;
+        color: vars.$dark-red;
+
+        &:hover {
+          background: $cp-danger-hover;
+          color: vars.$dark-red;
+        }
+      }
+    }
+
+    .cp-bulk-clear {
+      margin-left: auto;
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 12px;
+      color: vars.$gray3;
+
+      &:hover {
+        text-decoration: underline;
+        background: none;
+        color: vars.$gray3;
+      }
+    }
+  }
+
+  .cp-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 14px;
+    font-size: 12px;
+    color: vars.$gray2;
+
+    .cp-page-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    button {
+      padding: 4px 10px;
+      border: 1px solid vars.$gray1;
+      border-radius: 5px;
+      background: vars.$white;
+      font-family: inherit;
+      font-size: 12px;
+      cursor: pointer;
+
+      &:disabled {
+        color: vars.$gray2;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  // ---------------------------------------------------------- permission matrix
+
+  .cp-matrix-intro {
+    font-size: 13px;
+    color: $cp-secondary;
+    max-width: 660px;
+    text-wrap: pretty;
+    margin: 0 0 14px 0;
+  }
+
+  table.cp-matrix {
+    td.cp-capability {
+      text-align: left;
+      color: $cp-body;
+      white-space: normal;
+    }
+
+    th.cp-role-col,
+    td.cp-mark {
+      text-align: center;
+      font-weight: 700;
+    }
+
+    td.cp-mark {
+      &.allowed {
+        color: vars.$dark-green;
+      }
+
+      &.denied {
+        color: vars.$gray2;
+      }
+
+      &.protected {
+        color: $cp-body;
+        background: $cp-warning-wash;
+      }
+    }
+  }
+
+  .cp-matrix-legend {
+    display: flex;
+    gap: 18px;
+    margin-top: 12px;
+    font-size: 12px;
+    color: vars.$gray2;
+  }
+
+  // --------------------------------------------------------- user detail modal
+
+  .cp-detail-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 18px;
+
+    img {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: $cp-chip;
+    }
+  }
+
+  .cp-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px 24px;
+  }
+
+  .cp-detail-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 6px 0;
+    border-bottom: 1px solid $cp-rule;
+    min-width: 0;
+  }
+
+  .cp-detail-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: vars.$gray2;
+  }
+
+  .cp-detail-value {
+    font-size: 13px;
+    color: $cp-strong;
+    word-break: break-word;
+  }
+
+  .cp-detail-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  // ------------------------------------------------------------ upload results
+
+  .cp-upload-error {
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #f0b4b4;
+    background: $cp-danger-hover;
+    color: vars.$dark-red;
+    font-size: 13px;
+  }
+
+  .cp-upload-result {
+    margin-bottom: 16px;
+    padding: 12px;
+    border: 1px solid vars.$gray1;
+    border-radius: 8px;
+    font-size: 13px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .cp-upload-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      img {
+        width: 64px;
+        height: 44px;
+        object-fit: cover;
+        border-radius: 4px;
+        background: $cp-chip;
+        flex-shrink: 0;
+      }
+    }
+
+    .cp-upload-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+      flex-grow: 1;
+    }
+
+    .cp-upload-name {
+      font-weight: 600;
+      color: $cp-strong;
+    }
+
+    code {
+      font-family: monospace;
+      font-size: 12px;
+      background: $cp-chip;
+      padding: 2px 6px;
+      border-radius: 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  // ---------------------------------------------------------------- media grid
+
+  .cp-media-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px;
+  }
+
+  .cp-media-tile {
+    border: 1px solid vars.$gray1;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    &:hover {
+      border-color: vars.$tertiaryblue;
+    }
+
+    .cp-media-thumb {
+      height: 96px;
+      background: $cp-chip;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .cp-media-body {
+      padding: 9px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .cp-media-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: $cp-strong;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .cp-media-meta {
+      font-size: 11px;
+      color: vars.$gray2;
+    }
+
+    .cp-media-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      font-size: 11px;
+
+      .cp-media-usage {
+        color: $cp-secondary;
+
+        &.unused {
+          color: vars.$dark-red;
+        }
+      }
+
+      .cp-media-actions {
+        display: flex;
+        gap: 8px;
+        flex-shrink: 0;
+      }
+
+      button {
+        background: none;
+        border: none;
+        padding: 0;
+        font-family: inherit;
+        font-size: 11px;
+        color: vars.$dark-red;
+        cursor: pointer;
+        white-space: nowrap;
+
+        &:hover {
+          text-decoration: underline;
+        }
+
+        &.copy {
+          color: vars.$secondaryblue;
+        }
+      }
+    }
+  }
+
+  // ----------------------------------------------------------------- settings
+
+  .cp-settings {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    max-width: 620px;
+  }
+
+  .cp-setting-block {
+    .cp-setting-state {
+      font-size: 13px;
+      color: $cp-secondary;
+      margin: 0 0 12px 0;
+    }
+
+    .cp-field-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: vars.$gray2;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="url"] {
+      padding: 8px 10px;
+      border: 1px solid vars.$gray1;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: inherit;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .cp-field {
+      margin-bottom: 12px;
+
+      &.narrow {
+        max-width: 340px;
+      }
+
+      &.wide {
+        max-width: 460px;
+      }
+    }
+
+    .cp-service-account {
+      font-size: 12px;
+      color: $cp-secondary;
+      margin: 8px 0 12px 0;
+
+      code {
+        font-family: monospace;
+        font-size: 12px;
+        background: $cp-chip;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+    }
+
+    .cp-cycle-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 0;
+      border-bottom: 1px solid $cp-rule;
+
+      .cp-cycle-meta {
+        font-size: 12px;
+        color: vars.$gray2;
+      }
+
+      .cp-btn {
+        margin-left: auto;
+      }
+    }
+
+    .cp-btn {
+      align-self: flex-start;
+    }
+  }
+
+  // ------------------------------------------------------------------- dialog
+
+  .cp-empty {
+    padding: 24px 8px;
+    font-size: 13px;
+    color: vars.$gray2;
+  }
+
+  // Below the dense-table breakpoint the tables scroll inside their own wrappers (handled by
+  // .cp-table-scroll); the rail collapses to icons so the content region keeps its width.
+  @media (max-width: 900px) {
+    .cp-layout {
+      grid-template-columns: 1fr;
+    }
+
+    // Below the breakpoint the rail becomes a horizontal strip above the content, so pinning
+    // it to the viewport height would eat the screen.
+    .cp-rail {
+      position: static;
+      height: auto;
+      border-right: none;
+      border-bottom: 1px solid vars.$gray1;
+      flex-direction: row;
+      flex-wrap: wrap;
+      padding: 12px;
+      gap: 4px;
+    }
+
+    .cp-nav-items {
+      flex-direction: row;
+      flex-wrap: wrap;
+      overflow-y: visible;
+    }
+
+    .cp-rail-label,
+    .cp-rail-footer {
+      display: none;
+    }
+
+    .cp-nav-item {
+      width: auto;
+      border-left: none;
+      border-radius: 6px;
+
+      &.active {
+        border-left: none;
+      }
+    }
+
+    .cp-main {
+      padding: 20px 16px 48px;
+    }
+
+    .cp-overview-lower {
       grid-template-columns: 1fr;
     }
   }
 }
+
+// The assign-role dialog renders as a sibling of .control-panel-v2, not a descendant, so
+// these rules must live at the top level. Nested under .control-panel-v2 they matched
+// nothing and the dialog rendered as unstyled inline text at the foot of the page.
+.cp-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.cp-dialog {
+  background: vars.$white;
+  border-radius: 10px;
+  padding: 26px 28px;
+  width: 420px;
+  max-width: 90vw;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+    color: $cp-strong;
+  }
+
+  .cp-field-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: vars.$gray2;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  input[type="email"],
+  input[type="text"] {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid vars.$gray1;
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: inherit;
+    box-sizing: border-box;
+  }
+
+  .cp-segmented {
+    display: flex;
+    border: 1px solid vars.$gray1;
+    border-radius: 6px;
+    overflow: hidden;
+    width: fit-content;
+
+    button {
+      border: none;
+      background: vars.$white;
+      color: vars.$gray2;
+      font-family: inherit;
+      font-size: 13px;
+      padding: 6px 14px;
+      cursor: pointer;
+
+      &:hover {
+        background: $cp-chip;
+      }
+
+      &.selected {
+        background: vars.$secondaryblue;
+        color: vars.$white;
+
+        &:hover {
+          background: vars.$secondaryblue-dark;
+        }
+      }
+    }
+  }
+
+  .cp-chip-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .cp-chip {
+    padding: 4px 11px;
+    border-radius: 999px;
+    border: 1px solid vars.$gray1;
+    background: vars.$white;
+    font-size: 12px;
+    font-weight: 600;
+    color: vars.$gray3;
+    font-family: inherit;
+    cursor: pointer;
+
+    &:hover {
+      border-color: vars.$secondaryblue;
+      color: vars.$secondaryblue;
+    }
+
+    &.selected {
+      border-color: vars.$secondaryblue;
+      background: vars.$tertiaryblue;
+      color: vars.$secondaryblue-dark;
+    }
+  }
+
+  .cp-dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  .cp-dialog-error {
+    font-size: 12px;
+    color: vars.$dark-red;
+  }
+
+  // The bulk-add dialog carries a textarea and a failure table, so it needs more room than
+  // the 420px assign-role dialog.
+  &.wide {
+    width: 560px;
+  }
+
+  textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #d8d8d8;
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: inherit;
+    box-sizing: border-box;
+    resize: vertical;
+  }
+
+  .cp-field-hint {
+    font-size: 12px;
+    color: #979797;
+    margin: 6px 0 0 0;
+  }
+
+  .cp-bulk-result {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 13px;
+
+    .cp-bulk-ok {
+      margin: 0;
+      color: rgba(0, 0, 0, 0.85);
+    }
+  }
+}
+
