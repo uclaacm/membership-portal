@@ -66,8 +66,14 @@ module.exports = async (User, Event) => {
       applicationDeadline: new Date('2030-10-15T23:59:59.000Z'),
     },
     {
-      name: 'Dev',
-      displayName: 'Dev',
+      // Must match the canonical name in app/committees.js exactly. Seeding this as 'Dev' put
+      // the internship records out of step with every other surface: the Control Panel joins
+      // its table on the canonical list, found nothing, and reported the committee as closed
+      // while the internship screens read the same record and showed it open.
+      name: 'Dev Team',
+      displayName: 'Dev Team',
+      // Renames the record seeded under the old name rather than creating a second one.
+      aliases: ['Dev'],
       description: 'ACM internal development committee',
       internLimit: 10,
       applicationDeadline: new Date('2030-10-15T23:59:59.000Z'),
@@ -75,7 +81,7 @@ module.exports = async (User, Event) => {
   ];
 
   const committeeSeedPromises = committeeSeeds.map((seed) => {
-    const nameVariants = [seed.name, seed.name.toLowerCase()];
+    const nameVariants = [seed.name, seed.name.toLowerCase(), ...(seed.aliases || [])];
     return Committee.updateOne(
       { name: { $in: nameVariants } },
       {
