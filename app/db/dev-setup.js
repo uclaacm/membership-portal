@@ -65,6 +65,13 @@ module.exports = async (User, Event) => {
       internLimit: 8,
       applicationDeadline: new Date('2030-10-15T23:59:59.000Z'),
     },
+    {
+      name: 'Dev',
+      displayName: 'Dev',
+      description: 'ACM internal development committee',
+      internLimit: 10,
+      applicationDeadline: new Date('2030-10-15T23:59:59.000Z'),
+    },
   ];
 
   const committeeSeedPromises = committeeSeeds.map((seed) => {
