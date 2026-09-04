@@ -1,6 +1,6 @@
 const { Committee } = require('../api/v1/internship/models/Committee');
 
-module.exports = (User, Event) => {
+module.exports = async (User, Event) => {
   const committeeSeeds = [
     {
       name: 'AI',
@@ -66,8 +66,14 @@ module.exports = (User, Event) => {
       applicationDeadline: new Date('2030-10-15T23:59:59.000Z'),
     },
     {
-      name: 'Dev',
-      displayName: 'Dev',
+      // Must match the canonical name in app/committees.js exactly. Seeding this as 'Dev' put
+      // the internship records out of step with every other surface: the Control Panel joins
+      // its table on the canonical list, found nothing, and reported the committee as closed
+      // while the internship screens read the same record and showed it open.
+      name: 'Dev Team',
+      displayName: 'Dev Team',
+      // Renames the record seeded under the old name rather than creating a second one.
+      aliases: ['Dev'],
       description: 'ACM internal development committee',
       internLimit: 10,
       applicationDeadline: new Date('2030-10-15T23:59:59.000Z'),
@@ -75,7 +81,7 @@ module.exports = (User, Event) => {
   ];
 
   const committeeSeedPromises = committeeSeeds.map((seed) => {
-    const nameVariants = [seed.name, seed.name.toLowerCase()];
+    const nameVariants = [seed.name, seed.name.toLowerCase(), ...(seed.aliases || [])];
     return Committee.updateOne(
       { name: { $in: nameVariants } },
       {
@@ -560,5 +566,74 @@ module.exports = (User, Event) => {
       },
     }),
   ]);
+
+  // ---------------------------------------------------------------------------
+  // Extra seed data so the dashboard has something to lay out.
+  //
+  // The fit-to-window sections size themselves to the content available: with only a handful
+  // of upcoming events and a dozen scored members, the featured rows and the leaderboard rail
+  // rendered mostly empty and the layout could not be judged. Dates are relative to now so
+  // these stay in the future without editing the file every term.
+  // ---------------------------------------------------------------------------
+  const soon = (days, hour) => {
+    const d = new Date();
+    d.setDate(d.getDate() + days);
+    d.setHours(hour, 0, 0, 0);
+    return d;
+  };
+
+  const seedCommittees = ['AI', 'Hack', 'Cyber', 'Design', 'TeachLA', 'ICPC', 'W', 'Studio', 'Cloud'];
+  const seedTitles = [
+    'Intro to Neural Networks', 'React Workshop: Hooks in Depth', 'CTF Practice Night',
+    'Design Crit & Portfolio Review', 'Volunteer Onboarding', 'Weekly Practice Contest',
+    'Mentorship Mixer', 'Game Jam Kickoff', 'Deploying with Terraform',
+    'Resume Workshop', 'Intro to Rust', 'Data Viz with D3',
+    'Capture the Flag: Web Exploits', 'Figma Fundamentals', 'Teaching Demo Day',
+    'Dynamic Programming Deep Dive', 'Women in Tech Panel', 'Unity Basics',
+  ];
+  const seedLocations = [
+    'Boelter 3400', 'Kaplan A65', 'Engineering VI 289', 'Broad 2160E',
+    'Public Affairs 1234', 'Boelter 5249', 'Kerckhoff Grand Salon', 'Royce 156',
+  ];
+
+  await Promise.all(seedTitles.map((title, i) => Event.findOrCreate({
+    where: { attendanceCode: `seed-${i}` },
+    defaults: {
+      title,
+      description: `<p>${title} — seeded for local development.</p>`,
+      committee: seedCommittees[i % seedCommittees.length],
+      location: seedLocations[i % seedLocations.length],
+      // No cover on purpose: the card falls back to the committee banner, which is the path
+      // most real events actually take. Omitted rather than '' — the column validates length.
+      startDate: soon(i + 1, 17),
+      endDate: soon(i + 1, 19),
+      attendancePoints: 5 + (i % 5) * 5,
+    },
+  })));
+
+  const seedMembers = [
+    ['Priya', 'Raman', 512], ['Marcus', 'Webb', 468], ['Sofia', 'Delgado', 431],
+    ['Ethan', 'Nakamura', 402], ['Amara', 'Okafor', 377], ['Liam', 'Torres', 355],
+    ['Yuki', 'Tanaka', 340], ['Noor', 'Haddad', 318], ['Diego', 'Ramirez', 295],
+    ['Hannah', 'Kim', 274], ['Omar', 'Farouk', 251], ['Grace', 'Chen', 233],
+    ['Tobias', 'Lindqvist', 210], ['Ines', 'Moreau', 188], ['Kofi', 'Mensah', 165],
+    ['Mei', 'Zhang', 142], ['Arjun', 'Patel', 121], ['Freya', 'Olsen', 98],
+    ['Santiago', 'Cruz', 76], ['Zara', 'Ahmed', 54],
+  ];
+
+  await Promise.all(seedMembers.map(([firstName, lastName, points], i) => User.findOrCreate({
+    where: { email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@g.ucla.edu` },
+    defaults: {
+      email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@g.ucla.edu`,
+      accessType: 'STANDARD',
+      state: 'ACTIVE',
+      firstName,
+      lastName,
+      year: (i % 4) + 1,
+      major: 'Computer Science',
+      points,
+    },
+  })));
+
   return null; // we don't care about result (http://goo.gl/rRqMUw)
 };

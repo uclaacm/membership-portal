@@ -158,6 +158,23 @@ module.exports = (Sequelize, db) => {
         },
       },
 
+      // Optional attendee ceiling.
+      //
+      // Advisory only: nothing blocks an RSVP past this number. It exists so staff can see
+      // "42/60 RSVPs" and judge whether a room will hold the turnout. Nullable because most
+      // events do not have a meaningful limit, and a null must render as a plain count with
+      // no denominator rather than "42/0".
+      capacity: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        validate: {
+          min: {
+            args: [0],
+            msg: 'Capacity cannot be negative',
+          },
+        },
+      },
+
       // starting in winter 2019, we want to soft-delete events by marking them as 'deleted'
       // and then not serving them to the user, vs. deleting them from the database entirely.
       deleted: {
@@ -270,7 +287,15 @@ module.exports = (Sequelize, db) => {
       'endDate',
       'attendanceCode',
       'attendancePoints',
+      'capacity',
     ]);
+    // A blank capacity input arrives as '' and must clear the field rather than becoming 0 —
+    // "0 capacity" and "no limit set" mean very different things on a staff card.
+    if (sanitizedEvent.capacity !== undefined) {
+      const raw = String(sanitizedEvent.capacity).trim();
+      sanitizedEvent.capacity = raw === '' ? null : Number.parseInt(raw, 10);
+      if (Number.isNaN(sanitizedEvent.capacity)) sanitizedEvent.capacity = null;
+    }
     if (sanitizedEvent.cover !== undefined && sanitizedEvent.cover.length === 0) {
       sanitizedEvent.cover = null;
     }
@@ -309,6 +334,7 @@ module.exports = (Sequelize, db) => {
       endDate: this.getDataValue('endDate'),
       attendanceCode: admin ? this.getDataValue('attendanceCode') : undefined,
       attendancePoints: this.getDataValue('attendancePoints'),
+      capacity: this.getDataValue('capacity'),
     };
   };
 

@@ -18,11 +18,27 @@ router.route('/').get((req, res, next) => {
   const offset = parseInt(req.query.offset, 10);
   const limit = parseInt(req.query.limit, 10);
 
-  return User.getLeaderboard(offset, limit)
-    .then((users) => {
+  // `me` carries the caller's own standing alongside the requested page. The dashboard pins
+  // the current user's row and shows their rank in the modal footer; without this the client
+  // would have to page through every member to find someone ranked #340.
+  return Promise.all([
+    User.getLeaderboard(offset, limit),
+    User.getRank(req.user),
+    User.count({ where: { state: 'ACTIVE' } }),
+  ])
+    .then(([users, rank, total]) => {
       res.json({
         error: null,
         leaderboard: users.map((u) => u.getBaseProfile()),
+        // How many members are ranked in total, which is not the same as how many rows this
+        // page returned. The modal header states the chapter size, so using the page length
+        // made it contradict the caller's own rank.
+        total,
+        me: {
+          uuid: req.user.uuid,
+          rank,
+          points: req.user.points,
+        },
       });
       return null;
     })
