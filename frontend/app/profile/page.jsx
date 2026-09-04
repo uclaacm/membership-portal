@@ -8,14 +8,13 @@ import moment from 'moment';
 import logoutUser from '@/app/actions/auth/logoutUser';
 import fetchActivity from '@/app/actions/user/fetchActivity';
 import updateUser from '@/app/actions/user/updateUser';
-import { authUserProfileAtom, isAdminAtom, isOfficerAtom, adminViewAtom } from '@/lib/atoms';
+import { authUserProfileAtom, isAdminAtom, isOfficerAtom } from '@/lib/atoms';
 import './style.scss';
 
 export default function ProfilePage() {
   const userProfile = useAtomValue(authUserProfileAtom);
   const isAdmin = useAtomValue(isAdminAtom);
   const isOfficer = useAtomValue(isOfficerAtom);
-  const [adminView, setAdminView] = useAtom(adminViewAtom);
   const [activity, setActivity] = useState(null);
   const [activityError, setActivityError] = useState(null);
   const [updated, setUpdated] = useState(false);
@@ -64,15 +63,10 @@ export default function ProfilePage() {
   return (
     <div className="profile">
       <Topbar
-        isAdmin={adminView}
         picture={userProfile?.picture}
         onLogout={handleLogout}
         isRealAdmin={isAdmin}
-        adminView={adminView}
-        onToggleAdminView={() => setAdminView(v => !v)}
         isOfficer={isOfficer}
-        officerView={adminView}
-        onToggleOfficerView={() => setAdminView(v => !v)}
       />
       <Profile
         profile={profile}
@@ -83,7 +77,6 @@ export default function ProfilePage() {
         logout={handleLogout}
         activity={activity}
         activityError={activityError}
-        adminView={adminView}
         isAdmin={isAdmin}
       />
     </div>

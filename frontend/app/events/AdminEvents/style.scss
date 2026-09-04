@@ -635,17 +635,21 @@
   }
 }
 
-.admin-dashboard .admin-event-tile {
+// Renamed from `.admin-event-tile`. The full-width row this used to style was replaced by
+// EventPreviewCard in a wrapping grid, so the block now carries only the cell wrapper and the
+// RSVP panel that expands beneath it — the card draws its own chrome, which is why the row's
+// shadow, hover fill and 100% width are gone. The `.main-content` / `.top` / `.cover` /
+// `.external-rsvp-link` / `.rsvp-count` / `.view-rsvps-btn` rules further down are inert now
+// that those nodes no longer render, and can be deleted in a follow-up.
+.admin-dashboard .admin-event-cell {
   display: flex;
   flex-direction: column;
-  width: 100%;
-  margin-bottom: 10px;
-  box-shadow: 0px 0px 3px #d2d2d2;
-  border-radius: 4px;
 
-  &:hover {
-    background: rgba(240, 240, 240, 0.35);
-    cursor: pointer;
+  // With the RSVP list open the cell claims the whole grid row; squeezed into a 230px track
+  // the roster is unreadable.
+  &.is-open {
+    flex-basis: 100%;
+    width: 100%;
   }
 
   .main-content {
@@ -959,4 +963,11 @@
       border-bottom-left-radius: 0px;
     }
   }
+}
+
+// Hint text under a form field group.
+.admin-dashboard .field-hint {
+  margin: 8px 0 0 0;
+  font-size: 12px;
+  color: #979797;
 }

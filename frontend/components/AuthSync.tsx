@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useSetAtom } from "jotai";
-import { authUserProfileAtom, isAdminAtom, isOfficerAtom, adminViewAtom, officerViewAtom } from "@/lib/atoms";
+import { authUserProfileAtom, isAdminAtom, isOfficerAtom } from "@/lib/atoms";
 import { isTokenAdmin, isTokenOfficer } from "@/lib/token";
 import CookieStore from "@/lib/cookieStore";
 import type { UserExtendedProfile } from "@/lib/types/User";
@@ -20,8 +20,6 @@ export default function AuthSync({
   const setUserProfile = useSetAtom(authUserProfileAtom);
   const setIsAdmin = useSetAtom(isAdminAtom);
   const setIsOfficer = useSetAtom(isOfficerAtom);
-  const setAdminView = useSetAtom(adminViewAtom);
-  const setOfficerView = useSetAtom(officerViewAtom);
 
   // A token the API rejected is dead — clear it and send the user to log in, rather than
   // leaving them on a signed-in-looking page whose every request fails. This is what makes a
@@ -47,17 +45,12 @@ export default function AuthSync({
         const officer = isTokenOfficer(token);
         setIsAdmin(admin);
         setIsOfficer(officer);
-        // Default to elevated view on login for admins and officers
-        setAdminView(admin || officer);
-        setOfficerView(officer && !admin);
       }
     } else {
       setIsAdmin(false);
       setIsOfficer(false);
-      setAdminView(false);
-      setOfficerView(false);
     }
-  }, [user, setUserProfile, setIsAdmin, setIsOfficer, setAdminView, setOfficerView]);
+  }, [user, setUserProfile, setIsAdmin, setIsOfficer]);
 
   return null;
 }

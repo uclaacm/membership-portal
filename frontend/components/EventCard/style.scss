@@ -1,0 +1,213 @@
+// The shared event card. One implementation for both the events page and the home
+// dashboard — the two screens differ only in cover height, set by the `.is-compact`
+// modifier. Replaces the three divergent treatments that existed before: the member
+// card, the legacy admin row, and the dashboard's featured strip.
+
+.event-card {
+  min-width: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #d8d8d8;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+  transition: border-color 0.15s ease;
+
+  &:hover {
+    border-color: #d2dbe7;
+  }
+}
+
+.event-card__cover {
+  flex: 0 0 auto;
+  height: 132px;
+  position: relative;
+  background-color: #d2dbe7;
+  overflow: hidden;
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+}
+
+// The dashboard uses the same card at a shorter cover; nothing else differs.
+.event-card.is-compact .event-card__cover {
+  height: 104px;
+}
+
+.event-card__points {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #fff;
+  color: rgb(59, 89, 237);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+
+.event-card__draft {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(255, 186, 67, 0.9);
+  color: rgba(0, 0, 0, 0.75);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+
+.event-card__body {
+  flex: 1 1 auto;
+  padding: 12px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.event-card__committee {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+// Two-line clamp at a fixed height so cards stay aligned in the grid and a long title
+// wraps rather than being ellipsized mid-word.
+.event-card__title {
+  font-family: "Poppins", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+  min-height: 39px;
+  margin: 0;
+  color: rgba(0, 0, 0, 0.85);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.event-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: rgba(0, 0, 0, 0.6);
+  font-variant-numeric: tabular-nums;
+  min-width: 0;
+
+  i {
+    width: 12px;
+    font-size: 11px;
+    color: #b0b0b0;
+    flex-shrink: 0;
+    text-align: center;
+  }
+
+  span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.event-card__footer {
+  margin-top: 10px;
+  padding-top: 12px;
+  border-top: 1px solid #eeeeee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+// The attendance text is the element that shrinks. When the button cluster was allowed to
+// shrink instead, the footer overflowed and clipped the last button at any column narrower
+// than roughly 270px.
+.event-card__attendance {
+  min-width: 0;
+  flex-shrink: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  color: #979797;
+}
+
+.event-card__actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.event-card__icon-btn {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid #d8d8d8;
+  background: #fff;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background: #f6f8ff;
+    border-color: #d2dbe7;
+  }
+
+  &.is-danger {
+    color: #c14b4b;
+
+    &:hover {
+      background: rgba(247, 78, 78, 0.06);
+      border-color: rgba(247, 78, 78, 0.3);
+    }
+  }
+}
+
+.event-card__pill-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 7px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: "Lato", sans-serif;
+  transition: background 0.15s ease;
+
+  // Staff: opens the RSVP roster.
+  &.is-staff {
+    background: #f2f2f2;
+    color: rgba(0, 0, 0, 0.75);
+
+    &:hover { background: #e8e8e8; }
+  }
+
+  // Member: RSVP, toggling to Going once they have one.
+  &.is-rsvp {
+    background: rgb(59, 89, 237);
+    color: #fff;
+
+    &:hover { background: rgb(47, 70, 188); }
+  }
+
+  &.is-going {
+    background: rgba(52, 220, 106, 0.18);
+    color: #248a45;
+  }
+}

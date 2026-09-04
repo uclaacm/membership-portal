@@ -20,6 +20,10 @@ const config = {
       bulk: "/api/v1/user/bulk",
     },
     audit: "/api/v1/audit",
+    settings: {
+      email: "/api/v1/settings/email",
+      emailTest: "/api/v1/settings/email/test",
+    },
     activity: "/api/v1/activity",
     auth: {
       register: "/api/v1/register",

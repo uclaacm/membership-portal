@@ -230,9 +230,12 @@ export default class UserEvents extends React.Component {
           {this.renderCheckInSuccess()}
           {this.renderCheckInFailure()}
 
+          {/* The heading and filter bar share a row. Both classes already existed in
+              app/events/style.scss with this exact markup documented above them; they were
+              never applied, so the title fell back to the reset's 16px body type. */}
           <div style={{ padding: '0 20px' }}>
-            <h1 style={{ marginBottom: '20px' }}>Events</h1>
-            <div style={{ marginBottom: '24px' }}>
+            <div className="events-filter-row">
+              <h1 className="events-heading">Events</h1>
               <EventFilterBar
                 committees={committees}
                 timeRanges={timeRanges}

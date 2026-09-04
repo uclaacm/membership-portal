@@ -85,7 +85,7 @@ export default class Profile extends React.Component {
       );
     }
 
-    const { adminView, toggleAdminView, isAdmin } = this.props;
+    const { isAdmin } = this.props;
 
     return (
       <div>

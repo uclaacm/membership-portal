@@ -8,8 +8,6 @@ import type { InternshipApplication, InternshipCommittee, InternshipQuestionResp
 export const authUserProfileAtom = atom<UserPublicProfile | UserExtendedProfile | null>(null);
 export const isAdminAtom = atom<boolean>(false);
 export const isOfficerAtom = atom<boolean>(false);
-export const adminViewAtom = atom<boolean>(false);
-export const officerViewAtom = atom<boolean>(false);
 export const myApplicationAtom = atom<InternshipApplication | null>(null);
 export const officerApplicationsAtom = atom<InternshipApplication[]>([]);1
 export const activeCommitteesAtom = atom<InternshipCommittee[] | null>(null);

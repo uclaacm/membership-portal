@@ -1,0 +1,220 @@
+@use "../../styles/vars";
+
+// The unified events page. Replaces the member/admin split: the role changes the affordances
+// on the card and the toolbar's action cluster, never the layout of the page.
+
+.events-page {
+  min-height: 100vh;
+  // The topbar is `position: fixed`, so the document scrolls beneath it and the content has to
+  // reserve its height. This is the first screen whose document actually scrolls.
+  padding-top: vars.$topbar-height;
+}
+
+.events-page__inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 28px 36px 80px;
+}
+
+.events-page__title {
+  font-family: "Poppins", sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+  margin: 0;
+}
+
+.events-page__subtitle {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.55);
+  margin: 4px 0 0 0;
+}
+
+// ── Toolbar ───────────────────────────────────────────────────────────────────
+.events-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 22px 0 24px;
+}
+
+.events-toolbar__search {
+  position: relative;
+  flex: 0 1 260px;
+  min-width: 180px;
+
+  i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: #b0b0b0;
+    pointer-events: none;
+  }
+
+  input {
+    width: 100%;
+    height: 36px;
+    box-sizing: border-box;
+    padding: 0 12px 0 32px;
+    border: 1px solid #d8d8d8;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: "Lato", sans-serif;
+    background: #fff;
+
+    &:focus {
+      outline: none;
+      border-color: rgb(59, 89, 237);
+    }
+  }
+}
+
+.events-toolbar__select {
+  height: 36px;
+  box-sizing: border-box;
+  padding: 0 10px;
+  border: 1px solid #d8d8d8;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: "Lato", sans-serif;
+  background: #fff;
+  color: rgba(0, 0, 0, 0.75);
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: rgb(59, 89, 237);
+  }
+}
+
+// Pushes the role's action cluster to the right edge.
+.events-toolbar__spacer {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.events-toolbar__sync-note {
+  font-size: 12px;
+  color: #979797;
+  white-space: nowrap;
+}
+
+.events-toolbar__btn {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid #d8d8d8;
+  background: #fff;
+  color: rgba(0, 0, 0, 0.75);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: "Lato", sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:hover { background: #f6f8ff; border-color: #d2dbe7; }
+
+  &.is-primary {
+    background: rgb(59, 89, 237);
+    border-color: rgb(59, 89, 237);
+    color: #fff;
+
+    &:hover { background: rgb(47, 70, 188); }
+  }
+}
+
+// ── Month grouping ────────────────────────────────────────────────────────────
+//
+// The track list is driven by the same value that picks the variant. Hiding the gutter with
+// `display: none` would remove the grid *item* but not the *track*, dropping the content
+// column into the 56px track and collapsing it.
+.events-month {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 28px;
+
+  &.is-vertical {
+    grid-template-columns: 56px 1fr;
+  }
+
+  &.is-flat {
+    grid-template-columns: 1fr;
+  }
+}
+
+.events-month__label-vertical {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  position: sticky;
+  top: 85px;
+  align-self: start;
+  height: max-content;
+  font-family: "Poppins", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: #979797;
+}
+
+.events-month__label-flat {
+  position: sticky;
+  top: vars.$topbar-height;
+  background: #fff;
+  padding: 10px 0 8px;
+  border-bottom: 1px solid #eeeeee;
+  font-family: "Poppins", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: #979797;
+  z-index: 2;
+}
+
+// Rizwaan's note: the old 16px gap felt loose. 12px with wider cards gives four across at
+// 1400px and three at about 960px.
+.events-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(248px, 1fr));
+  min-width: 0;
+}
+
+// ── Empty state ───────────────────────────────────────────────────────────────
+.events-empty {
+  border: 1px solid #d8d8d8;
+  border-radius: 10px;
+  padding: 40px 24px;
+  text-align: center;
+
+  p {
+    margin: 0;
+
+    &:first-child {
+      font-family: "Poppins", sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.75);
+    }
+
+    &:last-child {
+      margin-top: 6px;
+      font-size: 13px;
+      color: #979797;
+    }
+  }
+}
+
+@media (max-width: 700px) {
+  .events-page__inner { padding: 20px 16px 60px; }
+  .events-month.is-vertical { grid-template-columns: 1fr; }
+  .events-month__label-vertical {
+    writing-mode: horizontal-tb;
+    transform: none;
+    position: static;
+  }
+}

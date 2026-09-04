@@ -3,8 +3,11 @@
 import { cookies } from "next/headers";
 import Config from "@/lib/config";
 import Logger from "@/lib/logger";
+import sendMarketingNotification from "@/lib/marketingMail";
 
-export default async function createEvent(event: any): Promise<{ success: boolean; error?: string }> {
+export default async function createEvent(
+  event: any
+): Promise<{ success: boolean; error?: string; marketingNotified?: boolean; marketingNote?: string }> {
   try {
     const cks = await cookies();
     const token = cks.get("token")?.value;
@@ -37,6 +40,14 @@ export default async function createEvent(event: any): Promise<{ success: boolea
 
     if (data?.error) {
       return { success: false, error: data.error.message ?? data.error };
+    }
+
+    // Marketing is told only once the event actually saved, and only when the author picked
+    // platforms. A failure here must never fail the save — the event exists either way.
+    if (Array.isArray(event?.platforms) && event.platforms.length > 0) {
+      const mail = await sendMarketingNotification(event, true);
+      if (!mail.sent) Logger.error(`Marketing not notified: ${mail.skipped ?? mail.error}`);
+      return { success: true, marketingNotified: mail.sent, marketingNote: mail.skipped ?? mail.error };
     }
 
     return { success: true };

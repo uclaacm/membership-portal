@@ -8,7 +8,7 @@ import Topbar from "@/components/Topbar";
 import logoutUser from "@/app/actions/auth/logoutUser";
 import updateCareerProfile from "@/app/actions/user/updateCareerProfile";
 import fetchCareerProfile from "@/app/actions/user/fetchCareerProfile";
-import { authUserProfileAtom, isAdminAtom, isOfficerAtom, adminViewAtom } from "@/lib/atoms";
+import { authUserProfileAtom, isAdminAtom, isOfficerAtom } from "@/lib/atoms";
 import "./page.scss";
 
 const normalizeUrl = url => {
@@ -62,7 +62,6 @@ export default function CareerEditPage() {
   const setAuthUserProfile = useSetAtom(authUserProfileAtom);
   const isAdmin = useAtomValue(isAdminAtom);
   const isOfficer = useAtomValue(isOfficerAtom);
-  const [adminView, setAdminView] = useAtom(adminViewAtom);
   const [mounted, setMounted] = useState(false);
   const [careerProfile, setCareerProfile] = useState(userProfile || {});
   const [bio, setBio] = useState(userProfile?.bio || "");
@@ -261,15 +260,10 @@ export default function CareerEditPage() {
   return (
     <div>
       <Topbar
-        isAdmin={adminView}
         picture={userProfile?.picture}
         onLogout={handleLogout}
         isRealAdmin={isAdmin}
-        adminView={adminView}
-        onToggleAdminView={() => setAdminView(v => !v)}
         isOfficer={isOfficer}
-        officerView={adminView}
-        onToggleOfficerView={() => setAdminView(v => !v)}
       />
       <div className="career-profile-page">
         <div className="career-profile-header">

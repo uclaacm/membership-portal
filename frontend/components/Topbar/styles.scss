@@ -168,3 +168,179 @@
     }
   }
 } 
+
+// ── Right cluster: launcher then avatar ───────────────────────────────────────
+//
+// Both are fixed width; the nav group is the only flexible element, so the bar keeps its shape
+// as the window narrows instead of the launcher being pushed off the edge.
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.launcher {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.launcher-btn {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid #d8d8d8;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  i {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  &:hover { border-color: rgb(59, 89, 237); }
+
+  &.is-open {
+    background: #d2dbe7;
+    border-color: rgb(59, 89, 237);
+
+    i { color: rgb(47, 70, 188); }
+  }
+}
+
+// Shown only while a recruitment cycle is open, and hidden while the panel is open.
+.launcher-dot {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #34dc6a;
+  border: 2px solid #fff;
+  box-sizing: content-box;
+}
+
+.launcher-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 312px;
+  max-height: 70vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #e8e8e8;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.16);
+  z-index: 30;
+  scrollbar-width: thin;
+  scrollbar-color: #d2dbe7 transparent;
+
+  &::-webkit-scrollbar { width: 8px; }
+  &::-webkit-scrollbar-thumb { background: #d2dbe7; border-radius: 4px; }
+}
+
+.launcher-section {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #979797;
+  padding: 12px 16px 8px;
+  margin: 0;
+}
+
+.launcher-divider {
+  height: 1px;
+  background: #eeeeee;
+  margin: 6px 0;
+}
+
+.launcher-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  text-decoration: none;
+  color: inherit;
+
+  &:hover { background: #f6f8ff; }
+}
+
+.launcher-row-icon {
+  font-size: 18px;
+  width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.launcher-row-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.launcher-row-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.82);
+}
+
+.launcher-row-meta {
+  font-size: 11px;
+  color: #979797;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &.is-open { color: #248a45; }
+}
+
+.launcher-row-chevron {
+  font-size: 10px;
+  color: #c4c4c4;
+  flex-shrink: 0;
+}
+
+.launcher-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  padding: 0 10px 12px;
+}
+
+.launcher-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 4px;
+  border-radius: 8px;
+  text-decoration: none;
+
+  &:hover { background: #f6f8ff; }
+}
+
+.launcher-tile-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  i { font-size: 15px; }
+}
+
+.launcher-tile-label {
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.6);
+  text-align: center;
+}

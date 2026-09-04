@@ -28,7 +28,7 @@ export const SECTIONS = [
 export const visibleSections = (isAdmin) => SECTIONS.filter((s) => isAdmin || !s.adminOnly);
 
 export default function ControlPanelV2({
-  section, onSectionChange, counts, isAdmin, adminView, onToggleView, onLogout, children,
+  section, onSectionChange, counts, isAdmin, onLogout, children,
 }) {
   return (
     <div className="control-panel-v2">
@@ -62,9 +62,6 @@ export default function ControlPanelV2({
           </div>
 
           <div className="cp-rail-footer">
-            <button type="button" onClick={onToggleView}>
-              {adminView ? 'Switch to member view' : 'Switch to admin view'}
-            </button>
             <button type="button" className="cp-signout" onClick={onLogout}>Sign out</button>
           </div>
         </nav>
@@ -80,8 +77,6 @@ ControlPanelV2.propTypes = {
   onSectionChange: PropTypes.func.isRequired,
   counts: PropTypes.object.isRequired,
   isAdmin: PropTypes.bool.isRequired,
-  adminView: PropTypes.bool.isRequired,
-  onToggleView: PropTypes.func.isRequired,
   onLogout: PropTypes.func.isRequired,
   children: PropTypes.node,
 };

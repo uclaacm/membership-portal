@@ -17,13 +17,17 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 const latoSans = Lato({
   variable: "--font-lato",
   subsets: ["latin"],
-  weight: ["300", "400"],
+  // 700 is needed for section labels and the current-user row; without it the browser
+  // synthesised a faux bold.
+  weight: ["300", "400", "700"],
 });
 
 const poppinsSans = Poppins({
   variable: "--font-poppins",
   subsets: ["latin"],
-  weight: ["700"],
+  // Was ["700"] only, which is why every word in the sidebar rendered bold. Headings and
+  // names ask for 600, so the family has to actually carry the lighter weights.
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {

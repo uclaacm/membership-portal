@@ -50,7 +50,10 @@ export default function EventRSVPsModal({ event, onClose }) {
           <p style={{ marginTop: 0 }}>
             <strong>{event.title}</strong>
             {' — '}
-            {loading ? 'loading…' : `${formatCount(rsvps.length)} RSVP${rsvps.length === 1 ? '' : 's'}`}
+            {loading
+              ? 'loading…'
+              : `${formatCount(rsvps.length)} RSVP${rsvps.length === 1 ? '' : 's'}`}
+            {!loading && event.capacity ? ` · capacity ${formatCount(event.capacity)}` : ''}
           </p>
 
           {error && <p style={{ color: '#c14b4b' }}>{error}</p>}

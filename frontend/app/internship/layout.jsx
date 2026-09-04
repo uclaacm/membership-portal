@@ -5,15 +5,13 @@ import { useAtom, useAtomValue } from "jotai";
 import Topbar from "@/components/Topbar";
 import CycleStatusBanner from "@/components/Internship/CycleStatusBanner";
 import logoutUser from "@/app/actions/auth/logoutUser";
-import { authUserProfileAtom, isAdminAtom, isOfficerAtom, adminViewAtom, officerViewAtom } from "@/lib/atoms";
+import { authUserProfileAtom, isAdminAtom, isOfficerAtom } from "@/lib/atoms";
 import "@/components/Internship/style.scss";
 
 export default function InternshipLayout({ children }) {
   const userProfile = useAtomValue(authUserProfileAtom);
   const isAdmin = useAtomValue(isAdminAtom);
   const isOfficer = useAtomValue(isOfficerAtom);
-  const [adminView, setAdminView] = useAtom(adminViewAtom);
-  const [officerView, setOfficerView] = useAtom(officerViewAtom);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -29,15 +27,10 @@ export default function InternshipLayout({ children }) {
   return (
     <>
       <Topbar
-        isAdmin={adminView}
         picture={userProfile?.picture}
         onLogout={handleLogout}
         isRealAdmin={isAdmin}
-        adminView={adminView}
-        onToggleAdminView={() => setAdminView(v => !v)}
         isOfficer={isOfficer}
-        officerView={officerView}
-        onToggleOfficerView={() => setOfficerView(v => !v)}
       />
       <div className="internship-layout">
         <CycleStatusBanner />

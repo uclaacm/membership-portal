@@ -14,6 +14,7 @@ export default class AdminEvents extends React.Component {
     super(props);
     this.emptyEvent = {
       attendancePoints: '',
+      capacity: '',
       attendanceCode: '',
       committee: '',
       cover: '',

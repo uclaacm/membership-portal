@@ -9,7 +9,7 @@ import ConfirmationModal from '@/components/Modal/confirmationModal';
 import SyncSheetsModal from '@/components/Modal/syncSheetsModal';
 import Config from '@/lib/config';
 import CookieStore from '@/lib/cookieStore';
-import { authUserProfileAtom, isAdminAtom, isOfficerAtom, adminViewAtom } from '@/lib/atoms';
+import { authUserProfileAtom, isAdminAtom, isOfficerAtom } from '@/lib/atoms';
 
 import logoutUser from '@/app/actions/auth/logoutUser';
 import changeOneClickPassword from '@/app/actions/auth/changeOneClickPassword';
@@ -74,7 +74,6 @@ export default function ControlPanelPage() {
   const userProfile = useAtomValue(authUserProfileAtom);
   const isAdmin = useAtomValue(isAdminAtom);
   const isOfficer = useAtomValue(isOfficerAtom);
-  const [adminView, setAdminView] = useAtom(adminViewAtom);
 
   const [selectedSection, setSection] = useState('overview');
   const [mounted, setMounted] = useState(false);
@@ -285,7 +284,10 @@ export default function ControlPanelPage() {
       : await createEventAction(event);
 
     if (result.success) {
-      notify(true, event.uuid ? 'Event updated.' : 'Event created.');
+      // A failed marketing notification is reported, not treated as a failed save — the event
+      // exists either way, and silently dropping the notice is how it goes unnoticed.
+      const saved = event.uuid ? 'Event updated.' : 'Event created.';
+      notify(true, result.marketingNote ? `${saved} Marketing not notified — ${result.marketingNote}` : saved);
       setEventForm((f) => ({ ...f, showing: false }));
       await Promise.all([loadEvents(), loadAudit(auditFilters, isAdmin)]);
     } else {
@@ -396,19 +398,6 @@ export default function ControlPanelPage() {
     if (result.success) await loadAudit(auditFilters);
   };
 
-  const handleToggleRecruitment = (committee) => setConfirm({
-    title: committee.isActive ? 'Close recruitment' : 'Open recruitment',
-    message: `${committee.isActive ? 'Close' : 'Open'} recruitment for ${committee.displayName}?`,
-    run: async () => {
-      const result = await bulkUpdateCommitteeStatus({
-        action: committee.isActive ? 'close' : 'open',
-        committeeIds: [committee.id],
-      });
-      notify(result.success, result.success ? 'Recruitment updated.' : result.error);
-      await Promise.all([loadInternship(), loadAudit(auditFilters)]);
-    },
-  });
-
   const handleCloseAll = () => setConfirm({
     title: 'Close all recruitment',
     message: 'Close recruitment for every committee?',
@@ -509,9 +498,6 @@ export default function ControlPanelPage() {
             admins={admins}
             officers={officers}
             events={events}
-            canManage={canManage}
-            onToggleRecruitment={handleToggleRecruitment}
-            onCloseAll={handleCloseAll}
           />
         );
       case 'events':
@@ -554,6 +540,7 @@ export default function ControlPanelPage() {
             serviceAccountEmail={serviceAccountEmail}
             system={system}
             canManage={canManage}
+            notify={notify}
             onRotatePassword={handleRotatePassword}
             onSync={() => setSyncOpen(true)}
             onCloseCycle={handleCloseAll}
@@ -582,15 +569,10 @@ export default function ControlPanelPage() {
   return (
     <>
       <Topbar
-        isAdmin={adminView}
         picture={userProfile?.picture}
         onLogout={handleLogout}
         isRealAdmin={isAdmin}
-        adminView={adminView}
-        onToggleAdminView={() => setAdminView((v) => !v)}
         isOfficer={isOfficer}
-        officerView={adminView}
-        onToggleOfficerView={() => setAdminView((v) => !v)}
       />
 
       <ControlPanelV2
@@ -598,8 +580,6 @@ export default function ControlPanelPage() {
         onSectionChange={setSection}
         counts={counts}
         isAdmin={isAdmin}
-        adminView={adminView}
-        onToggleView={() => setAdminView((v) => !v)}
         onLogout={handleLogout}
       >
         {renderSection()}

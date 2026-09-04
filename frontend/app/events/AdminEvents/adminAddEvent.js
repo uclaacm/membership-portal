@@ -18,6 +18,9 @@ export default class AdminAddEvent extends React.Component {
       event: { ...this.props.event },
       startTimeStr: this.props.event?.startDate ? this.props.event.startDate.format('HH:mm') : '',
       endTimeStr: this.props.event?.endDate ? this.props.event.endDate.format('HH:mm') : '',
+      // Which event the form is currently synced to. getDerivedStateFromProps compares against
+      // this to decide whether the incoming prop is a *different* event or just a re-render.
+      syncedUuid: this.props.event?.uuid,
       coverImageFile: null,
       coverImageURL: '', 
       coverMode: 'url', // 'url' | 'upload'
@@ -251,17 +254,23 @@ export default class AdminAddEvent extends React.Component {
     }
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    // reset state when switching to a different event (compare by UUID)
-    const nextUuid = nextProps.event?.uuid;
-    const currentUuid = this.props.event?.uuid;
-    if (nextUuid !== currentUuid) {
-      this.setState({
-        event: { ...nextProps.event },
-        startTimeStr: nextProps.event?.startDate ? nextProps.event.startDate.format('HH:mm') : '',
-        endTimeStr: nextProps.event?.endDate ? nextProps.event.endDate.format('HH:mm') : '',
-      });
-    }
+  /**
+   * Reset the form when the modal is pointed at a different event.
+   *
+   * Was UNSAFE_componentWillReceiveProps, which React warns about in strict mode. The guard is
+   * the uuid held in state rather than a comparison against `this.props`: this hook is static
+   * and runs before every render, including ones caused by the user typing, so without it the
+   * form would reset itself on each keystroke.
+   */
+  static getDerivedStateFromProps(props, state) {
+    const nextUuid = props.event?.uuid;
+    if (nextUuid === state.syncedUuid) return null;
+    return {
+      syncedUuid: nextUuid,
+      event: { ...props.event },
+      startTimeStr: props.event?.startDate ? props.event.startDate.format('HH:mm') : '',
+      endTimeStr: props.event?.endDate ? props.event.endDate.format('HH:mm') : '',
+    };
   }
 
   renderPreviewCard() {
@@ -493,7 +502,24 @@ export default class AdminAddEvent extends React.Component {
                       placeholder="10"
                     />
                   </div>
+                  <div className="field-group">
+                    <label>Capacity</label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={this.state.event.capacity ?? ''}
+                      name="capacity"
+                      onChange={this.handleChange}
+                      placeholder="40"
+                    />
+                  </div>
                 </div>
+                {/* Advisory only: nothing blocks an RSVP past this number. Left blank, cards
+                    fall back to a plain RSVP count with no denominator. */}
+                <p className="field-hint">
+                  Capacity is advisory — it is shown on staff cards and the RSVP list, but does
+                  not stop anyone RSVPing.
+                </p>
               </div>
 
               {/* Description */}

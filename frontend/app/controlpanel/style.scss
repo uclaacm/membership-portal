@@ -803,6 +803,12 @@ $cp-topbar-height: 61px;
 
   // ---------------------------------------------------------- permission matrix
 
+  // Inline "not applicable" text inside a table cell — e.g. a committee with no internship
+  // record behind it.
+  .cp-muted {
+    color: #979797;
+  }
+
   .cp-matrix-intro {
     font-size: 13px;
     color: $cp-secondary;

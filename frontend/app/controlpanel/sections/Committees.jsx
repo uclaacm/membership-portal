@@ -4,9 +4,10 @@ import PropTypes from 'prop-types';
 import Config from '@/lib/config';
 import DataTable from '../components/DataTable';
 import {
-  PageHeader, SectionHead, Pill, Dagger, ApiLegend, PendingButton,
+  PageHeader, SectionHead, Pill, Dagger, ApiLegend,
 } from '../components/primitives';
 import { formatDate } from '../format';
+import { findCommitteeRecord } from '@/lib/cycleState';
 
 const A = 'allowed';
 const D = 'denied';
@@ -49,13 +50,16 @@ function Mark({ value }) {
 Mark.propTypes = { value: PropTypes.string.isRequired };
 
 export default function Committees({
-  committees, admins, officers, events, canManage, onToggleRecruitment, onCloseAll,
+  committees, admins, officers, events,
 }) {
   // Every committee in the canonical list gets a row, joined to its internship-side record if
   // one exists. Deriving from Config.committees rather than the API response means a committee
   // never silently disappears from this table just because it has no internship config yet.
   const rows = Config.committees.map((name) => {
-    const record = committees.find((c) => c.name === name || c.displayName === name) || null;
+    // Matched through the shared resolver: the internship records were created separately and
+    // at least one disagrees with the canonical name ("Dev" vs "Dev Team"), which used to yield
+    // a null record and a wrong "Closed" status here while internship showed it open.
+    const record = findCommitteeRecord(committees, name);
     const president = admins.find((a) => (a.committees || []).includes(name) && a.level === 'President');
     return {
       name,
@@ -81,9 +85,14 @@ export default function Committees({
     {
       key: 'recruitment',
       label: 'Recruitment',
-      render: (row) => (row.record?.isActive
-        ? <Pill tone="success">Open</Pill>
-        : <Pill tone="muted">Closed</Pill>),
+      // Three states, not two: a committee with no internship record has no recruitment status
+      // at all, and showing it as "Closed" asserted something untrue.
+      render: (row) => {
+        if (!row.record) return <span className="cp-muted">Not set up</span>;
+        return row.record.isActive
+          ? <Pill tone="success">Open</Pill>
+          : <Pill tone="muted">Closed</Pill>;
+      },
     },
     {
       key: 'deadline',
@@ -100,30 +109,6 @@ export default function Committees({
     },
     {
       key: 'events', label: 'Events', numeric: true, render: (row) => row.eventCount,
-    },
-    {
-      key: 'actions',
-      label: '',
-      cellClassName: 'cp-row-actions',
-      render: (row) => (
-        <>
-          {row.record ? (
-            <button
-              type="button"
-              className="primary"
-              disabled={!canManage}
-              onClick={() => onToggleRecruitment(row.record)}
-            >
-              {row.record.isActive ? 'Close' : 'Open'}
-            </button>
-          ) : <span style={{ color: '#979797', marginRight: 10 }}>Not configured</span>}
-          <PendingButton
-            inline
-            label="Edit"
-            note="Needs a committee edit form wired to PATCH /internship/committees/:id — deadline, intern limit and custom questions are read-only here."
-          />
-        </>
-      ),
     },
   ];
 
@@ -152,17 +137,10 @@ export default function Committees({
 
       <div className="cp-stack">
         <div>
-          <SectionHead title="Committees" count={rows.length}>
-            <button type="button" className="cp-btn secondary small" disabled={!canManage} onClick={onCloseAll}>
-              Close all recruitment
-            </button>
-            <PendingButton
-              small
-              variant="primary"
-              label="+ New committee"
-              note="Needs a creation form wired to POST /internship/committees — the action exists in the API but has no UI."
-            />
-          </SectionHead>
+          {/* Read-only by design. Creating, editing and opening or closing committees all live
+              in the Internship admin screens, which own the cycle; duplicating them here gave
+              two places to change the same record and no indication of which had run last. */}
+          <SectionHead title="Committees" count={rows.length} />
           <DataTable
             columns={columns}
             rows={rows}
@@ -215,7 +193,7 @@ export default function Committees({
         </div>
       </div>
 
-      <ApiLegend pending />
+      <ApiLegend />
     </>
   );
 }
@@ -225,7 +203,4 @@ Committees.propTypes = {
   admins: PropTypes.arrayOf(PropTypes.object).isRequired,
   officers: PropTypes.arrayOf(PropTypes.object).isRequired,
   events: PropTypes.arrayOf(PropTypes.object).isRequired,
-  canManage: PropTypes.bool.isRequired,
-  onToggleRecruitment: PropTypes.func.isRequired,
-  onCloseAll: PropTypes.func.isRequired,
 };

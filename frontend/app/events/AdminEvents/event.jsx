@@ -2,6 +2,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import EventPreviewCard from '@/components/EventPreviewCard';
 import fetchEventRSVPs from '@/app/actions/rsvp/fetchEventRSVPs';
 
 class AdminEventCard extends React.Component {
@@ -30,13 +31,10 @@ class AdminEventCard extends React.Component {
     }
   }
 
-  editEvent(e) {
+  editEvent() {
     const { handleEditClick, event } = this.props;
-    // Don't edit if clicking on the view RSVPs button
-    if (e.target.closest('.view-rsvps-btn')) {
-      e.stopPropagation();
-      return;
-    }
+    // The card raises this only from its own face; the footer strip's controls are siblings of
+    // the card rather than children, so they no longer bubble into the edit handler at all.
     if (handleEditClick) handleEditClick(event);
   }
 
@@ -89,56 +87,17 @@ class AdminEventCard extends React.Component {
       rsvps, showRsvpData, rsvpData, loading, emailsCopied,
     } = this.state;
 
-    const hasExternalRsvp = !!event.eventLink;
-
-    let buttonText = 'View All RSVPs';
-    if (loading) {
-      buttonText = 'Loading...';
-    } else if (showRsvpData) {
-      buttonText = 'Hide RSVPs';
-    }
-
     return (
-      <div className="admin-event-tile" onClick={this.editEvent}>
-        <div className="main-content">
-          <div className="top">
-            <div className="cover" style={{ backgroundImage: `url(${event.cover || '/logo.png'})` }} />
-            <div className="event-header">
-              <span className="event-title Headline-2Primary">{event.title}</span>
-              <br />
-              <span className="event-committee Title-2Secondary">{event.committee}</span>
-            </div>
-          </div>
-          <div className="rsvp-section">
-            {hasExternalRsvp ? (
-              <a
-                className="external-rsvp-link"
-                href={event.eventLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={e => e.stopPropagation()}
-              >
-                External RSVP <i className="fa fa-external-link-alt" />
-              </a>
-            ) : (
-              <>
-                <div className="rsvp-count">
-                  RSVPs:
-                  {' '}
-                  {rsvps || 0}
-                </div>
-                <button
-                  type="button"
-                  className="view-rsvps-btn"
-                  onClick={this.handleViewRsvps}
-                  disabled={loading}
-                >
-                  {buttonText}
-                </button>
-              </>
-            )}
-          </div>
-        </div>
+      <div className={`admin-event-cell${showRsvpData ? ' is-open' : ''}`}>
+        <EventPreviewCard
+          event={event}
+          admin
+          rsvpCount={rsvps}
+          onEdit={this.editEvent}
+          onViewRsvps={this.handleViewRsvps}
+          rsvpsOpen={showRsvpData}
+          rsvpsLoading={loading}
+        />
 
         {showRsvpData && rsvpData && (
           <div className="rsvp-display">
