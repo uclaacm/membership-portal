@@ -296,19 +296,21 @@ module.exports = (Sequelize, db) => {
       sanitizedEvent.capacity = raw === '' ? null : Number.parseInt(raw, 10);
       if (Number.isNaN(sanitizedEvent.capacity)) sanitizedEvent.capacity = null;
     }
-    if (sanitizedEvent.cover !== undefined && sanitizedEvent.cover.length === 0) {
+    // getPublic hands the edit form back nulls for these, and the form PATCHes them
+    // straight through, so an untouched field arrives as null rather than ''.
+    if (sanitizedEvent.cover !== undefined && !sanitizedEvent.cover) {
       sanitizedEvent.cover = null;
     }
-    if (sanitizedEvent.eventLink !== undefined && sanitizedEvent.eventLink.length === 0) {
+    if (sanitizedEvent.eventLink !== undefined && !sanitizedEvent.eventLink) {
       sanitizedEvent.eventLink = null;
     }
-    if (sanitizedEvent.description !== undefined && sanitizedEvent.description.length === 0) {
+    if (sanitizedEvent.description !== undefined && !sanitizedEvent.description) {
       sanitizedEvent.description = null;
     }
-    if (sanitizedEvent.committee !== undefined && sanitizedEvent.committee.length === 0) {
+    if (sanitizedEvent.committee !== undefined && !sanitizedEvent.committee) {
       delete sanitizedEvent.committee;
     }
-    if (sanitizedEvent.attendanceCode !== undefined && sanitizedEvent.attendanceCode.length === 0) {
+    if (sanitizedEvent.attendanceCode !== undefined && !sanitizedEvent.attendanceCode) {
       delete sanitizedEvent.attendanceCode;
     }
 

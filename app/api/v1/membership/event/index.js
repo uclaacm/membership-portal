@@ -161,7 +161,7 @@ router
         recordAudit(AuditLog, req, {
           action: 'event.create',
           target: event.title,
-          detail: `${event.committee || 'ACM'} · ${event.pointValue} pts`,
+          detail: `${event.committee || 'ACM'} · ${event.attendancePoints} pts`,
           committee: event.committee,
         });
         return null;
