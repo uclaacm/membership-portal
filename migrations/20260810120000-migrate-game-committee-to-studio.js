@@ -15,7 +15,7 @@ module.exports = {
     await queryInterface.sequelize.query(`
       UPDATE "users"
       SET "committees" = ARRAY(
-        SELECT DISTINCT unnest(array_replace("committees", 'Game'::varchar, 'Studio'::varchar))
+        SELECT DISTINCT unnest(array_replace("committees", 'Game', 'Studio'))
       )
       WHERE 'Game' = ANY("committees");
     `);
