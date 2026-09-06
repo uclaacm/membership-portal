@@ -34,6 +34,12 @@ router.use('/image', require('./membership/image').router);
 router.use('/auth', require('./auth').router);
 router.use('/health', require('./membership/health').router);
 
+// Unauthenticated read-only API for outside consumers (the chapter site, committee sites).
+// Mounted without `auth` on purpose; it carries its own CORS, caching and rate limiting, and
+// serves a narrower serializer than the routes above. Officers and users will join events here
+// later — anything added under this prefix is world-readable by definition.
+router.use('/public', require('./public').router);
+
 // One-click API
 router.use('/one-click', apiLimiter, require('./membership/one-click').router);
 
