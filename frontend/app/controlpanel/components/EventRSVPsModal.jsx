@@ -4,6 +4,11 @@ import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import fetchEventRSVPs from '@/app/actions/rsvp/fetchEventRSVPs';
 import { formatCount } from '../format';
+// `.modal-wrapper` and `.attendees-modal-container` live here. Imported by the component rather
+// than its pages: /controlpanel pulled this sheet in for its own modals and so happened to style
+// this one too, while /events did not — leaving the overlay unstyled and rendering as a block at
+// the foot of the page.
+import '@/components/Modal/style.scss';
 
 /**
  * Attendee list for one event, backed by GET /rsvp/event/:uuid.

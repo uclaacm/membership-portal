@@ -126,6 +126,43 @@
   }
 }
 
+// A segmented pair inside one rounded border — the two segments share the border rather than
+// carrying their own, so the seam between them is a single hairline.
+.events-toolbar__toggle {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  flex-shrink: 0;
+  border: 1px solid #d8d8d8;
+  border-radius: 8px;
+  overflow: hidden;
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    height: 100%;
+    padding: 0 13px;
+    border: none;
+    background: #fff;
+    color: rgba(0, 0, 0, 0.7);
+    font-family: "Lato", sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+
+    i { font-size: 11px; }
+
+    & + button { border-left: 1px solid #d8d8d8; }
+
+    &.is-active {
+      background: rgb(59, 89, 237);
+      color: #fff;
+    }
+  }
+}
+
 // ── Month grouping ────────────────────────────────────────────────────────────
 //
 // The track list is driven by the same value that picks the variant. Hiding the gutter with

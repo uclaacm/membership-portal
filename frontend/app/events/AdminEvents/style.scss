@@ -615,8 +615,47 @@
       border-top: 1px solid #ececec;
       flex-shrink: 0;
 
-      button {
+      // Pushes Cancel / Save to the right and leaves Delete on the left edge.
+      .modal-footer__spacer {
+        flex: 1 1 auto;
+      }
+
+      // The page's own control styling, not the legacy `.blue` / `.green` / `.red` pills from
+      // components/Button — those are 40px tall with an 18px face and read as a different
+      // product next to this modal's 38px fields.
+      .modal-footer__btn {
         min-width: 110px;
+        height: 38px;
+        padding: 0 16px;
+        border-radius: 8px;
+        border: 1px solid #d8d8d8;
+        background: #fff;
+        color: rgba(0, 0, 0, 0.75);
+        font-family: "Lato", sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.125s ease-in-out;
+
+        &:hover {
+          border-color: rgb(59, 89, 237);
+          color: rgb(59, 89, 237);
+        }
+
+        &.is-primary {
+          border-color: rgb(59, 89, 237);
+          background: rgb(59, 89, 237);
+          color: #fff;
+
+          &:hover { background: rgb(47, 70, 188); border-color: rgb(47, 70, 188); }
+        }
+
+        &.is-danger {
+          border-color: transparent;
+          color: #c14b4b;
+
+          &:hover { border-color: #f74e4e; background: rgba(247, 78, 78, 0.06); color: #c14b4b; }
+        }
       }
     }
   }

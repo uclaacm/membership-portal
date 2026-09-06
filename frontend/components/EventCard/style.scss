@@ -1,7 +1,8 @@
 // The shared event card. One implementation for both the events page and the home
-// dashboard — the two screens differ only in cover height, set by the `.is-compact`
-// modifier. Replaces the three divergent treatments that existed before: the member
-// card, the legacy admin row, and the dashboard's featured strip.
+// dashboard — the cover is driven by the artwork's own aspect ratio, so a card is the same
+// shape wherever it lands and only its column width differs. Replaces the three divergent
+// treatments that existed before: the member card, the legacy admin row, and the dashboard's
+// featured strip.
 
 .event-card {
   min-width: 0;
@@ -19,9 +20,17 @@
   }
 }
 
+// The committee banners in `public/event_banners/` are all 2048×1075 — 1.905:1. A fixed cover
+// height cropped the top and bottom off every one of them at the card's width, so the band is
+// driven by the artwork's own ratio instead and the height follows the column. Matches the
+// dashboard's preview card, which already shows event artwork this way.
+//
+// `object-fit: cover` still applies: a user-supplied cover at some other ratio fills the band
+// and crops rather than letter-boxing.
 .event-card__cover {
   flex: 0 0 auto;
-  height: 132px;
+  aspect-ratio: 1.905 / 1;
+  height: auto;
   position: relative;
   background-color: #d2dbe7;
   overflow: hidden;
@@ -36,10 +45,6 @@
 }
 
 // The dashboard uses the same card at a shorter cover; nothing else differs.
-.event-card.is-compact .event-card__cover {
-  height: 104px;
-}
-
 .event-card__points {
   position: absolute;
   top: 8px;

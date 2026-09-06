@@ -5,7 +5,6 @@ import moment from 'moment';
 import PropTypes from 'prop-types';
 
 import DatePicker from 'react-datepicker';
-import Button from '@/components/Button';
 import Config from '@/lib/config';
 import uploadImage from '@/app/actions/image/uploadImage';
 
@@ -592,10 +591,25 @@ export default class AdminAddEvent extends React.Component {
 
           </div>
 
-          {/* Footer */}
+          {/* Footer. Delete sits apart on the left — it is the one destructive action here, and
+              putting it next to Cancel/Save is how it gets hit by accident. */}
           <div className="modal-footer">
-            <Button onClick={this.handleCancel} style="red" text="Cancel" icon="" />
-            <Button onClick={this.handleSubmit} style="green" text={this.props.isEdit ? 'Update Event' : 'Create Event'} icon="" />
+            {this.props.isEdit && this.props.onClickDelete && (
+              <button
+                type="button"
+                className="modal-footer__btn is-danger"
+                onClick={() => this.props.onClickDelete(this.props.event)}
+              >
+                Delete Event
+              </button>
+            )}
+            <span className="modal-footer__spacer" />
+            <button type="button" className="modal-footer__btn" onClick={this.handleCancel}>
+              Cancel
+            </button>
+            <button type="button" className="modal-footer__btn is-primary" onClick={this.handleSubmit}>
+              {this.props.isEdit ? 'Update Event' : 'Create Event'}
+            </button>
           </div>
 
         </div>
@@ -608,6 +622,7 @@ AdminAddEvent.propTypes = {
   event: PropTypes.object,
   onClickAdd: PropTypes.func,
   onClickCancel: PropTypes.func,
+  onClickDelete: PropTypes.func,
   isEdit: PropTypes.bool,
   showing: PropTypes.bool,
 };
@@ -615,6 +630,7 @@ AdminAddEvent.propTypes = {
 AdminAddEvent.defaultProps = {
   onClickAdd: null,
   onClickCancel: null,
+  onClickDelete: null,
   isEdit: false,
   showing: false,
 };
