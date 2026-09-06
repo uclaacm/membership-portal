@@ -103,6 +103,11 @@ const config = {
     ],
     devTeamDirectors: [
       {
+        name: "Camilla Chan",
+        position: "Dev Team Director, 26-27",
+        picture: "/officers/CamillaChan.png",
+      },
+      {
         name: "Alex Zheng",
         position: "Dev Team Director, 25-26",
         picture: "/officers/AlexZheng.jpg",
@@ -153,11 +158,6 @@ const config = {
         name: "Rizwaan Bana",
         position: "Dev Team Project Manager",
         picture: "/officers/RizwaanBana.jpg",
-      },
-      {
-        name: "Jason Tran",
-        position: "Dev Team Officer",
-        picture: "",
       },
       {
         name: "Najm Hoda",

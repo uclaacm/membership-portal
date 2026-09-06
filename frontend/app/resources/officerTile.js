@@ -1,9 +1,10 @@
+import Avatar from "@/components/Avatar";
+
 export default function OfficerTile({ officer }) {
   const { name, position, email, picture } = officer;
   return (
     <div className="officer-tile">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={picture || '/unknown.png'} alt={name} />
+      <Avatar name={name} picture={picture} size={70} />
       <div className="content">
         {name && <span className="name">{name}</span>}
         {position && <span className="position">{position}</span>}

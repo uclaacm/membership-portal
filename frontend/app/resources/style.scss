@@ -136,20 +136,16 @@
 
 .officer-tile {
   display: inline-flex;
+  vertical-align: middle;
   flex-direction: row;
   align-items: center;
   width: 280px;
   margin: 10px;
   transition: 0.125s ease-in-out;
 
-  img {
-    width: 70px;
-    height: 70px;
-    border-radius: 50px;
+  .avatar-fallback-img,
+  .avatar-fallback-initials {
     border: 3px solid #dadada;
-    object-fit: cover;
-    object-position: center;
-    flex-shrink: 0;
   }
 
   .content {
