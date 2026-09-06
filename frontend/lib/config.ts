@@ -433,6 +433,7 @@ const config = {
     ["Cloud", "#9f97ff"],
   ],
   committeeBanners: {
+    "Dev Team" : "/event_banners/acm_dev_banner.webp",
     "AI" : "/event_banners/acm_ai_banner.webp",
     "Cyber" : "/event_banners/acm_cyber_banner.png",
     "Design" : "/event_banners/acm_design_banner.webp",
