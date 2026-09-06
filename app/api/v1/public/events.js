@@ -16,6 +16,11 @@ const MAX_LIMIT = 100;
 // legitimately returns an empty list rather than an error.
 const MAX_COMMITTEE_LENGTH = 255;
 
+// `uuid` is a Postgres uuid column, so handing it a malformed value raises a cast error rather
+// than matching nothing — which surfaced as a 500 on a public endpoint before this guard.
+// Checking the shape first keeps that in the application, where it belongs.
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 /**
  * Parses an ISO-8601 date from a query parameter.
  *
@@ -116,19 +121,26 @@ router.route('/').get((req, res, next) => {
 /**
  * GET /api/v1/public/events/:uuid
  *
- * 404s for an unknown or deleted event. No distinction between the two: an outside consumer
- * has no business learning that a uuid used to exist.
+ * 404s for an unknown, deleted, or malformed id. No distinction between them: all three
+ * identify no event, and an outside consumer has no business learning which case it hit — or
+ * that a uuid used to exist.
  */
-router.route('/:uuid').get((req, res, next) => Event.findPublicByUUID(req.params.uuid)
-  .then((event) => {
-    if (!event) return next(new error.NotFound('Event not found'));
+router.route('/:uuid').get((req, res, next) => {
+  if (!UUID_PATTERN.test(req.params.uuid)) {
+    return next(new error.NotFound('Event not found'));
+  }
 
-    const serialized = event.getPublicApi();
-    serialized.cover = normalizeCover(serialized.cover);
+  return Event.findPublicByUUID(req.params.uuid)
+    .then((event) => {
+      if (!event) return next(new error.NotFound('Event not found'));
 
-    res.json({ error: null, event: serialized });
-    return null;
-  })
-  .catch(next));
+      const serialized = event.getPublicApi();
+      serialized.cover = normalizeCover(serialized.cover);
+
+      res.json({ error: null, event: serialized });
+      return null;
+    })
+    .catch(next);
+});
 
 module.exports = { router };

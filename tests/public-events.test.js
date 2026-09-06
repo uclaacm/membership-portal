@@ -190,6 +190,24 @@ describe('GET /public/events/:uuid', () => {
     expect(Object.keys(payload.event).sort()).toEqual([...PUBLIC_FIELDS].sort());
   });
 
+  test.each([
+    ['not-a-uuid'],
+    ['12345'],
+    ['../../etc/passwd'],
+    ['e1b9c0de-0000-4000-8000'],
+    ["' OR 1=1--"],
+  ])('404s a malformed id (%s) without querying the database', async (uuid) => {
+    // Regression: `uuid` is a Postgres uuid column, so a malformed value raised a cast error
+    // rather than matching nothing, and the endpoint answered 500. Caught on staging, not
+    // here, because these tests mock the finder and never hit a real column type.
+    const { res, next } = await invoke('/:uuid', { params: { uuid } });
+
+    expect(Event.findPublicByUUID).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
+    expect(next.mock.calls[0][0]).toBeInstanceOf(error.NotFound);
+    expect(next.mock.calls[0][0].message).toBe('Event not found');
+  });
+
   test('404s for an unknown or deleted event', async () => {
     Event.findPublicByUUID.mockResolvedValue(null);
 
