@@ -340,5 +340,69 @@ module.exports = (Sequelize, db) => {
     };
   };
 
+  /**
+   * The event as served by the unauthenticated public API.
+   *
+   * A separate serializer from getPublic() on purpose. getPublic gates the check-in code
+   * behind a boolean argument, which is fine inside the authenticated perimeter where every
+   * caller has already been through auth — but it leaves the code one truthy argument away
+   * from an anonymous response. This one takes no arguments and can only ever return the
+   * fields named here, so widening what the public sees requires editing this list.
+   *
+   * Deliberately omitted: attendanceCode (claiming points without attending), rsvpCount and
+   * capacity (turnout for every event, permanently scrapeable), id, organization, thumb,
+   * deleted.
+   */
+  Event.prototype.getPublicApi = function () {
+    return {
+      uuid: this.getDataValue('uuid'),
+      title: this.getDataValue('title'),
+      description: this.getDataValue('description'),
+      committee: this.getDataValue('committee'),
+      location: this.getDataValue('location'),
+      cover: this.getDataValue('cover'),
+      eventLink: this.getDataValue('eventLink'),
+      startDate: this.getDataValue('startDate'),
+      endDate: this.getDataValue('endDate'),
+      attendancePoints: this.getDataValue('attendancePoints'),
+    };
+  };
+
+  /**
+   * The only WHERE clause whose rows leave the authenticated perimeter.
+   *
+   * Kept as its own finder rather than a flag on getAll/getFutureEvents so that what the
+   * public can reach is legible in one place instead of being spread across the callers of a
+   * shared query.
+   *
+   * `deleted` is vestigial today — destroyByUUID hard-deletes and the model is not paranoid —
+   * but the column is the documented soft-delete flag, so filtering on it now means that
+   * turning soft-deletes back on later cannot silently republish deleted events.
+   */
+  Event.getPublicEvents = function ({
+    committee, from, to, offset = 0, limit = 50,
+  } = {}) {
+    const where = { deleted: false };
+
+    if (committee) where.committee = committee;
+
+    if (from || to) {
+      where.startDate = {};
+      if (from) where.startDate[Sequelize.Op.gte] = from;
+      if (to) where.startDate[Sequelize.Op.lte] = to;
+    }
+
+    return this.findAndCountAll({
+      where,
+      order: [['startDate', 'ASC']],
+      offset,
+      limit,
+    });
+  };
+
+  Event.findPublicByUUID = function (uuid) {
+    return this.findOne({ where: { uuid, deleted: false } });
+  };
+
   return Event;
 };
