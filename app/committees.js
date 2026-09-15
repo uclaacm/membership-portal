@@ -16,6 +16,7 @@ const COMMITTEES = [
   'Design',
   'Hack',
   'ICPC',
+  'Quantum',
   'Studio',
   'TeachLA',
   'W',

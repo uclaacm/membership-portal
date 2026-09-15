@@ -5,6 +5,7 @@ const uuid = require('uuid');
 const bodyParser = require('body-parser');
 const app = require('./app');
 const { connectDB } = require('./app/api/v1/internship/config/database');
+const { syncCommittees } = require('./app/api/v1/internship/syncCommittees');
 
 const log = app.logger;
 const server = express();
@@ -63,6 +64,10 @@ async function startServer() {
   try {
     // Connect to MongoDB
     await connectDB();
+
+    // Create a Committee document for anything new in app/committees.js. Runs in every
+    // environment — prod has no other path to a populated committee list.
+    await syncCommittees();
 
     // Setup Postgres (or other DB)
     await app.db.setup(false, app.config.isDevelopment);

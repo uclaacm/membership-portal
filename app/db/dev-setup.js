@@ -24,6 +24,13 @@ module.exports = async (User, Event) => {
       applicationDeadline: new Date('2030-10-15T23:59:59.000Z'),
     },
     {
+      name: 'Quantum',
+      displayName: 'Quantum',
+      description: 'Quantum computing fundamentals, algorithms, and hands-on experiments.',
+      internLimit: 8,
+      applicationDeadline: new Date('2030-10-15T23:59:59.000Z'),
+    },
+    {
       name: 'Studio',
       displayName: 'Studio',
       description: 'Ship creative technical projects with a focus on craft and collaboration.',
@@ -91,6 +98,9 @@ module.exports = async (User, Event) => {
           description: seed.description,
           internLimit: seed.internLimit,
           applicationDeadline: seed.applicationDeadline,
+          // syncCommittees inserts new committees closed; the dev seed reopens them so a
+          // local database comes up with a working internship portal.
+          isActive: true,
         },
       },
       { upsert: true },
