@@ -10,6 +10,10 @@ import uploadImage from '@/app/actions/image/uploadImage';
 
 import 'react-datepicker/dist/react-datepicker.css';
 
+// Matches the API's own image cap and the Control Panel's media uploader. next.config.ts sets
+// the server action body limit above this, so the API is what rejects an oversized file.
+const MAX_COVER_BYTES = 5 * 1024 * 1024;
+
 export default class AdminAddEvent extends React.Component {
   constructor(props) {
     super(props);
@@ -151,7 +155,10 @@ export default class AdminAddEvent extends React.Component {
             return newState;
           }, callback);
         } else {
-          callback();
+          // Don't fall through to callback() on a failed upload: event.cover still holds the
+          // FileReader data URL, which the API rejects for length, so saving anyway loses the
+          // edit and reports nothing.
+          alert(result.error || 'The banner image could not be uploaded. The event was not saved.');
         }
       });
     } else {
@@ -235,8 +242,8 @@ export default class AdminAddEvent extends React.Component {
         return newState;
       });
     } else {
-      if (file.size > 3 * 1024 * 1024) {
-        alert('File size exceeds 3 MB');
+      if (file.size > MAX_COVER_BYTES) {
+        alert(`That image is ${(file.size / (1024 * 1024)).toFixed(1)} MB \u2014 the limit is ${MAX_COVER_BYTES / (1024 * 1024)} MB.`);
         e.target.value = '';
         return;
       }
