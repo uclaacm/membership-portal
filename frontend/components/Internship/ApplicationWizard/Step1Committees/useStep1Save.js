@@ -5,7 +5,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import createApplicationDraft from "@/app/actions/internship/createApplicationDraft";
 import updateApplication from "@/app/actions/internship/updateApplication";
-import deleteApplication from "@/app/actions/internship/deleteApplication";
 import { myApplicationAtom, responsesByCommitteeAtom } from "@/lib/atoms";
 
 const DEBOUNCE_MS = 500;
@@ -74,7 +73,6 @@ export default function useStep1Save(selectedCommitteeIds, profileData) {
   const saveStateRef = useRef(saveState);
   const errorRef = useRef(error);
   const responsesByCommitteeRef = useRef(responsesByCommittee);
-  const hasEverSelectedRef = useRef(selectedCommitteeIds.length > 0);
 
   useEffect(() => {
     latestIdsRef.current = selectedCommitteeIds;
@@ -104,33 +102,13 @@ export default function useStep1Save(selectedCommitteeIds, profileData) {
     const ids = latestIdsRef.current;
     const app = appRef.current;
 
+    // An emptied selection is left alone rather than deleted. Deleting here threw away the
+    // member's resume and every answer on the same record, and submit-time validation already
+    // rejects an application with no committee.
     if (ids.length === 0) {
-      if (!app || !app._id) {
-        setSaveState("idle");
-        setError(null);
-        setErrorKind(null);
-        return;
-      }
-      setSaveState("saving");
+      setSaveState("idle");
       setError(null);
       setErrorKind(null);
-      try {
-        const result = await deleteApplication(app._id);
-        if (!result.success) {
-          setError(result.error || "Couldn't clear application");
-          setSaveState("error");
-          setErrorKind("network");
-          return;
-        }
-        setMyApplication(null);
-        appRef.current = null;
-        setSaveState("idle");
-        setErrorKind(null);
-      } catch (err) {
-        setError((err && err.message) || "Couldn't clear application");
-        setSaveState("error");
-        setErrorKind("network");
-      }
       return;
     }
 
@@ -232,13 +210,9 @@ export default function useStep1Save(selectedCommitteeIds, profileData) {
   }, [doSave]);
 
   useEffect(() => {
-    if (selectedCommitteeIds.length > 0) {
-      hasEverSelectedRef.current = true;
-    }
-
     const app = appRef.current;
     const hasDraft = Boolean(app && app._id);
-    if (selectedCommitteeIds.length === 0 && !hasDraft) {
+    if (selectedCommitteeIds.length === 0) {
       setSaveState("idle");
       if (timerRef.current) {
         clearTimeout(timerRef.current);
@@ -247,7 +221,7 @@ export default function useStep1Save(selectedCommitteeIds, profileData) {
       return undefined;
     }
 
-    if (hasDraft && selectedCommitteeIds.length > 0) {
+    if (hasDraft) {
       const persisted = [
         app.firstChoiceCommittee,
         app.secondChoiceCommittee,
@@ -278,8 +252,7 @@ export default function useStep1Save(selectedCommitteeIds, profileData) {
   }, [selectedCommitteeIds, runSave]);
 
   const flushPending = useCallback(async () => {
-    const hasDraft = Boolean(appRef.current && appRef.current._id);
-    if (latestIdsRef.current.length === 0 && !hasDraft) return;
+    if (latestIdsRef.current.length === 0) return;
 
     if (timerRef.current) {
       clearTimeout(timerRef.current);

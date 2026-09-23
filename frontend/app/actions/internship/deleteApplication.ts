@@ -1,5 +1,14 @@
 "use server";
 
+// UNUSED, and paired with a stale endpoint. The wizard used to call this whenever a member
+// cleared their last committee, which marked the application deleted. The mark hid the record
+// from the app but not from the one-application-per-cycle index, so the member could never
+// create another one that cycle. Nothing calls this now.
+//
+// The endpoint it targets still only marks the record — see the STALE note on deleteApplication
+// in the API's applicationController. Adding real deletion means changing that endpoint to
+// remove the document; this action works as-is once it does.
+
 import { cookies } from "next/headers";
 
 import Config from "@/lib/config";
