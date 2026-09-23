@@ -129,7 +129,7 @@ export default function Step4Review({ onValidityChange, flushPendingRef }) {
       <div>
         <h2 className="text-xl font-semibold text-slate-900">Review your application</h2>
         <p className="text-sm text-slate-600">
-          Check your profile details, committee rankings, responses, and resume link before submitting.
+          Please MAKE SURE to check your profile details, committee rankings, responses, and resume link before submitting, as you will NOT be able to re-submit.
         </p>
       </div>
 
