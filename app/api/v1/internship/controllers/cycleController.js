@@ -53,7 +53,7 @@ async function advanceCycle(req, res, next) {
     }
 
     const result = await InternshipApplication.updateMany(
-      { applicationCycle: previousCycle, deletedAt: null, archivedAt: null },
+      { applicationCycle: previousCycle, archivedAt: null },
       { $set: { archivedAt: new Date(), archivedBy: req.user.uuid } },
     );
     const archivedCount = (result && (

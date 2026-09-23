@@ -242,7 +242,6 @@ describe('submitApplication', () => {
         _id: 'application-1',
         userId: 'owner-user',
         submissionStatus: 'draft',
-        deletedAt: null,
       },
       expect.objectContaining({
         submissionStatus: 'submitted',

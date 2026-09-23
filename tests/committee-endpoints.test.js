@@ -304,7 +304,7 @@ describe('getAllCommitteesAdmin (applicationCount)', () => {
     expect(byId.c3.applicationCount).toBe(0);
   });
 
-  test('aggregation pipeline filters to submitted, non-deleted apps and dedupes choice slots', async () => {
+  test('aggregation pipeline filters to submitted, unarchived apps and dedupes choice slots', async () => {
     mockFindSort([]);
     InternshipApplication.aggregate.mockResolvedValue([]);
 
@@ -313,7 +313,7 @@ describe('getAllCommitteesAdmin (applicationCount)', () => {
     expect(InternshipApplication.aggregate).toHaveBeenCalledTimes(1);
     const pipeline = InternshipApplication.aggregate.mock.calls[0][0];
     expect(pipeline[0]).toEqual({
-      $match: { deletedAt: null, archivedAt: null, submissionStatus: 'submitted' },
+      $match: { archivedAt: null, submissionStatus: 'submitted' },
     });
     // $setUnion across the three choice fields ensures one application doesn't double-count
     // a committee selected in multiple slots.
