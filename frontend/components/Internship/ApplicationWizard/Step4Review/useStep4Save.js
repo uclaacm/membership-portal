@@ -12,7 +12,7 @@ function normalizePhone(phone) {
   return phone.trim();
 }
 
-export default function useStep4Save({ phone, graduationYear, canSave }) {
+export default function useStep4Save({ phone, major, graduationYear, canSave }) {
   const [myApplication, setMyApplication] = useAtom(myApplicationAtom);
   const [saveState, setSaveState] = useState("idle");
   const [error, setError] = useState(null);
@@ -20,14 +20,14 @@ export default function useStep4Save({ phone, graduationYear, canSave }) {
 
   const timerRef = useRef(null);
   const inFlightRef = useRef(null);
-  const latestValuesRef = useRef({ phone, graduationYear, canSave });
+  const latestValuesRef = useRef({ phone, major, graduationYear, canSave });
   const appRef = useRef(myApplication);
   const saveStateRef = useRef(saveState);
   const errorRef = useRef(error);
 
   useEffect(() => {
-    latestValuesRef.current = { phone, graduationYear, canSave };
-  }, [phone, graduationYear, canSave]);
+    latestValuesRef.current = { phone, major, graduationYear, canSave };
+  }, [phone, major, graduationYear, canSave]);
 
   useEffect(() => {
     appRef.current = myApplication;
@@ -57,6 +57,7 @@ export default function useStep4Save({ phone, graduationYear, canSave }) {
     try {
       const result = await updateApplication(app._id, {
         phone: normalizePhone(values.phone),
+        ...(values.major ? { major: values.major } : {}),
         graduationYear: values.graduationYear,
       });
 
@@ -112,8 +113,9 @@ export default function useStep4Save({ phone, graduationYear, canSave }) {
     }
 
     const phoneMatches = (app.phone || "") === normalizePhone(phone);
+    const majorMatches = !major || (app.major || "") === major;
     const yearMatches = Number(app.graduationYear) === Number(graduationYear);
-    if (phoneMatches && yearMatches) {
+    if (phoneMatches && majorMatches && yearMatches) {
       setSaveState("idle");
       return undefined;
     }
@@ -131,7 +133,7 @@ export default function useStep4Save({ phone, graduationYear, canSave }) {
         timerRef.current = null;
       }
     };
-  }, [phone, graduationYear, canSave, runSave]);
+  }, [phone, major, graduationYear, canSave, runSave]);
 
   const flushPending = useCallback(async () => {
     if (!appRef.current || !appRef.current._id || !latestValuesRef.current.canSave) return;

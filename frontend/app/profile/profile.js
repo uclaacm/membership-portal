@@ -51,14 +51,14 @@ export default class Profile extends React.Component {
       return;
     }
 
-    if (parseInt(this.state.profile.year) === NaN) {
+    const year = parseInt(this.state.profile.year, 10);
+    if (Number.isNaN(year)) {
       this.bannerRef.current.showBanner('Please select a valid year', false);
       return;
     }
 
     const firstName = nameArray[0].replace(/\n/g, '');
     const lastName = nameArray[1].replace(/\n/g, '');
-    const { year } = this.state.profile;
     const major = this.state.profile.major.replace(/\n/g, '');
 
     this.props.saveChanges({
