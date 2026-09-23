@@ -12,7 +12,7 @@ import { authUserProfileAtom, isAdminAtom, isOfficerAtom } from '@/lib/atoms';
 import './style.scss';
 
 export default function ProfilePage() {
-  const userProfile = useAtomValue(authUserProfileAtom);
+  const [userProfile, setAuthUserProfile] = useAtom(authUserProfileAtom);
   const isAdmin = useAtomValue(isAdminAtom);
   const isOfficer = useAtomValue(isOfficerAtom);
   const [activity, setActivity] = useState(null);
@@ -38,6 +38,9 @@ export default function ProfilePage() {
 
   const handleSaveChanges = async (newProfile) => {
     const result = await updateUser(newProfile);
+    if (result.success) {
+      setAuthUserProfile(prev => ({ ...(prev || {}), ...newProfile }));
+    }
     setUpdated(true);
     setUpdateSuccess(result.success);
     setUpdateError(result.error ?? null);
