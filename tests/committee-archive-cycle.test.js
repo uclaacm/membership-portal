@@ -104,7 +104,7 @@ describe('advanceCycle', () => {
     await advanceCycle(req, res, next);
 
     expect(InternshipApplication.updateMany).toHaveBeenCalledWith(
-      { applicationCycle: '2026-2027', deletedAt: null, archivedAt: null },
+      { applicationCycle: '2026-2027', archivedAt: null },
       { $set: { archivedAt: expect.any(Date), archivedBy: 'admin-uuid' } },
     );
     expect(setCurrentCycle).toHaveBeenCalledWith('2027-2028');

@@ -144,7 +144,6 @@ async function createApplication(req, res) {
     const existingApplication = await InternshipApplication.findOne({
       userId: req.user.uuid,
       applicationCycle,
-      deletedAt: null,
     });
 
     if (existingApplication) {
@@ -367,9 +366,6 @@ async function getAllApplications(req, res) {
       query.$and = andConditions;
     }
 
-    // Always exclude soft-deleted records
-    query.deletedAt = null;
-
     // Archived applications (a past, closed cycle) are hidden from the
     // default view; ?archived=true switches to the read-only past-cycles
     // view showing only archived applications.
@@ -480,7 +476,6 @@ async function getApplicationStatusCounts(req, res) {
     const results = await InternshipApplication.aggregate([
       {
         $match: {
-          deletedAt: null,
           archivedAt: null,
           submissionStatus: 'submitted',
           $or: [
@@ -582,7 +577,6 @@ async function getOwnApplication(req, res) {
     const application = await InternshipApplication.findOne({
       userId: req.user.uuid,
       applicationCycle,
-      deletedAt: null,
     }).select(OWN_APPLICATION_RESPONSE_EXCLUDED_FIELDS);
     if (!application) {
       return res.status(404).json({ success: false, message: 'Application not found' });
@@ -687,6 +681,9 @@ async function deleteApplication(req, res) {
       return res.status(403).json({ success: false, message: 'Forbidden' });
     }
 
+    // STALE: nothing reads deletedAt any more, so this marks the record without hiding it
+    // and the application stays live. Real deletion has to remove the document, which also
+    // frees the one-per-cycle slot the unique index holds.
     await application.updateOne({ deletedAt: new Date(), deletedBy: req.user.uuid });
     return res.status(200).json({ success: true, message: 'Application deleted successfully' });
   } catch (error) {
@@ -712,7 +709,7 @@ async function updateApplicationStatus(req, res) {
     }
 
     const application = await InternshipApplication.findById(req.params.id);
-    if (!application || application.deletedAt) {
+    if (!application) {
       return res.status(404).json({
         success: false,
         message: 'Application not found',
@@ -803,7 +800,7 @@ async function updateApplicationReview(req, res) {
     }
 
     const application = await InternshipApplication.findById(req.params.id);
-    if (!application || application.deletedAt) {
+    if (!application) {
       return res.status(404).json({
         success: false,
         message: 'Application not found',
@@ -892,7 +889,7 @@ async function submitApplication(req, res) {
   try {
     const application = await InternshipApplication.findById(req.params.id);
 
-    if (!application || application.deletedAt) {
+    if (!application) {
       return res.status(404).json({
         success: false,
         message: 'Application not found',
@@ -988,7 +985,6 @@ async function submitApplication(req, res) {
         _id: req.params.id,
         userId: req.user.uuid,
         submissionStatus: 'draft',
-        deletedAt: null,
       },
       {
         submissionStatus: 'submitted',

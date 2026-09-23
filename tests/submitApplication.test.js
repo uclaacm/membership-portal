@@ -72,7 +72,9 @@ describe('submitApplication controller', () => {
     expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ success: false }));
   });
 
-  test('rejects with 404 when application is soft-deleted', async () => {
+  // A deletion mark no longer hides an application. It used to 404 here while still holding
+  // the applicant's one-per-cycle slot, which locked them out of ever applying again.
+  test('does not 404 on an application carrying a deletion mark', async () => {
     InternshipApplication.findById.mockResolvedValue(
       buildApplication({ deletedAt: new Date() }),
     );
@@ -81,7 +83,7 @@ describe('submitApplication controller', () => {
 
     await submitApplication(req, res);
 
-    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.status).not.toHaveBeenCalledWith(404);
   });
 
   test('rejects with 403 when caller does not own the application', async () => {

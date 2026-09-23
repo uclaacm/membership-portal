@@ -11,7 +11,7 @@ const { recordAudit } = require('../../../../audit');
 // counts once.
 async function getApplicationCountsByCommittee() {
   const counts = await InternshipApplication.aggregate([
-    { $match: { deletedAt: null, archivedAt: null, submissionStatus: 'submitted' } },
+    { $match: { archivedAt: null, submissionStatus: 'submitted' } },
     {
       $project: {
         committees: {

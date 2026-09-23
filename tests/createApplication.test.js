@@ -97,6 +97,35 @@ describe('createApplication', () => {
     expect(savedDoc.submissionStatus).toBe('draft');
   });
 
+  // The lockout bug: this lookup used to exclude deleted records while the database's
+  // one-per-cycle rule still counted them, so a deleted draft made the applicant permanently
+  // unable to create another one for that cycle.
+  test('looks up an existing application without excluding deleted ones', async () => {
+    mockCommitteeFind([{
+      id: 'committee-1',
+      isActive: true,
+      applicationDeadline: null,
+      displayName: 'ACM Dev',
+      name: 'dev',
+    }]);
+    const req = {
+      user: mockUser(),
+      body: {
+        university: 'UCLA',
+        major: 'Computer Science',
+        graduationYear: 2027,
+        firstChoiceCommittee: 'committee-1',
+      },
+    };
+
+    await createApplication(req, mockResponse());
+
+    expect(InternshipApplication.findOne).toHaveBeenCalledWith({
+      userId: 'owner-user',
+      applicationCycle: '2026-2027',
+    });
+  });
+
   test('rejects when the applicant already has an application for the current cycle', async () => {
     InternshipApplication.findOne.mockResolvedValue({ _id: 'existing-app' });
     const req = {
