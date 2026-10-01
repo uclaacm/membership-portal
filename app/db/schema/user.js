@@ -453,7 +453,7 @@ module.exports = (Sequelize, db) => {
       pronouns: this.getDataValue('pronouns'),
       bio: this.getDataValue('bio'),
       isProfilePublic: this.getDataValue('isProfilePublic'),
-      isOfficer: this.isOfficer(),
+      accessType: this.getDataValue('accessType'),
       committees: this.getDataValue('committees') || [],
     };
   };
