@@ -2,6 +2,15 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
+// A picked deadline date ("YYYY-MM-DD") means the end of that day, Pacific time
+function toEndOfDayPacific(value) {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+  const utc = new Date(`${value}T23:59:59.999Z`);
+  const asUTC = new Date(utc.toLocaleString('en-US', { timeZone: 'UTC' }));
+  const asPacific = new Date(utc.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
+  return new Date(utc.getTime() + (asUTC - asPacific));
+}
+
 const CustomQuestionSchema = new Schema({
   questionKey: { type: String, required: true },
   questionText: { type: String, required: true },
@@ -42,6 +51,7 @@ const CommitteeSchema = new Schema(
     applicationDeadline: {
       type: Date,
       required: false,
+      set: toEndOfDayPacific,
     },
     customQuestions: {
       type: [CustomQuestionSchema],
