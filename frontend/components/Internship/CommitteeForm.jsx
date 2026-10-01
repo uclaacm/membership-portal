@@ -8,7 +8,7 @@ function toDateInputValue(value) {
   if (!value) return "";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "";
-  return date.toISOString().slice(0, 10);
+  return date.toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" }); // YYYY-MM-DD
 }
 
 export default function CommitteeForm({ initialValues, submitLabel, onSubmit }) {
