@@ -1,0 +1,30 @@
+name: PR Tests
+
+on:
+  pull_request:
+    # Only run when files in this part of the repo change.
+    paths:
+      - '**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        # Folder containing the package.json to test ('.' = repo root).
+        working-directory: .
+
+    steps:
+     #Checkout repo onto runner and checks out PR branch
+      - uses: actions/checkout@v4
+     #Installs node version and caches dependencies based on package-lock.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - run: npm ci
+
+      - run: npm test
