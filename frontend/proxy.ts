@@ -5,7 +5,7 @@ import type { NextRequest } from "next/server";
 import { isAuthenticated, isTokenAdmin, isTokenOfficer, isTokenRegistered } from "@/lib/token";
 
 const SUPER_PROTECTED = ["/controlpanel"];
-const PROTECTED = ["/home", "/events", "/profile", "/resources", "/leaderboard"];
+const PROTECTED = ["/home", "/events", "/profile", "/resources", "/leaderboard", "/internship"];
 const ALL = [...SUPER_PROTECTED, ...PROTECTED, "/login", "/register"];
 
 export default async function proxy(req: NextRequest) {
@@ -52,6 +52,7 @@ export const config = {
     "/profile/:path*",
     "/resources/:path*",
     "/leaderboard/:path*",
+    "/internship/:path*",
     "/controlpanel/:path*",
   ],
 };
