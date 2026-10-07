@@ -1,5 +1,5 @@
-const { setup: setupDB, User } = require('../app/db');
-const log = require('../app/logger');
+const { setup: setupDB, User } = require('../../app/db');
+const log = require('../../app/logger');
 
 let passCount = 0;
 let testCount = 0;

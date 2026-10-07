@@ -1,5 +1,5 @@
 const { validationResult } = require('express-validator');
-const { validateCareerProfileUpdate } = require('../app/api/v1/membership/user/validation');
+const { validateCareerProfileUpdate } = require('../../app/api/v1/membership/user/validation');
 
 async function runMiddleware(fields) {
   const req = { body: { user: fields } };

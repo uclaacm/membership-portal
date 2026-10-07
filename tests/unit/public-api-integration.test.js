@@ -9,11 +9,11 @@
  * and that Access-Control-Allow-Credentials is never present.
  */
 
-jest.mock('../app/logger', () => ({
+jest.mock('../../app/logger', () => ({
   info: jest.fn(), warn: jest.fn(), error: jest.fn(), debug: jest.fn(), log: jest.fn(),
 }));
 
-jest.mock('../app/db', () => ({
+jest.mock('../../app/db', () => ({
   Event: {
     getPublicEvents: jest.fn(),
     findPublicByUUID: jest.fn(),
@@ -22,8 +22,8 @@ jest.mock('../app/db', () => ({
 
 const express = require('express');
 const request = require('supertest');
-const { Event } = require('../app/db');
-const appError = require('../app/error');
+const { Event } = require('../../app/db');
+const appError = require('../../app/error');
 
 const ATTENDANCE_CODE = 'SUPERSECRET2026';
 
@@ -45,7 +45,7 @@ const eventRow = () => ({
 // Mirrors how the server assembles things in index.js: the v1 tree, then the error middleware.
 const buildApp = () => {
   const app = express();
-  app.use('/app/api/v1/public', require('../app/api/v1/public').router); // eslint-disable-line global-require
+  app.use('/app/api/v1/public', require('../../app/api/v1/public').router); // eslint-disable-line global-require
   app.use(appError.errorHandler);
   app.use(appError.notFoundHandler);
   return app;

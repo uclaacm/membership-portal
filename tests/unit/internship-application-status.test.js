@@ -1,4 +1,4 @@
-jest.mock('../app/api/v1/internship/models/InternshipApplication', () => ({
+jest.mock('../../app/api/v1/internship/models/InternshipApplication', () => ({
   InternshipApplication: {
     findById: jest.fn(),
     findByIdAndUpdate: jest.fn(),
@@ -6,7 +6,7 @@ jest.mock('../app/api/v1/internship/models/InternshipApplication', () => ({
   getCurrentApplicationCycle: jest.fn(() => '2026-2027'),
 }));
 
-jest.mock('../app/api/v1/internship/models/Committee', () => ({
+jest.mock('../../app/api/v1/internship/models/Committee', () => ({
   Committee: {
     findById: jest.fn(),
   },
@@ -14,11 +14,11 @@ jest.mock('../app/api/v1/internship/models/Committee', () => ({
 
 const {
   InternshipApplication,
-} = require('../app/api/v1/internship/models/InternshipApplication');
-const { Committee } = require('../app/api/v1/internship/models/Committee');
+} = require('../../app/api/v1/internship/models/InternshipApplication');
+const { Committee } = require('../../app/api/v1/internship/models/Committee');
 const {
   updateApplicationStatus,
-} = require('../app/api/v1/internship/controllers/applicationController');
+} = require('../../app/api/v1/internship/controllers/applicationController');
 
 function mockResponse() {
   const res = {};

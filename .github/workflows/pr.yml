@@ -1,6 +1,6 @@
 name: PR Tests
 
-on:
+on: #trigger
   pull_request:
     # Only run when files in this part of the repo change.
     paths:
@@ -26,5 +26,7 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - run: npm ci
-
-      - run: npm test
+      - run: npm run lint
+      #Known backend unit tests that arent passing, need to fix
+      # Unit tests only (tests/unit); integration tests in tests/integration need a database and run separately.
+      - run: npm run test:unit

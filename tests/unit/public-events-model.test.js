@@ -20,7 +20,7 @@ const loadEventModel = () => {
       return function EventModel() {};
     },
   };
-  const Event = require('../app/db/schema/event')(Sequelize, db); // eslint-disable-line global-require
+  const Event = require('../../app/db/schema/event')(Sequelize, db); // eslint-disable-line global-require
   return { Event, defined };
 };
 
