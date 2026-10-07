@@ -11,7 +11,7 @@
     "test": "export TESTING=true && jest --config jest.config.json",
     "test:unit": "export TESTING=true && jest --config jest.config.json tests/unit",
     "test:integration": "export TESTING=true && jest --config jest.config.json --runInBand --passWithNoTests tests/integration",
-    "lint": "prettier --write './**/*.js*'"
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
