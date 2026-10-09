@@ -60,7 +60,7 @@ module.exports = (Sequelize, db) => {
 
       // human-readable context, e.g. 'Granted admin' or 'Cyber - 10 pts'
       detail: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
       },
 
       // committee the action was scoped to, when applicable

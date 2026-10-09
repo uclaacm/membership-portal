@@ -201,6 +201,7 @@ async function bulkUpdateCommitteeStatus(req, res, next) {
     const filter = (Array.isArray(committeeIds) && committeeIds.length > 0)
       ? { _id: { $in: committeeIds } }
       : {};
+    filter.isActive = { $ne: isActive };
 
     // Read the affected names before the write so the audit entry can name them; afterwards
     // the filter no longer identifies which committees actually changed.
@@ -210,11 +211,13 @@ async function bulkUpdateCommitteeStatus(req, res, next) {
     // result.modifiedCount and result.nModified options are to support Mongoose 6+ and older versions of Mongoose
     const modified = (result && (result.modifiedCount !== undefined ? result.modifiedCount : result.nModified)) || 0;
 
-    recordAudit(AuditLog, req, {
-      action: isActive ? 'committee.open' : 'committee.close',
-      target: affected.map((c) => c.displayName).join(', ') || 'All committees',
-      detail: `Recruitment ${isActive ? 'opened' : 'closed'} for ${modified} committee(s)`,
-    });
+    if (modified > 0) {
+      recordAudit(AuditLog, req, {
+        action: isActive ? 'committee.open' : 'committee.close',
+        target: affected.map((c) => c.displayName).join(', ') || 'All committees',
+        detail: `Recruitment ${isActive ? 'opened' : 'closed'} for ${modified} committee(s)`,
+      });
+    }
 
     return res.json({ success: true, modified });
   } catch (e) {
