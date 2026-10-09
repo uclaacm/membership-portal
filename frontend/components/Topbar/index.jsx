@@ -39,8 +39,7 @@ export default function Topbar({
     setMenuOpen(prev => !prev);
   };
 
-  // Three constant items. The bar no longer changes shape by role — Internship, Career Hub and
-  // the Control Panel moved behind the launcher, and Leaderboard is gone with its page.
+  // Four constant items. The bar doesn't change shape by role. Career Hub and the Control Panel live in grid. Leaderboard page is gone.
   const sharedLinks = (
     <>
       <Link href="/home" className={pathname === "/home" ? "selected" : ""}>
@@ -51,6 +50,9 @@ export default function Topbar({
       </Link>
       <Link href="/resources" className={pathname === "/resources" ? "selected" : ""}>
         <NavigationItem text="Organization" />
+      </Link>
+      <Link href="/internship" className={pathname === "/internship" ? "selected" : ""}>
+        <NavigationItem text="Internship" />
       </Link>
     </>
   );
