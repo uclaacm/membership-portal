@@ -4,7 +4,7 @@ jest.mock('google-auth-library', () => ({
   })),
 }), { virtual: true });
 
-jest.mock('../app/logger', () => ({
+jest.mock('../../app/logger', () => ({
   info: jest.fn(),
   warn: jest.fn(),
   error: jest.fn(),
@@ -12,14 +12,14 @@ jest.mock('../app/logger', () => ({
   log: jest.fn(),
 }));
 
-jest.mock('../app/api/v1/internship/models/Committee', () => ({
+jest.mock('../../app/api/v1/internship/models/Committee', () => ({
   Committee: {
     findById: jest.fn(),
     find: jest.fn(),
   },
 }));
 
-jest.mock('../app/api/v1/internship/models/InternshipApplication', () => ({
+jest.mock('../../app/api/v1/internship/models/InternshipApplication', () => ({
   InternshipApplication: {
     updateMany: jest.fn(),
     distinct: jest.fn(),
@@ -30,18 +30,18 @@ jest.mock('../app/api/v1/internship/models/InternshipApplication', () => ({
   getCurrentApplicationCycle: jest.fn(),
 }));
 
-jest.mock('../app/api/v1/internship/models/InternshipSettings', () => ({
+jest.mock('../../app/api/v1/internship/models/InternshipSettings', () => ({
   computeDefaultCycleLabel: jest.fn(() => '2099-2100'),
   getCurrentCycle: jest.fn(),
   setCurrentCycle: jest.fn(),
 }));
 
-const { Committee } = require('../app/api/v1/internship/models/Committee');
-const { InternshipApplication } = require('../app/api/v1/internship/models/InternshipApplication');
-const { getCurrentCycle, setCurrentCycle } = require('../app/api/v1/internship/models/InternshipSettings');
-const { getCycleInfo, advanceCycle } = require('../app/api/v1/internship/controllers/cycleController');
-const { getAllApplications, getApplicationStatusCounts } = require('../app/api/v1/internship/controllers/applicationController');
-const error = require('../app/error');
+const { Committee } = require('../../app/api/v1/internship/models/Committee');
+const { InternshipApplication } = require('../../app/api/v1/internship/models/InternshipApplication');
+const { getCurrentCycle, setCurrentCycle } = require('../../app/api/v1/internship/models/InternshipSettings');
+const { getCycleInfo, advanceCycle } = require('../../app/api/v1/internship/controllers/cycleController');
+const { getAllApplications, getApplicationStatusCounts } = require('../../app/api/v1/internship/controllers/applicationController');
+const error = require('../../app/error');
 
 const mockRes = () => {
   const res = {};

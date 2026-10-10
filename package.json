@@ -9,7 +9,9 @@
     "migrate": "make migrate",
     "rollback": "make rollback",
     "test": "export TESTING=true && jest --config jest.config.json",
-    "lint": "prettier --write './**/*.js*'"
+    "test:unit": "export TESTING=true && jest --config jest.config.json tests/unit",
+    "test:integration": "export TESTING=true && jest --config jest.config.json --runInBand --passWithNoTests tests/integration",
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",

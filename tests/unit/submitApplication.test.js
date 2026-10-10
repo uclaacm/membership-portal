@@ -1,19 +1,19 @@
-jest.mock('../app/api/v1/internship/models/InternshipApplication', () => ({
+jest.mock('../../app/api/v1/internship/models/InternshipApplication', () => ({
   InternshipApplication: {
     findById: jest.fn(),
   },
   getCurrentApplicationCycle: jest.fn(() => '2026-2027'),
 }));
 
-jest.mock('../app/api/v1/internship/models/Committee', () => ({
+jest.mock('../../app/api/v1/internship/models/Committee', () => ({
   Committee: {
     find: jest.fn(),
   },
 }));
 
-const { submitApplication } = require('../app/api/v1/internship/controllers/applicationController');
-const { InternshipApplication } = require('../app/api/v1/internship/models/InternshipApplication');
-const { Committee } = require('../app/api/v1/internship/models/Committee');
+const { submitApplication } = require('../../app/api/v1/internship/controllers/applicationController');
+const { InternshipApplication } = require('../../app/api/v1/internship/models/InternshipApplication');
+const { Committee } = require('../../app/api/v1/internship/models/Committee');
 
 const OWNER_UUID = 'owner-uuid';
 const APPLICATION_ID = 'app-1';
