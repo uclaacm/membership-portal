@@ -4,7 +4,7 @@ const {
   Event, AuditLog, RSVP, Attendance, db: Sequelize,
 } = require('../../../../db');
 const { assertCanManageCommitteeResource, canManageCommitteeResource } = require('../../auth/committeeScope');
-const { recordAudit } = require('../../../../audit');
+const { recordAudit, describeEventChanges } = require('../../../../audit');
 // Shared with the public API, which serves the same covers to outside consumers.
 const { normalizeCover } = require('../../../../event-cover');
 
@@ -150,7 +150,7 @@ router
         recordAudit(AuditLog, req, {
           action: 'event.create',
           target: event.title,
-          detail: `${event.committee || 'ACM'} · ${event.attendancePoints} pts`,
+          detail: `Event ${event.uuid}; Created: ${describeEventChanges({}, event.get({ plain: true }))}`,
           committee: event.committee,
         });
         return null;
@@ -198,8 +198,13 @@ router
       && new Date(req.body.event.startDate) > new Date(req.body.event.endDate)
     ) return next(new error.BadRequest('Start date must be before end date'));
 
-    // find the existing event by the given UUID
-    return Event.findByUUID(req.params.uuid)
+    // Serialize edits so the old values describe the row this request actually replaces.
+    let detail;
+    return Sequelize.transaction((transaction) => Event.findOne({
+      where: { uuid: req.params.uuid },
+      transaction,
+      lock: transaction.LOCK.UPDATE,
+    })
       .then((event) => {
         if (!event) throw new error.BadRequest('No such event found');
 
@@ -216,19 +221,24 @@ router
           throw new error.Forbidden('You do not have permission to move this event to another committee.');
         }
 
-        // update the event with the new information after sanitizing the input
-        return event.update(updates);
-      })
+        const before = { ...event.get({ plain: true }) };
+        return event.update(updates, { transaction }).then((saved) => {
+          detail = describeEventChanges(before, saved.get({ plain: true }), Object.keys(updates));
+          return saved;
+        });
+      }))
       .then((event) => {
         res.json(
           { error: null, event: event.getPublic(req.user.isAdmin() || req.user.isOfficer()) },
         );
-        recordAudit(AuditLog, req, {
-          action: 'event.update',
-          target: event.title,
-          detail: `Updated ${Object.keys(Event.sanitize(req.body.event)).join(', ')}`,
-          committee: event.committee,
-        });
+        if (detail) {
+          recordAudit(AuditLog, req, {
+            action: 'event.update',
+            target: event.title,
+            detail: `Event ${event.uuid}; ${detail}`,
+            committee: event.committee,
+          });
+        }
         return null;
       })
       .catch(next);
@@ -252,12 +262,14 @@ router
         return Event.destroyByUUID(req.params.uuid)
           .then((numDeleted) => {
             res.json({ error: null, numDeleted });
-            recordAudit(AuditLog, req, {
-              action: 'event.delete',
-              target: event.title,
-              detail: event.committee || 'ACM',
-              committee: event.committee,
-            });
+            if (numDeleted) {
+              recordAudit(AuditLog, req, {
+                action: 'event.delete',
+                target: event.title,
+                detail: `Event ${event.uuid}; Deleted: ${describeEventChanges(event.get({ plain: true }), {})}`,
+                committee: event.committee,
+              });
+            }
             return null;
           });
       })

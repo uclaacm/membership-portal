@@ -4,7 +4,7 @@ const error = require('../../../../error');
 const {
   User, Activity, AuditLog, db: Sequelize,
 } = require('../../../../db');
-const { recordAudit } = require('../../../../audit');
+const { recordAudit, describeChanges } = require('../../../../audit');
 const { COMMITTEES } = require('../../../../committees');
 const {
   validatePublicProfileLookup,
@@ -427,6 +427,7 @@ router.patch('/bulk', async (req, res, next) => {
       return;
     }
 
+    const before = { accessType: target.accessType, committees: target.committees };
     try {
       await target.update({
         accessType: ROLE_TO_ACCESS[nextRole],
@@ -447,11 +448,12 @@ router.patch('/bulk', async (req, res, next) => {
       committees: nextCommittees,
     });
 
-    const scope = nextCommittees.length > 0 ? ` · ${nextCommittees.join(', ')}` : '';
     recordAudit(AuditLog, req, {
       action: nextRole === 'Member' ? 'role.revoke' : 'role.grant',
       target: target.email,
-      detail: `Bulk: ${nextRole.toLowerCase()}${scope}`,
+      detail: `Bulk: ${describeChanges(before, target, ['accessType', 'committees'], {
+        sets: ['committees'],
+      }) || 'No role or committee changes'}`,
       committee: nextCommittees[0] || null,
     });
   };
@@ -514,7 +516,9 @@ router.patch('/:uuid/role', async (req, res, next) => {
       return next(new error.Forbidden('You cannot change your own role.'));
     }
 
-    const previousRole = target.isAdmin() ? 'Admin' : (target.isOfficer() ? 'Officer' : 'Member');
+    const before = {
+      accessType: target.accessType, committees: target.committees, position: target.position,
+    };
     const accessType = ROLE_TO_ACCESS[role];
     const nextCommittees = role === 'Member' ? [] : (committees ?? target.committees ?? []);
 
@@ -533,13 +537,12 @@ router.patch('/:uuid/role', async (req, res, next) => {
       roleGrantedAt: role === 'Member' ? null : new Date(),
     });
 
-    const scope = nextCommittees.length > 0 ? ` · ${nextCommittees.join(', ')}` : '';
     recordAudit(AuditLog, req, {
       action: role === 'Member' ? 'role.revoke' : 'role.grant',
       target: target.email,
-      detail: role === 'Member'
-        ? `Removed ${previousRole.toLowerCase()}${scope}`
-        : `Granted ${role.toLowerCase()}${scope}`,
+      detail: describeChanges(before, target, ['accessType', 'committees', 'position'], {
+        sets: ['committees'],
+      }) || 'No role, committee, or position changes',
       committee: nextCommittees[0] || null,
     });
 

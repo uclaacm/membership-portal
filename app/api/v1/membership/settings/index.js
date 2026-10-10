@@ -1,7 +1,7 @@
 const express = require('express');
 const error = require('../../../../error');
 const { Secret, AuditLog } = require('../../../../db');
-const { recordAudit } = require('../../../../audit');
+const { recordAudit, describeChanges } = require('../../../../audit');
 
 const router = express.Router();
 
@@ -66,7 +66,7 @@ router
 
     try {
       const existing = await Secret.findByName(EMAIL_SECRET);
-      const previous = existing ? readConfig(existing) : {};
+      const previous = readConfig(existing);
 
       const meta = {
         transport,
@@ -90,7 +90,12 @@ router
       recordAudit(AuditLog, req, {
         action: 'settings.update',
         target: 'Email notifications',
-        detail: `Transport set to ${transport}${token ? ' (credential replaced)' : ''}`,
+        detail: [
+          describeChanges(previous, meta, ['transport', 'host', 'port', 'username', 'from', 'configured'], {
+            numbers: ['port'],
+          }),
+          token ? 'Credential replaced (redacted)' : '',
+        ].filter(Boolean).join('; ') || 'No settings changed',
       });
       return null;
     } catch (updateError) {
