@@ -152,6 +152,10 @@ module.exports = (Sequelize, db) => {
         type: Sequelize.INTEGER,
         allowNull: false,
         validate: {
+          max: {
+            args: [500],
+            msg: 'The attendance points must be at most 500',
+          },
           notEmpty: {
             msg: 'The attendance points must be at least 0',
           },
