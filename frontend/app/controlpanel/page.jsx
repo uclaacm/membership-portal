@@ -415,6 +415,10 @@ export default function ControlPanelPage() {
   });
 
   // ------------------------------------------------------------ derived counts
+  const officerCommittees = useMemo(
+    () => [...new Set([...Config.committees, ...committees.map((c) => c.name)])],
+    [committees],
+  );
 
   const counts = useMemo(() => ({
     users: roster.total,
@@ -593,6 +597,7 @@ export default function ControlPanelPage() {
           prefill={assign.prefill}
           onClose={() => setAssign((a) => ({ ...a, open: false }))}
           onAssign={handleAssignRole}
+          committeeOptions={officerCommittees}
         />
 
         {/* `.admin-dashboard` is the scope every rule in AdminEvents/style.scss is nested
@@ -620,6 +625,7 @@ export default function ControlPanelPage() {
         <BulkCommitteeDialog
           open={bulkCommittee.open}
           count={bulkCommittee.uuids.length}
+          committeeOptions={officerCommittees}
           onClose={() => setBulkCommittee({ open: false, uuids: [] })}
           onApply={({ committees: picked, committeeMode }) => handleBulkUpdate({
             uuids: bulkCommittee.uuids, committees: picked, committeeMode,
@@ -630,6 +636,7 @@ export default function ControlPanelPage() {
           open={bulkAddOpen}
           onClose={() => setBulkAddOpen(false)}
           onApply={handleBulkUpdate}
+          committeeOptions={officerCommittees}
         />
 
         <SyncSheetsModal

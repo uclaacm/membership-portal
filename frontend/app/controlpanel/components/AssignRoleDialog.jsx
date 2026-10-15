@@ -9,15 +9,15 @@ const ROLES = ['Member', 'Officer', 'Admin'];
 /**
  * Assign-role dialog, opened from "+ Add admin" / "+ Add officer".
  *
- * The committee chips come from Config.committees — the canonical list — and never from a
- * local copy. A second hardcoded list here previously left out the only committee that had
- * officers, making it impossible to assign anyone to it.
+ * The committee chips come from `committeeOptions` (Config.committees plus committees created in
+ * the Control Panel), never from a local copy. A second hardcoded list here previously left out
+ * the only committee that had officers, making it impossible to assign anyone to it.
  *
  * State is reset by remounting: the caller passes a `key` that changes each time the dialog
  * opens, so a previous attempt cannot leak into the next one and no reset effect is needed.
  */
 export default function AssignRoleDialog({
-  open, initialRole, prefill, onClose, onAssign,
+  open, initialRole, prefill, onClose, onAssign, committeeOptions = Config.committees,
 }) {
   const [email, setEmail] = useState(prefill?.email ?? '');
   const [role, setRole] = useState(prefill?.role ?? initialRole);
@@ -96,7 +96,7 @@ export default function AssignRoleDialog({
           <div>
             <span className="cp-field-label">Committees</span>
             <div className="cp-chip-group">
-              {Config.committees.map((committee) => (
+              {committeeOptions.map((committee) => (
                 <button
                   key={committee}
                   type="button"
@@ -124,6 +124,7 @@ export default function AssignRoleDialog({
 }
 
 AssignRoleDialog.propTypes = {
+  committeeOptions: PropTypes.arrayOf(PropTypes.string),
   open: PropTypes.bool.isRequired,
   initialRole: PropTypes.string,
   prefill: PropTypes.shape({

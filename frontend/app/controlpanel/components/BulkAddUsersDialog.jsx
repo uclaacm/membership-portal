@@ -28,7 +28,9 @@ export const parseEmails = (raw) => [
  * Partial success is expected — an address that never registered cannot be assigned anything —
  * so the result panel lists every failure with its reason rather than reporting one summary.
  */
-export default function BulkAddUsersDialog({ open, onClose, onApply }) {
+export default function BulkAddUsersDialog({
+  open, onClose, onApply, committeeOptions = Config.committees,
+}) {
   const [raw, setRaw] = useState('');
   const [role, setRole] = useState('Officer');
   const [committees, setCommittees] = useState([]);
@@ -115,7 +117,7 @@ export default function BulkAddUsersDialog({ open, onClose, onApply }) {
               <div>
                 <span className="cp-field-label">Committees</span>
                 <div className="cp-chip-group">
-                  {Config.committees.map((committee) => (
+                  {committeeOptions.map((committee) => (
                     <button
                       key={committee}
                       type="button"
@@ -187,6 +189,7 @@ export default function BulkAddUsersDialog({ open, onClose, onApply }) {
 }
 
 BulkAddUsersDialog.propTypes = {
+  committeeOptions: PropTypes.arrayOf(PropTypes.string),
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   onApply: PropTypes.func.isRequired,
