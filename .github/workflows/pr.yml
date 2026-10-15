@@ -1,0 +1,40 @@
+name: PR Tests
+
+on: #trigger
+  pull_request:
+    # Only run when files in this part of the repo change.
+    paths:
+      - '**'
+  # Re-run after changes to shared testing branch
+  push:
+    branches:
+      - feat/testing
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        # Folder containing the package.json to test ('.' = repo root).
+        working-directory: .
+
+    steps:
+     #Checkout repo onto runner and checks out PR branch
+      - uses: actions/checkout@v4
+     #Installs node version and caches dependencies based on package-lock.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - run: npm ci
+      # ESLint (airbnb config in .eslintrc.js). Existing errors still need fixing, so for now a
+      # lint failure is reported but doesn't stop the unit tests from running. Remove
+      # continue-on-error once lint is clean.
+      - run: npm run lint
+        continue-on-error: true
+      #Known backend unit tests that arent passing, need to fix
+      # Unit tests only (tests/unit); integration tests in tests/integration need a database and run separately.
+      - run: npm run test:unit

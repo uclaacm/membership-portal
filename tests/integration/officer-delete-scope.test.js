@@ -1,8 +1,8 @@
 const request = require('supertest');
 const jwt = require('jsonwebtoken');
-const { server, setup } = require('..');
-const config = require('../app/config');
-const { User, Event, Image } = require('../app/db');
+const { server, setup } = require('../..');
+const config = require('../../app/config');
+const { User, Event, Image } = require('../../app/db');
 
 const API_ROUTE = '/app/api/v1';
 

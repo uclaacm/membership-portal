@@ -1,6 +1,9 @@
 const request = require('supertest');
 
-const baseUrl = 'http://localhost:8080/app/api/v1';
+const { server, setup } = require('../..');
+const { db: Sequelize } = require('../../app/db');
+
+const API_ROUTE = '/app/api/v1';
 
 let token;
 
@@ -20,19 +23,25 @@ const escapeHtml = (str) => {
 };
 
 beforeAll(async () => {
-  const response = await request(baseUrl)
-    .post('/auth/dev-login')
+  await setup(false, true);
+  const response = await request(server)
+    .post(`${API_ROUTE}/auth/dev-login`)
     .send({});
 
   token = response.body.token;
+});
+
+afterAll(async () => {
+  server.close();
+  await Sequelize.close();
 });
 
 describe('PATCH /user/', () => {
   const headers = () => ({ Authorization: `Bearer ${token}` });
 
   const testValidation = async (field, invalidValue, expectedErrorPath) => {
-    const response = await request(baseUrl)
-      .patch('/user/')
+    const response = await request(server)
+      .patch(`${API_ROUTE}/user/`)
       .set(headers())
       .send({ user: { [field]: invalidValue } });
 
@@ -85,8 +94,8 @@ describe('PATCH /user/', () => {
       isProfilePublic: true,
     };
 
-    const response = await request(baseUrl)
-      .patch('/user/')
+    const response = await request(server)
+      .patch(`${API_ROUTE}/user/`)
       .set(headers())
       .send({ user: updatedFields });
 
@@ -107,13 +116,13 @@ describe('PATCH /user/', () => {
     };
 
     // Set initial values
-    await request(baseUrl)
-      .patch('/user/')
+    await request(server)
+      .patch(`${API_ROUTE}/user/`)
       .set(headers())
       .send({ user: initialFields });
 
-    const response = await request(baseUrl)
-      .patch('/user/')
+    const response = await request(server)
+      .patch(`${API_ROUTE}/user/`)
       .set(headers())
       .send({ user: { firstName: '', lastName: '', major: '' } });
 
@@ -134,8 +143,8 @@ describe('PATCH /user/', () => {
     };
 
     // Set initial values
-    await request(baseUrl)
-      .patch('/user/')
+    await request(server)
+      .patch(`${API_ROUTE}/user/`)
       .set(headers())
       .send({ user: initialFields });
 
@@ -148,8 +157,8 @@ describe('PATCH /user/', () => {
       careerInterests: ['Software Engineering', 'Web Development'],
     };
 
-    const response = await request(baseUrl)
-      .patch('/user/')
+    const response = await request(server)
+      .patch(`${API_ROUTE}/user/`)
       .set(headers())
       .send({ user: careerFields });
 
@@ -170,10 +179,15 @@ describe('PATCH /user/', () => {
 
 describe('PATCH /user/career/', () => {
   const headers = () => ({ Authorization: `Bearer ${token}` });
+  // linkedinUrl and githubUrl are required on every career update.
+  const REQUIRED_CAREER_FIELDS = {
+    linkedinUrl: 'https://linkedin.com/in/johndoe',
+    githubUrl: 'https://github.com/johndoe',
+  };
 
   const testValidation = async (field, invalidValue, expectedErrorPath) => {
-    const response = await request(baseUrl)
-      .patch('/user/career/')
+    const response = await request(server)
+      .patch(`${API_ROUTE}/user/career/`)
       .set(headers())
       .send({ user: { [field]: invalidValue } });
 
@@ -230,8 +244,8 @@ describe('PATCH /user/career/', () => {
       careerInterests: ['Software Engineering', 'Web Development'],
     };
 
-    const response = await request(baseUrl)
-      .patch('/user/career/')
+    const response = await request(server)
+      .patch(`${API_ROUTE}/user/career/`)
       .set(headers())
       .send({ user: updatedFields });
 
@@ -251,20 +265,20 @@ describe('PATCH /user/career/', () => {
   });
 
   it('accepts linkedinUrl with www in the domain', async () => {
-    const response = await request(baseUrl)
-      .patch('/user/career/')
+    const response = await request(server)
+      .patch(`${API_ROUTE}/user/career/`)
       .set(headers())
-      .send({ user: { linkedinUrl: 'https://www.linkedin.com/in/johndoe' } });
+      .send({ user: { ...REQUIRED_CAREER_FIELDS, linkedinUrl: 'https://www.linkedin.com/in/johndoe' } });
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('user.linkedinUrl', 'https://www.linkedin.com/in/johndoe');
   });
 
   it('accepts githubUrl with www in the domain', async () => {
-    const response = await request(baseUrl)
-      .patch('/user/career/')
+    const response = await request(server)
+      .patch(`${API_ROUTE}/user/career/`)
       .set(headers())
-      .send({ user: { githubUrl: 'https://www.github.com/johndoe' } });
+      .send({ user: { ...REQUIRED_CAREER_FIELDS, githubUrl: 'https://www.github.com/johndoe' } });
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('user.githubUrl', 'https://www.github.com/johndoe');
@@ -281,8 +295,8 @@ describe('PATCH /user/career/', () => {
     };
 
     // Set initial values
-    await request(baseUrl)
-      .patch('/user/career/')
+    await request(server)
+      .patch(`${API_ROUTE}/user/career/`)
       .set(headers())
       .send({ user: initialFields });
 
@@ -295,10 +309,10 @@ describe('PATCH /user/career/', () => {
       pronouns: 'he/him',
     };
 
-    const response = await request(baseUrl)
-      .patch('/user/career/')
+    const response = await request(server)
+      .patch(`${API_ROUTE}/user/career/`)
       .set(headers())
-      .send({ user: nonCareerFields });
+      .send({ user: { ...REQUIRED_CAREER_FIELDS, ...nonCareerFields } });
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('user');

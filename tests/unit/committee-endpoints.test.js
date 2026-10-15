@@ -4,7 +4,7 @@ jest.mock('google-auth-library', () => ({
   })),
 }), { virtual: true });
 
-jest.mock('../app/logger', () => ({
+jest.mock('../../app/logger', () => ({
   info: jest.fn(),
   warn: jest.fn(),
   error: jest.fn(),
@@ -12,7 +12,7 @@ jest.mock('../app/logger', () => ({
   log: jest.fn(),
 }));
 
-jest.mock('../app/api/v1/internship/models/Committee', () => ({
+jest.mock('../../app/api/v1/internship/models/Committee', () => ({
   Committee: {
     findById: jest.fn(),
     findByIdAndUpdate: jest.fn(),
@@ -20,22 +20,22 @@ jest.mock('../app/api/v1/internship/models/Committee', () => ({
   },
 }));
 
-jest.mock('../app/api/v1/internship/models/InternshipApplication', () => ({
+jest.mock('../../app/api/v1/internship/models/InternshipApplication', () => ({
   InternshipApplication: {
     aggregate: jest.fn(),
   },
   getCurrentApplicationCycle: jest.fn(),
 }));
 
-const { Committee } = require('../app/api/v1/internship/models/Committee');
-const { InternshipApplication } = require('../app/api/v1/internship/models/InternshipApplication');
+const { Committee } = require('../../app/api/v1/internship/models/Committee');
+const { InternshipApplication } = require('../../app/api/v1/internship/models/InternshipApplication');
 const {
   updateCommitteeQuestions,
   updateCommitteeAdmin,
   getAllCommitteesAdmin,
-} = require('../app/api/v1/internship/controllers/committeeController');
-const { isAdmin } = require('../app/api/v1/auth');
-const error = require('../app/error');
+} = require('../../app/api/v1/internship/controllers/committeeController');
+const { isAdmin } = require('../../app/api/v1/auth');
+const error = require('../../app/error');
 
 const mockRes = () => {
   const res = {};
