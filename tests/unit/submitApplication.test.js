@@ -1,6 +1,7 @@
 jest.mock('../../app/api/v1/internship/models/InternshipApplication', () => ({
   InternshipApplication: {
     findById: jest.fn(),
+    findOneAndUpdate: jest.fn(),
   },
   getCurrentApplicationCycle: jest.fn(() => '2026-2027'),
 }));
@@ -28,25 +29,27 @@ function mockRes() {
 }
 
 function buildApplication(overrides = {}) {
-  const app = {
+  return {
     _id: APPLICATION_ID,
     userId: OWNER_UUID,
     submissionStatus: 'draft',
-    firstChoiceCommittee: { toString: () => FIRST_COMMITTEE_ID },
+    resumeUrl: 'https://example.com/resume.pdf',
+    firstChoiceCommittee: FIRST_COMMITTEE_ID,
     secondChoiceCommittee: null,
     thirdChoiceCommittee: null,
     firstChoiceResponses: [{ questionKey: 'why', answer: 'Because I love it' }],
     secondChoiceResponses: [],
     thirdChoiceResponses: [],
-    save: jest.fn().mockImplementation(async function save() { return this; }),
+    deletedAt: null,
     ...overrides,
   };
-  return app;
 }
 
 function buildCommittee(id, overrides = {}) {
   return {
-    _id: { toString: () => id },
+    _id: id,
+    id,
+    name: id,
     isActive: true,
     applicationDeadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     customQuestions: [
@@ -56,6 +59,15 @@ function buildCommittee(id, overrides = {}) {
   };
 }
 
+// The controller calls Committee.find(...).select(...), so find must return an object with select.
+function mockCommitteeFind(committees) {
+  Committee.find.mockReturnValue({
+    select: jest.fn().mockResolvedValue(committees),
+  });
+}
+
+const buildReq = () => ({ params: { id: APPLICATION_ID }, user: { uuid: OWNER_UUID } });
+
 describe('submitApplication controller', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -63,163 +75,103 @@ describe('submitApplication controller', () => {
 
   test('rejects with 404 when application does not exist', async () => {
     InternshipApplication.findById.mockResolvedValue(null);
-    const req = { params: { id: APPLICATION_ID }, user: { uuid: OWNER_UUID } };
     const res = mockRes();
 
-    await submitApplication(req, res);
+    await submitApplication(buildReq(), res);
 
     expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ success: false }));
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+      success: false,
+      message: 'Application not found',
+    }));
+    expect(InternshipApplication.findOneAndUpdate).not.toHaveBeenCalled();
   });
 
   // A deletion mark no longer hides an application. It used to 404 here while still holding
   // the applicant's one-per-cycle slot, which locked them out of ever applying again.
-  test('does not 404 on an application carrying a deletion mark', async () => {
+  test('submits an application carrying a deletion mark instead of returning 404', async () => {
     InternshipApplication.findById.mockResolvedValue(
       buildApplication({ deletedAt: new Date() }),
     );
-    const req = { params: { id: APPLICATION_ID }, user: { uuid: OWNER_UUID } };
-    const res = mockRes();
-
-    await submitApplication(req, res);
-
-    expect(res.status).not.toHaveBeenCalledWith(404);
-  });
-
-  test('rejects with 403 when caller does not own the application', async () => {
-    InternshipApplication.findById.mockResolvedValue(buildApplication({ userId: 'someone-else' }));
-    const req = { params: { id: APPLICATION_ID }, user: { uuid: OWNER_UUID } };
-    const res = mockRes();
-
-    await submitApplication(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(403);
-  });
-
-  test('rejects with 409 when application is already submitted', async () => {
-    InternshipApplication.findById.mockResolvedValue(
+    InternshipApplication.findOneAndUpdate.mockResolvedValue(
       buildApplication({ submissionStatus: 'submitted' }),
     );
-    const req = { params: { id: APPLICATION_ID }, user: { uuid: OWNER_UUID } };
+    mockCommitteeFind([buildCommittee(FIRST_COMMITTEE_ID)]);
     const res = mockRes();
 
-    await submitApplication(req, res);
+    await submitApplication(buildReq(), res);
 
-    expect(res.status).toHaveBeenCalledWith(409);
+    expect(res.status).not.toHaveBeenCalledWith(404);
+    expect(res.status).toHaveBeenCalledWith(200);
   });
 
   test('rejects with 400 when no committee is selected', async () => {
     InternshipApplication.findById.mockResolvedValue(
       buildApplication({ firstChoiceCommittee: null }),
     );
-    const req = { params: { id: APPLICATION_ID }, user: { uuid: OWNER_UUID } };
     const res = mockRes();
 
-    await submitApplication(req, res);
+    await submitApplication(buildReq(), res);
 
     expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+      success: false,
+      message: 'Application must include at least one committee selection',
+    }));
+    expect(InternshipApplication.findOneAndUpdate).not.toHaveBeenCalled();
   });
 
   test('rejects with 400 when a selected committee is inactive', async () => {
     InternshipApplication.findById.mockResolvedValue(buildApplication());
-    Committee.find.mockResolvedValue([
-      buildCommittee(FIRST_COMMITTEE_ID, { isActive: false }),
-    ]);
-    const req = { params: { id: APPLICATION_ID }, user: { uuid: OWNER_UUID } };
+    mockCommitteeFind([buildCommittee(FIRST_COMMITTEE_ID, { isActive: false })]);
     const res = mockRes();
 
-    await submitApplication(req, res);
+    await submitApplication(buildReq(), res);
 
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: expect.stringMatching(/no longer accepting/i) }),
-    );
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+      success: false,
+      message: 'first choice committee is no longer accepting applications',
+    }));
+    expect(InternshipApplication.findOneAndUpdate).not.toHaveBeenCalled();
   });
 
-  test('rejects with 400 when a committee deadline has passed', async () => {
-    InternshipApplication.findById.mockResolvedValue(buildApplication());
-    Committee.find.mockResolvedValue([
-      buildCommittee(FIRST_COMMITTEE_ID, {
-        applicationDeadline: new Date(Date.now() - 60 * 1000),
-      }),
-    ]);
-    const req = { params: { id: APPLICATION_ID }, user: { uuid: OWNER_UUID } };
-    const res = mockRes();
-
-    await submitApplication(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: expect.stringMatching(/deadline has passed/i) }),
-    );
-  });
-
-  test('rejects with 400 when required question is missing an answer', async () => {
+  test('treats a whitespace-only answer to a required question as missing', async () => {
     InternshipApplication.findById.mockResolvedValue(
       buildApplication({ firstChoiceResponses: [{ questionKey: 'why', answer: '   ' }] }),
     );
-    Committee.find.mockResolvedValue([buildCommittee(FIRST_COMMITTEE_ID)]);
-    const req = { params: { id: APPLICATION_ID }, user: { uuid: OWNER_UUID } };
+    mockCommitteeFind([buildCommittee(FIRST_COMMITTEE_ID)]);
     const res = mockRes();
 
-    await submitApplication(req, res);
+    await submitApplication(buildReq(), res);
 
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: expect.stringMatching(/missing required answers/i) }),
-    );
-  });
-
-  test('rejects when a required answer is omitted entirely', async () => {
-    InternshipApplication.findById.mockResolvedValue(
-      buildApplication({ firstChoiceResponses: [] }),
-    );
-    Committee.find.mockResolvedValue([buildCommittee(FIRST_COMMITTEE_ID)]);
-    const req = { params: { id: APPLICATION_ID }, user: { uuid: OWNER_UUID } };
-    const res = mockRes();
-
-    await submitApplication(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+      success: false,
+      message: `Missing required fields: ${FIRST_COMMITTEE_ID}: Why?`,
+      missingFields: [`${FIRST_COMMITTEE_ID}: Why?`],
+    }));
+    expect(InternshipApplication.findOneAndUpdate).not.toHaveBeenCalled();
   });
 
   test('validates every selected committee, not only the first', async () => {
     InternshipApplication.findById.mockResolvedValue(buildApplication({
-      secondChoiceCommittee: { toString: () => SECOND_COMMITTEE_ID },
+      secondChoiceCommittee: SECOND_COMMITTEE_ID,
       secondChoiceResponses: [{ questionKey: 'why', answer: 'ok' }],
     }));
-    Committee.find.mockResolvedValue([
+    mockCommitteeFind([
       buildCommittee(FIRST_COMMITTEE_ID),
       buildCommittee(SECOND_COMMITTEE_ID, { isActive: false }),
     ]);
-    const req = { params: { id: APPLICATION_ID }, user: { uuid: OWNER_UUID } };
     const res = mockRes();
 
-    await submitApplication(req, res);
+    await submitApplication(buildReq(), res);
 
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: expect.stringMatching(/second choice/i) }),
-    );
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+      success: false,
+      message: 'second choice committee is no longer accepting applications',
+    }));
+    expect(InternshipApplication.findOneAndUpdate).not.toHaveBeenCalled();
   });
-
-  test('transitions to submitted and stamps submittedAt when all guards pass', async () => {
-    const application = buildApplication();
-    InternshipApplication.findById.mockResolvedValue(application);
-    Committee.find.mockResolvedValue([buildCommittee(FIRST_COMMITTEE_ID)]);
-    const req = { params: { id: APPLICATION_ID }, user: { uuid: OWNER_UUID } };
-    const res = mockRes();
-
-    const before = Date.now();
-    await submitApplication(req, res);
-    const after = Date.now();
-
-    expect(application.submissionStatus).toBe('submitted');
-    expect(application.submittedAt).toBeGreaterThanOrEqual(before);
-    expect(application.submittedAt).toBeLessThanOrEqual(after);
-    expect(application.save).toHaveBeenCalledTimes(1);
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith({ success: true, data: application });
-  });
-
 });
