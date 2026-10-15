@@ -94,8 +94,12 @@ function parseDateTime(dateStr, timeStr) {
       minutes = m || 0;
     }
 
-    // Create Date object (in local timezone, will be converted to UTC by Sequelize).
-    const date = new Date(year, month - 1, day, hours, minutes, 0);
+    // Sheet times are Pacific, whatever timezone the server runs in. Build the time as if it
+    // were UTC, then shift by the Pacific offset (PST or PDT) at that moment.
+    const utc = new Date(Date.UTC(year, month - 1, day, hours, minutes, 0));
+    const asUTC = new Date(utc.toLocaleString('en-US', { timeZone: 'UTC' }));
+    const asPacific = new Date(utc.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
+    const date = new Date(utc.getTime() + (asUTC - asPacific));
 
     if (Number.isNaN(date.getTime())) {
       throw new Error(`Invalid date: ${dateStr} ${timeStr}`);
@@ -253,7 +257,8 @@ async function getRecurringEvents(spreadsheetId) {
       throw new Error(`Invalid date range or day of the week for event "${title}"`);
     }
 
-    for (const day = new Date(rangeStart); day <= rangeEnd; day.setDate(day.getDate() + 1)) {
+    // The hour of slack keeps End Date included when the range crosses a daylight saving change.
+    for (const day = new Date(rangeStart); day.getTime() <= rangeEnd.getTime() + 60 * 60 * 1000; day.setDate(day.getDate() + 1)) {
       if (day.getDay() === dayOfWeek) {
         const dateStr = `${day.getMonth() + 1}/${day.getDate()}/${day.getFullYear()}`;
         const startDate = parseDateTime(dateStr, startTime);
