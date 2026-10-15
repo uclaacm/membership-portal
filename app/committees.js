@@ -1,3 +1,6 @@
+const mongoose = require('mongoose');
+const { Committee } = require('./api/v1/internship/models/Committee');
+
 /**
  * The canonical committee list.
  *
@@ -29,4 +32,17 @@ const GENERAL_COMMITTEE = 'ACM';
 
 const isValidCommittee = (committee) => COMMITTEES.includes(committee);
 
-module.exports = { COMMITTEES, GENERAL_COMMITTEE, isValidCommittee };
+async function getOfficerCommittees() {
+  if (mongoose.connection.readyState !== 1) return COMMITTEES;
+
+  try {
+    const created = await Committee.find({}).distinct('name');
+    return [...new Set([...COMMITTEES, ...created])];
+  } catch (err) {
+    return COMMITTEES;
+  }
+}
+
+module.exports = {
+  COMMITTEES, GENERAL_COMMITTEE, isValidCommittee, getOfficerCommittees,
+};
