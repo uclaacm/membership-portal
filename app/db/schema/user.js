@@ -1,4 +1,4 @@
-const { COMMITTEES } = require('../../committees');
+const { getOfficerCommittees } = require('../../committees');
 
 module.exports = (Sequelize, db) => {
   const User = db.define(
@@ -71,11 +71,12 @@ module.exports = (Sequelize, db) => {
         type: Sequelize.ARRAY(Sequelize.STRING),
         defaultValue: [],
         validate: {
-          isValidCommittee(value) {
+          async isValidCommittee(value) {
             if (!Array.isArray(value)) return;
-            const invalid = value.filter((c) => !COMMITTEES.includes(c));
+            const valid = await getOfficerCommittees();
+            const invalid = value.filter((c) => !valid.includes(c));
             if (invalid.length > 0) {
-              throw new Error(`Invalid committee(s): ${invalid.join(', ')}. Must be one of: ${COMMITTEES.join(', ')}`);
+              throw new Error(`Invalid committee(s): ${invalid.join(', ')}. Must be one of: ${valid.join(', ')}`);
             }
           },
         },
