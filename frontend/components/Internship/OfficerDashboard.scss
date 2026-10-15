@@ -79,6 +79,13 @@
     margin-bottom: 0.75rem;
   }
 
+  &__toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
   &__pagination {
     display: flex;
     align-items: center;

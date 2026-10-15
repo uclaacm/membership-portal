@@ -3,8 +3,11 @@
 import { useEffect, useMemo, useState } from "react";
 import fetchAllApplications from "@/app/actions/internship/fetchAllApplications";
 import fetchApplicationCycle from "@/app/actions/internship/fetchApplicationCycle";
+import fetchEveryApplication from "@/lib/fetchEveryApplication";
 import useDebouncedValue from "@/lib/hooks/useDebouncedValue";
+import { formatSpreadsheetDate } from "@/lib/spreadsheet";
 import AdminApplicationDetailDrawer from "@/app/internship/components/AdminApplicationDetailDrawer";
+import ExportSpreadsheetButton from "@/app/internship/components/ExportSpreadsheetButton";
 
 const STATUS_OPTIONS = [
   { value: "all", label: "All statuses" },
@@ -50,6 +53,7 @@ export default function ApplicationTable({ committees = [] }) {
   const [status, setStatus] = useState("loading"); // loading | success | error
   const [error, setError] = useState(null);
   const [selectedApplicationId, setSelectedApplicationId] = useState(null);
+  const [exportError, setExportError] = useState(null);
 
   const committeeLookup = useMemo(() => {
     const map = new Map();
@@ -98,6 +102,56 @@ export default function ApplicationTable({ committees = [] }) {
 
   const selectedApplication = applications.find((app) => app._id === selectedApplicationId) ?? null;
 
+  async function handleFetchSpreadsheetRows() {
+    setExportError(null);
+    const matchingApplications = await fetchEveryApplication({
+      search: debouncedSearch.trim() || undefined,
+      status: statusFilter !== "all" ? statusFilter : undefined,
+      committeeId: committeeFilter !== "all" ? committeeFilter : undefined,
+      ...resolveCycleParams(cycleFilter),
+    });
+    const getCommitteeName = id => (id ? committeeLookup.get(id) ?? id : "");
+
+    const header = [
+      "First Name",
+      "Last Name",
+      "Email",
+      "Phone",
+      "University",
+      "Major",
+      "Grad Year",
+      "1st Choice",
+      "1st Choice Status",
+      "2nd Choice",
+      "2nd Choice Status",
+      "3rd Choice",
+      "3rd Choice Status",
+      "Resume",
+      "Cycle",
+      "Submitted",
+    ];
+    const rows = matchingApplications.map(application => [
+      application.firstName,
+      application.lastName,
+      application.email,
+      application.phone,
+      application.university,
+      application.major,
+      application.graduationYear,
+      getCommitteeName(application.firstChoiceCommittee),
+      application.firstChoiceStatus,
+      getCommitteeName(application.secondChoiceCommittee),
+      application.secondChoiceStatus,
+      getCommitteeName(application.thirdChoiceCommittee),
+      application.thirdChoiceStatus,
+      application.resumeUrl,
+      application.applicationCycle,
+      formatSpreadsheetDate(application.submittedAt),
+    ]);
+
+    return [header, ...rows];
+  }
+
   function handleApplicationChanged(applicationId, updatedApplication) {
     setApplications((prev) => prev.map((app) => (
       app._id === applicationId ? { ...app, ...updatedApplication } : app
@@ -108,10 +162,20 @@ export default function ApplicationTable({ committees = [] }) {
     <div className="application-table-wrapper">
       <div className="application-table-wrapper__header">
         <h3>Applications</h3>
-        <span className="application-table-wrapper__count">
-          {pagination.total} application{pagination.total === 1 ? "" : "s"}
-        </span>
+        <div className="application-table-wrapper__actions">
+          <span className="application-table-wrapper__count">
+            {pagination.total} application{pagination.total === 1 ? "" : "s"}
+          </span>
+          <ExportSpreadsheetButton
+            totalCount={pagination.total}
+            fileName="internship-applications.csv"
+            onFetchRows={handleFetchSpreadsheetRows}
+            onError={setExportError}
+          />
+        </div>
       </div>
+
+      {exportError && <div className="committee-table-wrapper__error">{exportError}</div>}
 
       <div className="application-filters">
         <input

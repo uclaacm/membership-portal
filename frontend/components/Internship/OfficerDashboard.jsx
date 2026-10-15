@@ -9,10 +9,13 @@ import fetchApplicationStatusCounts from "@/app/actions/internship/fetchApplicat
 import ApplicationDetailDrawer from "@/app/internship/components/ApplicationDetailDrawer";
 import ApplicationTable from "@/app/internship/components/ApplicationTable";
 import CopyEmailsButton from "@/app/internship/components/CopyEmailsButton";
+import ExportSpreadsheetButton from "@/app/internship/components/ExportSpreadsheetButton";
 import OfficerFilterBar from "@/app/internship/components/OfficerFilterBar";
 import OfficerStatsBar from "@/app/internship/components/OfficerStatsBar";
 import Toast from "@/components/Toast";
+import fetchEveryApplication from "@/lib/fetchEveryApplication";
 import useDebouncedValue from "@/lib/hooks/useDebouncedValue";
+import { formatSpreadsheetDate } from "@/lib/spreadsheet";
 import { authUserProfileAtom, officerApplicationsAtom } from "@/lib/atoms";
 import CommitteeQuestionsModal from "./CommitteeQuestionsModal";
 import "./OfficerDashboard.scss";
@@ -86,6 +89,58 @@ function enrichForCommittee(application, committeeId) {
     myNotesField: match.notesField,
     myNotes: application[match.notesField] ?? "",
   };
+}
+
+// Expects applications already run through enrichForCommittee. Each of the
+// committee's questions gets its own column so answers line up across rows.
+function buildOfficerSpreadsheetRows(applications) {
+  const questions = new Map();
+  applications.forEach((application) => {
+    application.myResponses.forEach((response) => {
+      if (!questions.has(response.questionKey)) questions.set(response.questionKey, response.question);
+    });
+  });
+
+  const header = [
+    "First Name",
+    "Last Name",
+    "Email",
+    "Phone",
+    "University",
+    "Major",
+    "Grad Year",
+    "Choice",
+    "Status",
+    "Officer 1 Rating",
+    "Officer 2 Rating",
+    "Notes",
+    "Resume",
+    "Submitted",
+    ...questions.values(),
+  ];
+
+  const rows = applications.map((application) => {
+    const answers = new Map(application.myResponses.map((response) => [response.questionKey, response.answer]));
+    return [
+      application.firstName,
+      application.lastName,
+      application.email,
+      application.phone,
+      application.university,
+      application.major,
+      application.graduationYear,
+      application.myChoiceRank,
+      application.myStatus,
+      application.myOfficer1Rating,
+      application.myOfficer2Rating,
+      application.myNotes,
+      application.resumeUrl,
+      formatSpreadsheetDate(application.submittedAt),
+      ...[...questions.keys()].map((questionKey) => answers.get(questionKey)),
+    ];
+  });
+
+  return [header, ...rows];
 }
 
 export default function OfficerDashboard() {
@@ -262,35 +317,34 @@ export default function OfficerDashboard() {
     showToast("Committee questions saved", true);
   }, [showToast]);
 
+  const fetchMatchingApplications = useCallback(() => fetchEveryApplication({
+    search: debouncedSearch.trim() || undefined,
+    status: statusFilter !== "all" ? statusFilter : undefined,
+    choiceRank: choiceFilter !== "all" ? choiceFilter : undefined,
+  }), [debouncedSearch, statusFilter, choiceFilter]);
+
   const handleFetchAllEmails = useCallback(async () => {
-    const emails = [];
-    const fetchOptions = {
-      limit: 100,
-      search: debouncedSearch.trim() || undefined,
-      status: statusFilter !== "all" ? statusFilter : undefined,
-      choiceRank: choiceFilter !== "all" ? choiceFilter : undefined,
-    };
+    const matchingApplications = await fetchMatchingApplications();
+    return matchingApplications.map((application) => application.email).filter(Boolean);
+  }, [fetchMatchingApplications]);
 
-    let currentPage = 1;
-    let totalPages = 1;
-    do {
-      const result = await fetchAllApplications({ ...fetchOptions, page: currentPage });
-      if (!result.success) throw new Error(result.error);
-      result.data.forEach((application) => {
-        if (application.email) emails.push(application.email);
-      });
-      totalPages = result.pagination.pages;
-      currentPage += 1;
-    } while (currentPage <= totalPages);
-
-    return emails;
-  }, [debouncedSearch, statusFilter, choiceFilter]);
+  const handleFetchSpreadsheetRows = useCallback(async () => {
+    const matchingApplications = await fetchMatchingApplications();
+    const committeeApplications = matchingApplications
+      .map((application) => enrichForCommittee(application, myCommittee.id))
+      .filter(Boolean);
+    return buildOfficerSpreadsheetRows(committeeApplications);
+  }, [fetchMatchingApplications, myCommittee]);
 
   const handleCopied = useCallback((count) => {
     showToast(`Copied ${count} email address${count === 1 ? "" : "es"}`, true);
   }, [showToast]);
 
-  const handleCopyError = useCallback((message) => {
+  const handleExported = useCallback((count) => {
+    showToast(`Exported ${count} application${count === 1 ? "" : "s"}`, true);
+  }, [showToast]);
+
+  const handleToolbarError = useCallback((message) => {
     showToast(message, false);
   }, [showToast]);
 
@@ -325,6 +379,9 @@ export default function OfficerDashboard() {
       </div>
     );
   }
+
+  const committeeSlug = (myCommittee.displayName || myCommittee.name).toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const exportFileName = `${committeeSlug}-applications.csv`;
 
   return (
     <div className="officer-dashboard">
@@ -370,12 +427,21 @@ export default function OfficerDashboard() {
         <div className="officer-dashboard__count">
           {pagination.total} application{pagination.total === 1 ? "" : "s"}
         </div>
-        <CopyEmailsButton
-          totalCount={pagination.total}
-          onFetchAllEmails={handleFetchAllEmails}
-          onCopied={handleCopied}
-          onError={handleCopyError}
-        />
+        <div className="officer-dashboard__toolbar-actions">
+          <CopyEmailsButton
+            totalCount={pagination.total}
+            onFetchAllEmails={handleFetchAllEmails}
+            onCopied={handleCopied}
+            onError={handleToolbarError}
+          />
+          <ExportSpreadsheetButton
+            totalCount={pagination.total}
+            fileName={exportFileName}
+            onFetchRows={handleFetchSpreadsheetRows}
+            onExported={handleExported}
+            onError={handleToolbarError}
+          />
+        </div>
       </div>
 
       <ApplicationTable
