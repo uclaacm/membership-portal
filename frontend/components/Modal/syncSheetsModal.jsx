@@ -56,7 +56,7 @@ export default class SyncSheetsModal extends React.Component {
               </li>
               <li>Tabs named <strong>Week 1</strong> through <strong>Week 10</strong></li>
               <li>
-                Columns in order: Committee, Title, Date, Start Time, End Time, Location, Description, Event Link, Cover Image
+                Columns in order: Committee, Title, Start Date, End Date, Day of the Week, Start Time, End Time, Location, Description, Event Link, Banner
               </li>
             </ul>
 
