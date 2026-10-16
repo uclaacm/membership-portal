@@ -21,6 +21,8 @@ const ACTION_STYLE = {
   'committee.close': { icon: 'fa-folder-open', color: 'rgba(0,0,0,0.6)' },
   'committee.create': { icon: 'fa-sitemap', color: '#248a45' },
   'committee.update': { icon: 'fa-sitemap', color: 'rgba(0,0,0,0.6)' },
+  'decisions.release': { icon: 'fa-eye', color: '#248a45' },
+  'decisions.hide': { icon: 'fa-eye-slash', color: 'rgba(0,0,0,0.6)' },
 };
 
 const DEFAULT_STYLE = { icon: 'fa-clock-rotate-left', color: 'rgba(0,0,0,0.6)' };

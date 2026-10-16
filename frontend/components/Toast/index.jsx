@@ -19,16 +19,19 @@ export default class Toast extends React.Component {
 
   componentDidMount() {
     if (this.props.showing) {
-      this.showToast(this.props.message, this.props.success, this.props.duration);
+      this.showToast(this.props.message, this.props.success, this.props.duration, this.props.tone);
     }
   }
 
-  showToast(message, success, duration = 3000) {
+  // `tone` overrides the green/red picked from `success`. `"concealed"` confirms that something was
+  // hidden from view (e.g. decisions withheld from applicants) without reading as a failure.
+  showToast(message, success, duration = 3000, tone) {
     this.setState((prev) => {
       if (prev.timeout) clearTimeout(prev.timeout);
       return {
         showing: true,
         success,
+        tone,
         message: message ? message.toString() : success ? 'Success' : 'Error',
         timeout: setTimeout(this.hideToast, duration),
       };
@@ -46,17 +49,19 @@ export default class Toast extends React.Component {
     // would immediately re-arm showToast and the toast would never close.
     const propsChanged = prevProps.showing !== this.props.showing
       || prevProps.message !== this.props.message
-      || prevProps.success !== this.props.success;
+      || prevProps.success !== this.props.success
+      || prevProps.tone !== this.props.tone;
 
     if (this.props.showing && propsChanged) {
-      this.showToast(this.props.message, this.props.success, this.props.duration);
+      this.showToast(this.props.message, this.props.success, this.props.duration, this.props.tone);
     }
   }
 
   render() {
+    const tone = this.state.tone ?? (this.state.success ? 'success' : 'error');
     return (
       <div
-        className={`toast${this.state.success ? ' success' : ' error'}${
+        className={`toast ${tone}${
           this.state.showing ? ' showing' : ''
         }`}
       >

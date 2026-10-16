@@ -71,6 +71,15 @@
     font-size: 0.85rem;
   }
 
+  &__stats-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+
   &__toolbar {
     display: flex;
     align-items: center;
@@ -144,7 +153,6 @@
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
-  margin-bottom: 1.5rem;
 
   &__pill {
     appearance: none;
@@ -200,6 +208,37 @@
 
   &__pill--rejected &__count {
     color: vars.$dark-red;
+  }
+}
+
+// Shaped like the status pills it sits beside, so the row reads as one set of controls.
+.release-decisions-toggle {
+  margin-left: auto;
+
+  &__switch {
+    border: 1px solid vars.$gray1;
+    background: vars.$white;
+    border-radius: 999px;
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+    transition: border-color 0.15s, background 0.15s;
+
+    &:hover:not(.switch--disabled) {
+      border-color: vars.$primary-color;
+    }
+
+    .switch__label {
+      color: vars.$gray3;
+    }
+  }
+
+  &--on &__switch {
+    border-color: vars.$primary-color;
+    background: rgba(33, 77, 133, 0.08);
+
+    .switch__label {
+      color: vars.$primary-color;
+    }
   }
 }
 

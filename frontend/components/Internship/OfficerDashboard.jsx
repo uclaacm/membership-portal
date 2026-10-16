@@ -6,12 +6,14 @@ import { useAtom, useAtomValue } from "jotai";
 import fetchAllApplications from "@/app/actions/internship/fetchAllApplications";
 import fetchAllCommittees from "@/app/actions/internship/fetchAllCommittees";
 import fetchApplicationStatusCounts from "@/app/actions/internship/fetchApplicationStatusCounts";
+import updateDecisionsReleased from "@/app/actions/internship/updateDecisionsReleased";
 import ApplicationDetailDrawer from "@/app/internship/components/ApplicationDetailDrawer";
 import ApplicationTable from "@/app/internship/components/ApplicationTable";
 import CopyEmailsButton from "@/app/internship/components/CopyEmailsButton";
 import ExportSpreadsheetButton from "@/app/internship/components/ExportSpreadsheetButton";
 import OfficerFilterBar from "@/app/internship/components/OfficerFilterBar";
 import OfficerStatsBar from "@/app/internship/components/OfficerStatsBar";
+import ReleaseDecisionsToggle from "@/app/internship/components/ReleaseDecisionsToggle";
 import Toast from "@/components/Toast";
 import fetchEveryApplication from "@/lib/fetchEveryApplication";
 import useDebouncedValue from "@/lib/hooks/useDebouncedValue";
@@ -170,10 +172,11 @@ export default function OfficerDashboard() {
 
   const [selectedApplicationId, setSelectedApplicationId] = useState(null);
   const [isQuestionsModalOpen, setIsQuestionsModalOpen] = useState(false);
+  const [isSavingDecisions, setIsSavingDecisions] = useState(false);
   const [toast, setToast] = useState({ key: 0, message: "", success: true, visible: false });
 
-  const showToast = useCallback((message, success) => {
-    setToast((prev) => ({ key: prev.key + 1, message, success, visible: true }));
+  const showToast = useCallback((message, success, tone) => {
+    setToast((prev) => ({ key: prev.key + 1, message, success, tone, visible: true }));
   }, []);
 
   // The Toast component re-arms its hide timer on every prop update where
@@ -352,6 +355,27 @@ export default function OfficerDashboard() {
     handleStatusFilterChange(nextStatus);
   }
 
+  async function handleReleaseDecisionsChange(released) {
+    const committeeId = myCommittee.id;
+    setIsSavingDecisions(true);
+    const result = await updateDecisionsReleased(committeeId, released);
+    setIsSavingDecisions(false);
+
+    if (!result.success) {
+      showToast(result.error, false);
+      return;
+    }
+    const { decisionsReleased } = result.data;
+    setCommittees((prev) => prev.map((committee) => (
+      committee.id === committeeId ? { ...committee, decisionsReleased } : committee
+    )));
+    if (decisionsReleased) {
+      showToast("Decisions released to applicants", true);
+    } else {
+      showToast("Decisions hidden from applicants", true, "concealed");
+    }
+  }
+
   if (committeesStatus === "loading" || (committeesStatus === "success" && loadStatus === "loading" && applications.length === 0)) {
     return <div className="officer-dashboard officer-dashboard__placeholder">Loading applications…</div>;
   }
@@ -412,7 +436,15 @@ export default function OfficerDashboard() {
         </button>
       </div>
 
-      <OfficerStatsBar counts={statusCounts} activeStatus={statusFilter} onSelectStatus={handleSelectStatus} />
+      <div className="officer-dashboard__stats-row">
+        <OfficerStatsBar counts={statusCounts} activeStatus={statusFilter} onSelectStatus={handleSelectStatus} />
+        <ReleaseDecisionsToggle
+          committeeName={myCommittee.displayName}
+          released={Boolean(myCommittee.decisionsReleased)}
+          onChange={handleReleaseDecisionsChange}
+          saving={isSavingDecisions}
+        />
+      </div>
 
       <OfficerFilterBar
         statusFilter={statusFilter}
@@ -478,7 +510,7 @@ export default function OfficerDashboard() {
         onApplicationChanged={handleApplicationChanged}
       />
 
-      <Toast key={toast.key} showing={toast.visible} message={toast.message} success={toast.success} />
+      <Toast key={toast.key} showing={toast.visible} message={toast.message} success={toast.success} tone={toast.tone} />
 
       {isQuestionsModalOpen && (
         <CommitteeQuestionsModal

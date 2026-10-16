@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Switch from "@/components/Switch";
 import Topbar from "@/components/Topbar";
 import logoutUser from "@/app/actions/auth/logoutUser";
 import updateCareerProfile from "@/app/actions/user/updateCareerProfile";
@@ -492,23 +493,13 @@ export default function CareerEditPage() {
               <div className="form-section">
                 <h2>Privacy Settings</h2>
 
-                <div className="toggle-group">
-                  <label className="toggle-label" htmlFor="isProfilePublic">
-                    <input
-                      id="isProfilePublic"
-                      type="checkbox"
-                      checked={isProfilePublic}
-                      onChange={e => setIsProfilePublic(e.target.checked)}
-                    />
-                    <span className="toggle-switch" />
-                    <span className="toggle-text">
-                      Make my career profile public
-                      <span className="toggle-description">
-                        Allow other ACM members and recruiters to view your career profile in the directory
-                      </span>
-                    </span>
-                  </label>
-                </div>
+                <Switch
+                  checked={isProfilePublic}
+                  onChange={setIsProfilePublic}
+                  label="Make my career profile public"
+                  description="Allow other ACM members and recruiters to view your career profile in the directory"
+                  className="privacy-switch"
+                />
               </div>
 
               <div className="form-actions">

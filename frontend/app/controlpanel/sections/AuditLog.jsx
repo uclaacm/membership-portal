@@ -20,6 +20,8 @@ const ACTION_TONE = {
   'committee.close': '',
   'committee.create': 'create',
   'committee.update': '',
+  'decisions.release': 'create',
+  'decisions.hide': '',
 };
 
 const ACTION_OPTIONS = [

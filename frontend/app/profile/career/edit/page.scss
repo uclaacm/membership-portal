@@ -229,61 +229,19 @@
             }
           }
 
-          .toggle-group {
-            .toggle-label {
-              display: flex;
-              align-items: flex-start;
-              gap: 12px;
-              cursor: pointer;
-              user-select: none;
+          // The switch itself comes from components/Switch; this only sets the form's text styles
+          // and top-aligns the track with a description that can wrap onto several lines.
+          .privacy-switch {
+            align-items: flex-start;
+            gap: 12px;
 
-              input[type="checkbox"] {
-                display: none;
-              }
+            .switch__label {
+              font-weight: 600;
+              color: #374151;
+            }
 
-              .toggle-switch {
-                position: relative;
-                width: 48px;
-                height: 24px;
-                background: #d1d5db;
-                border-radius: 12px;
-                transition: background 0.2s ease;
-                flex-shrink: 0;
-
-                &:after {
-                  content: "";
-                  position: absolute;
-                  top: 2px;
-                  left: 2px;
-                  width: 20px;
-                  height: 20px;
-                  background: white;
-                  border-radius: 50%;
-                  transition: transform 0.2s ease;
-                }
-              }
-
-              input[type="checkbox"]:checked + .toggle-switch {
-                background: vars.$secondary-color;
-
-                &:after {
-                  transform: translateX(24px);
-                }
-              }
-
-              .toggle-text {
-                flex: 1;
-                font-weight: 600;
-                color: #374151;
-
-                .toggle-description {
-                  display: block;
-                  font-weight: normal;
-                  color: #6b7280;
-                  font-size: 0.9em;
-                  margin-top: 4px;
-                }
-              }
+            .switch__description {
+              color: #6b7280;
             }
           }
         }
