@@ -391,13 +391,16 @@ describe('getOwnApplication', () => {
     jest.clearAllMocks();
   });
 
-  test('excludes reviewer-only and internal fields, but keeps status fields', async () => {
-    const selectMock = jest.fn().mockResolvedValue(mockApplication());
+  test('excludes reviewer-only and internal fields, but selects status fields', async () => {
+    const selectMock = jest.fn().mockResolvedValue({ toObject: () => mockApplication() });
     InternshipApplication.findOne.mockReturnValue({ select: selectMock });
+    mockCommitteeFind([]);
     const req = { user: mockUser() };
     const res = mockResponse();
 
     await getOwnApplication(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
 
     expect(selectMock).toHaveBeenCalledTimes(1);
     const selectArg = selectMock.mock.calls[0][0];
@@ -409,8 +412,7 @@ describe('getOwnApplication', () => {
     ].forEach((field) => {
       expect(selectArg).toContain(`-${field}`);
     });
-    // Status fields must stay visible — ApplicationStatusCard.jsx reads them
-    // to show the applicant their own per-committee decision once submitted.
+    // Status fields are still read; they're withheld per committee until decisions are released.
     ['firstChoiceStatus', 'secondChoiceStatus', 'thirdChoiceStatus'].forEach((field) => {
       expect(selectArg).not.toContain(`-${field}`);
     });

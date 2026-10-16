@@ -20,6 +20,8 @@ jest.mock('../app/api/v1/internship/models/Committee', () => ({
   },
 }));
 
+jest.mock('../app/audit', () => ({ recordAudit: jest.fn() }));
+
 jest.mock('../app/api/v1/internship/models/InternshipApplication', () => ({
   InternshipApplication: {
     aggregate: jest.fn(),
@@ -32,8 +34,10 @@ const { InternshipApplication } = require('../app/api/v1/internship/models/Inter
 const {
   updateCommitteeQuestions,
   updateCommitteeAdmin,
+  updateDecisionsReleased,
   getAllCommitteesAdmin,
 } = require('../app/api/v1/internship/controllers/committeeController');
+const { recordAudit } = require('../app/audit');
 const { isAdmin } = require('../app/api/v1/auth');
 const error = require('../app/error');
 
@@ -344,5 +348,82 @@ describe('getAllCommitteesAdmin (applicationCount)', () => {
     await getAllCommitteesAdmin({ user: adminUser }, mockRes(), next);
 
     expect(next).toHaveBeenCalledWith(boom);
+  });
+});
+
+describe('updateDecisionsReleased', () => {
+  const hackCommittee = { name: 'hack', displayName: 'Hack', decisionsReleased: false };
+  // Mirrors the Sequelize user: officerCanManageCommittee reads `committees`.
+  const hackOfficer = { isAdmin: () => false, isOfficer: () => true, committees: ['Hack'] };
+  const aiOfficer = { isAdmin: () => false, isOfficer: () => true, committees: ['AI'] };
+
+  test('lets an officer of the committee release its decisions, and audits it', async () => {
+    Committee.findById.mockResolvedValue(hackCommittee);
+    Committee.findByIdAndUpdate.mockResolvedValue({ ...hackCommittee, decisionsReleased: true });
+    const req = { params: { id: 'c-hack' }, body: { released: true }, user: hackOfficer };
+    const res = mockRes();
+    const next = jest.fn();
+
+    await updateDecisionsReleased(req, res, next);
+
+    expect(next).not.toHaveBeenCalled();
+    expect(Committee.findByIdAndUpdate).toHaveBeenCalledWith(
+      'c-hack',
+      { $set: { decisionsReleased: true } },
+      { new: true, runValidators: true },
+    );
+    expect(recordAudit.mock.calls[0][2]).toEqual(expect.objectContaining({
+      action: 'decisions.release',
+      target: 'Hack',
+    }));
+    expect(res.json).toHaveBeenCalledWith({
+      error: null,
+      committee: expect.objectContaining({ decisionsReleased: true }),
+    });
+  });
+
+  test('forbids an officer of a different committee', async () => {
+    Committee.findById.mockResolvedValue(hackCommittee);
+    const next = jest.fn();
+
+    const req = { params: { id: 'c-hack' }, body: { released: true }, user: aiOfficer };
+    await updateDecisionsReleased(req, mockRes(), next);
+
+    expect(next).toHaveBeenCalledWith(expect.any(error.Forbidden));
+    expect(Committee.findByIdAndUpdate).not.toHaveBeenCalled();
+  });
+
+  test('lets an admin hide any committee\'s decisions', async () => {
+    Committee.findById.mockResolvedValue({ ...hackCommittee, decisionsReleased: true });
+    Committee.findByIdAndUpdate.mockResolvedValue(hackCommittee);
+    const next = jest.fn();
+
+    const req = { params: { id: 'c-hack' }, body: { released: false }, user: adminUser };
+    await updateDecisionsReleased(req, mockRes(), next);
+
+    expect(next).not.toHaveBeenCalled();
+    expect(recordAudit.mock.calls[0][2]).toEqual(expect.objectContaining({
+      action: 'decisions.hide',
+    }));
+  });
+
+  test('rejects a non-boolean body without touching the committee', async () => {
+    const next = jest.fn();
+
+    const req = { params: { id: 'c-hack' }, body: { released: 'yes' }, user: adminUser };
+    await updateDecisionsReleased(req, mockRes(), next);
+
+    expect(next).toHaveBeenCalledWith(expect.any(error.BadRequest));
+    expect(Committee.findById).not.toHaveBeenCalled();
+  });
+
+  test('does not audit when the value is unchanged', async () => {
+    Committee.findById.mockResolvedValue(hackCommittee);
+    Committee.findByIdAndUpdate.mockResolvedValue(hackCommittee);
+
+    const req = { params: { id: 'c-hack' }, body: { released: false }, user: hackOfficer };
+    await updateDecisionsReleased(req, mockRes(), jest.fn());
+
+    expect(recordAudit).not.toHaveBeenCalled();
   });
 });

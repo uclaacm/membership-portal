@@ -1,7 +1,7 @@
 const { Committee } = require('../models/Committee');
 const { InternshipApplication } = require('../models/InternshipApplication');
 const { canManageCommitteeResource } = require('../../auth/committeeScope');
-const { CHOICE_FIELDS } = require('./applicationController');
+const { CHOICE_FIELDS, officerCanManageCommittee } = require('./applicationController');
 const error = require('../../../../error');
 const { AuditLog } = require('../../../../db');
 const { recordAudit } = require('../../../../audit');
@@ -97,6 +97,42 @@ async function updateCommitteeQuestions(req, res, next) {
   }
 }
 
+// Shows or hides this committee's statuses on applicants. Uses the same
+// committee check as status updates, so whoever can set a status can also release it.
+async function updateDecisionsReleased(req, res, next) {
+  try {
+    const { released } = req.body;
+    if (typeof released !== 'boolean') {
+      throw new error.BadRequest('released must be a boolean.');
+    }
+
+    const committee = await Committee.findById(req.params.id);
+    if (!committee) {
+      return res.status(404).json({ error: 'Committee not found' });
+    }
+    if (!req.user.isAdmin() && !officerCanManageCommittee(req.user, committee)) {
+      throw new error.Forbidden('You are not assigned to this committee.');
+    }
+
+    const updatedCommittee = await Committee.findByIdAndUpdate(
+      req.params.id,
+      { $set: { decisionsReleased: released } },
+      { new: true, runValidators: true },
+    );
+
+    if (committee.decisionsReleased !== released) {
+      recordAudit(AuditLog, req, {
+        action: released ? 'decisions.release' : 'decisions.hide',
+        target: committee.displayName,
+        detail: `Application statuses ${released ? 'released to' : 'hidden from'} applicants`,
+      });
+    }
+
+    return res.json({ error: null, committee: updatedCommittee });
+  } catch (e) {
+    return next(e);
+  }
+}
 
 async function updateCommitteeAdmin(req, res, next) {
   try {
@@ -250,6 +286,7 @@ module.exports = {
   createCommittees,
   updateCommitteeQuestions,
   updateCommitteeAdmin,
+  updateDecisionsReleased,
   deleteCommittee,
   bulkUpdateCommitteeStatus,
 };

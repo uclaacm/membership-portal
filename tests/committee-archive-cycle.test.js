@@ -16,6 +16,7 @@ jest.mock('../app/api/v1/internship/models/Committee', () => ({
   Committee: {
     findById: jest.fn(),
     find: jest.fn(),
+    updateMany: jest.fn(),
   },
 }));
 
@@ -108,6 +109,10 @@ describe('advanceCycle', () => {
       { $set: { archivedAt: expect.any(Date), archivedBy: 'admin-uuid' } },
     );
     expect(setCurrentCycle).toHaveBeenCalledWith('2027-2028');
+    expect(Committee.updateMany).toHaveBeenCalledWith(
+      { decisionsReleased: true },
+      { $set: { decisionsReleased: false } },
+    );
     expect(res.json).toHaveBeenCalledWith({
       error: null,
       previousCycle: '2026-2027',

@@ -24,6 +24,7 @@ const {
   createCommittees,
   updateCommitteeQuestions,
   updateCommitteeAdmin,
+  updateDecisionsReleased,
   deleteCommittee,
   bulkUpdateCommitteeStatus,
 } = require('./controllers/committeeController');
@@ -92,6 +93,16 @@ router.put('/committees/:id/admin', auth, admin, committeeRateLimiter, updateCom
 // UPDATE committee (admin or officer)
 // Only allows updating committee questions
 router.put('/committees/:id/questions', auth, adminOrOfficer, committeeRateLimiter, updateCommitteeQuestions);
+
+// PATCH show/hide a committee's statuses to applicants (admin or that committee's officers)
+router.patch(
+  '/committees/:id/decisions-released',
+  auth,
+  adminOrOfficer,
+  committeeRateLimiter,
+  validateMongoId,
+  updateDecisionsReleased,
+);
 
 // DELETE committee (admin only) - soft delete by setting isActive to false
 router.delete('/committees/:id', auth, admin, deleteCommittee);
