@@ -94,8 +94,12 @@ function parseDateTime(dateStr, timeStr) {
       minutes = m || 0;
     }
 
-    // Create Date object (in local timezone, will be converted to UTC by Sequelize).
-    const date = new Date(year, month - 1, day, hours, minutes, 0);
+    // Sheet times are Pacific, whatever timezone the server runs in. Build the time as if it
+    // were UTC, then shift by the Pacific offset (PST or PDT) at that moment.
+    const utc = new Date(Date.UTC(year, month - 1, day, hours, minutes, 0));
+    const asUTC = new Date(utc.toLocaleString('en-US', { timeZone: 'UTC' }));
+    const asPacific = new Date(utc.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
+    const date = new Date(utc.getTime() + (asUTC - asPacific));
 
     if (Number.isNaN(date.getTime())) {
       throw new Error(`Invalid date: ${dateStr} ${timeStr}`);
@@ -208,6 +212,81 @@ async function getEventsFromWeek(weekNumber, spreadsheetId) {
   return events;
 }
 
+const DAYS_OF_WEEK = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+
+/**
+ * Read events from the Recurring events sheet. Each row repeats on its Day of the Week
+ * every week from Start Date through End Date (inclusive).
+ * @param {string} spreadsheetId - spreadsheet ID to read from
+ * @returns {Array} - array of event objects
+ */
+async function getRecurringEvents(spreadsheetId) {
+  const rows = await getGoogleSheetData('Recurring events!A:K', spreadsheetId);
+
+  const events = [];
+
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+
+    // Skip header rows, example events, and rows missing a title, date range, day, or time.
+    if (
+      row.length < 7
+      || row[0] === 'Committee'
+      || (row[0] && row[0].includes('Example:'))
+      || !row[1] || !row[2] || !row[3] || !row[4] || !row[5] || !row[6]
+    ) {
+      // eslint-disable-next-line no-continue
+      continue;
+    }
+
+    // Columns: Committee, Title, Start Date, End Date, Day of the Week, Start Time,
+    // End Time, Location, Description, Event Link, Banner.
+    const committee = (row[0] && row[0].trim()) || 'ACM';
+    const title = row[1].trim();
+    const rangeStart = parseDateTime(row[2].trim(), '0:00');
+    const rangeEnd = parseDateTime(row[3].trim(), '0:00');
+    const dayOfWeek = DAYS_OF_WEEK.indexOf(row[4].trim().toLowerCase());
+    const startTime = row[5].trim();
+    const endTime = row[6].trim();
+    const location = (row[7] && row[7].trim()) || '';
+    const description = (row[8] && row[8].trim()) || 'No description provided';
+    const eventLink = (row[9] && row[9].trim()) || '';
+    const cover = (row[10] && row[10].trim()) || '';
+
+    if (!rangeStart || !rangeEnd || dayOfWeek === -1) {
+      throw new Error(`Invalid date range or day of the week for event "${title}"`);
+    }
+
+    // The hour of slack keeps End Date included when the range crosses a daylight saving change.
+    for (const day = new Date(rangeStart); day.getTime() <= rangeEnd.getTime() + 60 * 60 * 1000; day.setDate(day.getDate() + 1)) {
+      if (day.getDay() === dayOfWeek) {
+        const dateStr = `${day.getMonth() + 1}/${day.getDate()}/${day.getFullYear()}`;
+        const startDate = parseDateTime(dateStr, startTime);
+        const endDate = parseDateTime(dateStr, endTime);
+
+        if (!startDate || !endDate) {
+          throw new Error(`Invalid date/time format for event "${title}"`);
+        }
+
+        events.push({
+          committee,
+          title,
+          description,
+          location: location || undefined,
+          eventLink: eventLink || undefined,
+          cover: cover || undefined,
+          startDate,
+          endDate,
+          attendanceCode: generateAttendanceCode(title, dateStr),
+          attendancePoints: 10,
+        });
+      }
+    }
+  }
+
+  return events;
+}
+
 /**
  * Sync events from Google Sheets to the database.
  * Reads from Week 1-10 sheets and creates/updates events.
@@ -239,21 +318,35 @@ async function syncEventsFromSheets(Event, spreadsheetId = DEFAULT_SPREADSHEET_I
       }
     }
 
+    try {
+      allEvents.push(...await getRecurringEvents(spreadsheetId));
+    } catch (err) {
+      results.errors.push(`Error reading Recurring events: ${err.message}`);
+    }
+
     // Create or update each event in the database (sequential for data integrity).
     // eslint-disable-next-line no-restricted-syntax
     for (const eventData of allEvents) {
       try {
-        // Check if event already exists by attendance code.
+        // Check if event already exists by title and start date/time.
         // eslint-disable-next-line no-await-in-loop
-        const existing = await Event.findByAttendanceCode(eventData.attendanceCode);
+        const sameStart = await Event.findAll({ where: { startDate: eventData.startDate } });
+        const existing = sameStart.find((e) => e.title.trim().toLowerCase() === eventData.title.toLowerCase());
 
         if (existing) {
-          // Update existing event.
+          // Update existing event, keeping its attendance code (members may already have it).
+          const { attendanceCode, ...changes } = eventData;
           // eslint-disable-next-line no-await-in-loop
-          await existing.update(eventData);
+          await existing.update(changes);
           results.updated++;
         } else {
-          // Create new event.
+          // Create new event. Attendance codes must be unique, so add a number if this one is taken.
+          let code = eventData.attendanceCode;
+          // eslint-disable-next-line no-await-in-loop
+          for (let n = 2; await Event.findByAttendanceCode(code); n++) {
+            code = `${eventData.attendanceCode}${n}`;
+          }
+          eventData.attendanceCode = code;
           // eslint-disable-next-line no-await-in-loop
           await Event.create(eventData);
           results.created++;
