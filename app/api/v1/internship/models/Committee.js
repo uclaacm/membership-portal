@@ -57,6 +57,12 @@ const CommitteeSchema = new Schema(
       type: [CustomQuestionSchema],
       default: [],
     },
+    // While false, applicants can't see their status for this committee. Officers release it
+    // when ready, and advancing the cycle hides it again.
+    decisionsReleased: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

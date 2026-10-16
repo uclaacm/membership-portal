@@ -1017,6 +1017,7 @@ async function submitApplication(req, res) {
 
 module.exports = {
   CHOICE_FIELDS,
+  officerCanManageCommittee,
   createApplication,
   getAllApplications,
   getApplicationStatusCounts,
