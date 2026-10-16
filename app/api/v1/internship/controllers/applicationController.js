@@ -129,6 +129,27 @@ function scrubResponsesForOfficer(application, ownedCommitteeIds) {
   return plain;
 }
 
+// Null out the status of every choice whose committee hasn't released decisions, so it never
+// reaches the applicant's browser. Every hidden choice looks the same, revealing no progress.
+async function withholdUnreleasedStatuses(application) {
+  const plain = application.toObject();
+  const committeeIds = CHOICE_FIELDS
+    .map((choice) => plain[choice.committeeField])
+    .filter(Boolean);
+  const released = await Committee.find({ _id: { $in: committeeIds }, decisionsReleased: true })
+    .select('_id');
+  const releasedIds = new Set(released.map((committee) => committee.id));
+
+  CHOICE_FIELDS.forEach((choice) => {
+    const committeeId = plain[choice.committeeField];
+    if (!committeeId || !releasedIds.has(committeeId.toString())) {
+      plain[choice.statusField] = null;
+    }
+  });
+
+  return plain;
+}
+
 async function getOfficerCommitteeIds(user) {
   const allCommittees = await Committee.find({}).select('name displayName');
   return allCommittees
@@ -584,7 +605,7 @@ async function getOwnApplication(req, res) {
     // Always include submissionStatus in the response
     return res.status(200).json({
       success: true,
-      data: application,
+      data: await withholdUnreleasedStatuses(application),
       submissionStatus: application.submissionStatus,
     });
   } catch (error) {
