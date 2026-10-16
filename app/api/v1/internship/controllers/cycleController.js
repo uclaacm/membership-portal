@@ -1,3 +1,4 @@
+const { Committee } = require('../models/Committee');
 const { InternshipApplication } = require('../models/InternshipApplication');
 const {
   computeDefaultCycleLabel,
@@ -60,6 +61,8 @@ async function advanceCycle(req, res, next) {
       result.modifiedCount !== undefined ? result.modifiedCount : result.nModified
     )) || 0;
 
+    // A new cycle starts with every committee's decisions hidden again.
+    await Committee.updateMany({ decisionsReleased: true }, { $set: { decisionsReleased: false } });
     await setCurrentCycle(newCycle);
 
     return res.json({
