@@ -2,8 +2,9 @@ const Sequelize = require('sequelize');
 const express = require('express');
 const error = require('../../../../error');
 const {
-  Event, Activity, Attendance, RSVP, db,
+  Event, Activity, Attendance, RSVP, User, db,
 } = require('../../../../db');
+const { canManageCommitteeResource } = require('../../auth/committeeScope');
 
 const router = express.Router();
 
@@ -26,17 +27,30 @@ router.route('/').get((req, res, next) => {
     .catch(next);
 });
 
-// Get attendance for a specific event (with UUID)
+// Get who checked in to a specific event (admins, or officers of the event's committee)
 router.route('/:uuid').get((req, res, next) => {
   if (req.user.isPending()) return next(new error.Forbidden());
 
-  // Find all attendance records for that event
-  // Essentially will return all the users that attended an event
-  return Attendance.getAttendanceForEvent(req.params.uuid)
-    .then((attendance) => res.json({
-      error: null,
-      attendance: attendance.map((a) => a.getPublic()),
-    }))
+  return Event.findByUUID(req.params.uuid)
+    .then((event) => {
+      if (!event) throw new error.UserError('Event not found');
+
+      if (!canManageCommitteeResource(req.user, event.committee)) {
+        throw new error.Forbidden('You do not have permission to view check-ins for this event.');
+      }
+
+      // Find all attendance records for that event and attach each user's profile
+      return Attendance.getAttendanceForEvent(req.params.uuid)
+        .then((attendance) => Promise.all(
+          attendance.map((a) => User.findByUUID(a.getDataValue('user'))),
+        ).then((users) => res.json({
+          error: null,
+          attendance: attendance.map((a, index) => ({
+            ...a.getPublic(),
+            user: users[index] ? users[index].getUserProfile() : null,
+          })),
+        })));
+    })
     .catch(next);
 });
 
