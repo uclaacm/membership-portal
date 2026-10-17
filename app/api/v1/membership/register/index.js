@@ -1,12 +1,9 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
-const config = require('../../../../config');
 const error = require('../../../../error');
 const { Activity } = require('../../../../db');
+const { signUserToken } = require('../../auth');
 
 const router = express.Router();
-
-const TOKEN_EXPIRES = 86400; // 1 day in seconds
 
 /**
  * Registration route.
@@ -23,36 +20,26 @@ router.post('/', (req, res, next) => {
   const updatedInfo = {};
 
   const createUserToken = (user) => {
-    // create a token with the user's ID and privilege level
-    jwt.sign(
-      {
-        uuid: user.getDataValue('uuid'),
-        admin: user.isAdmin(),
-        registered: !user.isPending(),
-      },
-      config.session.secret,
-      { expiresIn: TOKEN_EXPIRES },
-      (err, token) => {
-        if (err) return next(err);
+    signUserToken(user, (err, token) => {
+      if (err) return next(err);
 
-        // respond with the token upon successful login
-        res.json({
-          error: null,
-          user: user.getPublicProfile(),
-          token,
-        });
-        // record that the user changed some account information, and what info was changed
-        Activity.accountActivated(
-          user.uuid,
-          'Registered - added year and major',
-        );
-        Activity.accountUpdatedInfo(
-          user.uuid,
-          Object.keys(updatedInfo).join(', '),
-        );
-        return null;
-      },
-    );
+      // respond with the token upon successful login
+      res.json({
+        error: null,
+        user: user.getPublicProfile(),
+        token,
+      });
+      // record that the user changed some account information, and what info was changed
+      Activity.accountActivated(
+        user.uuid,
+        'Registered - added year and major',
+      );
+      Activity.accountUpdatedInfo(
+        user.uuid,
+        Object.keys(updatedInfo).join(', '),
+      );
+      return null;
+    });
     return null;
   };
 
