@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
 import Config from '@/lib/config';
 import uploadImage from '@/app/actions/image/uploadImage';
+import fetchImages from '@/app/actions/image/fetchImages';
 
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -25,8 +26,10 @@ export default class AdminAddEvent extends React.Component {
       // this to decide whether the incoming prop is a *different* event or just a re-render.
       syncedUuid: this.props.event?.uuid,
       coverImageFile: null,
-      coverImageURL: '', 
-      coverMode: 'url', // 'url' | 'upload'
+      coverImageURL: '',
+      coverMode: 'url', // 'url' | 'upload' | 'library'
+      libraryImages: [],
+      libraryLoading: false,
       isPreviewFlipped: false,
       isPlatformsOpen: false
     };
@@ -35,6 +38,9 @@ export default class AdminAddEvent extends React.Component {
     this.resizeTextArea = this.resizeTextArea.bind(this);
     this.handleClickOutsidePlatforms = this.handleClickOutsidePlatforms.bind(this);
     this.handleChangeCover = this.handleChangeCover.bind(this);
+    this.handleChangeCoverMode = this.handleChangeCoverMode.bind(this);
+    this.loadLibraryImages = this.loadLibraryImages.bind(this);
+    this.handleSelectLibraryImage = this.handleSelectLibraryImage.bind(this);
     this.handleChangeStartDate = this.handleChangeStartDate.bind(this);
     this.handleChangeEndDate = this.handleChangeEndDate.bind(this);
     this.handleChangeTime = this.handleChangeTime.bind(this);
@@ -127,6 +133,47 @@ export default class AdminAddEvent extends React.Component {
       coverMode: 'url',
       isPreviewFlipped: false,
       isPlatformsOpen: false
+    });
+  }
+
+  getRawImageUrl(uuid) {
+    return `${Config.API_URL + Config.routes.image.specific}/${uuid}`;
+  }
+
+  // Which already-uploaded image (if any) the cover currently points at, so the library grid
+  // can highlight it even after switching tabs or reopening the form.
+  getSelectedLibraryUuid() {
+    const cover = this.state.event.cover || '';
+    const match = cover.match(new RegExp(`${Config.routes.image.specific}/([0-9a-f-]{36})`, 'i'));
+    return match ? match[1] : null;
+  }
+
+  loadLibraryImages() {
+    if (this.state.libraryLoading) return;
+    this.setState({ libraryLoading: true });
+    fetchImages().then((images) => {
+      this.setState({ libraryImages: images || [], libraryLoading: false });
+    });
+  }
+
+  handleChangeCoverMode(mode) {
+    this.setState({ coverMode: mode });
+    if (mode === 'library' && this.state.libraryImages.length === 0) {
+      this.loadLibraryImages();
+    }
+  }
+
+  // Picking an existing upload is treated the same as typing its URL in manually: it also
+  // fills coverImageURL so a later committee change (handleCommiteeChange) sees a valid custom
+  // cover instead of stomping the selection with the committee's default banner.
+  handleSelectLibraryImage(image) {
+    const url = this.getRawImageUrl(image.uuid);
+    this.setState((prev) => {
+      const newState = Object.assign({}, prev);
+      newState.event.cover = url;
+      newState.coverImageURL = url;
+      newState.coverImageFile = null;
+      return newState;
     });
   }
 
@@ -367,19 +414,26 @@ export default class AdminAddEvent extends React.Component {
                   <button
                     type="button"
                     className={`mode-btn${coverMode === 'url' ? ' active' : ''}`}
-                    onClick={() => this.setState({ coverMode: 'url' })}
+                    onClick={() => this.handleChangeCoverMode('url')}
                   >
                     URL
                   </button>
                   <button
                     type="button"
                     className={`mode-btn${coverMode === 'upload' ? ' active' : ''}`}
-                    onClick={() => this.setState({ coverMode: 'upload' })}
+                    onClick={() => this.handleChangeCoverMode('upload')}
                   >
                     Upload
                   </button>
+                  <button
+                    type="button"
+                    className={`mode-btn${coverMode === 'library' ? ' active' : ''}`}
+                    onClick={() => this.handleChangeCoverMode('library')}
+                  >
+                    Library
+                  </button>
                 </div>
-                {coverMode === 'url' ? (
+                {coverMode === 'url' && (
                   <input
                     type="text"
                     value={this.state.coverImageURL ? this.state.coverImageURL : ''}
@@ -387,7 +441,8 @@ export default class AdminAddEvent extends React.Component {
                     placeholder="https://..."
                     onChange={this.handleChangeCover}
                   />
-                ) : (
+                )}
+                {coverMode === 'upload' && (
                   <div className="upload-zone" onClick={() => this.coverUploadRef.current?.click()}>
                     <input
                       type="file"
@@ -406,6 +461,37 @@ export default class AdminAddEvent extends React.Component {
                     )}
                   </div>
                 )}
+                {coverMode === 'library' && (() => {
+                  const { libraryImages, libraryLoading } = this.state;
+                  const selectedUuid = this.getSelectedLibraryUuid();
+                  if (libraryLoading) {
+                    return <p className="library-status">Loading uploaded images...</p>;
+                  }
+                  if (libraryImages.length === 0) {
+                    return <p className="library-status">No images have been uploaded yet.</p>;
+                  }
+                  return (
+                    <div className="library-grid">
+                      {libraryImages.map((image) => {
+                        const url = this.getRawImageUrl(image.uuid);
+                        const isSelected = image.uuid === selectedUuid;
+                        return (
+                          <button
+                            type="button"
+                            key={image.uuid}
+                            className={`library-item${isSelected ? ' selected' : ''}`}
+                            onClick={() => this.handleSelectLibraryImage(image)}
+                            title={url}
+                          >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={url} alt="" />
+                            {isSelected && <span className="library-item-check">✓</span>}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Basic info */}

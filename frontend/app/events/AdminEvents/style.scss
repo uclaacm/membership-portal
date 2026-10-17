@@ -141,7 +141,7 @@
         }
       }
 
-      // Cover mode toggle (URL / Upload)
+      // Cover mode toggle (URL / Upload / Library)
       .cover-mode-toggle {
         display: inline-flex;
         background: #f0f1f3;
@@ -216,6 +216,68 @@
             color: vars.$dark-green;
             font-weight: 600;
           }
+        }
+      }
+
+      .library-status {
+        @include field-input;
+        margin: 0;
+        text-align: center;
+        color: #999;
+        font-size: 13px;
+        background: #fafafa;
+      }
+
+      .library-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+        gap: 8px;
+        max-height: 176px;
+        overflow-y: auto;
+        padding: 2px;
+      }
+
+      .library-item {
+        position: relative;
+        padding: 0;
+        border: 1.5px solid #e2e4e8;
+        border-radius: 8px;
+        overflow: hidden;
+        aspect-ratio: 1;
+        cursor: pointer;
+        background: #fafafa;
+        transition: border-color 0.15s, box-shadow 0.15s;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+
+        &:hover {
+          border-color: vars.$secondaryblue;
+        }
+
+        &.selected {
+          border-color: vars.$secondaryblue;
+          box-shadow: 0 0 0 3px rgba(59, 89, 237, 0.15);
+        }
+
+        .library-item-check {
+          position: absolute;
+          top: 4px;
+          right: 4px;
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background: vars.$secondaryblue;
+          color: #fff;
+          font-size: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          line-height: 1;
         }
       }
 
