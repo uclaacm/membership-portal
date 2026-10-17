@@ -15,7 +15,7 @@ import './style.scss';
  *
  * The role changes the affordances on the card, never the layout of the page:
  *   member  → RSVP / Going pill, "42 going"
- *   staff   → RSVPs button, "42/60 RSVPs", edit + delete when they may modify it
+ *   staff   → RSVPs button, "42/60 RSVPs", edit + delete + Check-ins when they may modify it
  *
  * @param canModify  admin anywhere, officer only inside their own committees. Computed by the
  *   caller from `userProfile.committees` so the rule lives next to the permission matrix.
@@ -24,7 +24,7 @@ import './style.scss';
 export default function EventCard({
   event, staff, canModify, compact,
   rsvpCount, checkedInCount, going,
-  onRsvp, onViewRsvps, onEdit, onDelete,
+  onRsvp, onViewRsvps, onViewCheckIns, onEdit, onDelete,
 }) {
   const committeeColors = Object.fromEntries(Config.committeeColors);
   const committee = event.committee || 'ACM';
@@ -111,6 +111,18 @@ export default function EventCard({
               </button>
             )}
 
+            {/* Check-ins follow the same scope as editing: admins everywhere, officers only
+                in their own committees. The API enforces the same rule. */}
+            {staff && canModify && onViewCheckIns && (
+              <button
+                type="button"
+                className="event-card__pill-btn is-staff"
+                onClick={() => onViewCheckIns(event)}
+              >
+                Check-ins
+              </button>
+            )}
+
             {staff ? (
               onViewRsvps && (
                 <button
@@ -160,6 +172,7 @@ EventCard.propTypes = {
   going: PropTypes.bool,
   onRsvp: PropTypes.func,
   onViewRsvps: PropTypes.func,
+  onViewCheckIns: PropTypes.func,
   onEdit: PropTypes.func,
   onDelete: PropTypes.func,
 };
@@ -173,6 +186,7 @@ EventCard.defaultProps = {
   going: false,
   onRsvp: null,
   onViewRsvps: null,
+  onViewCheckIns: null,
   onEdit: null,
   onDelete: null,
 };

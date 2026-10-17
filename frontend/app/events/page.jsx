@@ -64,6 +64,7 @@ function EventsPageInner() {
   const [editing, setEditing] = useState(null);
   const [creating, setCreating] = useState(false);
   const [rsvpModalEvent, setRsvpModalEvent] = useState(null);
+  const [checkInsModalEvent, setCheckInsModalEvent] = useState(null);
   const [checkInOpen, setCheckInOpen] = useState(false);
   const [deleting, setDeleting] = useState(null);
   const [syncOpen, setSyncOpen] = useState(false);
@@ -332,6 +333,7 @@ function EventsPageInner() {
             rsvpedUuids={rsvpedUuids}
             onRsvp={toggleRsvp}
             onViewRsvps={staff ? setRsvpModalEvent : null}
+            onViewCheckIns={staff ? setCheckInsModalEvent : null}
             onEdit={setEditing}
           />
         ) : months.length === 0 ? (
@@ -353,6 +355,7 @@ function EventsPageInner() {
                   going={!!rsvpedUuids[event.uuid]}
                   onRsvp={toggleRsvp}
                   onViewRsvps={staff ? setRsvpModalEvent : null}
+                  onViewCheckIns={staff ? setCheckInsModalEvent : null}
                   onEdit={setEditing}
                   onDelete={setDeleting}
                 />
@@ -382,6 +385,14 @@ function EventsPageInner() {
 
       {rsvpModalEvent && (
         <EventRSVPsModal event={rsvpModalEvent} onClose={() => setRsvpModalEvent(null)} />
+      )}
+
+      {checkInsModalEvent && (
+        <EventRSVPsModal
+          kind="checkins"
+          event={checkInsModalEvent}
+          onClose={() => setCheckInsModalEvent(null)}
+        />
       )}
 
       {checkInOpen && (

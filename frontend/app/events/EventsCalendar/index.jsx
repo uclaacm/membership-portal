@@ -29,7 +29,7 @@ export default function EventsCalendar({
   events, month, year, selectedDay,
   onSelectDay, onStepMonth, onToday,
   staff, canModify, rsvpedUuids,
-  onRsvp, onViewRsvps, onEdit,
+  onRsvp, onViewRsvps, onViewCheckIns, onEdit,
 }) {
   const committeeColors = useMemo(() => Object.fromEntries(Config.committeeColors), []);
   const colorFor = (committee) => committeeColors[committee || 'ACM'] || '#1d6bff';
@@ -242,6 +242,16 @@ export default function EventsCalendar({
                     </button>
                   )}
 
+                  {staff && canModify(event) && onViewCheckIns && (
+                    <button
+                      type="button"
+                      className="events-calendar__pill is-staff"
+                      onClick={() => onViewCheckIns(event)}
+                    >
+                      Check-ins
+                    </button>
+                  )}
+
                   {staff ? (
                     <button
                       type="button"
@@ -291,6 +301,7 @@ EventsCalendar.propTypes = {
   rsvpedUuids: PropTypes.object,
   onRsvp: PropTypes.func,
   onViewRsvps: PropTypes.func,
+  onViewCheckIns: PropTypes.func,
   onEdit: PropTypes.func,
 };
 
@@ -299,5 +310,6 @@ EventsCalendar.defaultProps = {
   rsvpedUuids: {},
   onRsvp: null,
   onViewRsvps: null,
+  onViewCheckIns: null,
   onEdit: null,
 };
