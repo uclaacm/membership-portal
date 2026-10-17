@@ -4,6 +4,16 @@ import Loader from '@/components/Loader';
 import './style.scss';
 
 class Button extends React.Component {
+  static defaultProps = {
+    className: null,
+    color: null,
+    icon: null,
+    loading: false,
+    onClick: () => {},
+    style: null,
+    type: 'button',
+  };
+
   constructor(props) {
     super(props);
     this.buttonAction = this.buttonAction.bind(this);
@@ -46,16 +56,6 @@ Button.propTypes = {
   style: PropTypes.string,
   text: PropTypes.string.isRequired,
   type: PropTypes.oneOf(['button', 'submit']),
-};
-
-Button.defaultProps = {
-  className: null,
-  color: null,
-  icon: null,
-  loading: false,
-  onClick: () => {},
-  style: null,
-  type: 'button',
 };
 
 export default Button;

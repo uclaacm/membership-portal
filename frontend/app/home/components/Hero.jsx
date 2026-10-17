@@ -12,7 +12,7 @@ import NeuralBackground from './NeuralBackground';
  * The NeuralBackground canvas is reused unchanged and sits behind the content at z-index 0.
  */
 export default function Hero({
-  firstName, picture, subline, position, rank,
+  firstName, picture = '', subline, position = '', rank = null,
 }) {
   const meta = [position, rank ? `Rank #${rank}` : null].filter(Boolean).join(' · ');
 
@@ -57,5 +57,3 @@ Hero.propTypes = {
   position: PropTypes.string,
   rank: PropTypes.number,
 };
-
-Hero.defaultProps = { picture: '', position: '', rank: null };

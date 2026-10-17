@@ -8,7 +8,7 @@ import {
 
 const ROLE_TONE = { Admin: 'admin', Officer: 'officer', Member: 'member' };
 
-function Row({ label, children }) {
+function Row({ label, children = '—' }) {
   return (
     <div className="cp-detail-row">
       <span className="cp-detail-label">{label}</span>
@@ -18,7 +18,6 @@ function Row({ label, children }) {
 }
 
 Row.propTypes = { label: PropTypes.string.isRequired, children: PropTypes.node };
-Row.defaultProps = { children: '—' };
 
 /**
  * Read-only detail view for one member.
@@ -27,7 +26,7 @@ Row.defaultProps = { children: '—' };
  * committees sees the redacted fields as "Hidden" rather than blank — the distinction between
  * "no value" and "not permitted" stays visible.
  */
-export default function UserDetailModal({ user, onEditRole, canManageRoles, onClose }) {
+export default function UserDetailModal({ user = null, onEditRole, canManageRoles, onClose }) {
   if (!user) return null;
 
   const hidden = <span className="cp-redacted">Hidden</span>;
@@ -95,5 +94,3 @@ UserDetailModal.propTypes = {
   onEditRole: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
 };
-
-UserDetailModal.defaultProps = { user: null };

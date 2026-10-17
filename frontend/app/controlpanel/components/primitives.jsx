@@ -19,8 +19,10 @@ export function Tag({ children }) {
 
 Tag.propTypes = { children: PropTypes.node.isRequired };
 
+const NO_ITEMS = [];
+
 /** A group of committee chips. Renders an em dash when a user has no committees. */
-export function TagGroup({ items }) {
+export function TagGroup({ items = NO_ITEMS }) {
   if (!items || items.length === 0) return <>&mdash;</>;
   return (
     <span className="cp-tag-group">
@@ -30,7 +32,6 @@ export function TagGroup({ items }) {
 }
 
 TagGroup.propTypes = { items: PropTypes.arrayOf(PropTypes.string) };
-TagGroup.defaultProps = { items: [] };
 
 /**
  * Marks a field the API cannot supply yet. Rendered as a blue dagger matching the footer
@@ -42,7 +43,7 @@ export function Dagger() {
 
 /** Stat tile for the Overview section. */
 export function StatTile({
-  label, value, delta, deltaColor, needsApi,
+  label, value, delta = null, deltaColor = 'rgba(0,0,0,0.45)', needsApi = false,
 }) {
   return (
     <div className="cp-stat-tile">
@@ -64,11 +65,9 @@ StatTile.propTypes = {
   needsApi: PropTypes.bool,
 };
 
-StatTile.defaultProps = { delta: null, deltaColor: 'rgba(0,0,0,0.45)', needsApi: false };
-
 /** Uppercase section heading with an optional count and right-hand action cluster. */
 export function SectionHead({
-  title, count, baseline, children,
+  title, count = null, baseline = false, children = null,
 }) {
   return (
     <div className={`cp-section-head ${baseline ? 'baseline' : ''}`}>
@@ -87,8 +86,6 @@ SectionHead.propTypes = {
   baseline: PropTypes.bool,
   children: PropTypes.node,
 };
-
-SectionHead.defaultProps = { count: null, baseline: false, children: null };
 
 /** Page title and subtitle at the top of each section. */
 export function PageHeader({ title, subtitle }) {
@@ -158,7 +155,7 @@ Select.propTypes = {
  * handler, or both before launch — see the section legend.
  */
 export function PendingButton({
-  label, note, variant, small, inline,
+  label, note, variant = 'secondary', small = false, inline = false,
 }) {
   if (inline) {
     return (
@@ -189,14 +186,12 @@ PendingButton.propTypes = {
   inline: PropTypes.bool,
 };
 
-PendingButton.defaultProps = { variant: 'secondary', small: false, inline: false };
-
 /**
  * Footer legend shown on every section.
  *
  * `pending` adds the second line when the section contains controls that are not wired up yet.
  */
-export function ApiLegend({ pending }) {
+export function ApiLegend({ pending = false }) {
   return (
     <div className="cp-legend">
       <div>
@@ -216,4 +211,3 @@ export function ApiLegend({ pending }) {
 }
 
 ApiLegend.propTypes = { pending: PropTypes.bool };
-ApiLegend.defaultProps = { pending: false };

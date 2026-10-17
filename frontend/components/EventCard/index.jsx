@@ -22,9 +22,9 @@ import './style.scss';
  * @param compact    dashboard sizing — a 104px cover instead of 132px. Nothing else differs.
  */
 export default function EventCard({
-  event, staff, canModify, compact,
-  rsvpCount, checkedInCount, going,
-  onRsvp, onViewRsvps, onViewCheckIns, onEdit, onDelete,
+  event, staff = false, canModify = false, compact = false,
+  rsvpCount = 0, checkedInCount = null, going = false,
+  onRsvp = null, onViewRsvps = null, onViewCheckIns = null, onEdit = null, onDelete = null,
 }) {
   const committeeColors = Object.fromEntries(Config.committeeColors);
   const committee = event.committee || 'ACM';
@@ -175,18 +175,4 @@ EventCard.propTypes = {
   onViewCheckIns: PropTypes.func,
   onEdit: PropTypes.func,
   onDelete: PropTypes.func,
-};
-
-EventCard.defaultProps = {
-  staff: false,
-  canModify: false,
-  compact: false,
-  rsvpCount: 0,
-  checkedInCount: null,
-  going: false,
-  onRsvp: null,
-  onViewRsvps: null,
-  onViewCheckIns: null,
-  onEdit: null,
-  onDelete: null,
 };

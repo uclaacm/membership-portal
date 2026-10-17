@@ -28,7 +28,7 @@ export const SECTIONS = [
 export const visibleSections = (isAdmin) => SECTIONS.filter((s) => isAdmin || !s.adminOnly);
 
 export default function ControlPanelV2({
-  section, onSectionChange, counts, isAdmin, onLogout, children,
+  section, onSectionChange, counts, isAdmin, onLogout, children = null,
 }) {
   return (
     <div className="control-panel-v2">
@@ -80,5 +80,3 @@ ControlPanelV2.propTypes = {
   onLogout: PropTypes.func.isRequired,
   children: PropTypes.node,
 };
-
-ControlPanelV2.defaultProps = { children: null };

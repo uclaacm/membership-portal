@@ -7,6 +7,11 @@ import Utils from '@/lib/utils';
 import './profileCard.scss';
 
 export default class ProfileCard extends React.Component {
+  static defaultProps = {
+    isAdmin: false,
+    activity: [],
+  };
+
   render() {
     const { profile, isAdmin, activity } = this.props;
     const { currLevel, nextLevel } = Utils.getLevel(profile.points);
@@ -114,9 +119,4 @@ ProfileCard.propTypes = {
   profile: PropTypes.object.isRequired,
   isAdmin: PropTypes.bool,
   activity: PropTypes.array,
-};
-
-ProfileCard.defaultProps = {
-  isAdmin: false,
-  activity: [],
 };

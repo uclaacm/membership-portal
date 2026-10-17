@@ -40,7 +40,9 @@ function resolveCycleParams(cycleFilter) {
   return {};
 }
 
-export default function ApplicationTable({ committees = [] }) {
+const NO_COMMITTEES = [];
+
+export default function ApplicationTable({ committees = NO_COMMITTEES }) {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search, 300);
   const [statusFilter, setStatusFilter] = useState("all");

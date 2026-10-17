@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import levelFor from './levels';
 
 /** Progress toward the next rung of the level ladder. */
-export default function ProgressCard({ points }) {
+export default function ProgressCard({ points = 0 }) {
   const level = levelFor(points);
 
   return (
@@ -32,4 +32,3 @@ export default function ProgressCard({ points }) {
 }
 
 ProgressCard.propTypes = { points: PropTypes.number };
-ProgressCard.defaultProps = { points: 0 };

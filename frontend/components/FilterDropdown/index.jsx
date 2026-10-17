@@ -3,6 +3,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './style.scss';
 
+const NONE = [];
+
 /**
  * Reusable dropdown filter component.
  *
@@ -14,8 +16,8 @@ import './style.scss';
  */
 export default function FilterDropdown({
   label,
-  options = [],
-  selected = [],
+  options = NONE,
+  selected = NONE,
   onChange,
   multiSelect = false,
 }) {

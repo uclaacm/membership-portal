@@ -24,7 +24,7 @@ const RESOURCE_FALLBACK = { icon: 'fa-solid fa-link', color: '#979797', backgrou
  * here. What varies by role is the launcher's contents, not the nav.
  */
 export default function AppLauncher({
-  open, onToggle, onClose, staff, cycle,
+  open, onToggle, onClose, staff = false, cycle = null,
 }) {
   // The ref wraps the panel *and* its trigger. Scoping the outside-click guard to the topbar
   // root would make the whole bar count as "inside", so clicking the wordmark or a nav link
@@ -139,5 +139,3 @@ AppLauncher.propTypes = {
   /** `{ open, closes, awaitingReview }` — one shape read by the dot, the meta line and the banner. */
   cycle: PropTypes.object,
 };
-
-AppLauncher.defaultProps = { staff: false, cycle: null };

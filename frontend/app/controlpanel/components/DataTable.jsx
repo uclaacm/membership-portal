@@ -13,7 +13,7 @@ import PropTypes from 'prop-types';
  * would otherwise widen the whole document and clip the right-hand columns off-screen.
  */
 export default function DataTable({
-  columns, rows, rowKey, isSelected, empty, className,
+  columns, rows, rowKey, isSelected = null, empty = 'Nothing to show.', className = '',
 }) {
   if (rows.length === 0) {
     return <div className="cp-empty">{empty}</div>;
@@ -69,10 +69,4 @@ DataTable.propTypes = {
   isSelected: PropTypes.func,
   empty: PropTypes.string,
   className: PropTypes.string,
-};
-
-DataTable.defaultProps = {
-  isSelected: null,
-  empty: 'Nothing to show.',
-  className: '',
 };

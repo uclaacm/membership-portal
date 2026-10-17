@@ -14,6 +14,9 @@ const CHIPS_PER_DAY = 2;
 
 const isoOf = (m) => m.format('YYYY-MM-DD');
 
+// Shared so the default is one stable object rather than a new one per render.
+const NO_RSVPS = {};
+
 /**
  * The month grid and day panel.
  *
@@ -28,8 +31,8 @@ const isoOf = (m) => m.format('YYYY-MM-DD');
 export default function EventsCalendar({
   events, month, year, selectedDay,
   onSelectDay, onStepMonth, onToday,
-  staff, canModify, rsvpedUuids,
-  onRsvp, onViewRsvps, onViewCheckIns, onEdit,
+  staff = false, canModify, rsvpedUuids = NO_RSVPS,
+  onRsvp = null, onViewRsvps = null, onViewCheckIns = null, onEdit = null,
 }) {
   const committeeColors = useMemo(() => Object.fromEntries(Config.committeeColors), []);
   const colorFor = (committee) => committeeColors[committee || 'ACM'] || '#1d6bff';
@@ -303,13 +306,4 @@ EventsCalendar.propTypes = {
   onViewRsvps: PropTypes.func,
   onViewCheckIns: PropTypes.func,
   onEdit: PropTypes.func,
-};
-
-EventsCalendar.defaultProps = {
-  staff: false,
-  rsvpedUuids: {},
-  onRsvp: null,
-  onViewRsvps: null,
-  onViewCheckIns: null,
-  onEdit: null,
 };

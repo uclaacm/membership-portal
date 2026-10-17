@@ -17,7 +17,7 @@ const ROLES = ['Member', 'Officer', 'Admin'];
  * opens, so a previous attempt cannot leak into the next one and no reset effect is needed.
  */
 export default function AssignRoleDialog({
-  open, initialRole, prefill, onClose, onAssign, committeeOptions = Config.committees,
+  open, initialRole = 'Officer', prefill = null, onClose, onAssign, committeeOptions = Config.committees,
 }) {
   const [email, setEmail] = useState(prefill?.email ?? '');
   const [role, setRole] = useState(prefill?.role ?? initialRole);
@@ -136,5 +136,3 @@ AssignRoleDialog.propTypes = {
   onClose: PropTypes.func.isRequired,
   onAssign: PropTypes.func.isRequired,
 };
-
-AssignRoleDialog.defaultProps = { initialRole: 'Officer', prefill: null };

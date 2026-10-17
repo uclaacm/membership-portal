@@ -4,6 +4,14 @@ import React from "react";
 import PropTypes from "prop-types";
 
 export default class EventFilterBar extends React.Component {
+  static defaultProps = {
+    committees: [],
+    timeRanges: [],
+    onSearchChange: () => {},
+    onCommitteeChange: () => {},
+    onTimeRangeChange: () => {}
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -106,11 +114,3 @@ EventFilterBar.propTypes = {
   onCommitteeChange: PropTypes.func,
   onTimeRangeChange: PropTypes.func
 };
-
-EventFilterBar.defaultProps = {
-  committees: [],
-  timeRanges: [],
-  onSearchChange: () => {},
-  onCommitteeChange: () => {},
-  onTimeRangeChange: () => {}
-}; 

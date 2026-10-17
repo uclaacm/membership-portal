@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import levelFor from './levels';
 
-function Podium({ user, place, size }) {
+function Podium({ user = null, place, size }) {
   if (!user) return <div className="dash-podium-slot" />;
 
   return (
@@ -29,8 +29,6 @@ Podium.propTypes = {
   place: PropTypes.number.isRequired,
   size: PropTypes.number.isRequired,
 };
-
-Podium.defaultProps = { user: null };
 
 /**
  * The full ranking, replacing the deleted /leaderboard page.

@@ -40,8 +40,8 @@ const plainText = (description) => {
  *   page's wrapping flexbox a full-width card takes a whole row and the cards stack.
  */
 export default function EventPreviewCard({
-  event, fill, onRsvp, going, flippable,
-  admin, rsvpCount, onEdit, onViewRsvps, rsvpsOpen, rsvpsLoading,
+  event, fill = false, onRsvp = null, going = false, flippable = true,
+  admin = false, rsvpCount = 0, onEdit = null, onViewRsvps = null, rsvpsOpen = false, rsvpsLoading = false,
 }) {
   const banner = Config.committeeBanners[event.committee] || '/logo.png';
   const [src, setSrc] = useState(event.cover || banner);
@@ -206,17 +206,4 @@ EventPreviewCard.propTypes = {
   onViewRsvps: PropTypes.func,
   rsvpsOpen: PropTypes.bool,
   rsvpsLoading: PropTypes.bool,
-};
-
-EventPreviewCard.defaultProps = {
-  fill: false,
-  onRsvp: null,
-  going: false,
-  flippable: true,
-  admin: false,
-  rsvpCount: 0,
-  onEdit: null,
-  onViewRsvps: null,
-  rsvpsOpen: false,
-  rsvpsLoading: false,
 };

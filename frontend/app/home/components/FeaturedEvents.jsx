@@ -38,7 +38,7 @@ function Cover({ event, className }) {
 
 Cover.propTypes = { event: PropTypes.object.isRequired, className: PropTypes.string.isRequired };
 
-function RsvpButton({ going, onToggle, inCard }) {
+function RsvpButton({ going, onToggle, inCard = false }) {
   return (
     <button
       type="button"
@@ -55,8 +55,6 @@ RsvpButton.propTypes = {
   onToggle: PropTypes.func.isRequired,
   inCard: PropTypes.bool,
 };
-
-RsvpButton.defaultProps = { inCard: false };
 
 /**
  * Featured events — one ordered list rendered as two bands.

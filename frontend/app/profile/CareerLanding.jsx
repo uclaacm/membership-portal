@@ -4,6 +4,11 @@ import Link from "next/link";
 import './careerLanding.scss';
 
 export default class CareerLanding extends React.Component {
+  static defaultProps = {
+    profile: {},
+    isInternshipOpen: null,
+  };
+
   calculateCompleteness() {
     const profile = this.props.profile;
     let completed = 0;
@@ -249,9 +254,4 @@ export default class CareerLanding extends React.Component {
 CareerLanding.propTypes = {
   profile: PropTypes.object,
   isInternshipOpen: PropTypes.bool,
-};
-
-CareerLanding.defaultProps = {
-  profile: {},
-  isInternshipOpen: null,
 };

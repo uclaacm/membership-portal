@@ -28,7 +28,7 @@ const ACTION_STYLE = {
 const DEFAULT_STYLE = { icon: 'fa-clock-rotate-left', color: 'rgba(0,0,0,0.6)' };
 
 function AttentionRow({
-  color, label, count, system,
+  color = '#ffba43', label, count, system = false,
 }) {
   return (
     <div className={`cp-attention-row ${system ? 'system' : ''}`}>
@@ -45,8 +45,6 @@ AttentionRow.propTypes = {
   count: PropTypes.node.isRequired,
   system: PropTypes.bool,
 };
-
-AttentionRow.defaultProps = { color: '#ffba43', system: false };
 
 export default function Overview({ data, isAdmin, onNavigate }) {
   const {

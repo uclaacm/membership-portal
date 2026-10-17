@@ -45,7 +45,7 @@ const KINDS = {
  * Fetches on open rather than with the events list: these are only ever looked at one event at
  * a time, and the list endpoint already returns the counts the table needs.
  */
-export default function EventRSVPsModal({ event, onClose, kind }) {
+export default function EventRSVPsModal({ event = null, onClose, kind = 'rsvps' }) {
   const config = KINDS[kind];
   const [state, setState] = useState({ loading: true, rsvps: [], error: '' });
 
@@ -141,5 +141,3 @@ EventRSVPsModal.propTypes = {
   onClose: PropTypes.func.isRequired,
   kind: PropTypes.oneOf(['rsvps', 'checkins']),
 };
-
-EventRSVPsModal.defaultProps = { event: null, kind: 'rsvps' };

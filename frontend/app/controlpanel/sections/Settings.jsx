@@ -169,7 +169,7 @@ EmailSettingsBlock.propTypes = {
 };
 
 export default function Settings({
-  serviceAccountEmail, system, canManage, notify, onRotatePassword, onSync, onCloseCycle,
+  serviceAccountEmail = '', system, canManage, notify, onRotatePassword, onSync, onCloseCycle,
 }) {
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -305,5 +305,3 @@ Settings.propTypes = {
   onSync: PropTypes.func.isRequired,
   onCloseCycle: PropTypes.func.isRequired,
 };
-
-Settings.defaultProps = { serviceAccountEmail: '' };
