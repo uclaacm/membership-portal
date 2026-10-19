@@ -1,0 +1,126 @@
+@use "@/styles/vars";
+
+.filter-dropdown {
+  position: relative;
+  display: inline-block;
+
+  .filter-dropdown-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 12px;
+    border: 1px solid vars.$gray1;
+    background: white;
+    font-family: "Open Sans", sans-serif;
+    font-size: 14px;
+    color: vars.$gray3;
+    cursor: pointer;
+    outline: none;
+    white-space: nowrap;
+
+    &:hover,
+    &.open {
+      border-color: vars.$secondaryblue;
+    }
+
+    &.active {
+      border-color: vars.$secondaryblue;
+      background: rgba(vars.$secondaryblue, 0.06);
+    }
+  }
+
+  .filter-dropdown-label {
+    flex: 1;
+  }
+
+  .filter-dropdown-clear {
+    font-size: 16px;
+    line-height: 1;
+    color: vars.$gray2;
+    cursor: pointer;
+
+    &:hover {
+      color: vars.$gray3;
+    }
+  }
+
+  .filter-dropdown-chevron {
+    font-size: 10px;
+    color: vars.$gray2;
+    transition: transform 0.15s ease;
+
+    &.rotated {
+      transform: rotate(180deg);
+    }
+  }
+
+  .filter-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    min-width: 100%;
+    max-height: 240px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    margin: 0;
+    padding: 4px 0;
+    list-style: none;
+    background: white;
+    border: 1px solid vars.$gray1;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+
+    li.filter-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      font-size: 14px;
+      color: vars.$gray3;
+      background: white;
+      border: none;
+      border-radius: 0;
+      cursor: pointer;
+
+      &:hover {
+        background: rgba(vars.$secondaryblue, 0.06);
+      }
+
+      &.selected {
+        color: vars.$secondaryblue;
+        font-weight: 600;
+        background: rgba(vars.$secondaryblue, 0.06);
+      }
+    }
+  }
+
+  .filter-dropdown-check {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid vars.$gray1;
+    border-radius: 3px;
+    flex-shrink: 0;
+
+    &.checked {
+      border-color: vars.$secondaryblue;
+      background: vars.$secondaryblue;
+      position: relative;
+
+      &::after {
+        content: "";
+        position: absolute;
+        left: 4px;
+        top: 1px;
+        width: 5px;
+        height: 9px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+      }
+    }
+  }
+}

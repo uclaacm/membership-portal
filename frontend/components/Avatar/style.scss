@@ -1,0 +1,20 @@
+@use "@/styles/vars";
+
+.avatar-fallback-img,
+.avatar-fallback-initials {
+  border-radius: 50%;
+  flex-shrink: 0;
+  object-fit: cover;
+  object-position: center;
+}
+
+.avatar-fallback-initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: vars.$acm-cobalt;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 1.2em;
+  user-select: none;
+}

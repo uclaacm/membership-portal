@@ -1,0 +1,120 @@
+@use "../../styles/vars";
+
+.ro-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.ro-modal {
+  background: vars.$white;
+  border-radius: 12px;
+  padding: 32px;
+  width: 440px;
+  max-width: 90vw;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.ro-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: vars.$primaryblack;
+  margin: 0;
+}
+
+.ro-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ro-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: vars.$gray2;
+}
+
+.ro-input {
+  font-family: Lato, sans-serif;
+  font-size: 15px;
+  border: none;
+  border-bottom: 2px dashed vars.$gray1;
+  outline: none;
+  padding: 6px 0;
+  width: 100%;
+  transition: border-color 0.15s ease;
+  background: transparent;
+
+  &:focus {
+    border-bottom-color: vars.$dark-red;
+  }
+}
+
+.ro-committee-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ro-chip {
+  font-family: Lato, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 2px solid vars.$gray1;
+  background: transparent;
+  color: vars.$gray3;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &.selected {
+    border-color: vars.$dark-red;
+    background: vars.$dark-red;
+    color: vars.$white;
+  }
+
+  &:not(.selected):hover {
+    border-color: vars.$dark-red;
+    color: vars.$dark-red;
+  }
+}
+
+.ro-help {
+  font-size: 12px;
+  color: vars.$gray2;
+  margin: 4px 0 0;
+  font-style: italic;
+}
+
+.ro-message {
+  font-size: 13px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin: 0;
+
+  &.success {
+    background: rgba(52, 220, 106, 0.12);
+    color: vars.$dark-green;
+  }
+
+  &.error {
+    background: rgba(247, 78, 78, 0.1);
+    color: vars.$dark-red;
+  }
+}
+
+.ro-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
