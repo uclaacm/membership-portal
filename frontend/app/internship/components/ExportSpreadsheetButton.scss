@@ -1,0 +1,26 @@
+@use "@/styles/vars";
+
+.export-spreadsheet-button {
+  appearance: none;
+  background: vars.$white;
+  color: vars.$primary-color;
+  border: 1px solid vars.$primary-color;
+  padding: 0.4rem 0.9rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition:
+    background 0.15s,
+    color 0.15s;
+
+  &:hover:not(:disabled) {
+    background: vars.$primary-color;
+    color: vars.$white;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

@@ -1,0 +1,66 @@
+services:
+  postgres:
+    image: postgres:9.6-alpine
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./pg_bkup:/backup
+    env_file:
+      - node.env
+
+  backend:
+    build:
+      context: ../../backend
+    links:
+      - postgres
+    restart: always
+    depends_on:
+      - postgres
+    env_file:
+      - node.env
+
+  nginx:
+    build:
+      context: ../../frontend
+      args:
+        - NEXT_PUBLIC_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+        - NEXT_PUBLIC_GOOGLE_API_KEY=${GOOGLE_API_KEY}
+        - NEXT_PUBLIC_GOOGLE_AUTH_DOMAIN=${GOOGLE_AUTH_DOMAIN}
+    links:
+      - backend
+    restart: always
+    ports:
+      - "80:8080"
+    # - "443:443" # Remove if SSL handled elsewhere
+    env_file:
+      - node.env
+    # volumes:
+    #   - "./certs:/etc/nginx/certs:ro" # Remove if SSL handled elsewhere
+    #   - "./certs-data:/data/letsencrypt" # Remove if SSL handled elsewhere
+  
+  mongodb:
+    image: mongo:7.0
+    container_name: membership-portal-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:?set MONGO_ROOT_USERNAME in node.env}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:?set MONGO_ROOT_PASSWORD in node.env}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE:-membership-portal-internship}
+    ports:
+      - "${MONGO_PORT:-27017}:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+    stop_grace_period: 60s
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+
+volumes:
+  postgres_data:
+  mongodb_data:
+  mongodb_config:
