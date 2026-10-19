@@ -1,4 +1,4 @@
-# membership-portal-ui
+# frontend
 
 Frontend for the ACM Membership Portal. For full documentation, see the [wiki](https://wiki.uclaacm.com/doc/membership-portal-zXucs8mbPS).
 
@@ -17,7 +17,7 @@ When working on a feature, check if it already exists in `src/` and port it to `
 
 ## Development
 
-Development is done through Docker via the deployment repo. Follow the setup instructions in [membership-portal-deployment](https://github.com/uclaacm/membership-portal-deployment).
+Development is done through Docker via [`deployment/`](../deployment). Follow the setup instructions in [`deployment/README.md`](../deployment/README.md).
 
 Do not run `npm install` locally — dependencies are installed inside the Docker container at build time. Running `npm install` locally with a different Node version will cause `package-lock.json` drift.
 

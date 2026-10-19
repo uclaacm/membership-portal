@@ -12,7 +12,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/uclaacm/membership-portal-ui.git"
+    "url": "git+https://github.com/uclaacm/membership-portal.git",
+    "directory": "frontend"
   },
   "author": "RyloRiz",
   "contributors": [
@@ -26,9 +27,9 @@
   ],
   "license": "MPL-2.0",
   "bugs": {
-    "url": "https://github.com/uclaacm/membership-portal-ui/issues"
+    "url": "https://github.com/uclaacm/membership-portal/issues"
   },
-  "homepage": "https://github.com/uclaacm/membership-portal-ui#readme",
+  "homepage": "https://github.com/uclaacm/membership-portal/tree/main/frontend#readme",
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
