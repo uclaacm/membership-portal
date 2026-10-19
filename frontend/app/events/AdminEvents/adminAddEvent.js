@@ -1,0 +1,729 @@
+'use client';
+
+import React, { createRef } from 'react';
+import moment from 'moment';
+import PropTypes from 'prop-types';
+
+import DatePicker from 'react-datepicker';
+import Config from '@/lib/config';
+import uploadImage from '@/app/actions/image/uploadImage';
+import fetchImages from '@/app/actions/image/fetchImages';
+
+import 'react-datepicker/dist/react-datepicker.css';
+
+// Matches the API's own image cap and the Control Panel's media uploader. next.config.ts sets
+// the server action body limit above this, so the API is what rejects an oversized file.
+const MAX_COVER_BYTES = 5 * 1024 * 1024;
+
+export default class AdminAddEvent extends React.Component {
+  static defaultProps = {
+    onClickAdd: null,
+    onClickCancel: null,
+    onClickDelete: null,
+    isEdit: false,
+    showing: false,
+  };
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      event: { ...this.props.event },
+      startTimeStr: this.props.event?.startDate ? this.props.event.startDate.format('HH:mm') : '',
+      endTimeStr: this.props.event?.endDate ? this.props.event.endDate.format('HH:mm') : '',
+      // Which event the form is currently synced to. getDerivedStateFromProps compares against
+      // this to decide whether the incoming prop is a *different* event or just a re-render.
+      syncedUuid: this.props.event?.uuid,
+      coverImageFile: null,
+      coverImageURL: '',
+      coverMode: 'url', // 'url' | 'upload' | 'library'
+      libraryImages: [],
+      libraryLoading: false,
+      isPreviewFlipped: false,
+      isPlatformsOpen: false
+    };
+    this.coverUploadRef = createRef();
+    this.multiSelectRef = createRef();
+    this.resizeTextArea = this.resizeTextArea.bind(this);
+    this.handleClickOutsidePlatforms = this.handleClickOutsidePlatforms.bind(this);
+    this.handleChangeCover = this.handleChangeCover.bind(this);
+    this.handleChangeCoverMode = this.handleChangeCoverMode.bind(this);
+    this.loadLibraryImages = this.loadLibraryImages.bind(this);
+    this.handleSelectLibraryImage = this.handleSelectLibraryImage.bind(this);
+    this.handleChangeStartDate = this.handleChangeStartDate.bind(this);
+    this.handleChangeEndDate = this.handleChangeEndDate.bind(this);
+    this.handleChangeTime = this.handleChangeTime.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handlePreviewFlip = this.handlePreviewFlip.bind(this);
+    this.handleTogglePlatform = this.handleTogglePlatform.bind(this);
+    this.handleCommiteeChange = this.handleCommiteeChange.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
+    this.resetState = this.resetState.bind(this);
+  }
+
+  // handle platforms dropdown behavior based on mouse clicks
+  componentDidMount() {
+    document.addEventListener('mousedown', this.handleClickOutsidePlatforms);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('mousedown', this.handleClickOutsidePlatforms);
+  }
+
+  handleClickOutsidePlatforms(e) {
+    if (this.state.isPlatformsOpen && !this.multiSelectRef.current?.contains(e.target)) {
+      this.setState({ isPlatformsOpen: false });
+    }
+  }
+
+  resizeTextArea(e) {
+    e.target.style.height = '5px';
+    e.target.style.height = `${e.target.scrollHeight}px`;
+  }
+
+  handleChangeStartDate(date) {
+    this.setState((prev) => {
+      const newState = Object.assign({}, prev);
+      newState.event.startDate = date ? moment(date) : null;
+      return newState;
+    });
+  }
+
+  getDefaultBanner(committee){
+    const bannerImageURL = Config.committeeBanners[committee];
+    return bannerImageURL ? bannerImageURL : "/logo.png";
+  }
+
+
+  handleChangeEndDate(date) {
+    this.setState((prev) => {
+      const newState = Object.assign({}, prev);
+      newState.event.endDate = date ? moment(date) : null;
+      return newState;
+    });
+  }
+
+  handleChange(e) {
+    const { name, value } = e.target;
+    this.setState((prev) => {
+      const newState = Object.assign({}, prev);
+      newState.event[name] = value;
+      return newState;
+    });
+  }
+
+  //decide how to update the cover image based on whether custom image is already uploaded
+  //check if file uploaded first and then check url valid after
+  handleCommiteeChange(e) {
+    var coverImageTempCover = this.state.event.cover;
+    try {
+      new URL(this.state.coverImageURL);
+    } catch (error){
+      coverImageTempCover = this.getDefaultBanner(e.target.value);
+    }
+    this.setState((prev) => {
+      const newState = Object.assign({}, prev);
+      newState.event.committee = e.target.value;
+      if (!newState.coverImageFile) {
+            newState.event.cover = coverImageTempCover;
+      }      
+      return newState;
+    })
+  }
+
+  resetState(){
+    this.setState({
+      event: { ...this.props.event },
+      startTimeStr: this.props.event?.startDate ? this.props.event.startDate.format('HH:mm') : '',
+      endTimeStr: this.props.event?.endDate ? this.props.event.endDate.format('HH:mm') : '',
+      coverImageFile: null,
+      coverImageURL: '',
+      coverMode: 'url',
+      isPreviewFlipped: false,
+      isPlatformsOpen: false
+    });
+  }
+
+  getRawImageUrl(uuid) {
+    return `${Config.API_URL + Config.routes.image.specific}/${uuid}`;
+  }
+
+  // Which already-uploaded image (if any) the cover currently points at, so the library grid
+  // can highlight it even after switching tabs or reopening the form.
+  getSelectedLibraryUuid() {
+    const cover = this.state.event.cover || '';
+    const match = cover.match(new RegExp(`${Config.routes.image.specific}/([0-9a-f-]{36})`, 'i'));
+    return match ? match[1] : null;
+  }
+
+  loadLibraryImages() {
+    if (this.state.libraryLoading) return;
+    this.setState({ libraryLoading: true });
+    fetchImages().then((images) => {
+      this.setState({ libraryImages: images || [], libraryLoading: false });
+    });
+  }
+
+  handleChangeCoverMode(mode) {
+    this.setState({ coverMode: mode });
+    if (mode === 'library' && this.state.libraryImages.length === 0) {
+      this.loadLibraryImages();
+    }
+  }
+
+  // Picking an existing upload is treated the same as typing its URL in manually: it also
+  // fills coverImageURL so a later committee change (handleCommiteeChange) sees a valid custom
+  // cover instead of stomping the selection with the committee's default banner.
+  handleSelectLibraryImage(image) {
+    const url = this.getRawImageUrl(image.uuid);
+    this.setState((prev) => {
+      const newState = Object.assign({}, prev);
+      newState.event.cover = url;
+      newState.coverImageURL = url;
+      newState.coverImageFile = null;
+      return newState;
+    });
+  }
+
+  handleCancel() {
+    this.resetState();
+    if (this.props.onClickCancel) this.props.onClickCancel();
+  }
+
+  handleSubmit() {
+    if (!this.state.event.title || !this.state.event.startDate || !this.state.event.endDate) return;
+
+    const callback = () => {
+      if (this.props.onClickAdd) this.props.onClickAdd(this.state.event);
+      this.resetState();
+    };
+
+    if (this.state.coverImageFile) {
+      const formData = new FormData();
+      formData.append('image', this.state.coverImageFile);
+
+      uploadImage(formData).then((result) => {
+        if (result.success && result.uuid) {
+          this.setState((prev) => {
+            const newState = Object.assign({}, prev);
+            newState.event.cover = `${Config.API_URL + Config.routes.image.specific}/${result.uuid}`;
+            return newState;
+          }, callback);
+        } else {
+          // Don't fall through to callback() on a failed upload: event.cover still holds the
+          // FileReader data URL, which the API rejects for length, so saving anyway loses the
+          // edit and reports nothing.
+          alert(result.error || 'The banner image could not be uploaded. The event was not saved.');
+        }
+      });
+    } else {
+      callback();
+    }
+  }
+
+  handleChangeTime(e) {
+    const isStart = e.target.name === 'startTime';
+    const strKey = isStart ? 'startTimeStr' : 'endTimeStr';
+    const dateKey = isStart ? 'startDate' : 'endDate';
+    const raw = e.target.value; // "HH:MM" from native time input, or ""
+
+    this.setState((prev) => {
+      const newState = Object.assign({}, prev);
+      newState[strKey] = raw;
+      if (raw) {
+        const [hh, mm] = raw.split(':').map(n => parseInt(n, 10));
+        if (newState.event[dateKey]) {
+          newState.event[dateKey] = newState.event[dateKey].clone().set({ hour: hh, minute: mm });
+        } else {
+          newState.event[dateKey] = moment({ hour: hh, minute: mm });
+        }
+      }
+      return newState;
+    });
+  }
+
+  handlePreviewFlip() {
+    this.setState(prev => ({ isPreviewFlipped: !prev.isPreviewFlipped }));
+  }
+
+  handleTogglePlatform(option) {
+    this.setState((prev) => {
+      const newState = Object.assign({}, prev);
+      const platforms = prev.event.platforms || [];
+
+      // add or remove option depending on whether it's already selected
+      let next;
+      if (platforms.includes(option)) {
+        next = platforms.filter(p => p !== option);
+      } else {
+        next = [...platforms, option];
+      }
+
+      // create new event object for React to detect change
+      newState.event = { ...prev.event, platforms: next };
+
+      return newState;
+    });
+  }
+
+  handleChangeCover(e) {
+    e.persist();
+    const file = e.target.files?.[0];
+
+    if (this.state.coverMode === 'url') {
+      const url = e.target.value;
+      var coverImageTempCover = url;
+      // check valid url before updating state
+      try {
+        new URL(url);
+      } catch (error){
+        console.log('Invalid URL:', url);
+        coverImageTempCover = this.getDefaultBanner(this.state.event.committee);
+      }
+
+      this.setState((prev) => {
+        const newState = Object.assign({}, prev);
+        if (newState.coverImageFile == null){
+          newState.event.cover = coverImageTempCover;
+        }
+        newState.coverImageURL = url;
+        return newState;
+      })
+    } else if (this.state.coverMode === 'upload' && !file) {
+      this.setState((prev) => {
+        const newState = Object.assign({}, prev);
+        newState.event.cover = this.getDefaultBanner(newState.event.committee);
+        newState.coverImageFile = null;
+        return newState;
+      });
+    } else {
+      if (file.size > MAX_COVER_BYTES) {
+        alert(`That image is ${(file.size / (1024 * 1024)).toFixed(1)} MB \u2014 the limit is ${MAX_COVER_BYTES / (1024 * 1024)} MB.`);
+        e.target.value = '';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        this.setState((prev) => {
+          const newState = Object.assign({}, prev);
+          newState.event.cover = reader.result;
+          newState.coverImageFile = file;
+          return newState;
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  /**
+   * Reset the form when the modal is pointed at a different event.
+   *
+   * Was UNSAFE_componentWillReceiveProps, which React warns about in strict mode. The guard is
+   * the uuid held in state rather than a comparison against `this.props`: this hook is static
+   * and runs before every render, including ones caused by the user typing, so without it the
+   * form would reset itself on each keystroke.
+   */
+  static getDerivedStateFromProps(props, state) {
+    const nextUuid = props.event?.uuid;
+    if (nextUuid === state.syncedUuid) return null;
+    return {
+      syncedUuid: nextUuid,
+      event: { ...props.event },
+      startTimeStr: props.event?.startDate ? props.event.startDate.format('HH:mm') : '',
+      endTimeStr: props.event?.endDate ? props.event.endDate.format('HH:mm') : '',
+    };
+  }
+
+  renderPreviewCard() {
+    const { event, isPreviewFlipped } = this.state;
+    const committeeColorMap = Object.fromEntries(Config.committeeColors);
+
+    const title = event.title || 'Event Title';
+    const committee = event.committee || 'ACM';
+    const location = event.location || 'Location TBD';
+    const points = event.attendancePoints || '0';
+
+    let dateStr = 'Date TBD';
+    if (event.startDate && event.endDate) {
+      dateStr = `${event.startDate.format('MMM D, YYYY')}, ${event.startDate.format('h:mm a')} – ${event.endDate.format('h:mm a')}`;
+    } else if (event.startDate) {
+      dateStr = event.startDate.format('MMM D, YYYY, h:mm a');
+    }
+
+    const committeeColor = committeeColorMap[committee] || '#1E6CFF';
+
+    return (
+      <div className={`preview-card-container${isPreviewFlipped ? ' is-flipped' : ''}`}>
+        <div className="preview-card-flipper">
+          {/* Front */}
+          <div className="preview-card preview-card-front" onClick={this.handlePreviewFlip} style={{ cursor: 'pointer' }} title="Click to see description">
+            <div className="preview-image-container">
+              <img
+                src={event.cover || '/logo.png'}
+                onError={(e) => {
+                  console.log('Image failed to load, using fallback');
+                  e.target.src = this.getDefaultBanner(event.committee) || '/logo.png';
+                }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+              <div className="preview-points-pill">{points} PTS</div>
+            </div>
+            <div className="preview-text-container">
+              <p className="preview-title">{title}</p>
+              <p className="preview-meta">🗓️ {dateStr}</p>
+              <p className="preview-meta">📍 {location}</p>
+              <p className="preview-meta" style={{ color: committeeColor }}>{committee}</p>
+              <div className="preview-rsvp-pill">RSVP</div>
+            </div>
+          </div>
+
+          {/* Back */}
+          <div className="preview-card preview-card-back">
+            <div className="preview-back-content">
+              <button className="preview-flip-back-btn" onClick={this.handlePreviewFlip}>
+                ← Back
+              </button>
+              <h3>{title}</h3>
+              <div className="preview-description-scroll">
+                <p>{event.description || 'Event description will appear here...'}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  render() {
+    const committeeColorMap = Object.fromEntries(Config.committeeColors);
+    const { coverMode } = this.state;
+    const platforms = this.state.event.platforms || [];
+
+    return (
+      <div className={`add-event-overlay${this.props.showing ? ' showing' : ''}`} onClick={this.props.onClickCancel}>
+        <div className="event-modal" onClick={e => e.stopPropagation()}>
+
+          {/* Header */}
+          <div className="modal-header">
+            <h2 className="modal-title">{this.props.isEdit ? 'Edit Event' : 'Create Event'}</h2>
+            <button className="modal-close-btn" onClick={this.props.onClickCancel} aria-label="Close">✕</button>
+          </div>
+
+          {/* Two-column content */}
+          <div className="modal-content">
+
+            {/* Left: form */}
+            <div className="modal-form">
+
+              {/* Cover */}
+              <div className="form-section">
+                <p className="section-label">Cover Image <span className="optional-mark">optional</span></p>
+                <div className="cover-mode-toggle">
+                  <button
+                    type="button"
+                    className={`mode-btn${coverMode === 'url' ? ' active' : ''}`}
+                    onClick={() => this.handleChangeCoverMode('url')}
+                  >
+                    URL
+                  </button>
+                  <button
+                    type="button"
+                    className={`mode-btn${coverMode === 'upload' ? ' active' : ''}`}
+                    onClick={() => this.handleChangeCoverMode('upload')}
+                  >
+                    Upload
+                  </button>
+                  <button
+                    type="button"
+                    className={`mode-btn${coverMode === 'library' ? ' active' : ''}`}
+                    onClick={() => this.handleChangeCoverMode('library')}
+                  >
+                    Library
+                  </button>
+                </div>
+                {coverMode === 'url' && (
+                  <input
+                    type="text"
+                    value={this.state.coverImageURL ? this.state.coverImageURL : ''}
+                    name="cover"
+                    placeholder="https://..."
+                    onChange={this.handleChangeCover}
+                  />
+                )}
+                {coverMode === 'upload' && (
+                  <div className="upload-zone" onClick={() => this.coverUploadRef.current?.click()}>
+                    <input
+                      type="file"
+                      value={''}
+                      name="cover"
+                      ref={this.coverUploadRef}
+                      id="coverInput"
+                      accept="image/*"
+                      onChange={this.handleChangeCover}
+                      onClick={(e) => { e.target.value = null; }}
+                    />
+                    {this.state.coverImageFile ? (
+                      <span className="upload-zone-label chosen">✓ {this.state.coverImageFile.name}</span>
+                    ) : (
+                      <span className="upload-zone-label">Click to choose an image</span>
+                    )}
+                  </div>
+                )}
+                {coverMode === 'library' && (() => {
+                  const { libraryImages, libraryLoading } = this.state;
+                  const selectedUuid = this.getSelectedLibraryUuid();
+                  if (libraryLoading) {
+                    return <p className="library-status">Loading uploaded images...</p>;
+                  }
+                  if (libraryImages.length === 0) {
+                    return <p className="library-status">No images have been uploaded yet.</p>;
+                  }
+                  return (
+                    <div className="library-grid">
+                      {libraryImages.map((image) => {
+                        const url = this.getRawImageUrl(image.uuid);
+                        const isSelected = image.uuid === selectedUuid;
+                        return (
+                          <button
+                            type="button"
+                            key={image.uuid}
+                            className={`library-item${isSelected ? ' selected' : ''}`}
+                            onClick={() => this.handleSelectLibraryImage(image)}
+                            title={url}
+                          >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={url} alt="" />
+                            {isSelected && <span className="library-item-check">✓</span>}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  );
+                })()}
+              </div>
+
+              {/* Basic info */}
+              <div className="form-section">
+                <p className="section-label">Basic Info</p>
+                <div className="field-group">
+                  <label>Title <span className="required-mark">*</span></label>
+                  <input type="text" value={this.state.event.title || ''} name="title" onChange={this.handleChange} placeholder="My Awesome Event" />
+                </div>
+                <div className="field-row">
+                  <div className="field-group">
+                    <label>Committee <span className="required-mark">*</span></label>
+                    <select
+                      value={this.state.event.committee || 'ACM'}
+                      name="committee"
+                      onChange={this.handleCommiteeChange}
+                      style={{ color: committeeColorMap[this.state.event.committee] }}
+                    >
+                      <option value="ACM" style={{ color: committeeColorMap['ACM'] }}>ACM</option>
+                      {Config.committees.map((committee, index) => (
+                        <option key={index} value={committee} style={{ color: committeeColorMap[committee] }}>{committee}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="field-group">
+                    <label>External RSVP Link <span className="optional-mark">optional — overrides built-in RSVP</span></label>
+                    <input type="text" value={this.state.event.eventLink || ''} name="eventLink" onChange={this.handleChange} placeholder="https://forms.google.com/..." />
+                  </div>
+                </div>
+              </div>
+
+              {/* Schedule */}
+              <div className="form-section">
+                <p className="section-label">Schedule</p>
+                <div className="field-row">
+                  <div className="field-group field-grow-3">
+                    <label>Start Date <span className="required-mark">*</span></label>
+                    <DatePicker
+                      selected={this.state.event.startDate ? this.state.event.startDate.toDate() : null}
+                      onChange={this.handleChangeStartDate}
+                      className="date-picker"
+                    />
+                  </div>
+                  <div className="field-group field-grow-2">
+                    <label>Start Time <span className="required-mark">*</span></label>
+                    <input
+                      type="time"
+                      onChange={this.handleChangeTime}
+                      name="startTime"
+                      value={this.state.startTimeStr}
+                    />
+                  </div>
+                </div>
+                <div className="field-row">
+                  <div className="field-group field-grow-3">
+                    <label>End Date <span className="required-mark">*</span></label>
+                    <DatePicker
+                      selected={this.state.event.endDate ? this.state.event.endDate.toDate() : null}
+                      onChange={this.handleChangeEndDate}
+                      className="date-picker"
+                    />
+                  </div>
+                  <div className="field-group field-grow-2">
+                    <label>End Time <span className="required-mark">*</span></label>
+                    <input
+                      type="time"
+                      onChange={this.handleChangeTime}
+                      name="endTime"
+                      value={this.state.endTimeStr}
+                    />
+                  </div>
+                </div>
+                <div className="field-group">
+                  <label>Location <span className="required-mark">*</span></label>
+                  <input type="text" value={this.state.event.location || ''} name="location" onChange={this.handleChange} placeholder="EBU3B B250" />
+                </div>
+              </div>
+
+              {/* Attendance */}
+              <div className="form-section">
+                <p className="section-label">Attendance</p>
+                <div className="field-row">
+                  <div className="field-group">
+                    <label>Check-in Code <span className="required-mark">*</span></label>
+                    <input
+                      type="text"
+                      value={this.state.event.attendanceCode || ''}
+                      name="attendanceCode"
+                      onChange={this.handleChange}
+                      placeholder="e.g. HACK2025"
+                    />
+                  </div>
+                  <div className="field-group">
+                    <label>Points <span className="required-mark">*</span></label>
+                    <input
+                      type="text"
+                      value={this.state.event.attendancePoints || ''}
+                      name="attendancePoints"
+                      onChange={this.handleChange}
+                      placeholder="10"
+                    />
+                  </div>
+                  <div className="field-group">
+                    <label>Capacity</label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={this.state.event.capacity ?? ''}
+                      name="capacity"
+                      onChange={this.handleChange}
+                      placeholder="40"
+                    />
+                  </div>
+                </div>
+                {/* Advisory only: nothing blocks an RSVP past this number. Left blank, cards
+                    fall back to a plain RSVP count with no denominator. */}
+                <p className="field-hint">
+                  Capacity is advisory — it is shown on staff cards and the RSVP list, but does
+                  not stop anyone RSVPing.
+                </p>
+              </div>
+
+              {/* Description */}
+              <div className="form-section">
+                <p className="section-label">Description <span className="optional-mark">optional</span></p>
+                <div className="field-group">
+                  <textarea
+                    value={this.state.event.description}
+                    name="description"
+                    onChange={this.handleChange}
+                    onKeyUp={this.resizeTextArea}
+                    placeholder="Tell people what this event is about..."
+                  />
+                </div>
+              </div>
+
+              {/* Marketing */}
+              <div className="form-section">
+                <p className="section-label">Marketing <span className="optional-mark">optional</span></p>
+
+                <div className="multi-select" ref={this.multiSelectRef}>
+                  <div
+                    className={`multi-select-trigger${platforms.length === 0 ? ' is-placeholder' : ''}`}
+                    onClick={() => this.setState(prev => ({ isPlatformsOpen: !prev.isPlatformsOpen }))}
+                  >
+                    {/* Chips */}
+                    {platforms.length === 0
+                      ? 'Select platforms...'
+                      : Config.platforms
+                          .filter(opt => platforms.includes(opt))
+                          .map(opt => (
+                            <span key={opt} className="multi-select-chip">
+                              <span className="chip-label">{opt}</span>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  this.handleTogglePlatform(opt);
+                                }}
+                              >✕</button>
+                            </span>
+                          ))
+                    }
+                    <i className={`fa fa-chevron-${this.state.isPlatformsOpen ? 'up' : 'down'}`} />
+                  </div>
+                  {this.state.isPlatformsOpen && (
+                    <div className="multi-select-menu">
+                      {Config.platforms.map(opt => (
+                        <button
+                          key={opt}
+                          type="button"
+                          className={platforms.includes(opt) ? 'selected' : ''}
+                          onClick={() => this.handleTogglePlatform(opt)}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Right: live preview */}
+            <div className="modal-preview">
+              <p className="preview-label">Preview</p>
+              {this.renderPreviewCard()}
+              <p className="preview-hint">Updates as you type</p>
+            </div>
+
+          </div>
+
+          {/* Footer. Delete sits apart on the left — it is the one destructive action here, and
+              putting it next to Cancel/Save is how it gets hit by accident. */}
+          <div className="modal-footer">
+            {this.props.isEdit && this.props.onClickDelete && (
+              <button
+                type="button"
+                className="modal-footer__btn is-danger"
+                onClick={() => this.props.onClickDelete(this.props.event)}
+              >
+                Delete Event
+              </button>
+            )}
+            <span className="modal-footer__spacer" />
+            <button type="button" className="modal-footer__btn" onClick={this.handleCancel}>
+              Cancel
+            </button>
+            <button type="button" className="modal-footer__btn is-primary" onClick={this.handleSubmit}>
+              {this.props.isEdit ? 'Update Event' : 'Create Event'}
+            </button>
+          </div>
+
+        </div>
+      </div>
+    );
+  }
+}
+
+AdminAddEvent.propTypes = {
+  event: PropTypes.object,
+  onClickAdd: PropTypes.func,
+  onClickCancel: PropTypes.func,
+  onClickDelete: PropTypes.func,
+  isEdit: PropTypes.bool,
+  showing: PropTypes.bool,
+};
