@@ -5,11 +5,11 @@ FROM node:18-alpine
 # Install Python 3 and build tools
 RUN apk add --no-cache python3 make g++
 
-# Work in the membership-portal directory
-WORKDIR /var/www/membership-portal
+# Work in the backend directory
+WORKDIR /var/www/backend
 
 # Install dependencies at build time for deterministic installs and faster startup
-COPY membership-portal/package*.json ./
+COPY backend/package*.json ./
 RUN npm ci
 
 # Start the development server

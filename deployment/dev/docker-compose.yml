@@ -1,0 +1,85 @@
+services:
+  # https://stackoverflow.com/questions/65417340/docker-compose-postgres-restart-after-running-scripts-in-docker-entrypoint-initd/65417566#65417566
+  # https://docs.docker.com/compose/startup-order/
+  postgres:
+    image: postgres:9.6-alpine
+    ports:
+      - "5432:5432" # 5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    environment:
+      # POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      # POSTGRES_DB: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ../..
+      dockerfile: backend/dev.Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ../../:/var/www
+      - /var/www/backend/node_modules
+    ports:
+      - "8080:8080"
+    links:
+      - postgres
+    restart: always
+    env_file:
+      - node.env
+    environment:
+      - PORT=8080
+      - HOST=0.0.0.0
+      - PG_HOST=postgres
+      - PG_PORT=5432
+      - PG_DATABASE=postgres
+      - NODE_ENV=development
+
+  nginx:
+    build:
+      context: ../..
+      dockerfile: frontend/dev.Dockerfile
+    volumes:
+      - ../../:/var/www
+      - /var/www/frontend/node_modules
+    ports:
+      - "8000:8000"
+    environment:
+      - NEXT_PUBLIC_GOOGLE_API_KEY=
+      - NEXT_PUBLIC_GOOGLE_AUTH_DOMAIN=
+      - NEXT_PUBLIC_GOOGLE_CLIENT_ID=913307270840-751ad0psdu1q2a7m81np30g062osgpp5.apps.googleusercontent.com
+      # Note: this client ID is for development only and should not be used in production.
+      # Prod has a different client ID.
+
+  mongodb:
+    image: mongo:7.0
+    container_name: membership-portal-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-devpassword}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE:-membership-portal-internship}
+    ports:
+      - "${MONGO_PORT:-27017}:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+    stop_grace_period: 60s
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+volumes:
+  postgres_data:
+  mongodb_data:
+  mongodb_config:

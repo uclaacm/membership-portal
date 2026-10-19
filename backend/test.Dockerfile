@@ -3,9 +3,9 @@
 FROM node:18-alpine
 RUN apk add --no-cache alpine-sdk
 
-# Work in the membership-portal directory
-WORKDIR /var/www/membership-portal
-COPY membership-portal/package.json membership-portal/yarn.lock ./
+# Work in the backend directory
+WORKDIR /var/www/backend
+COPY backend/package.json backend/yarn.lock ./
 
 # Install Node packages
 RUN yarn install
