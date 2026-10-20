@@ -1,4 +1,4 @@
-const { getOfficerCommittees } = require('../../committees');
+const { findUnknownCommittees } = require('../../committees');
 
 module.exports = (Sequelize, db) => {
   const User = db.define(
@@ -72,11 +72,10 @@ module.exports = (Sequelize, db) => {
         defaultValue: [],
         validate: {
           async isValidCommittee(value) {
-            if (!Array.isArray(value)) return;
-            const valid = await getOfficerCommittees();
-            const invalid = value.filter((c) => !valid.includes(c));
+            if (!Array.isArray(value) || value.length === 0) return;
+            const invalid = await findUnknownCommittees(value);
             if (invalid.length > 0) {
-              throw new Error(`Invalid committee(s): ${invalid.join(', ')}. Must be one of: ${valid.join(', ')}`);
+              throw new Error(`Invalid committee(s): ${invalid.join(', ')}. Create the committee first.`);
             }
           },
         },

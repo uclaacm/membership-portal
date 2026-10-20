@@ -10,7 +10,7 @@ const AUDIT_ACTION_GROUPS = {
   media: ['media.upload', 'media.delete'],
   settings: ['settings.update'],
   internship: [
-    'committee.open', 'committee.close', 'committee.create', 'committee.update',
+    'committee.open', 'committee.close', 'committee.create', 'committee.update', 'committee.delete',
     'decisions.release', 'decisions.hide',
   ],
 };
