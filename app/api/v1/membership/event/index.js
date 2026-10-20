@@ -150,7 +150,7 @@ router
         recordAudit(AuditLog, req, {
           action: 'event.create',
           target: event.title,
-          detail: `Event ${event.uuid}; Created: ${describeEventChanges({}, event.get({ plain: true }))}`,
+          detail: `Created: ${describeEventChanges({}, event.get({ plain: true }), undefined, 'after')} · Event ID: ${event.uuid}`,
           committee: event.committee,
         });
         return null;
@@ -235,7 +235,7 @@ router
           recordAudit(AuditLog, req, {
             action: 'event.update',
             target: event.title,
-            detail: `Event ${event.uuid}; ${detail}`,
+            detail: `${detail} · Event ID: ${event.uuid}`,
             committee: event.committee,
           });
         }
@@ -266,7 +266,7 @@ router
               recordAudit(AuditLog, req, {
                 action: 'event.delete',
                 target: event.title,
-                detail: `Event ${event.uuid}; Deleted: ${describeEventChanges(event.get({ plain: true }), {})}`,
+                detail: `Deleted: ${describeEventChanges(event.get({ plain: true }), {}, undefined, 'before')} · Event ID: ${event.uuid}`,
                 committee: event.committee,
               });
             }
