@@ -60,7 +60,7 @@ it('records old/new values and stable identity, excluding unchanged submitted fi
   expect(next).not.toHaveBeenCalled();
   expect(AuditLog.create).toHaveBeenCalledWith(expect.objectContaining({
     action: 'event.update',
-    detail: `Event ${event.uuid}; attendancePoints: 2147483647 → 20`,
+    detail: `Points: 2147483647 → 20 · Event ID: ${event.uuid}`,
   }));
   expect(Event.findOne).toHaveBeenCalledWith({
     where: { uuid: event.uuid }, transaction, lock: 'UPDATE',
@@ -87,9 +87,9 @@ it('records renames, clears, and code changes without exposing codes', async () 
   await handler('/:uuid', 'patch')(req, res, next);
   const entry = AuditLog.create.mock.calls[0][0];
   expect(entry.target).toBe('New title');
-  expect(entry.detail).toContain('title: "TeachLA General Meeting" → "New title"');
-  expect(entry.detail).toContain('capacity: 60 → null');
-  expect(entry.detail).toContain('attendanceCode: changed (redacted)');
+  expect(entry.detail).toContain('Title: "TeachLA General Meeting" → "New title"');
+  expect(entry.detail).toContain('Capacity: 60 → Not set');
+  expect(entry.detail).toContain('Attendance code: changed (redacted)');
   expect(entry.detail).not.toMatch(/SECRET|REPLACEMENT/);
 });
 
@@ -125,8 +125,8 @@ it('captures creation and deletion values with UUIDs, without attendance codes',
   await handler('/:uuid', 'delete')(req, res, next);
   expect(next).not.toHaveBeenCalled();
   const entries = AuditLog.create.mock.calls.map(([entry]) => entry);
-  expect(entries[0].detail).toContain('attendancePoints: null → 20');
-  expect(entries[1].detail).toContain('attendancePoints: 20 → null');
+  expect(entries[0].detail).toContain('Created: Points: 20');
+  expect(entries[1].detail).toContain('Deleted: Points: 20');
   entries.forEach((entry) => {
     expect(entry.detail).toContain(event.uuid);
     expect(entry.detail).not.toContain('SECRET');
