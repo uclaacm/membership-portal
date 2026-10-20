@@ -9,7 +9,7 @@
  *   1. Renames the 'Dev' record to 'Dev Team', the name officers, events and banners already use.
  *      Applications reference committees by _id, so they are unaffected.
  *   2. Rewrites officer/event references that differ from a record only in case or spacing
- *      (e.g. 'w' -> 'W') to the record's exact name.
+ *      (e.g. 'w' -> 'W'), or that still use a renamed name ('Dev'), to the record's exact name.
  *   3. Creates an inactive record for any other committee name an officer or event uses that has
  *      no record, so every existing reference resolves. Inactive means applicants don't see it.
  *   4. Copies the colors and banners that used to live in config.ts onto each record, leaving any
@@ -96,6 +96,11 @@ async function main() {
 
   // 2 & 3. Reconcile officer and event references
   const byNormalized = new Map([...records.keys()].map((name) => [normalize(name), name]));
+  // A reference still using a renamed name ('Dev') follows its record rather than getting a
+  // new record of its own.
+  Object.entries(RENAMES).forEach(([from, to]) => {
+    if (records.has(to)) byNormalized.set(normalize(from), to);
+  });
   const missing = new Map();
   for (const { source, name, count } of await referencedCommitteeNames()) {
     if (!name || name === GENERAL_COMMITTEE || records.has(name)) continue;
