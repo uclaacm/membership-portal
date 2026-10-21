@@ -1,4 +1,5 @@
 const { Committee } = require('../models/Committee');
+const { withRecruitmentStatus } = require('../utils/deadlineValidation');
 const { InternshipApplication } = require('../models/InternshipApplication');
 const { canManageCommitteeResource } = require('../../auth/committeeScope');
 const { CHOICE_FIELDS, officerCanManageCommittee } = require('./applicationController');
@@ -50,7 +51,11 @@ async function getAllCommittees(req, res, next) {
 
     const committees = await Committee.find(filter).select('-__v').sort({ displayName: 1 });
 
-    res.json({ error: null, committees });
+    const now = new Date();
+    const visibleCommittees = committees
+      .map((committee) => withRecruitmentStatus(committee, now))
+      .filter((committee) => includeInactive || committee.isActive);
+    res.json({ error: null, committees: visibleCommittees });
   } catch (error) {
     next(error);
   }
@@ -76,7 +81,7 @@ async function getCommitteeById(req, res, next) {
       return res.status(404).json({ error: 'Committee not found' });
     }
 
-    return res.json({ error: null, committee });
+    return res.json({ error: null, committee: withRecruitmentStatus(committee) });
   } catch (error) {
     return next(error);
   }
@@ -90,7 +95,7 @@ async function createCommittees(req, res, next) {
     }
     const committee = new Committee(req.body);
     await committee.save();
-    res.status(201).json({ error: null, committee });
+    res.status(201).json({ error: null, committee: withRecruitmentStatus(committee) });
   } catch (error) {
     next(error);
   }
@@ -117,7 +122,7 @@ async function updateCommitteeQuestions(req, res, next) {
       { new: true, runValidators: true },
     );
 
-    return res.json({ error: null, committee: updatedCommittee });
+    return res.json({ error: null, committee: withRecruitmentStatus(updatedCommittee) });
   } catch (e) {
     return next(e);
   }
@@ -154,7 +159,7 @@ async function updateDecisionsReleased(req, res, next) {
       });
     }
 
-    return res.json({ error: null, committee: updatedCommittee });
+    return res.json({ error: null, committee: withRecruitmentStatus(updatedCommittee) });
   } catch (e) {
     return next(e);
   }
@@ -179,7 +184,10 @@ async function updateCommitteeAdmin(req, res, next) {
       updates,
       { new: true, runValidators: true },
     );
-    return res.json({ error: null, committee: updatedCommittee });
+    if (!updatedCommittee) {
+      return res.status(404).json({ error: 'Committee not found' });
+    }
+    return res.json({ error: null, committee: withRecruitmentStatus(updatedCommittee) });
   } catch (error) {
     return next(error);
   }
@@ -334,8 +342,9 @@ async function getAllCommitteesAdmin(req, res, next) {
       getApplicationCountsByCommittee(),
     ]);
 
+    const now = new Date();
     const committeesWithCounts = committees.map((committee) => ({
-      ...committee.toObject(),
+      ...withRecruitmentStatus(committee, now),
       applicationCount: countByCommitteeId.get(committee._id.toString()) || 0,
     }));
 
