@@ -18,5 +18,6 @@ module.exports = {
     'no-plusplus': 'off',
     'func-names': 'off',
     'max-classes-per-file': 'off',
+    'no-underscore-dangle': ['error', { allow: ['_id'] }],
   },
 };

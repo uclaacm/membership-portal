@@ -38,8 +38,12 @@ async function getApplicationCountsByCommittee() {
 
 async function getAllCommittees(req, res, next) {
   try {
+    // Only admins and officers may see committees that aren't recruiting. For everyone else the
+    // query flag is ignored.
+    const includeInactive = req.query.includeInactive === 'true'
+      && Boolean(req.user) && (req.user.isAdmin() || req.user.isOfficer());
     let filter = { isActive: true };
-    if (req.query.includeInactive === 'true' && req.user) {
+    if (includeInactive) {
       if (req.user.isAdmin()) {
         filter = {};
       } else if (req.user.isOfficer()) {
@@ -56,8 +60,8 @@ async function getAllCommittees(req, res, next) {
       .map((committee) => withRecruitmentStatus(committee, now))
       .filter((committee) => includeInactive || committee.isActive);
     res.json({ error: null, committees: visibleCommittees });
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 }
 
@@ -69,8 +73,8 @@ async function getCommitteeDirectory(req, res, next) {
       .select('name displayName color bannerUrl isActive')
       .sort({ displayName: 1 });
     res.json({ error: null, committees });
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 }
 
@@ -82,8 +86,8 @@ async function getCommitteeById(req, res, next) {
     }
 
     return res.json({ error: null, committee: withRecruitmentStatus(committee) });
-  } catch (error) {
-    return next(error);
+  } catch (err) {
+    return next(err);
   }
 }
 
@@ -96,8 +100,8 @@ async function createCommittees(req, res, next) {
     const committee = new Committee(req.body);
     await committee.save();
     res.status(201).json({ error: null, committee: withRecruitmentStatus(committee) });
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 }
 
@@ -123,8 +127,8 @@ async function updateCommitteeQuestions(req, res, next) {
     );
 
     return res.json({ error: null, committee: withRecruitmentStatus(updatedCommittee) });
-  } catch (e) {
-    return next(e);
+  } catch (err) {
+    return next(err);
   }
 }
 
@@ -160,8 +164,8 @@ async function updateDecisionsReleased(req, res, next) {
     }
 
     return res.json({ error: null, committee: withRecruitmentStatus(updatedCommittee) });
-  } catch (e) {
-    return next(e);
+  } catch (err) {
+    return next(err);
   }
 }
 
@@ -188,8 +192,8 @@ async function updateCommitteeAdmin(req, res, next) {
       return res.status(404).json({ error: 'Committee not found' });
     }
     return res.json({ error: null, committee: withRecruitmentStatus(updatedCommittee) });
-  } catch (error) {
-    return next(error);
+  } catch (err) {
+    return next(err);
   }
 }
 
@@ -290,8 +294,8 @@ async function deleteCommittee(req, res, next) {
       updatedUsers,
       demotedOfficers,
     });
-  } catch (error) {
-    return next(error);
+  } catch (err) {
+    return next(err);
   }
 }
 
@@ -330,8 +334,8 @@ async function bulkUpdateCommitteeStatus(req, res, next) {
     }
 
     return res.json({ success: true, modified });
-  } catch (e) {
-    return next(e);
+  } catch (err) {
+    return next(err);
   }
 }
 
@@ -349,8 +353,8 @@ async function getAllCommitteesAdmin(req, res, next) {
     }));
 
     return res.json({ error: null, committees: committeesWithCounts });
-  } catch (error) {
-    return next(error);
+  } catch (err) {
+    return next(err);
   }
 }
 

@@ -86,7 +86,8 @@ describe('deadline-driven recruitment closure', () => {
   test.each([{}, { includeInactive: 'true' }])('applicants only see open committees: %j', async (query) => {
     const res = mockRes();
     const next = jest.fn();
-    await getAllCommittees({ query, user: { isAdmin: () => false } }, res, next);
+    const user = { isAdmin: () => false, isOfficer: () => false };
+    await getAllCommittees({ query, user }, res, next);
     expect(next).not.toHaveBeenCalled();
     expect(res.json.mock.calls[0][0].committees.map((c) => c._id))
       .toEqual(['future', 'no-deadline']);
