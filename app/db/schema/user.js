@@ -168,12 +168,15 @@ module.exports = (Sequelize, db) => {
       },
 
       // user's social links
+      // Custom validators rather than isUrl: Sequelize 4 drops isUrl's args whenever a msg is
+      // set, so a host_whitelist passed that way is silently ignored.
       linkedinUrl: {
         type: Sequelize.STRING,
         validate: {
-          isUrl: {
-            args: [{ host_whitelist: ['linkedin.com', 'www.linkedin.com'] }],
-            msg: 'The LinkedIn URL must be a valid URL',
+          isLinkedinUrl(value) {
+            if (!Sequelize.Validator.isURL(value, { host_whitelist: ['linkedin.com', 'www.linkedin.com'] })) {
+              throw new Error('The LinkedIn URL must be a valid URL');
+            }
           },
         },
       },
@@ -181,9 +184,10 @@ module.exports = (Sequelize, db) => {
       githubUrl: {
         type: Sequelize.STRING,
         validate: {
-          isUrl: {
-            args: [{ host_whitelist: ['github.com', 'www.github.com'] }],
-            msg: 'The GitHub URL must be a valid URL',
+          isGithubUrl(value) {
+            if (!Sequelize.Validator.isURL(value, { host_whitelist: ['github.com', 'www.github.com'] })) {
+              throw new Error('The GitHub URL must be a valid URL');
+            }
           },
         },
       },

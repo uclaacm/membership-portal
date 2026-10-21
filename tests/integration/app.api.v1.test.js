@@ -1,9 +1,9 @@
 import request from 'supertest';
-import { server, setup } from '..';
+import { server, setup } from '../..';
 
 const jwt = require('jsonwebtoken');
-const { User, Activity } = require('../app/db');
-const config = require('../app/config');
+const { User, Activity, db: Sequelize } = require('../../app/db');
+const config = require('../../app/config');
 
 const API_ROUTE = '/app/api/v1/';
 const route = (name) => API_ROUTE + name;
@@ -12,8 +12,9 @@ beforeAll(async () => {
   await setup;
 });
 
-afterAll(() => {
+afterAll(async () => {
   server.close();
+  await Sequelize.close();
 });
 
 describe('Health Tests', () => {

@@ -1,8 +1,10 @@
 const request = require('supertest');
 const jwt = require('jsonwebtoken');
-const { server, setup } = require('..');
-const config = require('../app/config');
-const { User, Event, Image } = require('../app/db');
+const { server, setup } = require('../..');
+const config = require('../../app/config');
+const {
+  User, Event, Image, db: Sequelize,
+} = require('../../app/db');
 
 const API_ROUTE = '/app/api/v1';
 
@@ -60,8 +62,9 @@ beforeAll(async () => {
   await setup(false, true);
 });
 
-afterAll(() => {
+afterAll(async () => {
   server.close();
+  await Sequelize.close();
 });
 
 describe('Committee-scoped delete authorization', () => {

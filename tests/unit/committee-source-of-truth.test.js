@@ -1,28 +1,28 @@
-jest.mock('../app/logger', () => ({
+jest.mock('../../app/logger', () => ({
   info: jest.fn(), warn: jest.fn(), error: jest.fn(), debug: jest.fn(), log: jest.fn(),
 }));
-jest.mock('../app/db', () => ({
+jest.mock('../../app/db', () => ({
   User: { findAll: jest.fn() },
   AuditLog: { create: jest.fn() },
 }));
-jest.mock('../app/audit', () => ({ recordAudit: jest.fn() }));
-jest.mock('../app/api/v1/internship/models/Committee', () => ({
+jest.mock('../../app/audit', () => ({ recordAudit: jest.fn() }));
+jest.mock('../../app/api/v1/internship/models/Committee', () => ({
   Committee: {
     find: jest.fn(),
     findById: jest.fn(),
     findByIdAndDelete: jest.fn(),
   },
 }));
-jest.mock('../app/api/v1/internship/models/InternshipApplication', () => ({
+jest.mock('../../app/api/v1/internship/models/InternshipApplication', () => ({
   InternshipApplication: { find: jest.fn().mockResolvedValue([]) },
   getCurrentApplicationCycle: jest.fn(),
 }));
 
 const mongoose = require('mongoose');
-const { User } = require('../app/db');
-const { Committee } = require('../app/api/v1/internship/models/Committee');
-const { getAllCommittees, deleteCommittee } = require('../app/api/v1/internship/controllers/committeeController');
-const { findUnknownCommittees } = require('../app/committees');
+const { User } = require('../../app/db');
+const { Committee } = require('../../app/api/v1/internship/models/Committee');
+const { getAllCommittees, deleteCommittee } = require('../../app/api/v1/internship/controllers/committeeController');
+const { findUnknownCommittees } = require('../../app/committees');
 
 const mockRes = () => {
   const res = {};

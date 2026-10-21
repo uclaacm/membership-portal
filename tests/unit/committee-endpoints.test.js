@@ -4,7 +4,7 @@ jest.mock('google-auth-library', () => ({
   })),
 }), { virtual: true });
 
-jest.mock('../app/logger', () => ({
+jest.mock('../../app/logger', () => ({
   info: jest.fn(),
   warn: jest.fn(),
   error: jest.fn(),
@@ -12,7 +12,7 @@ jest.mock('../app/logger', () => ({
   log: jest.fn(),
 }));
 
-jest.mock('../app/api/v1/internship/models/Committee', () => ({
+jest.mock('../../app/api/v1/internship/models/Committee', () => ({
   Committee: {
     findById: jest.fn(),
     findByIdAndUpdate: jest.fn(),
@@ -20,17 +20,19 @@ jest.mock('../app/api/v1/internship/models/Committee', () => ({
   },
 }));
 
-jest.mock('../app/audit', () => ({ recordAudit: jest.fn() }));
+jest.mock('../../app/audit', () => ({ recordAudit: jest.fn() }));
 
-jest.mock('../app/api/v1/internship/models/InternshipApplication', () => ({
+jest.mock('../../app/audit', () => ({ recordAudit: jest.fn() }));
+
+jest.mock('../../app/api/v1/internship/models/InternshipApplication', () => ({
   InternshipApplication: {
     aggregate: jest.fn(),
   },
   getCurrentApplicationCycle: jest.fn(),
 }));
 
-const { Committee } = require('../app/api/v1/internship/models/Committee');
-const { InternshipApplication } = require('../app/api/v1/internship/models/InternshipApplication');
+const { Committee } = require('../../app/api/v1/internship/models/Committee');
+const { InternshipApplication } = require('../../app/api/v1/internship/models/InternshipApplication');
 const {
   getAllCommittees,
   getCommitteeById,
@@ -38,10 +40,10 @@ const {
   updateCommitteeAdmin,
   updateDecisionsReleased,
   getAllCommitteesAdmin,
-} = require('../app/api/v1/internship/controllers/committeeController');
-const { recordAudit } = require('../app/audit');
-const { isAdmin } = require('../app/api/v1/auth');
-const error = require('../app/error');
+} = require('../../app/api/v1/internship/controllers/committeeController');
+const { recordAudit } = require('../../app/audit');
+const { isAdmin } = require('../../app/api/v1/auth');
+const error = require('../../app/error');
 
 const mockRes = () => {
   const res = {};
@@ -84,7 +86,8 @@ describe('deadline-driven recruitment closure', () => {
   test.each([{}, { includeInactive: 'true' }])('applicants only see open committees: %j', async (query) => {
     const res = mockRes();
     const next = jest.fn();
-    await getAllCommittees({ query, user: { isAdmin: () => false } }, res, next);
+    const user = { isAdmin: () => false, isOfficer: () => false };
+    await getAllCommittees({ query, user }, res, next);
     expect(next).not.toHaveBeenCalled();
     expect(res.json.mock.calls[0][0].committees.map((c) => c._id))
       .toEqual(['future', 'no-deadline']);

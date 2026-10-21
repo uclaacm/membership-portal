@@ -1,9 +1,9 @@
 import request from 'supertest';
-import { server, setup } from '..';
+import { server, setup } from '../..';
 
 const jwt = require('jsonwebtoken');
-const { User } = require('../app/db');
-const config = require('../app/config');
+const { User, db: Sequelize } = require('../../app/db');
+const config = require('../../app/config');
 
 const API_ROUTE = '/app/api/v1/';
 const route = (name) => API_ROUTE + name;
@@ -30,8 +30,9 @@ beforeAll(async () => {
   await setup;
 });
 
-afterAll(() => {
+afterAll(async () => {
   server.close();
+  await Sequelize.close();
 });
 
 describe('GET /leaderboard/admin', () => {
@@ -179,5 +180,4 @@ describe('GET /leaderboard/admin', () => {
     const names = res.body.leaderboard.map((u) => u.firstName);
     expect(names).toContain('Hack');
   });
-
 });

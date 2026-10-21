@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 
 const db = new Sequelize('postgres://localhost/event_points_test', { logging: false });
-const Event = require('../app/db/schema/event')(Sequelize, db);
+const Event = require('../../app/db/schema/event')(Sequelize, db);
 
 const validEvent = {
   title: 'General Meeting',
