@@ -108,21 +108,21 @@ async function createCommittees(req, res, next) {
 async function updateCommitteeQuestions(req, res, next) {
   try {
     const committee = await Committee.findById(req.params.id);
-    if(!committee) {
-      return res.status(404).json({error: "Committee not found"});
+    if (!committee) {
+      return res.status(404).json({ error: 'Committee not found' });
     }
-    if(!canManageCommitteeResource(req.user, committee.name)) {
+    if (!canManageCommitteeResource(req.user, committee.name)) {
       throw new error.Forbidden('You are not assigned to this committee.');
     }
 
-    const { customQuestions } = req.body
-    if(!Array.isArray(customQuestions)) {
+    const { customQuestions } = req.body;
+    if (!Array.isArray(customQuestions)) {
       throw new error.BadRequest('customQuestions must be an array.');
     }
 
     const updatedCommittee = await Committee.findByIdAndUpdate(
       req.params.id,
-      { $set: {customQuestions } },
+      { $set: { customQuestions } },
       { new: true, runValidators: true },
     );
 
@@ -200,7 +200,7 @@ async function updateCommitteeAdmin(req, res, next) {
 // Hard-deletes a committee and cascades to every application that chose it.
 // An application can list this committee as just one of up to 3 choices, so
 // deleting the committee shouldn't necessarily destroy the whole application
-// — only if this was the applicant's only choice. 
+// — only if this was the applicant's only choice.
 async function cascadeDeleteCommitteeFromApplications(committeeId) {
   const affectedApplications = await InternshipApplication.find({
     $or: CHOICE_FIELDS.map(({ committeeField }) => ({ [committeeField]: committeeId })),
@@ -219,7 +219,8 @@ async function cascadeDeleteCommitteeFromApplications(committeeId) {
         officer2Rating: application[choice.officer2RatingField],
         notes: application[choice.notesField],
       }))
-      .filter((choice) => choice.committeeId && choice.committeeId.toString() !== committeeId.toString());
+      .filter((choice) => choice.committeeId
+        && choice.committeeId.toString() !== committeeId.toString());
 
     if (remainingChoices.length === 0) {
       await application.deleteOne();
@@ -238,7 +239,11 @@ async function cascadeDeleteCommitteeFromApplications(committeeId) {
       update[choice.notesField] = remaining ? remaining.notes : '';
     });
 
-    await InternshipApplication.findByIdAndUpdate(application._id, { $set: update }, { runValidators: true });
+    await InternshipApplication.findByIdAndUpdate(
+      application._id,
+      { $set: update },
+      { runValidators: true },
+    );
     updatedApplications += 1;
   }));
 
@@ -274,8 +279,9 @@ async function deleteCommittee(req, res, next) {
       return res.status(404).json({ error: 'Committee not found' });
     }
 
-    const { deletedApplications, updatedApplications } =
-      await cascadeDeleteCommitteeFromApplications(committee._id);
+    const { deletedApplications, updatedApplications } = (
+      await cascadeDeleteCommitteeFromApplications(committee._id)
+    );
     const { updatedUsers, demotedOfficers } = await cascadeDeleteCommitteeFromUsers(committee.name);
 
     await Committee.findByIdAndDelete(committee._id);
@@ -322,8 +328,7 @@ async function bulkUpdateCommitteeStatus(req, res, next) {
     const affected = await Committee.find(filter).select('displayName');
 
     const result = await Committee.updateMany(filter, { $set: { isActive } });
-    // result.modifiedCount and result.nModified options are to support Mongoose 6+ and older versions of Mongoose
-    const modified = (result && (result.modifiedCount !== undefined ? result.modifiedCount : result.nModified)) || 0;
+    const modified = result.modifiedCount;
 
     if (modified > 0) {
       recordAudit(AuditLog, req, {
