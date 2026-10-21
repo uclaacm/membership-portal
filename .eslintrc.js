@@ -20,4 +20,16 @@ module.exports = {
     'max-classes-per-file': 'off',
     'no-underscore-dangle': ['error', { allow: ['_id'] }],
   },
+  overrides: [
+    {
+      // Run from the terminal or at container start; printing progress is their job.
+      files: [
+        'scripts/db-init.js',
+        'scripts/seed-internship-test-data.js',
+        'scripts/seed-officer-test-applications.js',
+        'scripts/migrate-committees-to-db.js',
+      ],
+      rules: { 'no-console': 'off' },
+    },
+  ],
 };

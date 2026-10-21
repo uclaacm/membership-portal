@@ -258,7 +258,11 @@ async function getRecurringEvents(spreadsheetId) {
     }
 
     // The hour of slack keeps End Date included when the range crosses a daylight saving change.
-    for (const day = new Date(rangeStart); day.getTime() <= rangeEnd.getTime() + 60 * 60 * 1000; day.setDate(day.getDate() + 1)) {
+    for (
+      const day = new Date(rangeStart);
+      day.getTime() <= rangeEnd.getTime() + 60 * 60 * 1000;
+      day.setDate(day.getDate() + 1)
+    ) {
       if (day.getDay() === dayOfWeek) {
         const dateStr = `${day.getMonth() + 1}/${day.getDate()}/${day.getFullYear()}`;
         const startDate = parseDateTime(dateStr, startTime);
@@ -331,7 +335,9 @@ async function syncEventsFromSheets(Event, spreadsheetId = DEFAULT_SPREADSHEET_I
         // Check if event already exists by title and start date/time.
         // eslint-disable-next-line no-await-in-loop
         const sameStart = await Event.findAll({ where: { startDate: eventData.startDate } });
-        const existing = sameStart.find((e) => e.title.trim().toLowerCase() === eventData.title.toLowerCase());
+        const existing = sameStart.find(
+          (e) => e.title.trim().toLowerCase() === eventData.title.toLowerCase(),
+        );
 
         if (existing) {
           // Update existing event, keeping its attendance code (members may already have it).
@@ -340,7 +346,8 @@ async function syncEventsFromSheets(Event, spreadsheetId = DEFAULT_SPREADSHEET_I
           await existing.update(changes);
           results.updated++;
         } else {
-          // Create new event. Attendance codes must be unique, so add a number if this one is taken.
+          // Create new event. Attendance codes must be unique, so if this one is taken,
+          // add a number to it (CODE2, CODE3, ...).
           let code = eventData.attendanceCode;
           // eslint-disable-next-line no-await-in-loop
           for (let n = 2; await Event.findByAttendanceCode(code); n++) {

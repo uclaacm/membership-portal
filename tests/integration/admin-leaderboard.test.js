@@ -180,5 +180,4 @@ describe('GET /leaderboard/admin', () => {
     const names = res.body.leaderboard.map((u) => u.firstName);
     expect(names).toContain('Hack');
   });
-
 });
