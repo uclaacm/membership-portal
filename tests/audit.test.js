@@ -13,12 +13,12 @@ it('omits equivalent numeric and date values but preserves meaningful clears', (
     capacity: null,
     startDate: '2026-10-06T19:00:00-07:00',
     description: '',
-  })).toBe('capacity: 0 → null; description: "Hello" → ""');
+  })).toBe('Capacity: 0 → Not set · Description: "Hello" → ""');
 });
 
 it('redacts changed attendance codes and omits unchanged codes', () => {
   expect(describeEventChanges({ attendanceCode: 'OLD' }, { attendanceCode: 'NEW' }))
-    .toBe('attendanceCode: changed (redacted)');
+    .toBe('Attendance code: changed (redacted)');
   expect(describeEventChanges({ attendanceCode: 'OLD' }, { attendanceCode: 'OLD' })).toBe('');
 });
 
@@ -26,6 +26,29 @@ it('compares committee membership independently of order and duplicates', () => 
   expect(describeChanges({ committees: ['Hack', 'AI'] }, {
     committees: ['AI', 'Hack', 'AI'],
   }, ['committees'], { sets: ['committees'] })).toBe('');
+});
+
+it('keeps timestamp precision and timezone in readable event snapshots', () => {
+  expect(describeEventChanges({}, {
+    attendancePoints: 0,
+    startDate: '2026-10-21T18:00:00.123-07:00',
+    description: '',
+    attendanceCode: 'SECRET',
+  }, undefined, 'after')).toBe(
+    'Points: 0 · Starts: 2026-10-22 01:00:00.123 UTC · Description: "" · Attendance code: redacted',
+  );
+});
+
+it('distinguishes missing values, literal text, and empty lists without dropping content', () => {
+  expect(describeChanges({
+    description: null, committees: [], accessType: 'STANDARD',
+  }, {
+    description: 'Not set', committees: ['A, B', 'W'], accessType: 'ADMIN',
+  }, ['description', 'committees', 'accessType'])).toBe(
+    'Description: Not set → "Not set" · Committees: [] → ["A, B", "W"] · Role: Member → Admin',
+  );
+  expect(describeChanges({ accessType: 'ADMIN' }, { accessType: 'CUSTOM' }, ['accessType']))
+    .toBe('Role: Admin → "CUSTOM"');
 });
 
 it('preserves long audit details and actor context', async () => {

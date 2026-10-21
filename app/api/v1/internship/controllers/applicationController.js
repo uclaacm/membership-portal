@@ -96,12 +96,10 @@ function officerCanManageCommittee(user, committee) {
   const officerCommittees = getOfficerCommittees(user)
     .map(normalizeCommitteeName)
     .filter(Boolean);
-  const committeeNames = [
-    committee && committee.name,
-    committee && committee.displayName,
-  ].map(normalizeCommitteeName).filter(Boolean);
-
-  return committeeNames.some((name) => officerCommittees.includes(name));
+  // Officers are assigned by the committee's immutable `name`. displayName is a free-form
+  // label an admin can edit, so matching on it could hand one committee's officers another's.
+  const committeeName = normalizeCommitteeName(committee && committee.name);
+  return committeeName !== '' && officerCommittees.includes(committeeName);
 }
 
 function buildMissingFieldsMessage(missingFields) {

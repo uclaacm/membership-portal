@@ -4,8 +4,9 @@ const { InternshipApplication } = require('../models/InternshipApplication');
 const { canManageCommitteeResource } = require('../../auth/committeeScope');
 const { CHOICE_FIELDS, officerCanManageCommittee } = require('./applicationController');
 const error = require('../../../../error');
-const { AuditLog } = require('../../../../db');
+const { AuditLog, User } = require('../../../../db');
 const { recordAudit } = require('../../../../audit');
+const { GENERAL_COMMITTEE } = require('../../../../committees');
 
 // Count submitted (non-deleted, non-archived) applications per committee across all 3 choice
 // slots. $setUnion dedupes per application so a committee selected in multiple slots only
@@ -37,8 +38,16 @@ async function getApplicationCountsByCommittee() {
 
 async function getAllCommittees(req, res, next) {
   try {
-    const includeInactive = req.query.includeInactive === 'true' && req.user && req.user.isAdmin();
-    const filter = includeInactive ? {} : { isActive: true };
+    let filter = { isActive: true };
+    if (req.query.includeInactive === 'true' && req.user) {
+      if (req.user.isAdmin()) {
+        filter = {};
+      } else if (req.user.isOfficer()) {
+        // An officer's own committee stays visible to them while recruitment is closed;
+        // hiding it is what left officers on "Could not find a committee matching ...".
+        filter = { $or: [{ isActive: true }, { name: { $in: req.user.committees || [] } }] };
+      }
+    }
 
     const committees = await Committee.find(filter).select('-__v').sort({ displayName: 1 });
 
@@ -47,6 +56,19 @@ async function getAllCommittees(req, res, next) {
       .map((committee) => withRecruitmentStatus(committee, now))
       .filter((committee) => includeInactive || committee.isActive);
     res.json({ error: null, committees: visibleCommittees });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// Every committee's identity and styling, active or not. Event pages color and badge events
+// by committee even while recruitment is closed, so this can't share getAllCommittees' filter.
+async function getCommitteeDirectory(req, res, next) {
+  try {
+    const committees = await Committee.find({})
+      .select('name displayName color bannerUrl isActive')
+      .sort({ displayName: 1 });
+    res.json({ error: null, committees });
   } catch (error) {
     next(error);
   }
@@ -67,6 +89,10 @@ async function getCommitteeById(req, res, next) {
 
 async function createCommittees(req, res, next) {
   try {
+    const name = typeof req.body.name === 'string' ? req.body.name.trim() : '';
+    if (name.toLowerCase() === GENERAL_COMMITTEE.toLowerCase()) {
+      throw new error.BadRequest(`'${GENERAL_COMMITTEE}' is reserved for chapter-wide events.`);
+    }
     const committee = new Committee(req.body);
     await committee.save();
     res.status(201).json({ error: null, committee: withRecruitmentStatus(committee) });
@@ -141,9 +167,21 @@ async function updateDecisionsReleased(req, res, next) {
 
 async function updateCommitteeAdmin(req, res, next) {
   try {
+    const committee = await Committee.findById(req.params.id);
+    if (!committee) {
+      return res.status(404).json({ error: 'Committee not found' });
+    }
+
+    // `name` is the key officers and events reference, so it can never change. Edit
+    // displayName to relabel a committee.
+    const { name, ...updates } = req.body || {};
+    if (name !== undefined && String(name).trim() !== committee.name) {
+      throw new error.BadRequest('A committee\'s name cannot be changed. Edit its display name instead.');
+    }
+
     const updatedCommittee = await Committee.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      updates,
       { new: true, runValidators: true },
     );
     if (!updatedCommittee) {
@@ -203,6 +241,28 @@ async function cascadeDeleteCommitteeFromApplications(committeeId) {
   return { deletedApplications, updatedApplications };
 }
 
+// Drops a deleted committee from every user's committee list. An officer's role is their
+// committee scope, so one left with no committee at all is demoted to member rather than kept
+// as an officer of nothing. Events keep the old name as a historical label.
+async function cascadeDeleteCommitteeFromUsers(committeeName) {
+  const users = await User.findAll({ where: { committees: { $contains: [committeeName] } } });
+
+  let demotedOfficers = 0;
+  await Promise.all(users.map(async (user) => {
+    const remaining = (user.committees || []).filter((c) => c !== committeeName);
+    const update = { committees: remaining };
+    if (user.isOfficer() && !user.isAdmin() && remaining.length === 0) {
+      Object.assign(update, {
+        accessType: 'STANDARD', position: null, roleGrantedBy: null, roleGrantedAt: null,
+      });
+      demotedOfficers += 1;
+    }
+    await user.update(update);
+  }));
+
+  return { updatedUsers: users.length, demotedOfficers };
+}
+
 async function deleteCommittee(req, res, next) {
   try {
     const committee = await Committee.findById(req.params.id);
@@ -212,14 +272,23 @@ async function deleteCommittee(req, res, next) {
 
     const { deletedApplications, updatedApplications } =
       await cascadeDeleteCommitteeFromApplications(committee._id);
+    const { updatedUsers, demotedOfficers } = await cascadeDeleteCommitteeFromUsers(committee.name);
 
     await Committee.findByIdAndDelete(committee._id);
+
+    recordAudit(AuditLog, req, {
+      action: 'committee.delete',
+      target: committee.displayName,
+      detail: `Removed from ${updatedUsers} user(s); ${demotedOfficers} officer(s) left without a committee were demoted to member`,
+    });
 
     return res.json({
       error: null,
       message: 'Committee deleted',
       deletedApplications,
       updatedApplications,
+      updatedUsers,
+      demotedOfficers,
     });
   } catch (error) {
     return next(error);
@@ -287,6 +356,7 @@ async function getAllCommitteesAdmin(req, res, next) {
 
 module.exports = {
   getAllCommittees,
+  getCommitteeDirectory,
   getAllCommitteesAdmin,
   getCommitteeById,
   createCommittees,
