@@ -20,9 +20,9 @@ jest.mock('../../app/api/v1/internship/models/Committee', () => ({
   },
 }));
 
-jest.mock('../app/audit', () => ({ recordAudit: jest.fn() }));
+jest.mock('../../app/audit', () => ({ recordAudit: jest.fn() }));
 
-jest.mock('../app/audit', () => ({ recordAudit: jest.fn() }));
+jest.mock('../../app/audit', () => ({ recordAudit: jest.fn() }));
 
 jest.mock('../../app/api/v1/internship/models/InternshipApplication', () => ({
   InternshipApplication: {
@@ -40,10 +40,10 @@ const {
   updateCommitteeAdmin,
   updateDecisionsReleased,
   getAllCommitteesAdmin,
-} = require('../app/api/v1/internship/controllers/committeeController');
-const { recordAudit } = require('../app/audit');
-const { isAdmin } = require('../app/api/v1/auth');
-const error = require('../app/error');
+} = require('../../app/api/v1/internship/controllers/committeeController');
+const { recordAudit } = require('../../app/audit');
+const { isAdmin } = require('../../app/api/v1/auth');
+const error = require('../../app/error');
 
 const mockRes = () => {
   const res = {};

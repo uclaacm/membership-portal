@@ -21,7 +21,7 @@ const { Committee } = require('../../app/api/v1/internship/models/Committee');
 const {
   updateApplicationStatus,
   getOwnApplication,
-} = require('../app/api/v1/internship/controllers/applicationController');
+} = require('../../app/api/v1/internship/controllers/applicationController');
 
 function mockResponse() {
   const res = {};
