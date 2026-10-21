@@ -8,6 +8,10 @@ jest.mock('../app/api/v1/internship/models/Committee', () => ({
   Committee: { find: jest.fn(), updateMany: jest.fn() },
 }));
 jest.mock('../app/api/v1/internship/models/InternshipApplication', () => ({ InternshipApplication: {} }));
+jest.mock('../app/committees', () => ({
+  GENERAL_COMMITTEE: 'ACM',
+  findUnknownCommittees: jest.fn().mockResolvedValue([]),
+}));
 jest.mock('../app/api/v1/internship/controllers/applicationController', () => ({ CHOICE_FIELDS: [] }));
 
 const express = require('express');

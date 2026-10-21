@@ -193,17 +193,19 @@ describe('updateCommitteeQuestions (officer-scoped)', () => {
 });
 
 describe('updateCommitteeAdmin', () => {
-  test('admin can update name, internLimit, isActive, and applicationDeadline together', async () => {
+  test('admin can update displayName, internLimit, isActive, and applicationDeadline together', async () => {
     const update = {
-      name: 'ACM Hack',
+      displayName: 'ACM Hack',
       internLimit: 20,
       isActive: false,
       applicationDeadline: new Date('2026-4-20'),
     };
-    const updated = { _id: '1', ...update };
+    const updated = { _id: '1', name: 'Hack', ...update };
+    Committee.findById.mockResolvedValue({ _id: '1', name: 'Hack' });
     Committee.findByIdAndUpdate.mockResolvedValue(updated);
 
-    const req = { params: { id: '1' }, user: adminUser, body: update };
+    // The edit form sends the unchanged name back; that is not a rename.
+    const req = { params: { id: '1' }, user: adminUser, body: { name: 'Hack', ...update } };
     const res = mockRes();
     const next = jest.fn();
 
@@ -218,8 +220,21 @@ describe('updateCommitteeAdmin', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
+  test('rejects changing the name, since officers and events reference it', async () => {
+    Committee.findById.mockResolvedValue({ _id: '1', name: 'Hack' });
+
+    const req = { params: { id: '1' }, user: adminUser, body: { name: 'ACM Hack' } };
+    const res = mockRes();
+    const next = jest.fn();
+
+    await updateCommitteeAdmin(req, res, next);
+
+    expect(Committee.findByIdAndUpdate).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith(expect.any(error.BadRequest));
+  });
+
   test('returns 404 when the committee does not exist', async () => {
-    Committee.findByIdAndUpdate.mockResolvedValue(null);
+    Committee.findById.mockResolvedValue(null);
 
     const req = { params: { id: 'missing' }, user: adminUser, body: { name: 'x' } };
     const res = mockRes();

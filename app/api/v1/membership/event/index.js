@@ -7,8 +7,17 @@ const { assertCanManageCommitteeResource, canManageCommitteeResource } = require
 const { recordAudit, describeEventChanges } = require('../../../../audit');
 // Shared with the public API, which serves the same covers to outside consumers.
 const { normalizeCover } = require('../../../../event-cover');
+const { GENERAL_COMMITTEE, findUnknownCommittees } = require('../../../../committees');
 
 const router = express.Router();
+
+// An event belongs to a real committee or to the chapter as a whole; anything else would
+// render with no color or banner and match no officer's scope.
+const assertKnownEventCommittee = async (committee) => {
+  if (!committee || committee === GENERAL_COMMITTEE) return;
+  const unknown = await findUnknownCommittees([committee]);
+  if (unknown.length > 0) throw new error.BadRequest(`Unknown committee: ${committee}`);
+};
 
 /**
  * Get all past events
@@ -142,7 +151,8 @@ router
       && new Date(req.body.event.startDate) > new Date(req.body.event.endDate)
     ) return next(new error.BadRequest('Start date must be before end date'));
 
-    return Event.create(Event.sanitize(req.body.event))
+    return assertKnownEventCommittee(req.body.event.committee)
+      .then(() => Event.create(Event.sanitize(req.body.event)))
       .then((event) => {
         res.json(
           { error: null, event: event.getPublic(req.user.isAdmin() || req.user.isOfficer()) },
@@ -222,10 +232,15 @@ router
         }
 
         const before = { ...event.get({ plain: true }) };
-        return event.update(updates, { transaction }).then((saved) => {
-          detail = describeEventChanges(before, saved.get({ plain: true }), Object.keys(updates));
-          return saved;
-        });
+        const committeeCheck = updates.committee && updates.committee !== event.committee
+          ? assertKnownEventCommittee(updates.committee)
+          : Promise.resolve();
+        return committeeCheck
+          .then(() => event.update(updates, { transaction }))
+          .then((saved) => {
+            detail = describeEventChanges(before, saved.get({ plain: true }), Object.keys(updates));
+            return saved;
+          });
       }))
       .then((event) => {
         res.json(

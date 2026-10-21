@@ -2,47 +2,35 @@ const mongoose = require('mongoose');
 const { Committee } = require('./api/v1/internship/models/Committee');
 
 /**
- * The canonical committee list.
- *
- * This is the single source of truth for which committees exist. Previously the list was
- * duplicated between the user schema validator and the analytics middleware, which let the
- * two drift apart. Every consumer must import from here.
- *
- * 'Dev Team' is a real committee that officers are assigned to, so it belongs in this list
- * even though it does not host public events the way the other committees do.
+ * The committee list lives in the Committee collection and nowhere else. Officer assignment,
+ * event ownership and every UI filter read it from there, so a committee created in the admin
+ * UI is immediately usable everywhere without a code change. Committees are referenced by
+ * `name`, which is immutable once created; `displayName` is the editable label.
  */
-const COMMITTEES = [
-  'Dev Team',
-  'AI',
-  'Cloud',
-  'Cyber',
-  'Design',
-  'Hack',
-  'ICPC',
-  'Studio',
-  'TeachLA',
-  'W',
-];
 
 /**
  * Sentinel used by `event.committee` to mean "general, chapter-wide" rather than owned by any
- * one committee. It is deliberately NOT in COMMITTEES: nobody can be an officer of 'ACM'.
+ * one committee. It is deliberately not a Committee record: nobody can be an officer of 'ACM'.
  */
 const GENERAL_COMMITTEE = 'ACM';
 
-const isValidCommittee = (committee) => COMMITTEES.includes(committee);
-
-async function getOfficerCommittees() {
-  if (mongoose.connection.readyState !== 1) return COMMITTEES;
-
-  try {
-    const created = await Committee.find({}).distinct('name');
-    return [...new Set([...COMMITTEES, ...created])];
-  } catch (err) {
-    return COMMITTEES;
+/**
+ * Every committee name. Throws when Mongo is unreachable rather than falling back to a stale
+ * list, so a validator never accepts a name that doesn't exist.
+ */
+async function getCommitteeNames() {
+  if (mongoose.connection.readyState !== 1) {
+    throw new Error('Committee list is unavailable: the internship database is not connected.');
   }
+  return Committee.find({}).distinct('name');
+}
+
+/** Names in `names` that are not existing committees. */
+async function findUnknownCommittees(names) {
+  const valid = await getCommitteeNames();
+  return names.filter((name) => !valid.includes(name));
 }
 
 module.exports = {
-  COMMITTEES, GENERAL_COMMITTEE, isValidCommittee, getOfficerCommittees,
+  GENERAL_COMMITTEE, getCommitteeNames, findUnknownCommittees,
 };
