@@ -2,6 +2,7 @@ jest.mock('../../app/api/v1/internship/models/InternshipApplication', () => ({
   InternshipApplication: {
     findById: jest.fn(),
     findByIdAndUpdate: jest.fn(),
+    findOne: jest.fn(),
   },
   getCurrentApplicationCycle: jest.fn(() => '2026-2027'),
 }));
@@ -9,6 +10,7 @@ jest.mock('../../app/api/v1/internship/models/InternshipApplication', () => ({
 jest.mock('../../app/api/v1/internship/models/Committee', () => ({
   Committee: {
     findById: jest.fn(),
+    find: jest.fn(),
   },
 }));
 
@@ -18,7 +20,8 @@ const {
 const { Committee } = require('../../app/api/v1/internship/models/Committee');
 const {
   updateApplicationStatus,
-} = require('../../app/api/v1/internship/controllers/applicationController');
+  getOwnApplication,
+} = require('../app/api/v1/internship/controllers/applicationController');
 
 function mockResponse() {
   const res = {};
@@ -213,5 +216,56 @@ describe('updateApplicationStatus', () => {
       message: 'Application status can only be updated after submission',
     }));
     expect(InternshipApplication.findByIdAndUpdate).not.toHaveBeenCalled();
+  });
+});
+
+describe('getOwnApplication', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  function mockOwnApplication(application, releasedCommitteeIds) {
+    InternshipApplication.findOne.mockReturnValue({
+      select: jest.fn().mockResolvedValue({ ...application, toObject: () => ({ ...application }) }),
+    });
+    Committee.find.mockReturnValue({
+      select: jest.fn().mockResolvedValue(releasedCommitteeIds.map((id) => ({ id }))),
+    });
+  }
+
+  async function fetchOwn() {
+    const res = mockResponse();
+    await getOwnApplication({ user: { uuid: 'user-1' } }, res);
+    return { res, data: res.json.mock.calls[0][0].data };
+  }
+
+  test('withholds statuses for committees that have not released decisions', async () => {
+    mockOwnApplication(mockApplication({
+      firstChoiceStatus: 'rejected',
+      secondChoiceStatus: 'interview_scheduled',
+    }), []);
+
+    const { res, data } = await fetchOwn();
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(data.firstChoiceStatus).toBeNull();
+    expect(data.secondChoiceStatus).toBeNull();
+    expect(data.thirdChoiceStatus).toBeNull();
+  });
+
+  test('shows the status only for committees that released, per committee', async () => {
+    mockOwnApplication(mockApplication({
+      firstChoiceStatus: 'accepted',
+      secondChoiceStatus: 'rejected',
+    }), ['committee-1']);
+
+    const { data } = await fetchOwn();
+
+    expect(Committee.find).toHaveBeenCalledWith({
+      _id: { $in: ['committee-1', 'committee-2'] },
+      decisionsReleased: true,
+    });
+    expect(data.firstChoiceStatus).toBe('accepted');
+    expect(data.secondChoiceStatus).toBeNull();
   });
 });

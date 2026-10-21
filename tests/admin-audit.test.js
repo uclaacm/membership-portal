@@ -8,6 +8,10 @@ jest.mock('../app/api/v1/internship/models/Committee', () => ({
   Committee: { find: jest.fn(), updateMany: jest.fn() },
 }));
 jest.mock('../app/api/v1/internship/models/InternshipApplication', () => ({ InternshipApplication: {} }));
+jest.mock('../app/committees', () => ({
+  GENERAL_COMMITTEE: 'ACM',
+  findUnknownCommittees: jest.fn().mockResolvedValue([]),
+}));
 jest.mock('../app/api/v1/internship/controllers/applicationController', () => ({ CHOICE_FIELDS: [] }));
 
 const express = require('express');
@@ -80,7 +84,7 @@ it('records actual role and committee changes, omitting unchanged position', asy
   await runAllHandlers(userRouter, '/:uuid/role', 'patch', req, res, next);
   expect(next).not.toHaveBeenCalled();
   expect(AuditLog.create.mock.calls[0][0].detail)
-    .toBe('accessType: "OFFICER" → "ADMIN"; committees: ["AI","Hack"] → ["Hack"]');
+    .toBe('Role: Officer → Admin · Committees: ["AI", "Hack"] → ["Hack"]');
 });
 
 it('labels unchanged role requests honestly, while retaining the protected-action audit', async () => {
@@ -95,7 +99,7 @@ it('includes old/new scope in bulk role updates', async () => {
   await runAllHandlers(userRouter, '/bulk', 'patch', req, res, next);
   expect(next).not.toHaveBeenCalled();
   expect(AuditLog.create.mock.calls[0][0].detail)
-    .toBe('Bulk: committees: ["AI","Hack"] → ["Hack"]');
+    .toBe('Bulk: Committees: ["AI", "Hack"] → ["Hack"]');
 });
 
 it('shows changed email fields without claiming the transport changed', async () => {
@@ -103,7 +107,7 @@ it('shows changed email fields without claiming the transport changed', async ()
   await runAllHandlers(settingsRouter, '/email', 'put', req, res, next);
   expect(next).not.toHaveBeenCalled();
   expect(AuditLog.create.mock.calls[0][0].detail)
-    .toBe('host: "old.example.com" → "new.example.com"');
+    .toBe('Host: "old.example.com" → "new.example.com"');
 });
 
 it('retains a truthful audit of unchanged settings', async () => {

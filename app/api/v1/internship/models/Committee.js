@@ -26,15 +26,31 @@ const CustomQuestionSchema = new Schema({
 
 const CommitteeSchema = new Schema(
   {
+    // The key officers (user.committees) and events (event.committee) reference. Immutable so
+    // relabelling a committee can't orphan those references; change displayName instead.
     name: {
       type: String,
       required: true,
       unique: true,
       trim: true,
+      immutable: true,
     },
     displayName: {
       type: String,
       required: true,
+    },
+    // Accent color for this committee's events, as a hex string.
+    color: {
+      type: String,
+      required: false,
+      trim: true,
+      match: [/^#[0-9a-fA-F]{6}$/, 'color must be a hex color like #1d6bff'],
+    },
+    // Default cover image for this committee's events: a site path or an uploaded image URL.
+    bannerUrl: {
+      type: String,
+      required: false,
+      trim: true,
     },
     description: {
       type: String,
@@ -56,6 +72,12 @@ const CommitteeSchema = new Schema(
     customQuestions: {
       type: [CustomQuestionSchema],
       default: [],
+    },
+    // While false, applicants can't see their status for this committee. Officers release it
+    // when ready, and advancing the cycle hides it again.
+    decisionsReleased: {
+      type: Boolean,
+      default: false,
     },
   },
   {

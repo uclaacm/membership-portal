@@ -20,6 +20,10 @@ jest.mock('../../app/api/v1/internship/models/Committee', () => ({
   },
 }));
 
+jest.mock('../app/audit', () => ({ recordAudit: jest.fn() }));
+
+jest.mock('../app/audit', () => ({ recordAudit: jest.fn() }));
+
 jest.mock('../../app/api/v1/internship/models/InternshipApplication', () => ({
   InternshipApplication: {
     aggregate: jest.fn(),
@@ -30,12 +34,16 @@ jest.mock('../../app/api/v1/internship/models/InternshipApplication', () => ({
 const { Committee } = require('../../app/api/v1/internship/models/Committee');
 const { InternshipApplication } = require('../../app/api/v1/internship/models/InternshipApplication');
 const {
+  getAllCommittees,
+  getCommitteeById,
   updateCommitteeQuestions,
   updateCommitteeAdmin,
+  updateDecisionsReleased,
   getAllCommitteesAdmin,
-} = require('../../app/api/v1/internship/controllers/committeeController');
-const { isAdmin } = require('../../app/api/v1/auth');
-const error = require('../../app/error');
+} = require('../app/api/v1/internship/controllers/committeeController');
+const { recordAudit } = require('../app/audit');
+const { isAdmin } = require('../app/api/v1/auth');
+const error = require('../app/error');
 
 const mockRes = () => {
   const res = {};
@@ -43,6 +51,77 @@ const mockRes = () => {
   res.json = jest.fn().mockReturnValue(res);
   return res;
 };
+
+describe('deadline-driven recruitment closure', () => {
+  const now = new Date('2026-10-19T06:59:59.999Z');
+  const makeCommittee = (id, deadline, isActive = true) => ({
+    _id: id,
+    isActive,
+    applicationDeadline: deadline,
+    toObject() {
+      const { toObject, ...rest } = this;
+      return rest;
+    },
+  });
+  let committees;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.useFakeTimers().setSystemTime(now);
+    committees = [
+      makeCommittee('expired', new Date(now.getTime() - 1)),
+      makeCommittee('boundary', now),
+      makeCommittee('future', new Date(now.getTime() + 1)),
+      makeCommittee('no-deadline', null),
+      makeCommittee('manual-closure', new Date(now.getTime() + 1), false),
+    ];
+    Committee.find.mockReturnValue({
+      select: () => ({ sort: async () => committees }),
+      sort: async () => committees,
+    });
+  });
+
+  afterEach(() => jest.useRealTimers());
+
+  test.each([{}, { includeInactive: 'true' }])('applicants only see open committees: %j', async (query) => {
+    const res = mockRes();
+    const next = jest.fn();
+    await getAllCommittees({ query, user: { isAdmin: () => false } }, res, next);
+    expect(next).not.toHaveBeenCalled();
+    expect(res.json.mock.calls[0][0].committees.map((c) => c._id))
+      .toEqual(['future', 'no-deadline']);
+  });
+
+  test.each(['list', 'admin'])('admin %s retains expired committees with closed status', async (endpoint) => {
+    InternshipApplication.aggregate.mockResolvedValue([]);
+    const res = mockRes();
+    const next = jest.fn();
+    const req = { query: { includeInactive: 'true' }, user: { isAdmin: () => true } };
+    await (endpoint === 'admin' ? getAllCommitteesAdmin : getAllCommittees)(req, res, next);
+    expect(next).not.toHaveBeenCalled();
+    expect(res.json.mock.calls[0][0].committees.map((c) => c.isActive))
+      .toEqual([false, false, true, true, false]);
+    expect(committees[0].isActive).toBe(true);
+  });
+
+  test('detail closes exactly at the deadline and reopens when the deadline is extended', async () => {
+    const committee = committees[1];
+    Committee.findById.mockResolvedValue(committee);
+    const req = { params: { id: committee._id } };
+    const res = mockRes();
+    const next = jest.fn();
+    jest.setSystemTime(now.getTime() - 1);
+    await getCommitteeById(req, res, next);
+    expect(res.json.mock.calls[0][0].committee.isActive).toBe(true);
+    jest.setSystemTime(now);
+    await getCommitteeById(req, res, next);
+    expect(res.json.mock.calls[1][0].committee.isActive).toBe(false);
+    committee.applicationDeadline = new Date(now.getTime() + 1);
+    await getCommitteeById(req, res, next);
+    expect(res.json.mock.calls[2][0].committee.isActive).toBe(true);
+    expect(next).not.toHaveBeenCalled();
+  });
+});
 
 const adminUser = {
   isAdmin: () => true,
@@ -189,17 +268,19 @@ describe('updateCommitteeQuestions (officer-scoped)', () => {
 });
 
 describe('updateCommitteeAdmin', () => {
-  test('admin can update name, internLimit, isActive, and applicationDeadline together', async () => {
+  test('admin can update displayName, internLimit, isActive, and applicationDeadline together', async () => {
     const update = {
-      name: 'ACM Hack',
+      displayName: 'ACM Hack',
       internLimit: 20,
       isActive: false,
       applicationDeadline: new Date('2026-4-20'),
     };
-    const updated = { _id: '1', ...update };
+    const updated = { _id: '1', name: 'Hack', ...update };
+    Committee.findById.mockResolvedValue({ _id: '1', name: 'Hack' });
     Committee.findByIdAndUpdate.mockResolvedValue(updated);
 
-    const req = { params: { id: '1' }, user: adminUser, body: update };
+    // The edit form sends the unchanged name back; that is not a rename.
+    const req = { params: { id: '1' }, user: adminUser, body: { name: 'Hack', ...update } };
     const res = mockRes();
     const next = jest.fn();
 
@@ -214,8 +295,21 @@ describe('updateCommitteeAdmin', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
+  test('rejects changing the name, since officers and events reference it', async () => {
+    Committee.findById.mockResolvedValue({ _id: '1', name: 'Hack' });
+
+    const req = { params: { id: '1' }, user: adminUser, body: { name: 'ACM Hack' } };
+    const res = mockRes();
+    const next = jest.fn();
+
+    await updateCommitteeAdmin(req, res, next);
+
+    expect(Committee.findByIdAndUpdate).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith(expect.any(error.BadRequest));
+  });
+
   test('returns 404 when the committee does not exist', async () => {
-    Committee.findByIdAndUpdate.mockResolvedValue(null);
+    Committee.findById.mockResolvedValue(null);
 
     const req = { params: { id: 'missing' }, user: adminUser, body: { name: 'x' } };
     const res = mockRes();
@@ -344,5 +438,82 @@ describe('getAllCommitteesAdmin (applicationCount)', () => {
     await getAllCommitteesAdmin({ user: adminUser }, mockRes(), next);
 
     expect(next).toHaveBeenCalledWith(boom);
+  });
+});
+
+describe('updateDecisionsReleased', () => {
+  const hackCommittee = { name: 'hack', displayName: 'Hack', decisionsReleased: false };
+  // Mirrors the Sequelize user: officerCanManageCommittee reads `committees`.
+  const hackOfficer = { isAdmin: () => false, isOfficer: () => true, committees: ['Hack'] };
+  const aiOfficer = { isAdmin: () => false, isOfficer: () => true, committees: ['AI'] };
+
+  test('lets an officer of the committee release its decisions, and audits it', async () => {
+    Committee.findById.mockResolvedValue(hackCommittee);
+    Committee.findByIdAndUpdate.mockResolvedValue({ ...hackCommittee, decisionsReleased: true });
+    const req = { params: { id: 'c-hack' }, body: { released: true }, user: hackOfficer };
+    const res = mockRes();
+    const next = jest.fn();
+
+    await updateDecisionsReleased(req, res, next);
+
+    expect(next).not.toHaveBeenCalled();
+    expect(Committee.findByIdAndUpdate).toHaveBeenCalledWith(
+      'c-hack',
+      { $set: { decisionsReleased: true } },
+      { new: true, runValidators: true },
+    );
+    expect(recordAudit.mock.calls[0][2]).toEqual(expect.objectContaining({
+      action: 'decisions.release',
+      target: 'Hack',
+    }));
+    expect(res.json).toHaveBeenCalledWith({
+      error: null,
+      committee: expect.objectContaining({ decisionsReleased: true }),
+    });
+  });
+
+  test('forbids an officer of a different committee', async () => {
+    Committee.findById.mockResolvedValue(hackCommittee);
+    const next = jest.fn();
+
+    const req = { params: { id: 'c-hack' }, body: { released: true }, user: aiOfficer };
+    await updateDecisionsReleased(req, mockRes(), next);
+
+    expect(next).toHaveBeenCalledWith(expect.any(error.Forbidden));
+    expect(Committee.findByIdAndUpdate).not.toHaveBeenCalled();
+  });
+
+  test('lets an admin hide any committee\'s decisions', async () => {
+    Committee.findById.mockResolvedValue({ ...hackCommittee, decisionsReleased: true });
+    Committee.findByIdAndUpdate.mockResolvedValue(hackCommittee);
+    const next = jest.fn();
+
+    const req = { params: { id: 'c-hack' }, body: { released: false }, user: adminUser };
+    await updateDecisionsReleased(req, mockRes(), next);
+
+    expect(next).not.toHaveBeenCalled();
+    expect(recordAudit.mock.calls[0][2]).toEqual(expect.objectContaining({
+      action: 'decisions.hide',
+    }));
+  });
+
+  test('rejects a non-boolean body without touching the committee', async () => {
+    const next = jest.fn();
+
+    const req = { params: { id: 'c-hack' }, body: { released: 'yes' }, user: adminUser };
+    await updateDecisionsReleased(req, mockRes(), next);
+
+    expect(next).toHaveBeenCalledWith(expect.any(error.BadRequest));
+    expect(Committee.findById).not.toHaveBeenCalled();
+  });
+
+  test('does not audit when the value is unchanged', async () => {
+    Committee.findById.mockResolvedValue(hackCommittee);
+    Committee.findByIdAndUpdate.mockResolvedValue(hackCommittee);
+
+    const req = { params: { id: 'c-hack' }, body: { released: false }, user: hackOfficer };
+    await updateDecisionsReleased(req, mockRes(), jest.fn());
+
+    expect(recordAudit).not.toHaveBeenCalled();
   });
 });

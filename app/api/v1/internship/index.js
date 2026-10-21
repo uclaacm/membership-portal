@@ -19,11 +19,13 @@ const {
 } = require('./controllers/applicationController');
 const {
   getAllCommittees,
+  getCommitteeDirectory,
   getAllCommitteesAdmin,
   getCommitteeById,
   createCommittees,
   updateCommitteeQuestions,
   updateCommitteeAdmin,
+  updateDecisionsReleased,
   deleteCommittee,
   bulkUpdateCommitteeStatus,
 } = require('./controllers/committeeController');
@@ -74,6 +76,9 @@ router.delete('/applications/:id', auth, deleteApplication);
 // GET all committees
 router.get('/committees', getAllCommittees);
 
+// GET every committee's name and styling, active or not (any signed-in user) - must be before /:id
+router.get('/committees/directory', getCommitteeDirectory);
+
 // GET all committees including inactive (admin only) - must be before /:id
 router.get('/committees/admin', auth, admin, getAllCommitteesAdmin);
 
@@ -92,6 +97,16 @@ router.put('/committees/:id/admin', auth, admin, committeeRateLimiter, updateCom
 // UPDATE committee (admin or officer)
 // Only allows updating committee questions
 router.put('/committees/:id/questions', auth, adminOrOfficer, committeeRateLimiter, updateCommitteeQuestions);
+
+// PATCH show/hide a committee's statuses to applicants (admin or that committee's officers)
+router.patch(
+  '/committees/:id/decisions-released',
+  auth,
+  adminOrOfficer,
+  committeeRateLimiter,
+  validateMongoId,
+  updateDecisionsReleased,
+);
 
 // DELETE committee (admin only) - soft delete by setting isActive to false
 router.delete('/committees/:id', auth, admin, deleteCommittee);

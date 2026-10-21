@@ -5,7 +5,7 @@ const {
   User, Activity, AuditLog, db: Sequelize,
 } = require('../../../../db');
 const { recordAudit, describeChanges } = require('../../../../audit');
-const { getOfficerCommittees } = require('../../../../committees');
+const { findUnknownCommittees } = require('../../../../committees');
 const {
   validatePublicProfileLookup,
   validateDirectoryLookup,
@@ -364,8 +364,12 @@ router.patch('/bulk', async (req, res, next) => {
   }
   if (committees !== undefined) {
     if (!Array.isArray(committees)) return next(new error.BadRequest('committees must be an array'));
-    const valid = await getOfficerCommittees();
-    const invalid = committees.filter((c) => !valid.includes(c));
+    let invalid;
+    try {
+      invalid = await findUnknownCommittees(committees);
+    } catch (lookupError) {
+      return next(lookupError);
+    }
     if (invalid.length > 0) {
       return next(new error.BadRequest(`Invalid committee(s): ${invalid.join(', ')}`));
     }
@@ -498,8 +502,12 @@ router.patch('/:uuid/role', async (req, res, next) => {
 
   if (committees !== undefined) {
     if (!Array.isArray(committees)) return next(new error.BadRequest('committees must be an array'));
-    const valid = await getOfficerCommittees();
-    const invalid = committees.filter((c) => !valid.includes(c));
+    let invalid;
+    try {
+      invalid = await findUnknownCommittees(committees);
+    } catch (lookupError) {
+      return next(lookupError);
+    }
     if (invalid.length > 0) {
       return next(new error.BadRequest(`Invalid committee(s): ${invalid.join(', ')}`));
     }

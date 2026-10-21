@@ -96,12 +96,10 @@ function officerCanManageCommittee(user, committee) {
   const officerCommittees = getOfficerCommittees(user)
     .map(normalizeCommitteeName)
     .filter(Boolean);
-  const committeeNames = [
-    committee && committee.name,
-    committee && committee.displayName,
-  ].map(normalizeCommitteeName).filter(Boolean);
-
-  return committeeNames.some((name) => officerCommittees.includes(name));
+  // Officers are assigned by the committee's immutable `name`. displayName is a free-form
+  // label an admin can edit, so matching on it could hand one committee's officers another's.
+  const committeeName = normalizeCommitteeName(committee && committee.name);
+  return committeeName !== '' && officerCommittees.includes(committeeName);
 }
 
 function buildMissingFieldsMessage(missingFields) {
@@ -123,6 +121,27 @@ function scrubResponsesForOfficer(application, ownedCommitteeIds) {
       plain[choice.officer1RatingField] = null;
       plain[choice.officer2RatingField] = null;
       plain[choice.notesField] = '';
+    }
+  });
+
+  return plain;
+}
+
+// Null out the status of every choice whose committee hasn't released decisions, so it never
+// reaches the applicant's browser. Every hidden choice looks the same, revealing no progress.
+async function withholdUnreleasedStatuses(application) {
+  const plain = application.toObject();
+  const committeeIds = CHOICE_FIELDS
+    .map((choice) => plain[choice.committeeField])
+    .filter(Boolean);
+  const released = await Committee.find({ _id: { $in: committeeIds }, decisionsReleased: true })
+    .select('_id');
+  const releasedIds = new Set(released.map((committee) => committee.id));
+
+  CHOICE_FIELDS.forEach((choice) => {
+    const committeeId = plain[choice.committeeField];
+    if (!committeeId || !releasedIds.has(committeeId.toString())) {
+      plain[choice.statusField] = null;
     }
   });
 
@@ -584,7 +603,7 @@ async function getOwnApplication(req, res) {
     // Always include submissionStatus in the response
     return res.status(200).json({
       success: true,
-      data: application,
+      data: await withholdUnreleasedStatuses(application),
       submissionStatus: application.submissionStatus,
     });
   } catch (error) {
@@ -1017,6 +1036,7 @@ async function submitApplication(req, res) {
 
 module.exports = {
   CHOICE_FIELDS,
+  officerCanManageCommittee,
   createApplication,
   getAllApplications,
   getApplicationStatusCounts,

@@ -9,7 +9,10 @@ const AUDIT_ACTION_GROUPS = {
   event: ['event.create', 'event.update', 'event.delete', 'events.sync'],
   media: ['media.upload', 'media.delete'],
   settings: ['settings.update'],
-  internship: ['committee.open', 'committee.close', 'committee.create', 'committee.update'],
+  internship: [
+    'committee.open', 'committee.close', 'committee.create', 'committee.update', 'committee.delete',
+    'decisions.release', 'decisions.hide',
+  ],
 };
 
 const AUDIT_ACTIONS = Object.values(AUDIT_ACTION_GROUPS).flat();

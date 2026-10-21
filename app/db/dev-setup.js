@@ -1,5 +1,18 @@
 const { Committee } = require('../api/v1/internship/models/Committee');
 
+const COMMITTEE_STYLES = {
+  AI: { color: '#28b2fd', bannerUrl: '/event_banners/acm_ai_banner.webp' },
+  Hack: { color: '#c95ffd', bannerUrl: '/event_banners/acm_hack_banner.webp' },
+  Design: { color: '#fe833d', bannerUrl: '/event_banners/acm_design_banner.webp' },
+  Studio: { color: '#ed3267', bannerUrl: '/event_banners/acm_studio_banner.webp' },
+  Cyber: { color: '#ffba43', bannerUrl: '/event_banners/acm_cyber_banner.png' },
+  ICPC: { color: '#ff6b6b', bannerUrl: '/event_banners/acm_icpc_banner.webp' },
+  W: { color: '#01d4cb', bannerUrl: '/event_banners/acm_w_banner.webp' },
+  TeachLA: { color: '#5fda10', bannerUrl: '/event_banners/acm_teachla_banner.webp' },
+  Cloud: { color: '#9f97ff', bannerUrl: '/event_banners/acm_cloud_banner.webp' },
+  'Dev Team': { color: '#3b59ed', bannerUrl: '/event_banners/acm_dev_banner.webp' },
+};
+
 module.exports = async (User, Event) => {
   const committeeSeeds = [
     {
@@ -88,12 +101,14 @@ module.exports = async (User, Event) => {
         $set: {
           name: seed.name,
           displayName: seed.displayName,
+          ...COMMITTEE_STYLES[seed.name],
           description: seed.description,
           internLimit: seed.internLimit,
           applicationDeadline: seed.applicationDeadline,
         },
       },
-      { upsert: true },
+      // `name` is immutable on the model; this upsert deliberately renames alias-seeded records.
+      { upsert: true, overwriteImmutable: true },
     );
   });
 

@@ -1,9 +1,21 @@
 const logger = require('./logger');
 
+const FIELD_LABELS = {
+  attendancePoints: 'Points',
+  accessType: 'Role',
+  startDate: 'Starts',
+  endDate: 'Ends',
+  eventLink: 'Event link',
+  cover: 'Cover image',
+  thumb: 'Thumbnail',
+  attendanceCode: 'Attendance code',
+};
+const ROLE_LABELS = { STANDARD: 'Member', OFFICER: 'Officer', ADMIN: 'Admin' };
+
 // Compare allow-listed fields only. Normalize database/form representations without
 // conflating null, empty strings, and zero. Secret fields are compared but never printed.
 const describeChanges = (before, after, fields, {
-  numbers = [], dates = [], sets = [], redacted = [],
+  numbers = [], dates = [], sets = [], redacted = [], snapshot = null,
 } = {}) => {
   const normalize = (field, value) => {
     if (value === undefined || value === null) return null;
@@ -17,13 +29,29 @@ const describeChanges = (before, after, fields, {
     if (sets.includes(field) && Array.isArray(value)) return [...new Set(value)].sort();
     return value;
   };
+  const format = (field, value) => {
+    if (value === null) return 'Not set';
+    if (field === 'accessType' && Object.prototype.hasOwnProperty.call(ROLE_LABELS, value)) {
+      return ROLE_LABELS[value];
+    }
+    if (dates.includes(field) && typeof value === 'string'
+      && /^\d{4}-\d\d-\d\dT.*Z$/.test(value)) {
+      return value.replace('T', ' ').replace('Z', ' UTC');
+    }
+    if (Array.isArray(value)) return `[${value.map((item) => JSON.stringify(item)).join(', ')}]`;
+    return JSON.stringify(value);
+  };
   return fields.flatMap((field) => {
-    const oldValue = JSON.stringify(normalize(field, before[field]));
-    const newValue = JSON.stringify(normalize(field, after[field]));
-    if (oldValue === newValue) return [];
-    if (redacted.includes(field)) return [`${field}: changed (redacted)`];
-    return [`${field}: ${oldValue} → ${newValue}`];
-  }).join('; ');
+    const oldValue = normalize(field, before[field]);
+    const newValue = normalize(field, after[field]);
+    if (JSON.stringify(oldValue) === JSON.stringify(newValue)) return [];
+    const label = FIELD_LABELS[field] || `${field[0].toUpperCase()}${field.slice(1)}`;
+    if (redacted.includes(field)) {
+      return [`${label}: ${snapshot ? 'redacted' : 'changed (redacted)'}`];
+    }
+    if (snapshot) return [`${label}: ${format(field, snapshot === 'before' ? oldValue : newValue)}`];
+    return [`${label}: ${format(field, oldValue)} → ${format(field, newValue)}`];
+  }).join(' · ');
 };
 
 const EVENT_AUDIT_FIELDS = [
@@ -31,7 +59,7 @@ const EVENT_AUDIT_FIELDS = [
   'capacity', 'description', 'eventLink', 'cover', 'thumb', 'attendanceCode',
 ];
 
-const describeEventChanges = (before, after, fields = EVENT_AUDIT_FIELDS) => describeChanges(
+const describeEventChanges = (before, after, fields = EVENT_AUDIT_FIELDS, snapshot = null) => describeChanges(
   before,
   after,
   EVENT_AUDIT_FIELDS.filter((field) => fields.includes(field)),
@@ -39,6 +67,7 @@ const describeEventChanges = (before, after, fields = EVENT_AUDIT_FIELDS) => des
     numbers: ['attendancePoints', 'capacity'],
     dates: ['startDate', 'endDate'],
     redacted: ['attendanceCode'],
+    snapshot,
   },
 );
 
