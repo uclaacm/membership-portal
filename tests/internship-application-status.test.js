@@ -112,7 +112,14 @@ describe('updateApplicationStatus', () => {
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
       success: true,
-      data: updatedApplication,
+      data: expect.objectContaining({
+        firstChoiceCommittee: 'committee-1',
+        firstChoiceStatus: 'accepted',
+        secondChoiceCommittee: null,
+        secondChoiceStatus: null,
+        thirdChoiceCommittee: null,
+        thirdChoiceStatus: null,
+      }),
     }));
   });
 
