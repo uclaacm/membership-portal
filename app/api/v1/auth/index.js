@@ -27,6 +27,26 @@ const touchLastActive = (user) => {
 };
 
 /**
+ * Signs a session token for the given user.
+ *
+ * Roles (admin/officer/etc.) are deliberately NOT embedded: they can change mid-session,
+ * and a token cannot be updated once issued. Clients must read roles from GET /user,
+ * and the API re-reads them from the db on every request via `authenticated`.
+ *
+ * @param user The user to sign a token for
+ * @param callback Node-style callback receiving (err, token)
+ */
+const signUserToken = (user, callback) => jwt.sign(
+  {
+    uuid: user.getDataValue('uuid'),
+    registered: !user.isPending(),
+  },
+  config.session.secret,
+  { expiresIn: TOKEN_EXPIRES },
+  callback,
+);
+
+/**
  * Middleware function that determines whether or not a user is authenticated
  * and assigns the req.user object to their user info from the db
  *
@@ -57,6 +77,7 @@ const authenticated = (req, res, next) => {
     User.findByUUID(decoded.uuid)
       .then((user) => {
         if (!user) return next(new error.Unauthorized());
+        if (user.isBlocked()) return next(new error.Forbidden('Your account has been blocked'));
         req.user = user;
         touchLastActive(user);
         return next();
@@ -73,35 +94,23 @@ const authenticated = (req, res, next) => {
  * Expects a Google ID token
  *
  * On success, this route will return the user's public profile and a user token containing user's
- * ID and privilege levels
+ * ID and registration state
  */
 router.post('/login', (req, res, next) => {
   if (!req.body.tokenId || req.body.tokenId.length < 1) return next(new error.BadRequest('Invalid token.'));
 
   const createUserToken = (user) => {
-    // create a token with the user's ID and privilege level
-    jwt.sign(
-      {
-        uuid: user.getDataValue('uuid'),
-        admin: user.isAdmin(),
-        superAdmin: user.isSuperAdmin(),
-        officer: user.isOfficer(),
-        registered: !user.isPending(),
-      },
-      config.session.secret,
-      { expiresIn: TOKEN_EXPIRES },
-      (err, token) => {
-        if (err) return next(err);
-        // respond with the token upon successful login
-        res.json({
-          error: null,
-          user: user.getBaseProfile(),
-          token,
-        });
-        Activity.accountLoggedIn(user.uuid);
-        return null;
-      },
-    );
+    signUserToken(user, (err, token) => {
+      if (err) return next(err);
+      // respond with the token upon successful login
+      res.json({
+        error: null,
+        user: user.getBaseProfile(),
+        token,
+      });
+      Activity.accountLoggedIn(user.uuid);
+      return null;
+    });
     return null;
   };
 
@@ -172,26 +181,16 @@ if (config.isDevelopment) {
   const DEFAULT_DEV_EMAIL = 'dev@g.ucla.edu';
   router.post('/dev-login', (req, res, next) => {
     const createUserToken = (user) => {
-      jwt.sign(
-        {
-          uuid: user.getDataValue('uuid'),
-          admin: user.isAdmin(),
-          superAdmin: user.isSuperAdmin(),
-          registered: !user.isPending(),
-        },
-        config.session.secret,
-        { expiresIn: TOKEN_EXPIRES },
-        (err, token) => {
-          if (err) return next(err);
-          res.json({
-            error: null,
-            user: user.getBaseProfile(),
-            token,
-          });
-          Activity.accountLoggedIn(user.uuid);
-          return null;
-        },
-      );
+      signUserToken(user, (err, token) => {
+        if (err) return next(err);
+        res.json({
+          error: null,
+          user: user.getBaseProfile(),
+          token,
+        });
+        Activity.accountLoggedIn(user.uuid);
+        return null;
+      });
       return null;
     };
 
@@ -243,5 +242,5 @@ const isOfficerOrAdmin = (req, res, next) => {
 };
 
 module.exports = {
-  router, authenticated, isAdmin, isOfficer, isOfficerOrAdmin,
+  router, authenticated, isAdmin, isOfficer, isOfficerOrAdmin, signUserToken,
 };
