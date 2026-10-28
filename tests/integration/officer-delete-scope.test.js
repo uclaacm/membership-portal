@@ -96,7 +96,9 @@ afterEach(async () => {
 });
 
 afterAll(async () => {
-  await new Promise((resolve) => server.close(resolve));
+  await new Promise((resolve) => {
+    server.close(resolve);
+  });
   await Sequelize.close();
 });
 
