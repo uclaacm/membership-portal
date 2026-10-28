@@ -1,0 +1,122 @@
+name: PR Tests
+
+on: #trigger
+  pull_request:
+    # Only run when files in this part of the repo change.
+    paths:
+      - '**'
+  # Re-run after changes to shared testing branch
+  push:
+    branches:
+      - feat/testing
+
+jobs:
+  # ESLint (modified airbnb config in .eslintrc.js).
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - run: npm ci
+      - run: npm run lint
+
+  unit-tests:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        # Folder containing the package.json to test ('.' = repo root).
+        working-directory: .
+
+    steps:
+      # Checkout repo onto runner and checks out PR branch.
+      - uses: actions/checkout@v4
+      # Installs node version and caches dependencies based on package-lock.json.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - run: npm ci
+      # Known backend unit tests that arent passing, need to fix.
+      # Unit tests only (tests/unit); integration tests in tests/integration need a database and run separately.
+      - run: npm run test:unit
+
+  integration-tests:
+    #needs: unit-tests
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: .
+
+    # Throwaway database containers that exist only for this job and are deleted when it ends.
+    # Every credential below is CI-only and unreachable from outside the runner: these are
+    # not secrets, and real (production/staging) credentials must never be put here.
+    services:
+      # Users, events, attendance, etc. (Sequelize). Same image as docker-compose.yml.
+      postgres:
+        image: postgres:9.6-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ci_throwaway_password
+          POSTGRES_DB: membership_portal_test
+        ports:
+          - 5432:5432
+        # Wait until Postgres accepts connections before running any steps.
+        options: >-
+          --health-cmd "pg_isready -h localhost"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      # Committees and internship applications (Mongoose). Every committee check in the
+      # Postgres routes (app/committees.js) reads from here, so integration tests need it too.
+      mongo:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    # Read by app/config and app/config/sequelize-config.js.
+    env:
+      # Anything but 'production' counts as development, which enables POST /auth/dev-login.
+      NODE_ENV: test
+      TESTING: true
+      HOST: 127.0.0.1
+      PORT: 8080
+      PG_HOST: localhost
+      PG_PORT: 5432
+      PG_USER: postgres
+      PG_PASSWORD: ci_throwaway_password
+      PG_DATABASE: membership_portal_test
+      MONGODB_URI: mongodb://localhost:27017/membership_portal_test
+      # Throwaway value; tokens only need to be signed and verified within this run.
+      SESSION_SECRET: ci_throwaway_session_secret
+      # Google auth and Sheets are left blank: tests use dev-login or self-signed JWTs instead.
+      GOOGLE_CLIENT_ID: ''
+      GOOGLE_API_KEY: ''
+      GOOGLE_AUTH_DOMAIN: ''
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - run: npm ci
+      # Create base tables (db.sync) then apply migrations, same as `make migrate`.
+      - run: node scripts/db-init.js
+      - run: npx sequelize-cli db:migrate --env test
+      # --runInBand: every test file binds port 8080 and shares the same databases.
+      - run: npm run test:integration

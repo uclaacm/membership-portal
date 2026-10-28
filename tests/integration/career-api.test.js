@@ -1,8 +1,14 @@
 const request = require('supertest');
+const jwt = require('jsonwebtoken');
 
-const baseUrl = 'http://localhost:8080/app/api/v1';
+const { server } = require('../..');
+const { User, Activity, db: Sequelize } = require('../../app/db');
+const config = require('../../app/config');
+
+const API_ROUTE = '/app/api/v1';
 
 let token;
+let testUser;
 
 // Basic HTML escaping function
 const escapeHtml = (str) => {
@@ -20,19 +26,45 @@ const escapeHtml = (str) => {
 };
 
 beforeAll(async () => {
-  const response = await request(baseUrl)
-    .post('/auth/dev-login')
-    .send({});
+  await Sequelize.sync();
+});
 
-  token = response.body.token;
+afterAll(async () => {
+  await new Promise((resolve) => {
+    server.close(resolve);
+  });
+  await Sequelize.close();
+});
+
+beforeEach(async () => {
+  testUser = await User.create({
+    email: `career-${Date.now()}-${Math.random().toString(36).slice(2)}@test.local`,
+    firstName: 'Career',
+    lastName: 'Tester',
+    accessType: 'STANDARD',
+    state: 'ACTIVE',
+    year: 3,
+    major: 'Computer Science',
+    lastActiveAt: new Date(),
+  });
+  token = jwt.sign({ uuid: testUser.uuid }, config.session.secret, { expiresIn: 3600 });
+});
+
+afterEach(async () => {
+  if (testUser) {
+    await Activity.destroy({ where: { user: testUser.uuid } });
+    await testUser.destroy();
+  }
+  testUser = undefined;
+  token = undefined;
 });
 
 describe('PATCH /user/', () => {
   const headers = () => ({ Authorization: `Bearer ${token}` });
 
   const testValidation = async (field, invalidValue, expectedErrorPath) => {
-    const response = await request(baseUrl)
-      .patch('/user/')
+    const response = await request(server)
+      .patch(`${API_ROUTE}/user/`)
       .set(headers())
       .send({ user: { [field]: invalidValue } });
 
@@ -85,8 +117,8 @@ describe('PATCH /user/', () => {
       isProfilePublic: true,
     };
 
-    const response = await request(baseUrl)
-      .patch('/user/')
+    const response = await request(server)
+      .patch(`${API_ROUTE}/user/`)
       .set(headers())
       .send({ user: updatedFields });
 
@@ -107,13 +139,13 @@ describe('PATCH /user/', () => {
     };
 
     // Set initial values
-    await request(baseUrl)
-      .patch('/user/')
+    await request(server)
+      .patch(`${API_ROUTE}/user/`)
       .set(headers())
       .send({ user: initialFields });
 
-    const response = await request(baseUrl)
-      .patch('/user/')
+    const response = await request(server)
+      .patch(`${API_ROUTE}/user/`)
       .set(headers())
       .send({ user: { firstName: '', lastName: '', major: '' } });
 
@@ -134,8 +166,8 @@ describe('PATCH /user/', () => {
     };
 
     // Set initial values
-    await request(baseUrl)
-      .patch('/user/')
+    await request(server)
+      .patch(`${API_ROUTE}/user/`)
       .set(headers())
       .send({ user: initialFields });
 
@@ -148,8 +180,8 @@ describe('PATCH /user/', () => {
       careerInterests: ['Software Engineering', 'Web Development'],
     };
 
-    const response = await request(baseUrl)
-      .patch('/user/')
+    const response = await request(server)
+      .patch(`${API_ROUTE}/user/`)
       .set(headers())
       .send({ user: careerFields });
 
@@ -170,10 +202,15 @@ describe('PATCH /user/', () => {
 
 describe('PATCH /user/career/', () => {
   const headers = () => ({ Authorization: `Bearer ${token}` });
+  // linkedinUrl and githubUrl are required on every career update.
+  const REQUIRED_CAREER_FIELDS = {
+    linkedinUrl: 'https://linkedin.com/in/johndoe',
+    githubUrl: 'https://github.com/johndoe',
+  };
 
   const testValidation = async (field, invalidValue, expectedErrorPath) => {
-    const response = await request(baseUrl)
-      .patch('/user/career/')
+    const response = await request(server)
+      .patch(`${API_ROUTE}/user/career/`)
       .set(headers())
       .send({ user: { [field]: invalidValue } });
 
@@ -230,8 +267,8 @@ describe('PATCH /user/career/', () => {
       careerInterests: ['Software Engineering', 'Web Development'],
     };
 
-    const response = await request(baseUrl)
-      .patch('/user/career/')
+    const response = await request(server)
+      .patch(`${API_ROUTE}/user/career/`)
       .set(headers())
       .send({ user: updatedFields });
 
@@ -251,20 +288,20 @@ describe('PATCH /user/career/', () => {
   });
 
   it('accepts linkedinUrl with www in the domain', async () => {
-    const response = await request(baseUrl)
-      .patch('/user/career/')
+    const response = await request(server)
+      .patch(`${API_ROUTE}/user/career/`)
       .set(headers())
-      .send({ user: { linkedinUrl: 'https://www.linkedin.com/in/johndoe' } });
+      .send({ user: { ...REQUIRED_CAREER_FIELDS, linkedinUrl: 'https://www.linkedin.com/in/johndoe' } });
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('user.linkedinUrl', 'https://www.linkedin.com/in/johndoe');
   });
 
   it('accepts githubUrl with www in the domain', async () => {
-    const response = await request(baseUrl)
-      .patch('/user/career/')
+    const response = await request(server)
+      .patch(`${API_ROUTE}/user/career/`)
       .set(headers())
-      .send({ user: { githubUrl: 'https://www.github.com/johndoe' } });
+      .send({ user: { ...REQUIRED_CAREER_FIELDS, githubUrl: 'https://www.github.com/johndoe' } });
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('user.githubUrl', 'https://www.github.com/johndoe');
@@ -281,8 +318,8 @@ describe('PATCH /user/career/', () => {
     };
 
     // Set initial values
-    await request(baseUrl)
-      .patch('/user/career/')
+    await request(server)
+      .patch(`${API_ROUTE}/user/career/`)
       .set(headers())
       .send({ user: initialFields });
 
@@ -295,10 +332,10 @@ describe('PATCH /user/career/', () => {
       pronouns: 'he/him',
     };
 
-    const response = await request(baseUrl)
-      .patch('/user/career/')
+    const response = await request(server)
+      .patch(`${API_ROUTE}/user/career/`)
       .set(headers())
-      .send({ user: nonCareerFields });
+      .send({ user: { ...REQUIRED_CAREER_FIELDS, ...nonCareerFields } });
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('user');

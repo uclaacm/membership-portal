@@ -1,12 +1,19 @@
 import request from 'supertest';
-import { server, setup } from '..';
+import { server } from '../..';
 
 const jwt = require('jsonwebtoken');
-const { User } = require('../app/db');
-const config = require('../app/config');
+const { User, db: Sequelize } = require('../../app/db');
+const config = require('../../app/config');
+const { Committee } = require('../../app/api/v1/internship/models/Committee');
 
 const API_ROUTE = '/app/api/v1/';
 const route = (name) => API_ROUTE + name;
+const fixtureId = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+const committeeNames = {
+  AI: `leaderboard-ai-${fixtureId}`,
+  Hack: `leaderboard-hack-${fixtureId}`,
+};
+const createdCommittees = [];
 
 const getJWTToken = (user) => new Promise((res, rej) => {
   jwt.sign(
@@ -20,21 +27,30 @@ const getJWTToken = (user) => new Promise((res, rej) => {
     config.session.secret,
     { expiresIn: 3600 },
     (err, jwtToken) => {
-      if (err) rej(err);
-      res(jwtToken);
+      if (err) return rej(err);
+      return res(jwtToken);
     },
   );
 });
 
 beforeAll(async () => {
-  await setup;
+  await Sequelize.sync();
+  await Promise.all(Object.values(committeeNames).map(async (name) => {
+    createdCommittees.push(await Committee.create({ name, displayName: name }));
+  }));
 });
 
-afterAll(() => {
-  server.close();
+afterAll(async () => {
+  await new Promise((resolve) => {
+    server.close(resolve);
+  });
+  await Sequelize.close();
 });
 
 describe('GET /leaderboard/admin', () => {
+  // Nested cleanup runs before the integration setup disconnects MongoDB.
+  afterAll(() => Promise.all(createdCommittees.map((committee) => committee.deleteOne())));
+
   let adminUser;
   let adminToken;
   let officerUser;
@@ -43,9 +59,17 @@ describe('GET /leaderboard/admin', () => {
   let standardToken;
   let memberYear3;
   let hackOfficer;
+  let createdUsers;
+
+  const createUser = async (values) => {
+    const user = await User.create({ ...values, lastActiveAt: new Date() });
+    createdUsers.push(user);
+    return user;
+  };
 
   beforeEach(async () => {
-    adminUser = await User.create({
+    createdUsers = [];
+    adminUser = await createUser({
       email: `admin-${Date.now()}@test.com`,
       firstName: 'Admin',
       lastName: 'User',
@@ -56,7 +80,7 @@ describe('GET /leaderboard/admin', () => {
     });
     adminToken = await getJWTToken(adminUser);
 
-    officerUser = await User.create({
+    officerUser = await createUser({
       email: `officer-${Date.now()}@test.com`,
       firstName: 'Officer',
       lastName: 'User',
@@ -64,11 +88,11 @@ describe('GET /leaderboard/admin', () => {
       state: 'ACTIVE',
       year: 3,
       major: 'CS',
-      committees: ['AI'],
+      committees: [committeeNames.AI],
     });
     officerToken = await getJWTToken(officerUser);
 
-    standardUser = await User.create({
+    standardUser = await createUser({
       email: `standard-${Date.now()}@test.com`,
       firstName: 'Standard',
       lastName: 'User',
@@ -79,7 +103,7 @@ describe('GET /leaderboard/admin', () => {
     });
     standardToken = await getJWTToken(standardUser);
 
-    memberYear3 = await User.create({
+    memberYear3 = await createUser({
       email: `year3-${Date.now()}@test.com`,
       firstName: 'Year3',
       lastName: 'Member',
@@ -89,7 +113,7 @@ describe('GET /leaderboard/admin', () => {
       major: 'CS',
     });
 
-    hackOfficer = await User.create({
+    hackOfficer = await createUser({
       email: `hack-officer-${Date.now()}@test.com`,
       firstName: 'Hack',
       lastName: 'Officer',
@@ -97,18 +121,12 @@ describe('GET /leaderboard/admin', () => {
       state: 'ACTIVE',
       year: 2,
       major: 'CS',
-      committees: ['Hack'],
+      committees: [committeeNames.Hack],
     });
   });
 
   afterEach(async () => {
-    await Promise.all([
-      adminUser.destroy(),
-      officerUser.destroy(),
-      standardUser.destroy(),
-      memberYear3.destroy(),
-      hackOfficer.destroy(),
-    ]);
+    await Promise.all((createdUsers || []).map((user) => user.destroy()));
   });
 
   test('standard user gets 403', async () => {
@@ -128,9 +146,11 @@ describe('GET /leaderboard/admin', () => {
       .get(route('leaderboard/admin'))
       .auth(officerToken, { type: 'bearer' });
     expect(res.statusCode).toBe(200);
-    const types = res.body.leaderboard.map((u) => u.accessType);
-    types.forEach((t) => expect(t).toBeUndefined());
-    expect(res.body.total).toBeGreaterThanOrEqual(1);
+    const ids = res.body.leaderboard.map((u) => u.id);
+    expect(ids).toEqual(expect.arrayContaining([standardUser.uuid, memberYear3.uuid]));
+    [adminUser, officerUser, hackOfficer].forEach((user) => {
+      expect(ids).not.toContain(user.uuid);
+    });
   });
 
   test('admin sees all access types by default', async () => {
@@ -138,7 +158,9 @@ describe('GET /leaderboard/admin', () => {
       .get(route('leaderboard/admin'))
       .auth(adminToken, { type: 'bearer' });
     expect(res.statusCode).toBe(200);
-    expect(res.body.total).toBeGreaterThanOrEqual(3);
+    expect(res.body.leaderboard.map((u) => u.id)).toEqual(expect.arrayContaining([
+      adminUser.uuid, officerUser.uuid, standardUser.uuid, memberYear3.uuid, hackOfficer.uuid,
+    ]));
   });
 
   test('officer can filter by year', async () => {
@@ -146,7 +168,8 @@ describe('GET /leaderboard/admin', () => {
       .get(route('leaderboard/admin?year=3'))
       .auth(officerToken, { type: 'bearer' });
     expect(res.statusCode).toBe(200);
-    expect(res.body.leaderboard.length).toBeGreaterThanOrEqual(1);
+    expect(res.body.leaderboard.map((u) => u.id)).toContain(memberYear3.uuid);
+    expect(res.body.leaderboard.map((u) => u.id)).not.toContain(standardUser.uuid);
   });
 
   test('officer cannot filter by role (ignored)', async () => {
@@ -158,7 +181,8 @@ describe('GET /leaderboard/admin', () => {
 
   test('officer cannot filter by committee (ignored)', async () => {
     const res = await request(server)
-      .get(route('leaderboard/admin?committee=Hack'))
+      .get(route('leaderboard/admin'))
+      .query({ committee: committeeNames.Hack })
       .auth(officerToken, { type: 'bearer' });
     expect(res.statusCode).toBe(200);
   });
@@ -173,11 +197,10 @@ describe('GET /leaderboard/admin', () => {
 
   test('admin can filter by committee', async () => {
     const res = await request(server)
-      .get(route('leaderboard/admin?committee=Hack'))
+      .get(route('leaderboard/admin'))
+      .query({ committee: committeeNames.Hack })
       .auth(adminToken, { type: 'bearer' });
     expect(res.statusCode).toBe(200);
-    const names = res.body.leaderboard.map((u) => u.firstName);
-    expect(names).toContain('Hack');
+    expect(res.body.leaderboard.map((u) => u.id)).toEqual([hackOfficer.uuid]);
   });
-
 });

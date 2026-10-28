@@ -1,5 +1,5 @@
-jest.mock('../app/logger', () => ({ error: jest.fn() }));
-jest.mock('../app/db', () => ({
+jest.mock('../../app/logger', () => ({ error: jest.fn() }));
+jest.mock('../../app/db', () => ({
   Event: {
     findOne: jest.fn(), create: jest.fn(), findByUUID: jest.fn(), destroyByUUID: jest.fn(),
   },
@@ -8,12 +8,12 @@ jest.mock('../app/db', () => ({
 }));
 
 const Sequelize = require('sequelize');
-const { Event, AuditLog, db } = require('../app/db');
-const { router } = require('../app/api/v1/membership/event');
+const { Event, AuditLog, db } = require('../../app/db');
+const { router } = require('../../app/api/v1/membership/event');
 
 // Use the real schema/sanitizer and model instances, without a database connection.
 const modelDb = new Sequelize('postgres://localhost/audit_test', { logging: false });
-const EventModel = require('../app/db/schema/event')(Sequelize, modelDb);
+const EventModel = require('../../app/db/schema/event')(Sequelize, modelDb);
 
 Event.sanitize = EventModel.sanitize;
 const handler = (path, method) => router.stack.find((l) => l.route && l.route.path === path)
