@@ -1,11 +1,14 @@
 const request = require('supertest');
+const jwt = require('jsonwebtoken');
 
-const { server, setup } = require('../..');
-const { db: Sequelize } = require('../../app/db');
+const { server } = require('../..');
+const { User, Activity, db: Sequelize } = require('../../app/db');
+const config = require('../../app/config');
 
 const API_ROUTE = '/app/api/v1';
 
 let token;
+let testUser;
 
 // Basic HTML escaping function
 const escapeHtml = (str) => {
@@ -23,17 +26,35 @@ const escapeHtml = (str) => {
 };
 
 beforeAll(async () => {
-  await setup(false, true);
-  const response = await request(server)
-    .post(`${API_ROUTE}/auth/dev-login`)
-    .send({});
-
-  token = response.body.token;
+  await Sequelize.sync();
 });
 
 afterAll(async () => {
-  server.close();
+  await new Promise((resolve) => server.close(resolve));
   await Sequelize.close();
+});
+
+beforeEach(async () => {
+  testUser = await User.create({
+    email: `career-${Date.now()}-${Math.random().toString(36).slice(2)}@test.local`,
+    firstName: 'Career',
+    lastName: 'Tester',
+    accessType: 'STANDARD',
+    state: 'ACTIVE',
+    year: 3,
+    major: 'Computer Science',
+    lastActiveAt: new Date(),
+  });
+  token = jwt.sign({ uuid: testUser.uuid }, config.session.secret, { expiresIn: 3600 });
+});
+
+afterEach(async () => {
+  if (testUser) {
+    await Activity.destroy({ where: { user: testUser.uuid } });
+    await testUser.destroy();
+  }
+  testUser = undefined;
+  token = undefined;
 });
 
 describe('PATCH /user/', () => {

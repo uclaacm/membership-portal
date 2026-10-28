@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { server, setup } from '../..';
+import { server } from '../..';
 
 const jwt = require('jsonwebtoken');
 const { User, Activity, db: Sequelize } = require('../../app/db');
@@ -9,11 +9,12 @@ const API_ROUTE = '/app/api/v1/';
 const route = (name) => API_ROUTE + name;
 
 beforeAll(async () => {
-  await setup;
+  // Initialize tables without running the unrelated development-data seed.
+  await Sequelize.sync();
 });
 
 afterAll(async () => {
-  server.close();
+  await new Promise((resolve) => server.close(resolve));
   await Sequelize.close();
 });
 
@@ -57,16 +58,13 @@ describe('User Tests', () => {
       config.session.secret,
       { expiresIn: 3600 },
       (err, jwtToken) => {
-        if (err) rej(err);
-        Activity.accountLoggedIn(user.uuid);
-        res(jwtToken);
+        if (err) return rej(err);
+        return res(jwtToken);
       },
     );
   });
 
   let testUser;
-  // let testAdmin; // TODO: implement test admin user
-  // let testPendingUser; // TODO: implement test pending user
   let testToken;
 
   // Generate unique user before each test
@@ -81,12 +79,16 @@ describe('User Tests', () => {
       year: 5,
       major: 'Undeclared',
     });
-    Activity.accountCreated(testUser.uuid);
+    await Activity.accountCreated(testUser.uuid);
     testToken = await getJWTToken(testUser);
   });
 
   afterEach(async () => {
-    await testUser.destroy();
+    if (testUser) {
+      await Activity.destroy({ where: { user: testUser.uuid } });
+      await testUser.destroy();
+    }
+    testUser = undefined;
     testToken = undefined;
   });
 
@@ -115,10 +117,6 @@ describe('User Tests', () => {
       const patchResponse = await request(server).patch(route('user')).auth();
       expect(patchResponse.error).toBeTruthy();
       expect(patchResponse.statusCode).toBe(401);
-    });
-
-    test('Unauthorized pending User', async () => {
-      // TODO: implement tests
     });
   });
 

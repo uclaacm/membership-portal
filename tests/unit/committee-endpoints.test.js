@@ -22,8 +22,6 @@ jest.mock('../../app/api/v1/internship/models/Committee', () => ({
 
 jest.mock('../../app/audit', () => ({ recordAudit: jest.fn() }));
 
-jest.mock('../../app/audit', () => ({ recordAudit: jest.fn() }));
-
 jest.mock('../../app/api/v1/internship/models/InternshipApplication', () => ({
   InternshipApplication: {
     aggregate: jest.fn(),

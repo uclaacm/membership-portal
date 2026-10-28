@@ -133,6 +133,31 @@ describe('advanceCycle', () => {
     expect(setCurrentCycle).toHaveBeenCalledWith('2027-2028');
   });
 
+  test('reports the legacy nModified count when modifiedCount is unavailable', async () => {
+    getCurrentCycle.mockResolvedValue('2026-2027');
+    InternshipApplication.updateMany.mockResolvedValue({ nModified: 3 });
+    const res = mockRes();
+
+    await advanceCycle({ user: adminUser, body: {} }, res, jest.fn());
+
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ archivedCount: 3 }));
+  });
+
+  test('does not advance the cycle if archiving fails', async () => {
+    const failure = new Error('archive failed');
+    getCurrentCycle.mockResolvedValue('2026-2027');
+    InternshipApplication.updateMany.mockRejectedValue(failure);
+    const res = mockRes();
+    const next = jest.fn();
+
+    await advanceCycle({ user: adminUser, body: {} }, res, next);
+
+    expect(next).toHaveBeenCalledWith(failure);
+    expect(Committee.updateMany).not.toHaveBeenCalled();
+    expect(setCurrentCycle).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
+  });
+
   test('rejects when newCycle equals the current cycle', async () => {
     getCurrentCycle.mockResolvedValue('2026-2027');
     const next = jest.fn();

@@ -83,7 +83,13 @@ describe('updateApplicationStatus', () => {
   });
 
   test('updates only the requested status field for an officer assigned to the selected committee', async () => {
-    const updatedApplication = mockApplication({ firstChoiceStatus: 'accepted' });
+    const updatedApplication = mockApplication({
+      firstChoiceStatus: 'accepted',
+      firstChoiceResponses: [{ answer: 'Hack answer' }],
+      secondChoiceResponses: [{ answer: 'Private answer' }],
+      secondChoiceOfficer1Rating: 4,
+      secondChoiceNotes: 'Private notes',
+    });
     InternshipApplication.findById.mockResolvedValue(mockApplication());
     InternshipApplication.findByIdAndUpdate.mockResolvedValue(updatedApplication);
     mockCommitteeFindById(mockCommittee());
@@ -112,8 +118,17 @@ describe('updateApplicationStatus', () => {
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
       success: true,
-      data: updatedApplication,
+      data: expect.objectContaining({
+        firstChoiceStatus: 'accepted',
+        firstChoiceResponses: [{ answer: 'Hack answer' }],
+        secondChoiceStatus: 'pending',
+        secondChoiceResponses: [],
+        secondChoiceOfficer1Rating: null,
+        secondChoiceNotes: '',
+        thirdChoiceResponses: [],
+      }),
     }));
+    expect(updatedApplication.secondChoiceResponses).toEqual([{ answer: 'Private answer' }]);
   });
 
   test('prevents officers from updating a status for a committee they do not manage', async () => {
