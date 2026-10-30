@@ -1,9 +1,18 @@
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const { User } = require('../../db');
+const { User, Activity } = require('../../db');
 const { authenticated } = require('./auth');
+
+const exportRateLimit = rateLimit({
+  windowMs: 60 * 1000,
+  max: 1,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Rate limit exceeded. Try again in 1 minute.' },
+});
 
 const hardcodedPassword = '$2b$10$t5itVIAG3WQTZsIKq2Fs9e8qbSAJAB7WgIXjTnE75HOEV13TzF6bK';
 
@@ -110,6 +119,51 @@ router.delete('/promote-officer', authenticated, async (req, res, next) => {
       error: null,
       message: `${email} removed from ${committee}. Demoted to standard member.`,
     });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+// GET /app/api/v1/admin/officers/emails
+router.get('/officers/emails', authenticated, exportRateLimit, async (req, res, next) => {
+  try {
+    if (!req.user || !req.user.isAdmin()) {
+      return res.status(403).json({ error: 'Admin access required' });
+    }
+
+    // get optional query parameters in endpoint
+    const { committee, format } = req.query;
+    const committees = committee ? [].concat(committee).map((c) => c.toLowerCase()) : null;
+
+    const officers = await User.findAll({ where: { accessType: 'OFFICER' } });
+
+    // filter officers by one or more committees
+    let filtered;
+    if (committees) {
+      filtered = officers.filter((u) => {
+        const officerCommittees = u.getDataValue('committees') || [];
+        return officerCommittees.some((c) => committees.includes(c.toLowerCase()));
+      });
+    } else {
+      filtered = officers;
+    }
+
+    const emails = filtered.map((u) => u.getDataValue('email'));
+
+    // logs activity in Activity table in database
+    Activity.createMilestone(
+      req.user.getDataValue('uuid'),
+      `Admin exported officer emails${committees ? ` for committees: ${committees.join(', ')}` : ''} (${emails.length} results)`,
+    );
+
+    // optional csv format
+    if (format === 'csv') {
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename="officer-emails.csv"');
+      return res.send(`email\n${emails.join('\n')}`);
+    }
+
+    return res.json({ error: null, emails });
   } catch (err) {
     return next(err);
   }
