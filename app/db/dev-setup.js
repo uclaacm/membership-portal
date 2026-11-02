@@ -112,7 +112,7 @@ module.exports = async (User, Event) => {
     );
   });
 
-  Promise.all([
+  await Promise.all([
     ...committeeSeedPromises,
     User.upsert({
       email: 'acm@g.ucla.edu',

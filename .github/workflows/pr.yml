@@ -67,7 +67,8 @@ jobs:
           POSTGRES_PASSWORD: ci_throwaway_password
           POSTGRES_DB: membership_portal_test
         ports:
-          - 5432:5432
+          # Deliberately not 5432 (the Postgres/Sequelize default) so CI fails if PG_PORT is ignored.
+          - 5433:5432
         # Wait until Postgres accepts connections before running any steps.
         options: >-
           --health-cmd "pg_isready -h localhost"
@@ -94,7 +95,7 @@ jobs:
       HOST: 127.0.0.1
       PORT: 8080
       PG_HOST: localhost
-      PG_PORT: 5432
+      PG_PORT: 5433
       PG_USER: postgres
       PG_PASSWORD: ci_throwaway_password
       PG_DATABASE: membership_portal_test
