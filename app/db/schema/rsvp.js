@@ -53,6 +53,12 @@ module.exports = (Sequelize, db) => {
         type: Sequelize.DATE,
         defaultValue: Sequelize.NOW,
       },
+      // Explicit opt-in for email reminders about this event.
+      emailRemindersEnabled: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
     },
     {
       // creating indices on frequently accessed fields improves efficiency
@@ -105,8 +111,8 @@ module.exports = (Sequelize, db) => {
     return this.count({ where: { user, event } }).then((c) => c !== 0);
   };
 
-  RSVP.rsvpToEvent = function rsvpToEvent(user, event) {
-    return this.create({ user, event });
+  RSVP.rsvpToEvent = function rsvpToEvent(user, event, emailRemindersEnabled = false) {
+    return this.create({ user, event, emailRemindersEnabled });
   };
 
   RSVP.cancelRSVP = function cancelRSVP(user, event) {
@@ -119,6 +125,7 @@ module.exports = (Sequelize, db) => {
       user: this.getDataValue('user'),
       event: this.getDataValue('event'),
       date: this.getDataValue('date'),
+      emailRemindersEnabled: this.getDataValue('emailRemindersEnabled'),
     };
   };
 

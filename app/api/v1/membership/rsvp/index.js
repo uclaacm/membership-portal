@@ -75,6 +75,10 @@ router.route('/add').post((req, res, next) => {
   if (!req.body.event || !req.body.event.uuid) {
     return next(new error.BadRequest('Event UUID is required'));
   }
+  const emailRemindersEnabled = req.body.emailRemindersEnabled ?? false;
+  if (typeof emailRemindersEnabled !== 'boolean') {
+    return next(new error.BadRequest('emailRemindersEnabled must be a boolean'));
+  }
 
   return Event.findByUUID(req.body.event.uuid)
     .then((event) => {
@@ -91,7 +95,7 @@ router.route('/add').post((req, res, next) => {
           if (rsvped) throw new error.UserError('You have already RSVPed to this event');
 
           // Record the RSVP
-          return RSVP.rsvpToEvent(req.user.uuid, event.uuid)
+          return RSVP.rsvpToEvent(req.user.uuid, event.uuid, emailRemindersEnabled)
             .then(() => {
               res.json({
                 error: null,
