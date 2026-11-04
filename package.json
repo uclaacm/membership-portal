@@ -46,6 +46,7 @@
     "multer": "^2.0.2",
     "node-gyp": "^4.0.0",
     "node-pre-gyp": "^0.13.0",
+    "nodemailer": "9.1.1",
     "pg": "^8.0.3",
     "sequelize": "^4.44.0",
     "underscore": "^1.8.3",

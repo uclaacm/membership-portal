@@ -2,12 +2,13 @@ const express = require('express');
 const error = require('../../../../error');
 const { Secret, AuditLog } = require('../../../../db');
 const { recordAudit, describeChanges } = require('../../../../audit');
+const { getReminderMailConfig, sendReminderTest } = require('../../../../reminder-mail');
+const logger = require('../../../../logger');
 
 const router = express.Router();
 
-// Where the email transport config lives. Reuses the Secret table rather than adding a
-// settings table for one row — Secret already exists for the one-click password and gives us
-// hashing and a name-keyed lookup.
+// Legacy marketing settings are retained for existing API clients. Reminder SMTP
+// reads usable credentials from backend environment variables instead.
 const EMAIL_SECRET = 'marketing-email';
 
 const TRANSPORTS = ['none', 'smtp', 'api', 'google'];
@@ -103,33 +104,38 @@ router
     }
   });
 
-/**
- * Sends a test message to the signed-in admin.
- *
- * The API does not itself hold a mail client — sending lives in the Next server action layer,
- * which is where the transport is implemented. This endpoint reports whether a transport is
- * configured so the UI can say something useful without leaking the credential.
- */
-router.post('/email/test', (req, res, next) => {
+/** Environment-backed SMTP configuration for RSVP reminders. */
+router.get('/email/reminder', (req, res, next) => {
   if (!req.user.isAdmin()) return next(new error.Forbidden());
+  return res.json({ error: null, settings: getReminderMailConfig() });
+});
 
-  return Secret.findByName(EMAIL_SECRET)
-    .then((secret) => {
-      const config = readConfig(secret);
-      if (!config.configured || config.transport === 'none') {
-        return res.json({
-          error: null,
-          sent: false,
-          message: 'No email transport is configured, so nothing was sent.',
-        });
-      }
-      return res.json({
-        error: null,
-        sent: true,
-        message: `A test message would be sent to ${req.user.email} via ${config.transport}.`,
-      });
-    })
-    .catch(next);
+/** Send a real SMTP test message to the signed-in admin. */
+router.post('/email/test', async (req, res, next) => {
+  if (!req.user.isAdmin()) return next(new error.Forbidden());
+  if (!getReminderMailConfig().configured) {
+    return res.json({
+      error: null,
+      sent: false,
+      message: 'test test message.',
+    });
+  }
+
+  try {
+    await sendReminderTest(req.user.email);
+    return res.json({
+      error: null,
+      sent: true,
+      message: `SMTP accepted a test message for ${req.user.email}.`,
+    });
+  } catch (sendError) {
+    logger.error('Reminder SMTP test failed: %s', sendError.code || sendError.name || 'unknown');
+    return res.json({
+      error: null,
+      sent: false,
+      message: 'SMTP did not accept the test message. Check the backend logs and configuration.',
+    });
+  }
 });
 
 module.exports = { router };
