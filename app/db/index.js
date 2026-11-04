@@ -30,6 +30,7 @@ const Activity = require('./schema/activity')(Sequelize, db);
 const Attendance = require('./schema/attendance')(Sequelize, db);
 const Secret = require('./schema/secret')(Sequelize, db);
 const RSVP = require('./schema/rsvp')(Sequelize, db);
+const EventReminder = require('./schema/event-reminder')(Sequelize, db);
 const Image = require('./schema/image')(Sequelize, db);
 const AuditLog = require('./schema/audit')(Sequelize, db);
 
@@ -89,5 +90,5 @@ const errorHandler = (err, req, res, next) => {
 };
 
 module.exports = {
-  db, User, Event, Activity, Attendance, Secret, RSVP, Image, AuditLog, setup, errorHandler,
+  db, User, Event, Activity, Attendance, Secret, RSVP, EventReminder, Image, AuditLog, setup, errorHandler,
 };

@@ -107,12 +107,12 @@ module.exports = (Sequelize, db) => {
     return this.findAll({ where: { event } });
   };
 
-  RSVP.userRSVPedEvent = function userRSVPedEvent(user, event) {
-    return this.count({ where: { user, event } }).then((c) => c !== 0);
+  RSVP.userRSVPedEvent = function userRSVPedEvent(user, event, options = {}) {
+    return this.count({ where: { user, event }, ...options }).then((c) => c !== 0);
   };
 
-  RSVP.rsvpToEvent = function rsvpToEvent(user, event, emailRemindersEnabled = false) {
-    return this.create({ user, event, emailRemindersEnabled });
+  RSVP.rsvpToEvent = function rsvpToEvent(user, event, emailRemindersEnabled = false, options = {}) {
+    return this.create({ user, event, emailRemindersEnabled }, options);
   };
 
   RSVP.cancelRSVP = function cancelRSVP(user, event) {

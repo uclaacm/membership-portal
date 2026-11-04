@@ -1,7 +1,7 @@
 const express = require('express');
 const error = require('../../../../error');
 const {
-  Event, RSVP, User,
+  Event, RSVP, EventReminder, User, db,
 } = require('../../../../db');
 const { canManageCommitteeResource } = require('../../auth/committeeScope');
 
@@ -68,7 +68,7 @@ router.route('/event/:uuid').get((req, res, next) => {
 /**
  * Record that the user RSVPed to an event
  */
-router.route('/add').post((req, res, next) => {
+router.route('/add').post(async (req, res, next) => {
   if (req.user.isPending()) return next(new error.Forbidden());
 
   // The user must specify the event UUID
@@ -80,33 +80,45 @@ router.route('/add').post((req, res, next) => {
     return next(new error.BadRequest('emailRemindersEnabled must be a boolean'));
   }
 
-  return Event.findByUUID(req.body.event.uuid)
-    .then((event) => {
-      if (!event) {
-        throw new error.UserError('Event not found');
-      }
+  try {
+    const event = await db.transaction(async (transaction) => {
+      // Event edits use this lock too, keeping the reminder tied to the start time
+      // that was current when the RSVP was recorded.
+      const currentEvent = await Event.findOne({
+        where: { uuid: req.body.event.uuid },
+        transaction,
+        lock: transaction.LOCK.UPDATE,
+      });
+      if (!currentEvent) throw new error.UserError('Event not found');
 
       const now = new Date();
-      if (now > event.startDate) throw new error.UserError('Cannot RSVP to an event that has already started');
+      if (now > currentEvent.startDate) {
+        throw new error.UserError('Cannot RSVP to an event that has already started');
+      }
 
-      // Check if the user has already RSVPed to this event
-      return RSVP.userRSVPedEvent(req.user.uuid, event.uuid)
-        .then((rsvped) => {
-          if (rsvped) throw new error.UserError('You have already RSVPed to this event');
+      const rsvped = await RSVP.userRSVPedEvent(req.user.uuid, currentEvent.uuid, { transaction });
+      if (rsvped) throw new error.UserError('You have already RSVPed to this event');
 
-          // Record the RSVP
-          return RSVP.rsvpToEvent(req.user.uuid, event.uuid, emailRemindersEnabled)
-            .then(() => {
-              res.json({
-                error: null,
-                success: true,
-                message: 'Successfully RSVPed to event',
-                event: event.getPublic(),
-              });
-            });
-        });
-    })
-    .catch(next);
+      const rsvp = await RSVP.rsvpToEvent(
+        req.user.uuid, currentEvent.uuid, emailRemindersEnabled, { transaction },
+      );
+      const dueAt = new Date(currentEvent.startDate.getTime() - 60 * 60 * 1000);
+      // RSVPs placed in the final hour are still saved, but get no late reminder.
+      if (emailRemindersEnabled && dueAt > now) {
+        await EventReminder.create({ rsvpId: rsvp.id, dueAt }, { transaction });
+      }
+      return currentEvent;
+    });
+
+    return res.json({
+      error: null,
+      success: true,
+      message: 'Successfully RSVPed to event',
+      event: event.getPublic(),
+    });
+  } catch (err) {
+    return next(err);
+  }
 });
 
 /**
