@@ -238,8 +238,8 @@ module.exports = (Sequelize, db) => {
     return this.count({ where: { uuid } }).then((c) => c !== 0);
   };
 
-  Event.destroyByUUID = function (uuid) {
-    return this.destroy({ where: { uuid } });
+  Event.destroyByUUID = function (uuid, options = {}) {
+    return this.destroy({ where: { uuid }, ...options });
   };
 
   Event.getCommitteeEvents = function (committee, offset, limit) {

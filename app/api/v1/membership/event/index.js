@@ -5,6 +5,7 @@ const {
 } = require('../../../../db');
 const { assertCanManageCommitteeResource, canManageCommitteeResource } = require('../../auth/committeeScope');
 const { recordAudit, describeEventChanges } = require('../../../../audit');
+const { reconcileEventReminders, clearUnsentEventReminders } = require('../../../../event-reminders');
 // Shared with the public API, which serves the same covers to outside consumers.
 const { normalizeCover } = require('../../../../event-cover');
 const { GENERAL_COMMITTEE, findUnknownCommittees } = require('../../../../committees');
@@ -237,7 +238,10 @@ router
           : Promise.resolve();
         return committeeCheck
           .then(() => event.update(updates, { transaction }))
-          .then((saved) => {
+          .then(async (saved) => {
+            if (new Date(before.startDate).getTime() !== new Date(saved.startDate).getTime()) {
+              await reconcileEventReminders(Sequelize, saved.uuid, saved.startDate, transaction);
+            }
             detail = describeEventChanges(before, saved.get({ plain: true }), Object.keys(updates));
             return saved;
           });
@@ -266,27 +270,30 @@ router
   .delete((req, res, next) => {
     if (!req.params.uuid) return next(new error.BadRequest());
 
-    return Event.findByUUID(req.params.uuid)
-      .then((event) => {
-        if (!event) {
-          res.json({ error: null, numDeleted: 0 });
-          return null;
-        }
+    return Sequelize.transaction(async (transaction) => {
+      const event = await Event.findOne({
+        where: { uuid: req.params.uuid },
+        transaction,
+        lock: transaction.LOCK.UPDATE,
+      });
+      if (!event) return { event: null, numDeleted: 0 };
 
-        assertCanManageCommitteeResource(req.user, event.committee, 'event');
-        return Event.destroyByUUID(req.params.uuid)
-          .then((numDeleted) => {
-            res.json({ error: null, numDeleted });
-            if (numDeleted) {
-              recordAudit(AuditLog, req, {
-                action: 'event.delete',
-                target: event.title,
-                detail: `Deleted: ${describeEventChanges(event.get({ plain: true }), {}, undefined, 'before')} · Event ID: ${event.uuid}`,
-                committee: event.committee,
-              });
-            }
-            return null;
+      assertCanManageCommitteeResource(req.user, event.committee, 'event');
+      await clearUnsentEventReminders(Sequelize, event.uuid, transaction);
+      const numDeleted = await Event.destroyByUUID(req.params.uuid, { transaction });
+      return { event, numDeleted };
+    })
+      .then(({ event, numDeleted }) => {
+        res.json({ error: null, numDeleted });
+        if (numDeleted) {
+          recordAudit(AuditLog, req, {
+            action: 'event.delete',
+            target: event.title,
+            detail: `Deleted: ${describeEventChanges(event.get({ plain: true }), {}, undefined, 'before')} · Event ID: ${event.uuid}`,
+            committee: event.committee,
           });
+        }
+        return null;
       })
       .catch(next);
   });
