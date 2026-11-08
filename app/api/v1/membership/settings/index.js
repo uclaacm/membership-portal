@@ -117,7 +117,7 @@ router.post('/email/test', async (req, res, next) => {
     return res.json({
       error: null,
       sent: false,
-      message: 'test test message.',
+      message: 'Reminder SMTP is not configured.',
     });
   }
 

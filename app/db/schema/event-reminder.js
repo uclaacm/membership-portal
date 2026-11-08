@@ -33,6 +33,14 @@ module.exports = (Sequelize, db) => db.define('eventReminder', {
     type: Sequelize.TEXT,
     allowNull: true,
   },
+  claimedAt: {
+    type: Sequelize.DATE,
+    allowNull: true,
+  },
+  nextAttemptAt: {
+    type: Sequelize.DATE,
+    allowNull: true,
+  },
 }, {
   tableName: 'event_reminders',
   indexes: [

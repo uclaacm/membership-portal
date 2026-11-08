@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index",
+    "reminders": "node scripts/reminder-worker.js",
     "dev": "nodemon -L -e js -i node_modules -i .git -V index.js",
     "migrate": "make migrate",
     "rollback": "make rollback",

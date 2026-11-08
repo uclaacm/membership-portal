@@ -25,7 +25,8 @@ async function reconcileEventReminders(db, eventUuid, startDate, transaction) {
     WHERE rsvp."event" = :eventUuid
       AND rsvp."emailRemindersEnabled" = TRUE
     ON CONFLICT ("rsvpId") DO UPDATE
-      SET "dueAt" = EXCLUDED."dueAt", "updatedAt" = NOW()
+      SET "dueAt" = EXCLUDED."dueAt", "attempts" = 0,
+          "nextAttemptAt" = NULL, "lastError" = NULL, "updatedAt" = NOW()
       WHERE "event_reminders"."status" = 'pending';
   `, { replacements: { eventUuid, dueAt }, transaction });
 }
