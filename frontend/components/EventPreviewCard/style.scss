@@ -1,0 +1,338 @@
+@use "../../styles/vars";
+
+// The event preview card, lifted out of `.admin-dashboard` in app/events/AdminEvents/style.scss
+// so the dashboard can use the same card instead of a second implementation. The rules are
+// unchanged apart from the de-nesting and the sizing overrides at the foot of this file.
+
+.preview-hint {
+  font-size: 11px;
+  color: #bbb;
+  margin: 10px 0 0 0;
+  font-family: "Lato", sans-serif;
+  text-align: center;
+}
+
+.preview-card-container {
+  width: 230px;
+  height: 280px;
+  perspective: 1000px;
+
+  &.is-flipped .preview-card-flipper {
+    transform: rotateY(180deg);
+  }
+
+  .preview-card-flipper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+  }
+
+  .preview-card {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+  }
+
+  .preview-card-front {
+    // front is default orientation
+  }
+
+  .preview-card-back {
+    transform: rotateY(180deg);
+    border: 1px solid rgba(148, 148, 148, 0.5);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background: #fff;
+    font-family: "Lato", sans-serif;
+    display: flex;
+    flex-direction: column;
+
+    .preview-back-content {
+      position: relative;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 16px 14px 50px 14px;
+
+      h3 {
+        color: #333;
+        font-size: 0.95em;
+        text-align: left;
+        margin: 0 0 8px 0;
+        flex-shrink: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .preview-description-scroll {
+        flex: 1 1 0;
+        min-height: 0;
+        overflow-y: auto;
+
+        &::-webkit-scrollbar { width: 4px; }
+        &::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 2px; }
+        &::-webkit-scrollbar-thumb { background: #ccc; border-radius: 2px; }
+
+        p {
+          color: #666;
+          line-height: 1.5;
+          text-align: left;
+          margin: 0;
+          font-size: 0.8em;
+          white-space: pre-wrap;
+        }
+      }
+    }
+
+    .preview-flip-back-btn {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      border: 1px solid #eee;
+      padding: 5px 10px;
+      border-radius: 16px;
+      cursor: pointer;
+      font-size: 0.78em;
+      color: #666;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      white-space: nowrap;
+
+      &:hover {
+        background: #f8f8f8;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+      }
+    }
+  }
+}
+
+.preview-card {
+  width: 230px;
+  height: 280px;
+  border: 1px solid rgba(148, 148, 148, 0.5);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: "Lato", sans-serif;
+
+  .preview-image-container {
+    position: relative;
+    width: 100%;
+    height: 50%;
+    flex-shrink: 0;
+  }
+
+  .preview-cover {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(41, 140, 255, 1);
+    background-position: center center;
+    background-size: cover;
+  }
+
+  .preview-points-pill {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #fff;
+    color: rgba(30, 108, 255, 1);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  }
+
+  .preview-text-container {
+    flex: 1;
+    padding: 8px 12px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .preview-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #111;
+    margin: 0 0 2px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .preview-meta {
+    font-size: 11px;
+    color: rgb(74, 74, 74);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .preview-rsvp-pill {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(30, 108, 255, 1);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 14px;
+    border-radius: 12px;
+    // Decorative by default: in the create-event form's live preview the pill is a plain div
+    // sitting over the card, and must not swallow clicks meant for the card behind it.
+    pointer-events: none;
+  }
+
+  // The real RSVP control carries the same class but is a <button> with an onClick, so the
+  // rule above made it inert — the click landed on the .preview-meta line underneath instead.
+  button.preview-rsvp-pill {
+    pointer-events: auto;
+    cursor: pointer;
+    border: none;
+    font-family: "Lato", sans-serif;
+  }
+}
+// Grid usage: the card is authored at a fixed 230x280. In a dashboard grid track it should
+// fill the width it is given while keeping its intrinsic height.
+.preview-card-container.fill {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+
+// ── Sizing used when the card fills a grid track (home, events list) ──────────
+//
+// Event artwork is always shown at 1.9:1 and cropped to fill. A fixed image height meant a
+// wider card letterboxed its banner and left grey bands; the ratio keeps the crop consistent
+// at every card width.
+.preview-image-container {
+  aspect-ratio: 1.9 / 1;
+  height: auto;
+  width: 100%;
+  overflow: hidden;
+  flex-shrink: 0;
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+}
+
+// Grid-only. In a wrapping flexbox (the events list) a 100%-wide card consumes an entire
+// row and the cards stack one per line, which is why this is opt-in rather than the default.
+//
+// The flip faces are `position: absolute`, so the card's height comes from its container. A
+// plain `height: auto` therefore collapsed the card to zero and the section below rendered on
+// top of it. Instead the FRONT face returns to normal flow to give the card an intrinsic
+// height, and the back is overlaid on it — the flip still works, and the height now follows
+// the 1.9:1 image plus whatever the text needs at this width.
+.preview-card-container.fill {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  box-sizing: border-box;
+
+  .preview-card-flipper {
+    position: relative;
+    width: 100%;
+    height: auto;
+  }
+
+  .preview-card-front {
+    position: relative;
+    height: auto;
+  }
+
+  .preview-card-back {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+  }
+
+  .preview-text-container {
+    flex: 0 0 auto;
+  }
+}
+
+// ── Staff footer strip (admin only) ───────────────────────────────────────────
+//
+// Sits outside `.preview-card-container` rather than inside it: the card's two faces are
+// absolutely positioned against a fixed 230x280 box, so anything added within it would either
+// be clipped or ride on top of the artwork. As a sibling it also keeps the footer's controls
+// out of the card's click target, which is what makes "click card to edit" unambiguous.
+.preview-card-shell {
+  display: flex;
+  flex-direction: column;
+  width: 230px;
+}
+
+.preview-admin-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 0 2px;
+  font-family: "Lato", sans-serif;
+}
+
+.preview-admin-count {
+  font-size: 12px;
+  color: rgb(74, 74, 74);
+  white-space: nowrap;
+}
+
+.preview-admin-btn {
+  background: none;
+  border: 1px solid #d8d8d8;
+  border-radius: 12px;
+  padding: 4px 10px;
+  font-size: 11px;
+  color: #333;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s;
+
+  &:hover:not(:disabled) {
+    background: #f2f2f2;
+    border-color: #bbb;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+}
+
+.preview-admin-external {
+  font-size: 12px;
+  color: rgba(30, 108, 255, 1);
+  text-decoration: none;
+
+  &:hover { text-decoration: underline; }
+}
+
+// The attendance code replaces the RSVP pill in staff view; it is informational, so it drops
+// the button affordance the member pill carries.
+.preview-rsvp-pill.is-code {
+  background: rgba(0, 0, 0, 0.62);
+  font-family: "Lato", monospace;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}

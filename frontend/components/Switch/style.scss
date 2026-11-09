@@ -1,0 +1,80 @@
+@use "@/styles/vars";
+
+.switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+
+  &--disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  // Off screen but still read by assistive tech: the checkbox, and a description hidden for space.
+  &__input,
+  &__description--hidden {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    overflow: hidden;
+  }
+
+  &__track {
+    position: relative;
+    flex-shrink: 0;
+    width: 36px;
+    height: 20px;
+    border-radius: 999px;
+    background: vars.$gray1;
+    transition: background 0.15s;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: vars.$white;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      transition: transform 0.15s;
+    }
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  &__description {
+    color: vars.$gray3;
+    font-size: 0.9em;
+  }
+
+  &__input:checked + &__track {
+    background: vars.$primary-color;
+
+    &::after {
+      transform: translateX(16px);
+    }
+  }
+
+  &__input:focus-visible + &__track {
+    outline: 2px solid vars.$secondary-color;
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__track,
+    &__track::after {
+      transition: none;
+    }
+  }
+}

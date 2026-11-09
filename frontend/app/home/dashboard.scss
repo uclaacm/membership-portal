@@ -1,0 +1,909 @@
+@use "../../styles/vars";
+
+// Tokens for the dashboard. Everything already in styles/vars.scss is referenced from there;
+// only the values that file lacks are defined locally. No new palette was introduced.
+$d-blue: rgb(59, 89, 237);
+$d-blue-dark: rgb(47, 70, 188);
+$d-accent: #d2dbe7;
+$d-navy: #1e2a38;
+$d-border: #d8d8d8;
+$d-rule: #eeeeee;
+$d-surface: #fbfbfb;
+$d-chip: #f2f2f2;
+$d-muted: #979797;
+$d-ellipsis: #c4c4c4;
+$d-success: #248a45;
+$d-success-wash: rgba(52, 220, 106, 0.18);
+$d-progress-end: #34dc6a;
+
+$d-strong: rgba(0, 0, 0, 0.85);
+$d-body: rgba(0, 0, 0, 0.8);
+$d-secondary: rgba(0, 0, 0, 0.6);
+
+$d-topbar: 61px;
+$d-rail: 340px;
+$d-mobile: 860px;
+
+// Intrinsic item heights. These must match the fallbacks in useFit.js, and every one is
+// border-box so the authored height is the real height — the fit maths depends on it.
+$d-row-height: 60px;
+$d-board-row: 32px;
+$d-card-height: 244px;
+
+.dash-root {
+  position: relative;
+  // Must be padding, not margin. A top margin on the first in-flow child collapses through the
+  // root and drags the absolutely-positioned topbar down over the first 61px of content.
+  padding-top: $d-topbar;
+  height: 100vh;
+  box-sizing: border-box;
+  overflow: hidden;
+  font-family: "Lato", sans-serif;
+  color: #111;
+  background: vars.$white;
+}
+
+.dash-shell {
+  display: grid;
+  grid-template-columns: $d-rail 1fr;
+  // Explicit row so the columns actually fill the shell. Relying on an implicit auto row
+  // left both columns at their content height and dumped the leftover space at the bottom.
+  grid-template-rows: minmax(560px, 1fr);
+  gap: 20px;
+  padding: 24px;
+  height: 100%;
+  box-sizing: border-box;
+  // Deliberate fallback: on a viewport shorter than the content floor the page scrolls rather
+  // than clipping. The columns carry a min-height for the same reason.
+  overflow-y: auto;
+  overflow-x: hidden;
+  align-items: stretch;
+  scrollbar-width: thin;
+  scrollbar-color: $d-accent transparent;
+}
+
+// 340px fixed, not a fraction: at 1fr the cards were too narrow and every label wrapped.
+.dash-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 560px;
+  min-width: 0;
+}
+
+.dash-main {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 560px;
+  min-width: 0;
+}
+
+// One card treatment everywhere. The old offset shadow is gone; cards use borders.
+// Default is fixed-size. Without an explicit flex the columns compressed check-in and
+// progress to make room, which is where most of the spacing looked wrong.
+.dash-card {
+  background: vars.$white;
+  border: 1px solid $d-border;
+  border-radius: 12px;
+  padding: 18px 20px;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+}
+
+// Block, not inline: as a <span> the bottom margin was silently dropped and every card's
+// header sat flush against its content.
+.dash-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: $d-muted;
+}
+
+.dash-empty {
+  font-size: 13px;
+  color: $d-muted;
+  margin: 10px 0 0 0;
+}
+
+.dash-viewall {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: 12px;
+  color: $d-blue;
+  cursor: pointer;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// --------------------------------------------------------------------- hero
+
+.dash-hero {
+  position: relative;
+  height: 232px;
+  box-sizing: border-box;
+  border-radius: 12px;
+  overflow: hidden;
+  background: $d-navy;
+  color: vars.$white;
+  flex-shrink: 0;
+}
+
+.dash-hero-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.dash-hero-content {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  padding: 26px 28px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.dash-hero-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  height: 100%;
+  min-width: 0;
+}
+
+// The greeting is one block so space-between pushes only the credit to the bottom.
+.dash-hero-greeting {
+  min-width: 0;
+}
+
+.dash-hero-eyebrow {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.dash-hero-title {
+  font-family: "Poppins", sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.dash-hero-subline {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 8px 0 0 0;
+}
+
+.dash-hero-credit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+
+  img {
+    height: 20px;
+    width: auto;
+  }
+}
+
+.dash-hero-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.dash-hero-who {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.dash-hero-avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  background: $d-chip;
+}
+
+.dash-hero-name {
+  font-family: "Poppins", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.dash-hero-meta {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+// ----------------------------------------------------------------- check-in
+
+.dash-checkin-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+
+  input {
+    flex-grow: 1;
+    min-width: 0;
+    height: 44px;
+    padding: 0 14px;
+    border: 1px solid $d-border;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    box-sizing: border-box;
+
+    &:focus {
+      outline: none;
+      border-color: $d-blue;
+    }
+  }
+
+  button {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border: none;
+    border-radius: 50%;
+    background: $d-blue;
+    color: vars.$white;
+    cursor: pointer;
+
+    &:hover {
+      background: $d-blue-dark;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+  }
+}
+
+.dash-checkin-status {
+  margin: 10px 0 0 0;
+  font-size: 12px;
+
+  &.ok {
+    color: $d-success;
+  }
+
+  &.error {
+    color: vars.$dark-red;
+  }
+}
+
+// ----------------------------------------------------------------- progress
+
+.dash-progress-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 12px 0 8px;
+}
+
+.dash-progress-name {
+  font-family: "Poppins", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: $d-strong;
+}
+
+.dash-progress-points {
+  font-size: 13px;
+  color: $d-secondary;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.dash-progress-track {
+  height: 8px;
+  background: $d-rule;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.dash-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, $d-blue 0%, $d-progress-end 100%);
+}
+
+.dash-progress-caption {
+  margin: 8px 0 0 0;
+  font-size: 12px;
+  color: $d-muted;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// ---------------------------------------------------------- leaderboard rail
+
+.dash-board {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 180px;
+}
+
+.dash-board-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+
+// No internal scroll: the card renders only the rows that fit, and "View all" is the escape
+// hatch for everything else.
+.dash-board-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.dash-board-row {
+  height: $d-board-row;
+  box-sizing: border-box;
+  padding: 0 10px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+
+  &.is-me {
+    background: $d-accent;
+    color: $d-blue-dark;
+    font-weight: 700;
+
+    .dash-board-rank,
+    .dash-board-points {
+      color: $d-blue-dark;
+    }
+  }
+
+  &.is-ellipsis {
+    justify-content: center;
+    letter-spacing: 2px;
+    color: $d-ellipsis;
+  }
+}
+
+.dash-board-rank {
+  width: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: $d-muted;
+
+  &.is-top {
+    color: $d-blue;
+  }
+}
+
+.dash-board-name {
+  flex-grow: 1;
+  min-width: 0;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dash-board-points {
+  font-size: 12px;
+  color: $d-muted;
+  font-variant-numeric: tabular-nums;
+}
+
+// ---------------------------------------------------------------- events
+
+.dash-events {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 420px;
+
+  // With fewer upcoming events than fit, the handoff says to end the section short rather
+  // than pad it. Stretching a half-empty card is what produced the large blank area.
+  &.is-short {
+    flex: 0 0 auto;
+    min-height: 0;
+  }
+}
+
+.dash-events-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-shrink: 0;
+}
+
+.dash-event-cards {
+  display: grid;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+// Intrinsic height. When these inherited "whatever space is left", the body resolved to 0px
+// and the text was clipped away entirely.
+
+
+// Shared by the card banner and the row thumbnail.
+
+
+
+
+
+
+.dash-event-meta {
+  flex-shrink: 0;
+  line-height: 1.35;
+  font-size: 12px;
+  color: $d-muted;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Base button only. `margin-top: auto` belongs to the card variant — applied here it also
+// hit the compact rows, where the button sits in a centred row and has nothing to push off.
+.dash-rsvp {
+  border: none;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  background: $d-blue;
+  color: vars.$white;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.85;
+  }
+
+  &.is-going {
+    background: $d-success-wash;
+    color: $d-success;
+  }
+
+  // In the card the button is pushed to the bottom of the body and hugs the left edge.
+  &.in-card {
+    margin-top: auto;
+    align-self: flex-start;
+    padding: 8px 18px;
+  }
+}
+
+.dash-events-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 18px 0 12px;
+  flex-shrink: 0;
+
+  .dash-rule {
+    flex-grow: 1;
+    height: 1px;
+    background: $d-rule;
+  }
+}
+
+.dash-event-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.dash-event-row {
+  height: $d-row-height;
+  box-sizing: border-box;
+  border: 1px solid $d-border;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-shrink: 0;
+
+  &:hover {
+    border-color: $d-accent;
+  }
+}
+
+// The horizontal card's image is the same 1.9:1 crop as the vertical one: at 60px tall that
+// is 114px wide. Deriving the width from the ratio is what stops the grey band.
+.dash-event-thumb {
+  aspect-ratio: 1.9 / 1;
+  height: 100%;
+  flex-shrink: 0;
+  background: $d-accent;
+  overflow: hidden;
+}
+
+// Restored: this was removed with the bespoke card, leaving the row image unsized and
+// floating in its grey container.
+.dash-event-cover {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.dash-event-rowbody {
+  padding: 0 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  min-width: 0;
+  flex-grow: 1;
+}
+
+.dash-event-rowtitle {
+  font-family: "Poppins", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: $d-strong;
+}
+
+.dash-event-rowright {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-right: 12px;
+  flex-shrink: 0;
+}
+
+.dash-event-rowpts {
+  font-size: 12px;
+  color: $d-muted;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+// ------------------------------------------------------------------- modal
+
+.dash-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.dash-modal {
+  width: 520px;
+  max-width: 100%;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  background: vars.$white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+  font-family: "Lato", sans-serif;
+}
+
+.dash-modal-head {
+  padding: 20px 22px 14px;
+  border-bottom: 1px solid $d-rule;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+
+  h2 {
+    font-family: "Poppins", sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    color: $d-strong;
+  }
+}
+
+.dash-modal-sub {
+  font-size: 12px;
+  color: $d-muted;
+}
+
+.dash-modal-close {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border: 1px solid $d-border;
+  border-radius: 50%;
+  background: vars.$white;
+  color: $d-secondary;
+  cursor: pointer;
+
+  &:hover {
+    border-color: $d-blue;
+    color: $d-blue;
+  }
+}
+
+.dash-podium {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  align-items: end;
+  padding: 20px 22px 18px;
+  border-bottom: 1px solid $d-rule;
+}
+
+.dash-podium-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+  min-width: 0;
+}
+
+.dash-podium-place {
+  font-size: 12px;
+  font-weight: 700;
+  color: $d-blue;
+}
+
+.dash-podium-avatar {
+  border-radius: 50%;
+  object-fit: cover;
+  background: $d-chip;
+  border: 3px solid $d-border;
+}
+
+.place-1 .dash-podium-avatar {
+  border-color: $d-blue;
+}
+
+.dash-podium-name {
+  font-family: "Poppins", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: $d-strong;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.place-1 .dash-podium-name {
+  font-size: 15px;
+}
+
+.dash-podium-level {
+  font-size: 11px;
+  color: $d-muted;
+}
+
+.dash-podium-points {
+  font-size: 11px;
+  color: $d-secondary;
+  font-variant-numeric: tabular-nums;
+}
+
+.dash-modal-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px 12px;
+  scrollbar-width: thin;
+  scrollbar-color: $d-accent transparent;
+}
+
+.dash-modal-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 8px;
+
+  &.is-me {
+    background: $d-accent;
+    color: $d-blue-dark;
+
+    .dash-modal-name,
+    .dash-modal-rank,
+    .dash-modal-points {
+      color: $d-blue-dark;
+    }
+  }
+}
+
+.dash-modal-rank {
+  width: 28px;
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: $d-secondary;
+  flex-shrink: 0;
+}
+
+.dash-modal-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: $d-chip;
+  flex-shrink: 0;
+}
+
+.dash-modal-who {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex-grow: 1;
+}
+
+.dash-modal-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: $d-strong;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dash-modal-level {
+  font-size: 11px;
+  color: $d-muted;
+}
+
+.dash-modal-points {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: $d-secondary;
+  flex-shrink: 0;
+}
+
+.dash-modal-foot {
+  padding: 14px 22px;
+  border-top: 1px solid $d-rule;
+  background: $d-surface;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dash-modal-footlabel {
+  font-size: 12px;
+  color: $d-muted;
+}
+
+.dash-modal-footvalue {
+  font-size: 13px;
+  font-weight: 700;
+  color: $d-blue-dark;
+  font-variant-numeric: tabular-nums;
+}
+
+// ------------------------------------------------------------------ mobile
+
+@media (max-width: $d-mobile) {
+  .dash-root {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+
+  .dash-shell {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    height: auto;
+    overflow: visible;
+    padding: 16px;
+  }
+
+  // The columns dissolve so their cards join the single column, and each card's `order`
+  // sets the sequence: hero → check-in → events → progress → leaderboard. Check-in is
+  // second because entering a code is the main phone task at an event.
+  .dash-rail,
+  .dash-main {
+    display: contents;
+  }
+
+  .dash-hero {
+    height: auto;
+    padding: 20px;
+  }
+
+  .dash-hero-content {
+    padding: 0;
+    gap: 16px;
+  }
+
+  .dash-hero-left {
+    gap: 8px;
+  }
+
+  .dash-hero-title {
+    font-size: 22px;
+  }
+
+  .dash-hero-subline {
+    font-size: 13px;
+  }
+
+  .dash-hero-avatar {
+    width: 56px;
+    height: 56px;
+  }
+
+  .dash-hero-credit {
+    display: none;
+  }
+
+  // The page scrolls now, so these lists are no longer fitted to a fixed height.
+  .dash-board,
+  .dash-events {
+    min-height: 0;
+    flex: 0 0 auto;
+  }
+
+  .dash-board-list,
+  .dash-event-rows {
+    overflow: visible;
+  }
+
+  // 44px is the floor for anything tappable on touch.
+  .dash-rsvp,
+  .dash-viewall {
+    min-height: 44px;
+    min-width: 44px;
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .dash-viewall {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
