@@ -1,21 +1,22 @@
 name: PR Tests
 
-on: #trigger
+on:
+  # CI will run on every PR to any branch. PR into main can't merge until all three pass.
   pull_request:
-    # Only run when files in this part of the repo change.
-    paths:
-      - '**'
-  # Re-run after changes to shared testing branch
+  # Re-test main after each merge, so a broken main shows up even if a PR's run was stale.
   push:
     branches:
-      - feat/testing
+      - main
+permissions:
+  contents: read
 
 jobs:
-  # ESLint (modified airbnb config in .eslintrc.js).
   lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: 18
@@ -33,8 +34,9 @@ jobs:
         working-directory: .
 
     steps:
-      # Checkout repo onto runner and checks out PR branch.
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       # Installs node version and caches dependencies based on package-lock.json.
       - uses: actions/setup-node@v4
         with:
@@ -43,12 +45,9 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - run: npm ci
-      # Known backend unit tests that arent passing, need to fix.
-      # Unit tests only (tests/unit); integration tests in tests/integration need a database and run separately.
       - run: npm run test:unit
 
   integration-tests:
-    #needs: unit-tests
     runs-on: ubuntu-latest
 
     defaults:
@@ -67,7 +66,8 @@ jobs:
           POSTGRES_PASSWORD: ci_throwaway_password
           POSTGRES_DB: membership_portal_test
         ports:
-          # Deliberately not 5432 (the Postgres/Sequelize default) so CI fails if PG_PORT is ignored.
+          #VM Port : Container Port
+          #Not 5432 (the Postgres/Sequelize default) so CI fails if PG_PORT is ignored.
           - 5433:5432
         # Wait until Postgres accepts connections before running any steps.
         options: >-
@@ -75,8 +75,6 @@ jobs:
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
-      # Committees and internship applications (Mongoose). Every committee check in the
-      # Postgres routes (app/committees.js) reads from here, so integration tests need it too.
       mongo:
         image: mongo:7
         ports:
@@ -87,7 +85,6 @@ jobs:
           --health-timeout 5s
           --health-retries 10
 
-    # Read by app/config and app/config/sequelize-config.js.
     env:
       # Anything but 'production' counts as development, which enables POST /auth/dev-login.
       NODE_ENV: test
@@ -102,13 +99,14 @@ jobs:
       MONGODB_URI: mongodb://localhost:27017/membership_portal_test
       # Throwaway value; tokens only need to be signed and verified within this run.
       SESSION_SECRET: ci_throwaway_session_secret
-      # Google auth and Sheets are left blank: tests use dev-login or self-signed JWTs instead.
       GOOGLE_CLIENT_ID: ''
       GOOGLE_API_KEY: ''
       GOOGLE_AUTH_DOMAIN: ''
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: 18
@@ -116,8 +114,6 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - run: npm ci
-      # Create base tables (db.sync) then apply migrations, same as `make migrate`.
       - run: node scripts/db-init.js
       - run: npx sequelize-cli db:migrate --env test
-      # --runInBand: every test file binds port 8080 and shares the same databases.
       - run: npm run test:integration
