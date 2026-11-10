@@ -1,4 +1,9 @@
 const nodemailer = require('nodemailer');
+const fs = require('fs');
+const path = require('path');
+const { buildReminderEmail, LOGO_CID } = require('./reminder-template');
+
+const wordmark = fs.readFileSync(path.join(__dirname, 'assets', 'acm-wordmark.png'));
 
 function getReminderMailConfig() {
   const host = process.env.REMINDER_SMTP_HOST?.trim() || null;
@@ -16,7 +21,7 @@ function getReminderMailConfig() {
   };
 }
 
-async function sendMail({ to, subject, text }) {
+async function sendMail({ to, subject, text, html }) {
   const config = getReminderMailConfig();
   if (!config.configured) throw new Error('Reminder SMTP is not configured.');
 
@@ -35,6 +40,13 @@ async function sendMail({ to, subject, text }) {
     to,
     subject,
     text,
+    html,
+    attachments: [{
+      filename: 'acm-wordmark.png',
+      content: wordmark,
+      cid: LOGO_CID,
+      contentDisposition: 'inline',
+    }],
     disableFileAccess: true,
     disableUrlAccess: true,
   });
@@ -42,33 +54,25 @@ async function sendMail({ to, subject, text }) {
   return result;
 }
 
-function formatEventTime(startDate) {
-  return new Date(startDate).toLocaleString('en-US', {
-    dateStyle: 'full',
-    timeStyle: 'short',
-    timeZone: 'America/Los_Angeles',
-  });
-}
-
 async function sendEventReminder({ to, event }) {
-  const portalUrl = process.env.PORTAL_URL || 'https://portal.uclaacm.com';
   return sendMail({
     to,
-    subject: `Reminder: ${event.title} starts in one hour`,
-    text: [
-      `${event.title} starts in one hour.`,
-      `When: ${formatEventTime(event.startDate)} (Los Angeles time)`,
-      `Where: ${event.location || 'See event details'}`,
-      `Event details: ${portalUrl}/events`,
-    ].join('\n'),
+    ...buildReminderEmail({ event, portalUrl: process.env.PORTAL_URL }),
   });
 }
 
 async function sendReminderTest(to) {
   return sendMail({
     to,
-    subject: 'ACM event reminder email test',
-    text: 'This is a test of the ACM Membership Portal event reminder email transport.',
+    ...buildReminderEmail({
+      event: {
+        title: 'Sample ACM event',
+        startDate: new Date(Date.now() + 60 * 60 * 1000),
+        location: 'UCLA campus',
+      },
+      portalUrl: process.env.PORTAL_URL,
+      preview: true,
+    }),
   });
 }
 
