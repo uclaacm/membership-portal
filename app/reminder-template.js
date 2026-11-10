@@ -1,4 +1,5 @@
-const LOGO_CID = 'acm-wordmark@portal.uclaacm.com';
+const LOGO_CID = 'acm-wordmark@members.uclaacm.com';
+const EVENTS_URL = 'https://members.uclaacm.com/events';
 
 function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>"']/g, (character) => ({
@@ -14,24 +15,13 @@ function formatEventTime(startDate) {
   });
 }
 
-function eventsUrl(portalUrl) {
-  const fallback = 'https://portal.uclaacm.com/events';
-  try {
-    const base = new URL(portalUrl || fallback);
-    if (!['http:', 'https:'].includes(base.protocol)) return fallback;
-    return new URL('/events', base).toString();
-  } catch (_) {
-    return fallback;
-  }
-}
-
-function buildEventEmail({ event, portalUrl, kind }) {
+function buildEventEmail({ event, kind }) {
   const preview = kind === 'test';
   const confirmation = kind === 'confirmation';
   const title = String(event.title || 'ACM event').replace(/[\r\n]+/g, ' ').trim();
   const when = `${formatEventTime(event.startDate)} (Los Angeles time)`;
   const where = String(event.location || 'See event details');
-  const url = eventsUrl(portalUrl);
+  const url = EVENTS_URL;
   const safeTitle = escapeHtml(title);
   const safeWhen = escapeHtml(when);
   const safeWhere = escapeHtml(where);
@@ -118,12 +108,12 @@ function buildEventEmail({ event, portalUrl, kind }) {
   };
 }
 
-function buildReminderEmail({ event, portalUrl, preview = false }) {
-  return buildEventEmail({ event, portalUrl, kind: preview ? 'test' : 'reminder' });
+function buildReminderEmail({ event, preview = false }) {
+  return buildEventEmail({ event, kind: preview ? 'test' : 'reminder' });
 }
 
-function buildRSVPConfirmationEmail({ event, portalUrl }) {
-  return buildEventEmail({ event, portalUrl, kind: 'confirmation' });
+function buildRSVPConfirmationEmail({ event }) {
+  return buildEventEmail({ event, kind: 'confirmation' });
 }
 
 module.exports = { buildReminderEmail, buildRSVPConfirmationEmail, LOGO_CID };

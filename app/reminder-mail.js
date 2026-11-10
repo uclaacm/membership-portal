@@ -57,14 +57,14 @@ async function sendMail({ to, subject, text, html }) {
 async function sendEventReminder({ to, event }) {
   return sendMail({
     to,
-    ...buildReminderEmail({ event, portalUrl: process.env.PORTAL_URL }),
+    ...buildReminderEmail({ event }),
   });
 }
 
 async function sendRSVPConfirmation({ to, event }) {
   return sendMail({
     to,
-    ...buildRSVPConfirmationEmail({ event, portalUrl: process.env.PORTAL_URL }),
+    ...buildRSVPConfirmationEmail({ event }),
   });
 }
 
@@ -77,7 +77,6 @@ async function sendReminderTest(to) {
         startDate: new Date(Date.now() + 60 * 60 * 1000),
         location: 'UCLA campus',
       },
-      portalUrl: process.env.PORTAL_URL,
       preview: true,
     }),
   });
