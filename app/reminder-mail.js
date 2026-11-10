@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer');
 const fs = require('fs');
 const path = require('path');
-const { buildReminderEmail, LOGO_CID } = require('./reminder-template');
+const { buildReminderEmail, buildRSVPConfirmationEmail, LOGO_CID } = require('./reminder-template');
 
 const wordmark = fs.readFileSync(path.join(__dirname, 'assets', 'acm-wordmark.png'));
 
@@ -61,6 +61,13 @@ async function sendEventReminder({ to, event }) {
   });
 }
 
+async function sendRSVPConfirmation({ to, event }) {
+  return sendMail({
+    to,
+    ...buildRSVPConfirmationEmail({ event, portalUrl: process.env.PORTAL_URL }),
+  });
+}
+
 async function sendReminderTest(to) {
   return sendMail({
     to,
@@ -76,4 +83,4 @@ async function sendReminderTest(to) {
   });
 }
 
-module.exports = { getReminderMailConfig, sendEventReminder, sendReminderTest };
+module.exports = { getReminderMailConfig, sendEventReminder, sendRSVPConfirmation, sendReminderTest };

@@ -4,6 +4,8 @@ const {
   Event, RSVP, EventReminder, User, db,
 } = require('../../../../db');
 const { canManageCommitteeResource } = require('../../auth/committeeScope');
+const { sendRSVPConfirmation } = require('../../../../reminder-mail');
+const logger = require('../../../../logger');
 
 const router = express.Router();
 
@@ -110,10 +112,20 @@ router.route('/add').post(async (req, res, next) => {
       return currentEvent;
     });
 
+    // The RSVP is committed before contacting SMTP. Mail trouble cannot undo a saved RSVP.
+    let confirmationEmailSent = false;
+    try {
+      await sendRSVPConfirmation({ to: req.user.email, event: event.getPublic() });
+      confirmationEmailSent = true;
+    } catch (mailError) {
+      logger.warn('RSVP confirmation email failed: %s', mailError.code || mailError.name || 'unknown');
+    }
+
     return res.json({
       error: null,
       success: true,
       message: 'Successfully RSVPed to event',
+      confirmationEmailSent,
       event: event.getPublic(),
     });
   } catch (err) {
