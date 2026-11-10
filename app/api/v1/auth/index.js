@@ -49,7 +49,7 @@ const authenticated = (req, res, next) => {
   ) return next(new error.Unauthorized());
 
   const token = authHead[1];
-  jwt.verify(token, config.session.secret, (err, decoded) => {
+  jwt.verify(token, config.session.secret, { algorithms: ['HS256'] }, (err, decoded) => {
     if (err) return next(new error.Unauthorized());
 
     // if the user provided a valid token, use it to deserialize the UUID to

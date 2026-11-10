@@ -28,6 +28,85 @@ describe('Health Tests', () => {
     expect(response.body).toHaveProperty('memory');
     expect(response.body).toHaveProperty('uptime');
   });
+
+  // /health/setup drops every table. Only check the refusals here: a successful call
+  // would wipe the shared test database out from under the other suites.
+  describe('Database reset route', () => {
+    let member;
+
+    beforeAll(async () => {
+      member = await User.create({
+        email: `setup-guard-${Date.now()}@testemail.com`,
+        firstName: 'Setup',
+        lastName: 'Guard',
+        accessType: 'STANDARD',
+        state: 'ACTIVE',
+        year: 2,
+        major: 'Undeclared',
+      });
+    });
+
+    afterAll(async () => {
+      if (member) await member.destroy();
+    });
+
+    test('is not reachable with GET', async () => {
+      const response = await request(server).get(route('health/setup'));
+      expect(response.statusCode).toBe(404);
+    });
+
+    test('rejects unauthenticated requests', async () => {
+      const response = await request(server).post(route('health/setup'));
+      expect(response.statusCode).toBe(401);
+    });
+
+    test('rejects users who are not super admins', async () => {
+      const token = jwt.sign({ uuid: member.uuid }, config.session.secret, { expiresIn: 3600 });
+      const response = await request(server)
+        .post(route('health/setup'))
+        .auth(token, { type: 'bearer' });
+      expect(response.statusCode).toBe(403);
+    });
+  });
+});
+
+describe('Token algorithm', () => {
+  let member;
+
+  beforeAll(async () => {
+    member = await User.create({
+      email: `token-alg-${Date.now()}@testemail.com`,
+      firstName: 'Token',
+      lastName: 'Alg',
+      accessType: 'STANDARD',
+      state: 'ACTIVE',
+      year: 2,
+      major: 'Undeclared',
+    });
+  });
+
+  afterAll(async () => {
+    if (member) await member.destroy();
+  });
+
+  test('accepts tokens signed with HS256', async () => {
+    const token = jwt.sign({ uuid: member.uuid }, config.session.secret, { algorithm: 'HS256' });
+    const response = await request(server).get(route('user')).auth(token, { type: 'bearer' });
+    expect(response.statusCode).toBe(200);
+  });
+
+  test('rejects tokens signed with any other algorithm', async () => {
+    const token = jwt.sign({ uuid: member.uuid }, config.session.secret, { algorithm: 'HS512' });
+    const response = await request(server).get(route('user')).auth(token, { type: 'bearer' });
+    expect(response.statusCode).toBe(401);
+  });
+
+  test('rejects unsigned tokens', async () => {
+    const encode = (obj) => Buffer.from(JSON.stringify(obj)).toString('base64url');
+    const token = `${encode({ alg: 'none', typ: 'JWT' })}.${encode({ uuid: member.uuid })}.`;
+    const response = await request(server).get(route('user')).auth(token, { type: 'bearer' });
+    expect(response.statusCode).toBe(401);
+  });
 });
 
 describe('Auth Tests', () => {
