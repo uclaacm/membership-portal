@@ -1,53 +1,16 @@
-name: PR Tests
+name: Integration Tests
 
 on:
-  # CI will run on every PR to any branch. PR into main can't merge until all three pass.
-  pull_request:
-  # Re-test main after each merge, so a broken main shows up even if a PR's run was stale.
-  push:
-    branches:
-      - main
+  # Called by ci.yml; can also be run by hand from the Actions tab.
+  workflow_call:
+  workflow_dispatch:
+
 permissions:
   contents: read
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: npm
-          cache-dependency-path: package-lock.json
-      - run: npm ci
-      - run: npm run lint
-
-  unit-tests:
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        # Folder containing the package.json to test ('.' = repo root).
-        working-directory: .
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      # Installs node version and caches dependencies based on package-lock.json.
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: npm
-          cache-dependency-path: package-lock.json
-
-      - run: npm ci
-      - run: npm run test:unit
-
   integration-tests:
+    name: jest
     runs-on: ubuntu-latest
 
     defaults:
