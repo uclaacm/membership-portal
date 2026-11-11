@@ -51,7 +51,7 @@ describe('RSVPs', () => {
     await as(member).add(event.uuid);
     const second = await as(member).add(event.uuid);
 
-    // UserError: HTTP 200 with an error message in the body.
+    expect(second.statusCode).toBe(409);
     expect(second.body.error.message).toMatch(/already RSVPed/);
     expect(await RSVP.count({ where: { user: member.uuid, event: event.uuid } })).toBe(1);
   });
@@ -71,6 +71,7 @@ describe('RSVPs', () => {
     const member = await f.createUser();
     const event = await upcoming();
     const response = await as(member).cancel(event.uuid);
+    expect(response.statusCode).toBe(404);
     expect(response.body.error.message).toMatch(/have not RSVPed/);
   });
 
@@ -83,20 +84,38 @@ describe('RSVPs', () => {
 
     await as(member).cancel(event.uuid);
 
+    expect(await RSVP.userRSVPedEvent(member.uuid, event.uuid)).toBe(false);
     expect(await RSVP.userRSVPedEvent(other.uuid, event.uuid)).toBe(true);
   });
 
-  test('you cannot RSVP to or cancel for an event that has already started', async () => {
+  test('you cannot RSVP to an event that has already started', async () => {
     const member = await f.createUser();
     const started = await f.createEvent();
 
-    expect((await as(member).add(started.uuid)).body.error.message).toMatch(/already started/);
-    expect((await as(member).cancel(started.uuid)).body.error.message).toMatch(/already started/);
+    const response = await as(member).add(started.uuid);
+
+    expect(response.statusCode).toBe(409);
+    expect(response.body.error.message).toMatch(/already started/);
+    expect(await RSVP.userRSVPedEvent(member.uuid, started.uuid)).toBe(false);
+  });
+
+  test('you cannot cancel an RSVP once the event has started', async () => {
+    const member = await f.createUser();
+    const started = await f.createEvent();
+    // The API refuses RSVPs to started events, so seed the RSVP directly.
+    await RSVP.rsvpToEvent(member.uuid, started.uuid);
+
+    const response = await as(member).cancel(started.uuid);
+
+    expect(response.statusCode).toBe(409);
+    expect(response.body.error.message).toMatch(/already started/);
+    expect(await RSVP.userRSVPedEvent(member.uuid, started.uuid)).toBe(true);
   });
 
   test('RSVPing to an event that does not exist is rejected', async () => {
     const member = await f.createUser();
     const response = await as(member).add('00000000-0000-4000-8000-000000000000');
+    expect(response.statusCode).toBe(404);
     expect(response.body.error.message).toMatch(/not found/);
   });
 
@@ -114,6 +133,7 @@ describe('RSVPs', () => {
     const event = await upcoming();
     expect((await as(pending).add(event.uuid)).statusCode).toBe(403);
     expect((await as(pending).mine()).statusCode).toBe(403);
+    expect(await RSVP.userRSVPedEvent(pending.uuid, event.uuid)).toBe(false);
   });
 
   test('capacity is advisory: RSVPs beyond it are still accepted', async () => {
@@ -128,5 +148,7 @@ describe('RSVPs', () => {
     const response = await as(second).add(event.uuid);
 
     expect(response.body.success).toBe(true);
+    expect(await RSVP.userRSVPedEvent(first.uuid, event.uuid)).toBe(true);
+    expect(await RSVP.userRSVPedEvent(second.uuid, event.uuid)).toBe(true);
   });
 });

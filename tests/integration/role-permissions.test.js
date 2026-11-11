@@ -129,6 +129,7 @@ describe('role permissions on write routes', () => {
       const response = await as(admin).delete(`/event/${event.uuid}`);
       expect(response.statusCode).toBe(200);
       expect(response.body.numDeleted).toBe(1);
+      expect(await Event.eventExists(event.uuid)).toBe(false);
     });
   });
 
