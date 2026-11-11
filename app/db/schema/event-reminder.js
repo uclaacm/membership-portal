@@ -10,6 +10,13 @@ module.exports = (Sequelize, db) => db.define('eventReminder', {
     references: { model: 'rsvps', key: 'id' },
     onDelete: 'CASCADE',
   },
+  kind: {
+    type: Sequelize.STRING(16),
+    allowNull: false,
+    // Only for legacy db-init/backfill; the latest migration drops this DB default.
+    defaultValue: 'one_hour',
+    validate: { isIn: [['one_week', 'three_days', 'one_day', 'day_of']] },
+  },
   dueAt: {
     type: Sequelize.DATE,
     allowNull: false,
@@ -44,7 +51,6 @@ module.exports = (Sequelize, db) => db.define('eventReminder', {
 }, {
   tableName: 'event_reminders',
   indexes: [
-    { unique: true, fields: ['rsvpId'], name: 'event_reminders_rsvp_unique' },
     { fields: ['status', 'dueAt'], name: 'event_reminders_due_index' },
   ],
 });

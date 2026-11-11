@@ -1,5 +1,6 @@
 const { db } = require('../app/db');
 const { getReminderMailConfig, sendEventReminder } = require('../app/reminder-mail');
+const { reminderScheduleSql } = require('../app/event-reminders');
 
 const POLL_MS = 60 * 1000;
 const BATCH_SIZE = 50;
@@ -28,6 +29,7 @@ async function claimDueReminder() {
     WITH candidate AS (
       SELECT "id" FROM "event_reminders"
       WHERE "dueAt" <= NOW()
+        AND "kind" <> 'one_hour'
         AND (
           ("status" = 'pending' AND ("nextAttemptAt" IS NULL OR "nextAttemptAt" <= NOW()))
           OR ("status" = 'sending' AND "claimedAt" < NOW() - INTERVAL '5 minutes')
@@ -49,12 +51,15 @@ async function claimDueReminder() {
 async function processReminder(claim) {
   const replacements = { id: claim.id, attempts: claim.attempts };
   const [rows] = await db.query(`
-    SELECT reminder."dueAt", r."emailRemindersEnabled", u."email", u."state",
+    SELECT reminder."dueAt", reminder."kind", schedule."dueAt" AS "expectedDueAt",
+           r."emailRemindersEnabled", u."email", u."state",
            e."title", e."location", e."startDate"
     FROM "event_reminders" AS reminder
     LEFT JOIN "rsvps" AS r ON r."id" = reminder."rsvpId"
     LEFT JOIN "users" AS u ON u."uuid" = r."user"
     LEFT JOIN "events" AS e ON e."uuid" = r."event"
+    LEFT JOIN LATERAL ${reminderScheduleSql('e."startDate"')}
+      AS schedule(kind, "dueAt") ON schedule.kind = reminder."kind"
     WHERE reminder."id" = :id;
   `, { replacements });
   const target = rows[0];
@@ -70,16 +75,18 @@ async function processReminder(claim) {
     return;
   }
 
-  const dueAt = new Date(start.getTime() - 60 * 60 * 1000);
-  if (dueAt.getTime() !== new Date(target.dueAt).getTime() && dueAt <= new Date()) {
-    // A move into the final hour should not produce a late email.
+  const dueAt = target.expectedDueAt && new Date(target.expectedDueAt);
+  const now = new Date();
+  if (!dueAt || dueAt >= start
+      || (dueAt.getTime() !== new Date(target.dueAt).getTime() && dueAt <= now)) {
+    // A reschedule never sends a stage after its new send time has passed.
     await db.query(`
       DELETE FROM "event_reminders"
       WHERE "id" = :id AND "attempts" = :attempts AND "status" = 'sending';
     `, { replacements });
     return;
   }
-  if (dueAt > new Date()) {
+  if (dueAt > now) {
     // The event moved while this reminder was claimed.
     await db.query(`
       UPDATE "event_reminders"
@@ -91,7 +98,7 @@ async function processReminder(claim) {
   }
 
   try {
-    await sendEventReminder({ to: target.email, event: target });
+    await sendEventReminder({ to: target.email, event: target, kind: target.kind });
   } catch (err) {
     const reason = String(err.code || err.name || 'SMTP error').slice(0, 120);
     const delayMinutes = Math.min(30, 2 ** Math.min(claim.attempts - 1, 10));

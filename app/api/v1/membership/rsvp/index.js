@@ -1,8 +1,9 @@
 const express = require('express');
 const error = require('../../../../error');
 const {
-  Event, RSVP, EventReminder, User, db,
+  Event, RSVP, User, db,
 } = require('../../../../db');
+const { scheduleRsvpReminders } = require('../../../../event-reminders');
 const { canManageCommitteeResource } = require('../../auth/committeeScope');
 const { sendRSVPConfirmation } = require('../../../../reminder-mail');
 const logger = require('../../../../logger');
@@ -104,11 +105,8 @@ router.route('/add').post(async (req, res, next) => {
       const rsvp = await RSVP.rsvpToEvent(
         req.user.uuid, currentEvent.uuid, emailRemindersEnabled, { transaction },
       );
-      const dueAt = new Date(currentEvent.startDate.getTime() - 60 * 60 * 1000);
-      // RSVPs placed in the final hour are still saved, but get no late reminder.
-      if (emailRemindersEnabled && dueAt > now) {
-        await EventReminder.create({ rsvpId: rsvp.id, dueAt }, { transaction });
-      }
+      // Only future reminder stages are scheduled for this RSVP.
+      if (emailRemindersEnabled) await scheduleRsvpReminders(db, rsvp.id, transaction);
       return currentEvent;
     });
 

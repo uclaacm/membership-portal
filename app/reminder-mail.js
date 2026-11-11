@@ -54,10 +54,10 @@ async function sendMail({ to, subject, text, html }) {
   return result;
 }
 
-async function sendEventReminder({ to, event }) {
+async function sendEventReminder({ to, event, kind }) {
   return sendMail({
     to,
-    ...buildReminderEmail({ event }),
+    ...buildReminderEmail({ event, kind }),
   });
 }
 
@@ -74,7 +74,7 @@ async function sendReminderTest(to) {
     ...buildReminderEmail({
       event: {
         title: 'Sample ACM event',
-        startDate: new Date(Date.now() + 60 * 60 * 1000),
+        startDate: new Date(Date.now() + 24 * 60 * 60 * 1000),
         location: 'UCLA campus',
       },
       preview: true,

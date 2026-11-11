@@ -15,7 +15,14 @@ function formatEventTime(startDate) {
   });
 }
 
-function buildEventEmail({ event, kind }) {
+const REMINDER_COPY = {
+  one_week: { heading: 'See you in a week.', timing: 'starts in one week' },
+  three_days: { heading: 'See you in three days.', timing: 'starts in three days' },
+  one_day: { heading: 'See you tomorrow.', timing: 'starts tomorrow' },
+  day_of: { heading: 'See you today.', timing: 'starts today' },
+};
+
+function buildEventEmail({ event, kind, reminderKind = 'day_of' }) {
   const preview = kind === 'test';
   const confirmation = kind === 'confirmation';
   const title = String(event.title || 'ACM event').replace(/[\r\n]+/g, ' ').trim();
@@ -26,8 +33,9 @@ function buildEventEmail({ event, kind }) {
   const safeWhen = escapeHtml(when);
   const safeWhere = escapeHtml(where);
   const safeUrl = escapeHtml(url);
+  const reminderCopy = REMINDER_COPY[reminderKind] || REMINDER_COPY.day_of;
   const heading = preview ? 'Your reminder preview'
-    : (confirmation ? "You're on the list." : 'See you in an hour.');
+    : (confirmation ? "You're on the list." : reminderCopy.heading);
   const intro = preview
     ? 'This is a test email. Here is what members will see before an event.'
     : (confirmation
@@ -39,7 +47,7 @@ function buildEventEmail({ event, kind }) {
       ? 'You received this confirmation because you RSVPed to this event.'
       : 'You received this because you opted in to email reminders when you RSVPed.');
   const preheader = preview ? 'A preview of your ACM event reminders.'
-    : (confirmation ? `Your RSVP for ${safeTitle} is confirmed.` : `${safeTitle} starts in one hour.`);
+    : (confirmation ? `Your RSVP for ${safeTitle} is confirmed.` : `${safeTitle} ${reminderCopy.timing}.`);
   const label = preview ? 'TEST EMAIL' : (confirmation ? 'RSVP CONFIRMED' : 'EVENT REMINDER');
   const cardLabel = confirmation ? 'YOUR EVENT' : 'COMING UP';
 
@@ -89,7 +97,7 @@ function buildEventEmail({ event, kind }) {
     `ACM AT UCLA — ${label}`,
     '',
     preview ? 'This is a preview. No event RSVP was created.'
-      : (confirmation ? `Your RSVP for ${title} is confirmed.` : `${title} starts in one hour.`),
+      : (confirmation ? `Your RSVP for ${title} is confirmed.` : `${title} ${reminderCopy.timing}.`),
     '',
     title,
     `When: ${when}`,
@@ -102,14 +110,14 @@ function buildEventEmail({ event, kind }) {
 
   return {
     subject: preview ? 'Test: ACM event reminder'
-      : (confirmation ? `RSVP confirmed: ${title}` : `Reminder: ${title} starts in one hour`),
+      : (confirmation ? `RSVP confirmed: ${title}` : `Reminder: ${title} ${reminderCopy.timing}`),
     html,
     text,
   };
 }
 
-function buildReminderEmail({ event, preview = false }) {
-  return buildEventEmail({ event, kind: preview ? 'test' : 'reminder' });
+function buildReminderEmail({ event, kind = 'day_of', preview = false }) {
+  return buildEventEmail({ event, kind: preview ? 'test' : 'reminder', reminderKind: kind });
 }
 
 function buildRSVPConfirmationEmail({ event }) {

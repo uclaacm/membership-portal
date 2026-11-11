@@ -240,7 +240,7 @@ router
           .then(() => event.update(updates, { transaction }))
           .then(async (saved) => {
             if (new Date(before.startDate).getTime() !== new Date(saved.startDate).getTime()) {
-              await reconcileEventReminders(Sequelize, saved.uuid, saved.startDate, transaction);
+              await reconcileEventReminders(Sequelize, saved.uuid, transaction);
             }
             detail = describeEventChanges(before, saved.get({ plain: true }), Object.keys(updates));
             return saved;
