@@ -1,14 +1,17 @@
-# Need a custom image here so that we can incorporate an npm build too
+# Image for `make test` (docker-compose "test" profile): runs unit and integration tests.
 # Alpine is super light
 FROM node:18-alpine
-RUN apk add --no-cache alpine-sdk
+
+# Install Python 3 and build tools (needed to compile native modules such as bcrypt)
+RUN apk add --no-cache python3 make g++
 
 # Work in the membership-portal directory
 WORKDIR /var/www/membership-portal
-COPY membership-portal/package.json membership-portal/yarn.lock ./
 
-# Install Node packages
-RUN yarn install
+# Install dependencies at build time for deterministic installs (requires package-lock.json)
+COPY membership-portal/package*.json ./
+RUN npm ci
 
-# Start the development server
-CMD ["/bin/sh", "-c", "make setup && yarn test"]
+# `make setup` creates the session secret and runs migrations against the throwaway test Postgres;
+# `npm test` then runs unit tests and, if they pass, integration tests.
+CMD ["/bin/sh", "-c", "make setup && npm test"]

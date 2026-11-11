@@ -8,9 +8,9 @@
     "dev": "nodemon -L -e js -i node_modules -i .git -V index.js",
     "migrate": "make migrate",
     "rollback": "make rollback",
-    "test": "export TESTING=true && jest --config jest.config.json",
-    "test:unit": "export TESTING=true && jest --config jest.config.json tests/unit",
-    "test:integration": "export TESTING=true && jest --config jest.config.json --runInBand --passWithNoTests tests/integration --setupFilesAfterEnv ./tests/integration/setup.js",
+    "test": "npm run test:unit && npm run test:integration",
+    "test:unit": "jest --config jest.config.json tests/unit",
+    "test:integration": "jest --config jest.config.json --runInBand tests/integration --setupFilesAfterEnv ./tests/integration/setup.js",
     "lint": "eslint ."
   },
   "repository": {
@@ -53,7 +53,6 @@
     "uuid": "https://registry.npmjs.org/uuid/-/uuid-3.1.0.tgz",
     "winston": "^2.3.1"
   },
-  "false": {},
   "devDependencies": {
     "@babel/core": "^7.29.0",
     "@babel/preset-env": "^7.29.0",

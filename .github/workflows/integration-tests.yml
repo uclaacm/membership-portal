@@ -51,7 +51,6 @@ jobs:
     env:
       # Anything but 'production' counts as development, which enables POST /auth/dev-login.
       NODE_ENV: test
-      TESTING: true
       HOST: 127.0.0.1
       PORT: 8080
       PG_HOST: localhost

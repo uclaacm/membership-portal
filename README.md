@@ -46,11 +46,11 @@ If you do not pass `SEED_EMAIL` or `SEED_USER_UUID`, the script will fail instea
 
 ### Testing
 
-To run unit tests:
+To run unit and integration tests:
 ```Bash
 $ make test
 ```
-This command will create and run the database and run all the unit tests.
+This command builds a test container, starts throwaway Postgres and MongoDB containers just for the run, runs the migrations, and then runs the unit tests followed by the integration tests (the same checks CI runs on every PR). It needs only Docker. The test databases are separate from your dev database and are removed afterwards.
 
 ### Accessing the Server
 
