@@ -93,27 +93,35 @@ module.exports = async (User, Event) => {
     },
   ];
 
-  const committeeSeedPromises = committeeSeeds.map((seed) => {
+  const committeeSeedPromises = committeeSeeds.map(async (seed) => {
     const nameVariants = [seed.name, seed.name.toLowerCase(), ...(seed.aliases || [])];
-    return Committee.updateOne(
+    const values = {
+      name: seed.name,
+      displayName: seed.displayName,
+      ...COMMITTEE_STYLES[seed.name],
+      description: seed.description,
+      internLimit: seed.internLimit,
+      applicationDeadline: seed.applicationDeadline,
+    };
+    const filter = { name: seed.name };
+    const canonical = await Committee.updateOne(filter, { $set: values });
+    if (canonical.matchedCount) return canonical;
+
+    // Upserts move immutable names to $setOnInsert, so rename legacy records separately.
+    const renamed = await Committee.updateOne(
       { name: { $in: nameVariants } },
-      {
-        $set: {
-          name: seed.name,
-          displayName: seed.displayName,
-          ...COMMITTEE_STYLES[seed.name],
-          description: seed.description,
-          internLimit: seed.internLimit,
-          applicationDeadline: seed.applicationDeadline,
-        },
-      },
-      // `name` is immutable on the model; this upsert deliberately renames alias-seeded records.
-      { upsert: true, overwriteImmutable: true },
+      { $set: values },
+      { overwriteImmutable: true },
     );
+    if (renamed.matchedCount) return renamed;
+
+    return Committee.updateOne(filter, { $set: values }, { upsert: true });
   });
 
-  Promise.all([
-    ...committeeSeedPromises,
+  // User validation reads MongoDB, so committees must exist before assigning officers.
+  await Promise.all(committeeSeedPromises);
+
+  await Promise.all([
     User.upsert({
       email: 'acm@g.ucla.edu',
       accessType: 'SUPERADMIN',

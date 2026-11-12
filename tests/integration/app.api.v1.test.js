@@ -1,19 +1,23 @@
 import request from 'supertest';
-import { server, setup } from '..';
+import { server } from '../..';
 
 const jwt = require('jsonwebtoken');
-const { User, Activity } = require('../app/db');
-const config = require('../app/config');
+const { User, Activity, db: Sequelize } = require('../../app/db');
+const config = require('../../app/config');
 
 const API_ROUTE = '/app/api/v1/';
 const route = (name) => API_ROUTE + name;
 
 beforeAll(async () => {
-  await setup;
+  // Initialize tables without running the unrelated development-data seed.
+  await Sequelize.sync();
 });
 
-afterAll(() => {
-  server.close();
+afterAll(async () => {
+  await new Promise((resolve) => {
+    server.close(resolve);
+  });
+  await Sequelize.close();
 });
 
 describe('Health Tests', () => {
@@ -23,6 +27,85 @@ describe('Health Tests', () => {
     expect(response.body).toHaveProperty('cpu');
     expect(response.body).toHaveProperty('memory');
     expect(response.body).toHaveProperty('uptime');
+  });
+
+  // /health/setup drops every table. Only check the refusals here: a successful call
+  // would wipe the shared test database out from under the other suites.
+  describe('Database reset route', () => {
+    let member;
+
+    beforeAll(async () => {
+      member = await User.create({
+        email: `setup-guard-${Date.now()}@testemail.com`,
+        firstName: 'Setup',
+        lastName: 'Guard',
+        accessType: 'STANDARD',
+        state: 'ACTIVE',
+        year: 2,
+        major: 'Undeclared',
+      });
+    });
+
+    afterAll(async () => {
+      if (member) await member.destroy();
+    });
+
+    test('is not reachable with GET', async () => {
+      const response = await request(server).get(route('health/setup'));
+      expect(response.statusCode).toBe(404);
+    });
+
+    test('rejects unauthenticated requests', async () => {
+      const response = await request(server).post(route('health/setup'));
+      expect(response.statusCode).toBe(401);
+    });
+
+    test('rejects users who are not super admins', async () => {
+      const token = jwt.sign({ uuid: member.uuid }, config.session.secret, { expiresIn: 3600 });
+      const response = await request(server)
+        .post(route('health/setup'))
+        .auth(token, { type: 'bearer' });
+      expect(response.statusCode).toBe(403);
+    });
+  });
+});
+
+describe('Token algorithm', () => {
+  let member;
+
+  beforeAll(async () => {
+    member = await User.create({
+      email: `token-alg-${Date.now()}@testemail.com`,
+      firstName: 'Token',
+      lastName: 'Alg',
+      accessType: 'STANDARD',
+      state: 'ACTIVE',
+      year: 2,
+      major: 'Undeclared',
+    });
+  });
+
+  afterAll(async () => {
+    if (member) await member.destroy();
+  });
+
+  test('accepts tokens signed with HS256', async () => {
+    const token = jwt.sign({ uuid: member.uuid }, config.session.secret, { algorithm: 'HS256' });
+    const response = await request(server).get(route('user')).auth(token, { type: 'bearer' });
+    expect(response.statusCode).toBe(200);
+  });
+
+  test('rejects tokens signed with any other algorithm', async () => {
+    const token = jwt.sign({ uuid: member.uuid }, config.session.secret, { algorithm: 'HS512' });
+    const response = await request(server).get(route('user')).auth(token, { type: 'bearer' });
+    expect(response.statusCode).toBe(401);
+  });
+
+  test('rejects unsigned tokens', async () => {
+    const encode = (obj) => Buffer.from(JSON.stringify(obj)).toString('base64url');
+    const token = `${encode({ alg: 'none', typ: 'JWT' })}.${encode({ uuid: member.uuid })}.`;
+    const response = await request(server).get(route('user')).auth(token, { type: 'bearer' });
+    expect(response.statusCode).toBe(401);
   });
 });
 
@@ -56,16 +139,13 @@ describe('User Tests', () => {
       config.session.secret,
       { expiresIn: 3600 },
       (err, jwtToken) => {
-        if (err) rej(err);
-        Activity.accountLoggedIn(user.uuid);
-        res(jwtToken);
+        if (err) return rej(err);
+        return res(jwtToken);
       },
     );
   });
 
   let testUser;
-  // let testAdmin; // TODO: implement test admin user
-  // let testPendingUser; // TODO: implement test pending user
   let testToken;
 
   // Generate unique user before each test
@@ -80,12 +160,16 @@ describe('User Tests', () => {
       year: 5,
       major: 'Undeclared',
     });
-    Activity.accountCreated(testUser.uuid);
+    await Activity.accountCreated(testUser.uuid);
     testToken = await getJWTToken(testUser);
   });
 
   afterEach(async () => {
-    await testUser.destroy();
+    if (testUser) {
+      await Activity.destroy({ where: { user: testUser.uuid } });
+      await testUser.destroy();
+    }
+    testUser = undefined;
     testToken = undefined;
   });
 
@@ -114,10 +198,6 @@ describe('User Tests', () => {
       const patchResponse = await request(server).patch(route('user')).auth();
       expect(patchResponse.error).toBeTruthy();
       expect(patchResponse.statusCode).toBe(401);
-    });
-
-    test('Unauthorized pending User', async () => {
-      // TODO: implement tests
     });
   });
 

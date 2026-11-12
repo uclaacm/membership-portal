@@ -59,16 +59,18 @@ const EVENT_AUDIT_FIELDS = [
   'capacity', 'description', 'eventLink', 'cover', 'thumb', 'attendanceCode',
 ];
 
-const describeEventChanges = (before, after, fields = EVENT_AUDIT_FIELDS, snapshot = null) => describeChanges(
-  before,
-  after,
-  EVENT_AUDIT_FIELDS.filter((field) => fields.includes(field)),
-  {
-    numbers: ['attendancePoints', 'capacity'],
-    dates: ['startDate', 'endDate'],
-    redacted: ['attendanceCode'],
-    snapshot,
-  },
+const describeEventChanges = (before, after, fields = EVENT_AUDIT_FIELDS, snapshot = null) => (
+  describeChanges(
+    before,
+    after,
+    EVENT_AUDIT_FIELDS.filter((field) => fields.includes(field)),
+    {
+      numbers: ['attendancePoints', 'capacity'],
+      dates: ['startDate', 'endDate'],
+      redacted: ['attendanceCode'],
+      snapshot,
+    },
+  )
 );
 
 /**

@@ -1,27 +1,27 @@
-jest.mock('../app/logger', () => ({ error: jest.fn() }));
-jest.mock('../app/db', () => ({
+jest.mock('../../app/logger', () => ({ error: jest.fn() }));
+jest.mock('../../app/db', () => ({
   User: { findByUUID: jest.fn() },
   Secret: { findByName: jest.fn(), generateHash: jest.fn() },
   AuditLog: { create: jest.fn() },
 }));
-jest.mock('../app/api/v1/internship/models/Committee', () => ({
+jest.mock('../../app/api/v1/internship/models/Committee', () => ({
   Committee: { find: jest.fn(), updateMany: jest.fn() },
 }));
-jest.mock('../app/api/v1/internship/models/InternshipApplication', () => ({ InternshipApplication: {} }));
-jest.mock('../app/committees', () => ({
+jest.mock('../../app/api/v1/internship/models/InternshipApplication', () => ({ InternshipApplication: {} }));
+jest.mock('../../app/committees', () => ({
   GENERAL_COMMITTEE: 'ACM',
   findUnknownCommittees: jest.fn().mockResolvedValue([]),
 }));
-jest.mock('../app/api/v1/internship/controllers/applicationController', () => ({ CHOICE_FIELDS: [] }));
+jest.mock('../../app/api/v1/internship/controllers/applicationController', () => ({ CHOICE_FIELDS: [] }));
 
 const express = require('express');
-const { User, Secret, AuditLog } = require('../app/db');
-const { router: userRouter } = require('../app/api/v1/membership/user');
-const { router: settingsRouter } = require('../app/api/v1/membership/settings');
-const { Committee } = require('../app/api/v1/internship/models/Committee');
+const { User, Secret, AuditLog } = require('../../app/db');
+const { router: userRouter } = require('../../app/api/v1/membership/user');
+const { router: settingsRouter } = require('../../app/api/v1/membership/settings');
+const { Committee } = require('../../app/api/v1/internship/models/Committee');
 const {
   bulkUpdateCommitteeStatus,
-} = require('../app/api/v1/internship/controllers/committeeController');
+} = require('../../app/api/v1/internship/controllers/committeeController');
 
 // Let Express run the complete route stack, including next(), short-circuits, and
 // async errors. These tests use mocked JSON responses, so completion means either

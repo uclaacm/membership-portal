@@ -2,6 +2,13 @@ function getCommitteeLabel(committee) {
   return committee.displayName || committee.name || committee.id;
 }
 
+function findCommitteesPastDeadline(committees, referenceDate = new Date()) {
+  return committees.filter((committee) => (
+    committee.applicationDeadline
+    && new Date(committee.applicationDeadline) <= referenceDate
+  ));
+}
+
 // Derive recruitment status at read time so deadlines take effect without a
 // scheduled write, while preserving an administrator's manual closure.
 function withRecruitmentStatus(committee, referenceDate = new Date()) {
@@ -12,13 +19,6 @@ function withRecruitmentStatus(committee, referenceDate = new Date()) {
     result.isActive = false;
   }
   return result;
-}
-
-function findCommitteesPastDeadline(committees, referenceDate = new Date()) {
-  return committees.filter((committee) => (
-    committee.applicationDeadline
-    && new Date(committee.applicationDeadline) <= referenceDate
-  ));
 }
 
 function buildDeadlineViolationMessage(committees) {

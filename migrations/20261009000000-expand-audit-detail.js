@@ -6,5 +6,7 @@ module.exports = {
     });
   },
 
-  async down() {},
+  async down() {
+    // Must exist for rollback; left empty on purpose.
+  },
 };

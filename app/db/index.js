@@ -19,6 +19,8 @@ const db = new Sequelize(
   {
     dialect: 'postgres',
     host: config.database.host,
+    // PG_PORT arrives as a string (or not at all); fall back to the Postgres default.
+    port: Number(config.database.port) || 5432,
     logging: config.isDevelopment ? logger.debug : false, // false as a function
   },
 );
@@ -36,26 +38,34 @@ const AuditLog = require('./schema/audit')(Sequelize, db);
 /**
  * DB setup function to sync tables and add admin if doesn't exist
  */
-const setup = (force, dev) => {
-  db.authenticate()
-    .then(() => {
-      logger.info('Connection has been established successfully.');
-    })
-    .catch((err) => {
-      logger.error('Unable to connect to the database:', err);
-    });
-  return (
-    dev
-      ? db.sync({ force }).then(() => devSetup(User, Event))
-      : db.sync({ force })
-  ).then(() => {
-    Secret.generateHash('password').then((hash) => Secret.findOrCreate({
+const setup = async (force, dev) => {
+  // Every step is awaited so that `await setup()` means the database is actually ready.
+  // Callers (tests, scripts/db-init.js, index.js) rely on that to not race the seeding.
+  try {
+    await db.authenticate();
+    logger.info('Connection has been established successfully.');
+  } catch (err) {
+    logger.error('Unable to connect to the database:', err);
+    throw err;
+  }
+
+  await db.sync({ force });
+  if (dev) await devSetup(User, Event);
+
+  // Seeding the one-click secret and admin is non-fatal: scripts/db-init.js runs this before
+  // migrations at container start, and a seed failure must not block the migrations from running.
+  try {
+    const hash = await Secret.generateHash('password');
+    await Secret.findOrCreate({
       where: { name: 'one-click' },
       defaults: { hash },
-    })).catch((err) => {
-      logger.error('Error creating secret:', err);
     });
-    User.findOrCreate({
+  } catch (err) {
+    logger.error('Error creating secret:', err);
+  }
+
+  try {
+    await User.findOrCreate({
       where: { email: 'acm@g.ucla.edu' },
       defaults: {
         email: 'acm@g.ucla.edu',
@@ -67,8 +77,11 @@ const setup = (force, dev) => {
         major: 'Computer Science',
       },
     });
-    return null;
-  });
+  } catch (err) {
+    logger.error('Error creating admin user:', err);
+  }
+
+  return null;
 };
 
 /**

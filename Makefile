@@ -4,8 +4,14 @@ ECR_URL=527059199351.dkr.ecr.us-west-1.amazonaws.com
 default: build
 	docker compose --profile dev up
 
+# Unit + integration tests in Docker, against throwaway test databases (see docker-compose.yml).
+# `run` starts only test-backend and the test databases it depends on (not the dev Postgres) and
+# exits with the test result; the test databases are then removed whether the tests passed or not.
 test: build
-	docker compose --profile test up --abort-on-container-exit
+	docker compose --profile test run --rm test-backend; \
+	status=$$?; \
+	docker compose --profile test rm --stop --force -v test-postgres test-mongo; \
+	exit $$status
 
 ecr-login:
 	$(shell aws ecr get-login --no-include-email --region us-west-1)
