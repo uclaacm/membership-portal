@@ -9,6 +9,7 @@ const {
 } = require('../../app/db');
 const { Committee } = require('../../app/api/v1/internship/models/Committee');
 const { InternshipApplication } = require('../../app/api/v1/internship/models/InternshipApplication');
+const { ResumeFile } = require('../../app/api/v1/internship/models/ResumeFile');
 
 const API_ROUTE = '/app/api/v1';
 
@@ -79,6 +80,7 @@ const createFixtures = () => {
     await RSVP.destroy({ where: { $or: [{ user: userUUIDs }, { event: eventUUIDs }] } });
     await Activity.destroy({ where: { user: userUUIDs } });
     await AuditLog.destroy({ where: { actor: userUUIDs } });
+    await ResumeFile.deleteMany({ userId: { $in: userUUIDs } });
     await InternshipApplication.deleteMany({ userId: { $in: userUUIDs } });
     await Event.destroy({ where: { uuid: eventUUIDs } });
     await User.destroy({ where: { uuid: userUUIDs } });

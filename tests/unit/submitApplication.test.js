@@ -33,7 +33,7 @@ function buildApplication(overrides = {}) {
     _id: APPLICATION_ID,
     userId: OWNER_UUID,
     submissionStatus: 'draft',
-    resumeUrl: 'https://example.com/resume.pdf',
+    resume: { originalName: 'resume.pdf', size: 1234, uploadedAt: new Date('2026-10-01') },
     firstChoiceCommittee: FIRST_COMMITTEE_ID,
     secondChoiceCommittee: null,
     thirdChoiceCommittee: null,

@@ -5,6 +5,9 @@ const { db: Sequelize } = require('../../app/db');
 const { Committee } = require('../../app/api/v1/internship/models/Committee');
 const { API_ROUTE, createFixtures } = require('./helpers');
 
+// Smallest thing the upload accepts: the PDF header plus a little body.
+const PDF = Buffer.from('%PDF-1.4\n1 0 obj << /Type /Catalog >> endobj\n%%EOF\n');
+
 afterAll(async () => {
   await new Promise((resolve) => {
     server.close(resolve);
@@ -48,6 +51,11 @@ describe('internship applications', () => {
     submit: (id) => request(server).post(`${API_ROUTE}/internship/applications/${id}/submit`).auth(f.tokenFor(user), { type: 'bearer' }),
     remove: (id) => request(server).delete(`${API_ROUTE}/internship/applications/${id}`).auth(f.tokenFor(user), { type: 'bearer' }),
     mine: () => request(server).get(`${API_ROUTE}/internship/applications/me`).auth(f.tokenFor(user), { type: 'bearer' }),
+    uploadResume: (id, file = PDF, { filename = 'resume.pdf', contentType = 'application/pdf' } = {}) => request(server)
+      .put(`${API_ROUTE}/internship/applications/${id}/resume`)
+      .auth(f.tokenFor(user), { type: 'bearer' })
+      .attach('resume', file, { filename, contentType }),
+    getResume: (id) => request(server).get(`${API_ROUTE}/internship/applications/${id}/resume`).auth(f.tokenFor(user), { type: 'bearer' }),
   });
 
   const validDraft = () => ({
@@ -81,10 +89,13 @@ describe('internship applications', () => {
       expect(mine.body.submissionStatus).toBe('draft');
 
       const updated = await as.update(id, {
-        resumeUrl: 'https://example.com/resume.pdf',
         firstChoiceResponses: [{ questionKey: 'why', question: 'Why do you want to join?', answer: 'To build things.' }],
       });
       expect(updated.statusCode).toBe(200);
+
+      const uploaded = await as.uploadResume(id);
+      expect(uploaded.statusCode).toBe(200);
+      expect(uploaded.body.data.resume).toMatchObject({ originalName: 'resume.pdf', size: PDF.length });
 
       const submitted = await as.submit(id);
       expect(submitted.statusCode).toBe(200);
@@ -166,7 +177,7 @@ describe('internship applications', () => {
 
     test('a draft missing a required answer cannot be submitted', async () => {
       const { applicant, id } = await createDraft();
-      await api(applicant).update(id, { resumeUrl: 'https://example.com/resume.pdf' });
+      await api(applicant).uploadResume(id);
 
       const response = await api(applicant).submit(id);
 
@@ -176,8 +187,8 @@ describe('internship applications', () => {
 
     test('a draft cannot be submitted after the committee deadline passes', async () => {
       const { applicant, id } = await createDraft();
+      await api(applicant).uploadResume(id);
       await api(applicant).update(id, {
-        resumeUrl: 'https://example.com/resume.pdf',
         firstChoiceResponses: [{ questionKey: 'why', question: 'Why?', answer: 'Because.' }],
       });
       // Close the deadline after the draft exists.
@@ -198,13 +209,14 @@ describe('internship applications', () => {
 
     test('a submitted application cannot be edited, resubmitted or deleted by the applicant', async () => {
       const { applicant, id } = await createDraft();
+      await api(applicant).uploadResume(id);
       await api(applicant).update(id, {
-        resumeUrl: 'https://example.com/resume.pdf',
         firstChoiceResponses: [{ questionKey: 'why', question: 'Why?', answer: 'Because.' }],
       });
       expect((await api(applicant).submit(id)).statusCode).toBe(200);
 
       expect((await api(applicant).update(id, { major: 'Changed' })).statusCode).toBe(403);
+      expect((await api(applicant).uploadResume(id)).statusCode).toBe(403);
       expect((await api(applicant).submit(id)).statusCode).toBe(400);
       expect((await api(applicant).remove(id)).statusCode).toBe(403);
     });
@@ -231,6 +243,94 @@ describe('internship applications', () => {
         .get(`${API_ROUTE}/internship/applications`)
         .auth(f.tokenFor(member), { type: 'bearer' });
       expect(response.statusCode).toBe(403);
+    });
+  });
+
+  describe('resumes', () => {
+    test('the applicant gets back exactly the PDF they uploaded', async () => {
+      const { applicant, id } = await createDraft();
+      const uploaded = await api(applicant).uploadResume(id, PDF, { filename: "Ada's Résumé (final).pdf" });
+      expect(uploaded.statusCode).toBe(200);
+      expect(uploaded.body.data.resume.originalName).toBe("Ada's Résumé (final).pdf");
+
+      const response = await api(applicant).getResume(id).buffer(true);
+
+      expect(response.statusCode).toBe(200);
+      expect(response.headers['content-type']).toBe('application/pdf');
+      expect(response.headers['x-content-type-options']).toBe('nosniff');
+      expect(response.headers['content-disposition']).toBe(
+        'inline; filename="Ada_s R_sum_ _final_.pdf"; '
+        + "filename*=UTF-8''Ada%27s%20R%C3%A9sum%C3%A9%20%28final%29.pdf",
+      );
+      expect(Buffer.compare(response.body, PDF)).toBe(0);
+    });
+
+    test('uploading again replaces the previous resume', async () => {
+      const { applicant, id } = await createDraft();
+      await api(applicant).uploadResume(id);
+      const replacement = Buffer.concat([PDF, Buffer.from('% revised\n')]);
+      const second = await api(applicant).uploadResume(id, replacement, { filename: 'v2.pdf' });
+      expect(second.body.data.resume.originalName).toBe('v2.pdf');
+
+      const response = await api(applicant).getResume(id).buffer(true);
+      expect(Buffer.compare(response.body, replacement)).toBe(0);
+    });
+
+    test('files that are not PDFs are rejected', async () => {
+      const { applicant, id } = await createDraft();
+
+      const wrongType = await api(applicant).uploadResume(id, PDF, { filename: 'r.docx', contentType: 'application/msword' });
+      expect(wrongType.statusCode).toBe(400);
+      expect(wrongType.body.message).toMatch(/PDF/);
+
+      // Claims to be a PDF, but the bytes say otherwise.
+      const disguised = await api(applicant).uploadResume(id, Buffer.from('<html><script>alert(1)</script></html>'));
+      expect(disguised.statusCode).toBe(400);
+      expect(disguised.body.message).toMatch(/PDF/);
+    });
+
+    test('files over 5 MB are rejected with the limit in the message', async () => {
+      const { applicant, id } = await createDraft();
+      const tooBig = Buffer.concat([PDF, Buffer.alloc(5 * 1024 * 1024)]);
+      const response = await api(applicant).uploadResume(id, tooBig);
+      expect(response.statusCode).toBe(400);
+      expect(response.body.message).toMatch(/5 MB/);
+    });
+
+    test("nobody else can upload to someone's application", async () => {
+      const { id } = await createDraft();
+      const stranger = await f.createUser();
+      expect((await api(stranger).uploadResume(id)).statusCode).toBe(403);
+    });
+
+    test('only officers of a chosen committee (and admins) can view the resume', async () => {
+      const { applicant, id } = await createDraft();
+      await api(applicant).uploadResume(id);
+
+      const stranger = await f.createUser();
+      const ownOfficer = await f.createUser({ accessType: 'OFFICER', committees: [committee.name] });
+      const otherOfficer = await f.createUser({ accessType: 'OFFICER', committees: [otherCommittee.name] });
+      const admin = await f.createUser({ accessType: 'ADMIN' });
+
+      expect((await api(stranger).getResume(id)).statusCode).toBe(403);
+      expect((await api(otherOfficer).getResume(id)).statusCode).toBe(403);
+      expect((await api(ownOfficer).getResume(id)).statusCode).toBe(200);
+      expect((await api(admin).getResume(id)).statusCode).toBe(200);
+    });
+
+    test('viewing requires signing in', async () => {
+      const { applicant, id } = await createDraft();
+      await api(applicant).uploadResume(id);
+      const response = await request(server).get(`${API_ROUTE}/internship/applications/${id}/resume`);
+      expect(response.statusCode).toBe(401);
+    });
+
+    test('a resume link can no longer be set through the update route', async () => {
+      const { applicant, id } = await createDraft();
+      const response = await api(applicant).update(id, { resumeUrl: 'https://example.com/resume.pdf' });
+      expect(response.statusCode).toBe(200);
+      expect(response.body.data.resumeUrl).toBeUndefined();
+      expect((await api(applicant).submit(id)).body.missingFields).toEqual(['Resume']);
     });
   });
 

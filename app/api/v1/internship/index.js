@@ -30,6 +30,8 @@ const {
   bulkUpdateCommitteeStatus,
 } = require('./controllers/committeeController');
 const { getCycleInfo, advanceCycle } = require('./controllers/cycleController');
+const { uploadResume, getResume } = require('./controllers/resumeController');
+const { resumeUpload } = require('./middleware/resumeUpload');
 const {
   validateCreateApplication,
   validateUpdateApplication,
@@ -38,7 +40,12 @@ const {
   validateGetApplications,
   validateMongoId,
 } = require('./middleware/validation');
-const { strictCreateApplicationLimiter, getApplicationsLimiter, committeeRateLimiter } = require('./middleware/rateLimiter');
+const {
+  createApplicationLimiter,
+  strictCreateApplicationLimiter,
+  getApplicationsLimiter,
+  committeeRateLimiter,
+} = require('./middleware/rateLimiter');
 
 const router = express.Router();
 
@@ -60,6 +67,14 @@ router.post('/applications', auth, strictCreateApplicationLimiter, validateCreat
 
 // PUT (update) an application by ID
 router.put('/applications/:id', auth, validateUpdateApplication, updateApplication);
+
+// PUT upload or replace the applicant's resume PDF (multipart, field "resume").
+// Auth and ID checks run first so an anonymous or malformed request is turned away before
+// multer buffers the file.
+router.put('/applications/:id/resume', auth, createApplicationLimiter, validateMongoId, resumeUpload, uploadResume);
+
+// GET the resume PDF (the applicant, admins, and officers of a committee the applicant chose)
+router.get('/applications/:id/resume', auth, getApplicationsLimiter, validateMongoId, getResume);
 
 // PUT update review status for one committee choice (officers/admins only)
 router.put('/applications/:id/status', auth, adminOrOfficer, validateUpdateApplicationStatus, updateApplicationStatus);

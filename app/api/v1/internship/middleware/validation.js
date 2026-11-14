@@ -135,8 +135,6 @@ const validateCreateApplication = [
   body('graduationYear')
     .isInt({ min: MIN_GRADUATION_YEAR })
     .withMessage(`Graduation year must be ${MIN_GRADUATION_YEAR} or later`),
-  body('resumeUrl').optional().trim().isURL()
-    .withMessage('Resume URL must be a valid URL'),
   body('coverLetter').optional().trim(),
   body('firstChoiceCommittee')
     .notEmpty()
@@ -242,8 +240,6 @@ const validateUpdateApplication = [
     .withMessage('Third choice committee must be a valid MongoDB ID')
     .bail()
     .custom((value) => validateCommitteeById(value, 'third choice')),
-  body('resumeUrl').optional().trim().isURL()
-    .withMessage('Resume URL must be a valid URL'),
   body('coverLetter').optional().trim(),
   body('firstChoiceResponses').optional().isArray().withMessage('Responses must be an array'),
   body('firstChoiceResponses.*.questionKey').optional().trim().notEmpty()

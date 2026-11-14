@@ -71,7 +71,7 @@ const APPLICANT_EDITABLE_FIELDS = [
   'firstChoiceCommittee',
   'secondChoiceCommittee',
   'thirdChoiceCommittee',
-  'resumeUrl',
+  // resumeUrl is deliberately absent: resumes are uploaded through PUT /applications/:id/resume.
   'coverLetter',
   'firstChoiceResponses',
   'secondChoiceResponses',
@@ -940,7 +940,7 @@ async function submitApplication(req, res) {
       });
     }
 
-    if (!application.resumeUrl || !application.resumeUrl.trim()) {
+    if (!application.resume) {
       return res.status(400).json({
         success: false,
         message: buildMissingFieldsMessage(['Resume']),
@@ -1036,6 +1036,8 @@ async function submitApplication(req, res) {
 
 module.exports = {
   CHOICE_FIELDS,
+  UPDATE_APPLICATION_RESPONSE_EXCLUDED_FIELDS,
+  getOfficerCommitteeIds,
   officerCanManageCommittee,
   createApplication,
   getAllApplications,
