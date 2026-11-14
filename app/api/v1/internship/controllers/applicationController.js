@@ -106,9 +106,8 @@ function buildMissingFieldsMessage(missingFields) {
   return `Missing required fields: ${missingFields.join(', ')}`;
 }
 
-// Strip response arrays for any committee choice the officer doesn't manage,
-// so answers written for other committees never reach an officer's browser
-// (not just hidden in the UI — removed from the API response itself).
+// Remove other committees' choice details before returning data to an officer,
+// including when the list endpoint is used to build a spreadsheet export.
 function scrubResponsesForOfficer(application, ownedCommitteeIds) {
   const plain = typeof application.toObject === 'function' ? application.toObject() : { ...application };
   const ownedIds = new Set(ownedCommitteeIds.map((id) => id.toString()));
@@ -117,6 +116,8 @@ function scrubResponsesForOfficer(application, ownedCommitteeIds) {
     const committeeId = plain[choice.committeeField];
     const isOwned = committeeId && ownedIds.has(committeeId.toString());
     if (!isOwned) {
+      plain[choice.committeeField] = null;
+      plain[choice.statusField] = null;
       plain[choice.responsesField] = [];
       plain[choice.officer1RatingField] = null;
       plain[choice.officer2RatingField] = null;
