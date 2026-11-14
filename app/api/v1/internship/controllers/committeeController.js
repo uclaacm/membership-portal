@@ -1,4 +1,5 @@
 const { Committee } = require('../models/Committee');
+const { withRecruitmentStatus } = require('../utils/deadlineValidation');
 const { InternshipApplication } = require('../models/InternshipApplication');
 const { canManageCommitteeResource } = require('../../auth/committeeScope');
 const { CHOICE_FIELDS, officerCanManageCommittee } = require('./applicationController');
@@ -37,8 +38,12 @@ async function getApplicationCountsByCommittee() {
 
 async function getAllCommittees(req, res, next) {
   try {
+    // Only admins and officers may see committees that aren't recruiting. For everyone else the
+    // query flag is ignored.
+    const includeInactive = req.query.includeInactive === 'true'
+      && Boolean(req.user) && (req.user.isAdmin() || req.user.isOfficer());
     let filter = { isActive: true };
-    if (req.query.includeInactive === 'true' && req.user) {
+    if (includeInactive) {
       if (req.user.isAdmin()) {
         filter = {};
       } else if (req.user.isOfficer()) {
@@ -50,9 +55,13 @@ async function getAllCommittees(req, res, next) {
 
     const committees = await Committee.find(filter).select('-__v').sort({ displayName: 1 });
 
-    res.json({ error: null, committees });
-  } catch (error) {
-    next(error);
+    const now = new Date();
+    const visibleCommittees = committees
+      .map((committee) => withRecruitmentStatus(committee, now))
+      .filter((committee) => includeInactive || committee.isActive);
+    res.json({ error: null, committees: visibleCommittees });
+  } catch (err) {
+    next(err);
   }
 }
 
@@ -64,8 +73,8 @@ async function getCommitteeDirectory(req, res, next) {
       .select('name displayName color bannerUrl isActive')
       .sort({ displayName: 1 });
     res.json({ error: null, committees });
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 }
 
@@ -76,9 +85,9 @@ async function getCommitteeById(req, res, next) {
       return res.status(404).json({ error: 'Committee not found' });
     }
 
-    return res.json({ error: null, committee });
-  } catch (error) {
-    return next(error);
+    return res.json({ error: null, committee: withRecruitmentStatus(committee) });
+  } catch (err) {
+    return next(err);
   }
 }
 
@@ -90,36 +99,36 @@ async function createCommittees(req, res, next) {
     }
     const committee = new Committee(req.body);
     await committee.save();
-    res.status(201).json({ error: null, committee });
-  } catch (error) {
-    next(error);
+    res.status(201).json({ error: null, committee: withRecruitmentStatus(committee) });
+  } catch (err) {
+    next(err);
   }
 }
 
 async function updateCommitteeQuestions(req, res, next) {
   try {
     const committee = await Committee.findById(req.params.id);
-    if(!committee) {
-      return res.status(404).json({error: "Committee not found"});
+    if (!committee) {
+      return res.status(404).json({ error: 'Committee not found' });
     }
-    if(!canManageCommitteeResource(req.user, committee.name)) {
+    if (!canManageCommitteeResource(req.user, committee.name)) {
       throw new error.Forbidden('You are not assigned to this committee.');
     }
 
-    const { customQuestions } = req.body
-    if(!Array.isArray(customQuestions)) {
+    const { customQuestions } = req.body;
+    if (!Array.isArray(customQuestions)) {
       throw new error.BadRequest('customQuestions must be an array.');
     }
 
     const updatedCommittee = await Committee.findByIdAndUpdate(
       req.params.id,
-      { $set: {customQuestions } },
+      { $set: { customQuestions } },
       { new: true, runValidators: true },
     );
 
-    return res.json({ error: null, committee: updatedCommittee });
-  } catch (e) {
-    return next(e);
+    return res.json({ error: null, committee: withRecruitmentStatus(updatedCommittee) });
+  } catch (err) {
+    return next(err);
   }
 }
 
@@ -154,9 +163,9 @@ async function updateDecisionsReleased(req, res, next) {
       });
     }
 
-    return res.json({ error: null, committee: updatedCommittee });
-  } catch (e) {
-    return next(e);
+    return res.json({ error: null, committee: withRecruitmentStatus(updatedCommittee) });
+  } catch (err) {
+    return next(err);
   }
 }
 
@@ -179,16 +188,19 @@ async function updateCommitteeAdmin(req, res, next) {
       updates,
       { new: true, runValidators: true },
     );
-    return res.json({ error: null, committee: updatedCommittee });
-  } catch (error) {
-    return next(error);
+    if (!updatedCommittee) {
+      return res.status(404).json({ error: 'Committee not found' });
+    }
+    return res.json({ error: null, committee: withRecruitmentStatus(updatedCommittee) });
+  } catch (err) {
+    return next(err);
   }
 }
 
 // Hard-deletes a committee and cascades to every application that chose it.
 // An application can list this committee as just one of up to 3 choices, so
 // deleting the committee shouldn't necessarily destroy the whole application
-// — only if this was the applicant's only choice. 
+// — only if this was the applicant's only choice.
 async function cascadeDeleteCommitteeFromApplications(committeeId) {
   const affectedApplications = await InternshipApplication.find({
     $or: CHOICE_FIELDS.map(({ committeeField }) => ({ [committeeField]: committeeId })),
@@ -207,7 +219,8 @@ async function cascadeDeleteCommitteeFromApplications(committeeId) {
         officer2Rating: application[choice.officer2RatingField],
         notes: application[choice.notesField],
       }))
-      .filter((choice) => choice.committeeId && choice.committeeId.toString() !== committeeId.toString());
+      .filter((choice) => choice.committeeId
+        && choice.committeeId.toString() !== committeeId.toString());
 
     if (remainingChoices.length === 0) {
       await application.deleteOne();
@@ -226,7 +239,11 @@ async function cascadeDeleteCommitteeFromApplications(committeeId) {
       update[choice.notesField] = remaining ? remaining.notes : '';
     });
 
-    await InternshipApplication.findByIdAndUpdate(application._id, { $set: update }, { runValidators: true });
+    await InternshipApplication.findByIdAndUpdate(
+      application._id,
+      { $set: update },
+      { runValidators: true },
+    );
     updatedApplications += 1;
   }));
 
@@ -262,8 +279,9 @@ async function deleteCommittee(req, res, next) {
       return res.status(404).json({ error: 'Committee not found' });
     }
 
-    const { deletedApplications, updatedApplications } =
-      await cascadeDeleteCommitteeFromApplications(committee._id);
+    const { deletedApplications, updatedApplications } = (
+      await cascadeDeleteCommitteeFromApplications(committee._id)
+    );
     const { updatedUsers, demotedOfficers } = await cascadeDeleteCommitteeFromUsers(committee.name);
 
     await Committee.findByIdAndDelete(committee._id);
@@ -282,8 +300,8 @@ async function deleteCommittee(req, res, next) {
       updatedUsers,
       demotedOfficers,
     });
-  } catch (error) {
-    return next(error);
+  } catch (err) {
+    return next(err);
   }
 }
 
@@ -310,8 +328,7 @@ async function bulkUpdateCommitteeStatus(req, res, next) {
     const affected = await Committee.find(filter).select('displayName');
 
     const result = await Committee.updateMany(filter, { $set: { isActive } });
-    // result.modifiedCount and result.nModified options are to support Mongoose 6+ and older versions of Mongoose
-    const modified = (result && (result.modifiedCount !== undefined ? result.modifiedCount : result.nModified)) || 0;
+    const modified = result.modifiedCount;
 
     if (modified > 0) {
       recordAudit(AuditLog, req, {
@@ -322,8 +339,8 @@ async function bulkUpdateCommitteeStatus(req, res, next) {
     }
 
     return res.json({ success: true, modified });
-  } catch (e) {
-    return next(e);
+  } catch (err) {
+    return next(err);
   }
 }
 
@@ -334,14 +351,15 @@ async function getAllCommitteesAdmin(req, res, next) {
       getApplicationCountsByCommittee(),
     ]);
 
+    const now = new Date();
     const committeesWithCounts = committees.map((committee) => ({
-      ...committee.toObject(),
+      ...withRecruitmentStatus(committee, now),
       applicationCount: countByCommitteeId.get(committee._id.toString()) || 0,
     }));
 
     return res.json({ error: null, committees: committeesWithCounts });
-  } catch (error) {
-    return next(error);
+  } catch (err) {
+    return next(err);
   }
 }
 

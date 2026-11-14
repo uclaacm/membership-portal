@@ -1,4 +1,4 @@
-jest.mock('../app/api/v1/internship/models/InternshipApplication', () => {
+jest.mock('../../app/api/v1/internship/models/InternshipApplication', () => {
   const mockSave = jest.fn().mockImplementation(function save() {
     return Promise.resolve(this);
   });
@@ -14,7 +14,7 @@ jest.mock('../app/api/v1/internship/models/InternshipApplication', () => {
   };
 });
 
-jest.mock('../app/api/v1/internship/models/Committee', () => ({
+jest.mock('../../app/api/v1/internship/models/Committee', () => ({
   Committee: {
     find: jest.fn(),
   },
@@ -23,9 +23,9 @@ jest.mock('../app/api/v1/internship/models/Committee', () => ({
 const {
   InternshipApplication,
   __mockSave: mockSave,
-} = require('../app/api/v1/internship/models/InternshipApplication');
-const { Committee } = require('../app/api/v1/internship/models/Committee');
-const { createApplication } = require('../app/api/v1/internship/controllers/applicationController');
+} = require('../../app/api/v1/internship/models/InternshipApplication');
+const { Committee } = require('../../app/api/v1/internship/models/Committee');
+const { createApplication } = require('../../app/api/v1/internship/controllers/applicationController');
 
 function mockResponse() {
   const res = {};

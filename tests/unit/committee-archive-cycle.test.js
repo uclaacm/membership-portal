@@ -4,7 +4,7 @@ jest.mock('google-auth-library', () => ({
   })),
 }), { virtual: true });
 
-jest.mock('../app/logger', () => ({
+jest.mock('../../app/logger', () => ({
   info: jest.fn(),
   warn: jest.fn(),
   error: jest.fn(),
@@ -12,7 +12,7 @@ jest.mock('../app/logger', () => ({
   log: jest.fn(),
 }));
 
-jest.mock('../app/api/v1/internship/models/Committee', () => ({
+jest.mock('../../app/api/v1/internship/models/Committee', () => ({
   Committee: {
     findById: jest.fn(),
     find: jest.fn(),
@@ -20,7 +20,7 @@ jest.mock('../app/api/v1/internship/models/Committee', () => ({
   },
 }));
 
-jest.mock('../app/api/v1/internship/models/InternshipApplication', () => ({
+jest.mock('../../app/api/v1/internship/models/InternshipApplication', () => ({
   InternshipApplication: {
     updateMany: jest.fn(),
     distinct: jest.fn(),
@@ -31,18 +31,18 @@ jest.mock('../app/api/v1/internship/models/InternshipApplication', () => ({
   getCurrentApplicationCycle: jest.fn(),
 }));
 
-jest.mock('../app/api/v1/internship/models/InternshipSettings', () => ({
+jest.mock('../../app/api/v1/internship/models/InternshipSettings', () => ({
   computeDefaultCycleLabel: jest.fn(() => '2099-2100'),
   getCurrentCycle: jest.fn(),
   setCurrentCycle: jest.fn(),
 }));
 
-const { Committee } = require('../app/api/v1/internship/models/Committee');
-const { InternshipApplication } = require('../app/api/v1/internship/models/InternshipApplication');
-const { getCurrentCycle, setCurrentCycle } = require('../app/api/v1/internship/models/InternshipSettings');
-const { getCycleInfo, advanceCycle } = require('../app/api/v1/internship/controllers/cycleController');
-const { getAllApplications, getApplicationStatusCounts } = require('../app/api/v1/internship/controllers/applicationController');
-const error = require('../app/error');
+const { Committee } = require('../../app/api/v1/internship/models/Committee');
+const { InternshipApplication } = require('../../app/api/v1/internship/models/InternshipApplication');
+const { getCurrentCycle, setCurrentCycle } = require('../../app/api/v1/internship/models/InternshipSettings');
+const { getCycleInfo, advanceCycle } = require('../../app/api/v1/internship/controllers/cycleController');
+const { getAllApplications, getApplicationStatusCounts } = require('../../app/api/v1/internship/controllers/applicationController');
+const error = require('../../app/error');
 
 const mockRes = () => {
   const res = {};
@@ -131,6 +131,31 @@ describe('advanceCycle', () => {
     await advanceCycle(req, res, jest.fn());
 
     expect(setCurrentCycle).toHaveBeenCalledWith('2027-2028');
+  });
+
+  test('reports the legacy nModified count when modifiedCount is unavailable', async () => {
+    getCurrentCycle.mockResolvedValue('2026-2027');
+    InternshipApplication.updateMany.mockResolvedValue({ nModified: 3 });
+    const res = mockRes();
+
+    await advanceCycle({ user: adminUser, body: {} }, res, jest.fn());
+
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ archivedCount: 3 }));
+  });
+
+  test('does not advance the cycle if archiving fails', async () => {
+    const failure = new Error('archive failed');
+    getCurrentCycle.mockResolvedValue('2026-2027');
+    InternshipApplication.updateMany.mockRejectedValue(failure);
+    const res = mockRes();
+    const next = jest.fn();
+
+    await advanceCycle({ user: adminUser, body: {} }, res, next);
+
+    expect(next).toHaveBeenCalledWith(failure);
+    expect(Committee.updateMany).not.toHaveBeenCalled();
+    expect(setCurrentCycle).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
   });
 
   test('rejects when newCycle equals the current cycle', async () => {

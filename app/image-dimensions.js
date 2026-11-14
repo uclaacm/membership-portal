@@ -1,3 +1,5 @@
+/* eslint-disable no-bitwise */
+
 /**
  * Reads pixel dimensions out of an image buffer by parsing its header.
  *

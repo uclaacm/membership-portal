@@ -1,6 +1,6 @@
-jest.mock('../app/logger', () => ({ error: jest.fn() }));
+jest.mock('../../app/logger', () => ({ error: jest.fn() }));
 
-const { describeChanges, describeEventChanges, recordAudit } = require('../app/audit');
+const { describeChanges, describeEventChanges, recordAudit } = require('../../app/audit');
 
 it('omits equivalent numeric and date values but preserves meaningful clears', () => {
   expect(describeEventChanges({

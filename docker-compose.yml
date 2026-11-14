@@ -39,6 +39,33 @@ services:
       - GOOGLE_CLIENT_ID=913307270840-751ad0psdu1q2a7m81np30g062osgpp5.apps.googleusercontent.com
       - NODE_ENV=development
 
+  # `make test` runs unit and integration tests. Integration tests need Postgres and MongoDB, so
+  # the test profile gets its own throwaway databases (no volumes, wiped when the run ends),
+  # mirroring CI. They are separate from the dev `postgres` service on purpose: some tests expect
+  # empty tables, and tests must never write into your dev data.
+  test-postgres:
+    profiles:
+      - test
+    image: postgres:9.6-alpine
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: membership_portal_test
+    healthcheck:
+      test: ["CMD", "pg_isready", "-h", "localhost", "-U", "postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  test-mongo:
+    profiles:
+      - test
+    image: mongo:7
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.runCommand({ ping: 1 })"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   test-backend:
     profiles:
       - test
@@ -48,22 +75,28 @@ services:
     volumes:
       - ../:/var/www
       - /var/www/membership-portal/node_modules
-    ports:
-      - "8080:8080"
-    links:
-      - postgres
+    # No published port: tests reach the server inside the container, and mapping 8080 on the
+    # host would make `make test` fail whenever the dev backend (or anything else) is using it.
+    # Wait until both databases accept connections; migrations run first thing.
+    depends_on:
+      test-postgres:
+        condition: service_healthy
+      test-mongo:
+        condition: service_healthy
     environment:
       - PORT=8080
       - HOST=0.0.0.0
-      - PG_HOST=postgres
+      - PG_HOST=test-postgres
       - PG_USER=postgres
       - PG_PASSWORD=password
       - PG_PORT=5432
-      - PG_DATABASE=postgres
+      - PG_DATABASE=membership_portal_test
+      # Set explicitly so a MONGODB_URI in your .env (loaded by dotenv) can never point tests at a real database.
+      - MONGODB_URI=mongodb://test-mongo:27017/membership_portal_test
       - GOOGLE_API_KEY=
       - GOOGLE_AUTH_DOMAIN=
       - GOOGLE_CLIENT_ID=913307270840-751ad0psdu1q2a7m81np30g062osgpp5.apps.googleusercontent.com
-      - NODE_ENV=development
+      - NODE_ENV=test
     
 volumes:
   postgres_data:

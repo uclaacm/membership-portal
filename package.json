@@ -8,8 +8,10 @@
     "dev": "nodemon -L -e js -i node_modules -i .git -V index.js",
     "migrate": "make migrate",
     "rollback": "make rollback",
-    "test": "export TESTING=true && jest --config jest.config.json",
-    "lint": "prettier --write './**/*.js*'"
+    "test": "npm run test:unit && npm run test:integration",
+    "test:unit": "jest --config jest.config.json tests/unit",
+    "test:integration": "jest --config jest.config.json --runInBand tests/integration --setupFilesAfterEnv ./tests/integration/setup.js",
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
@@ -40,12 +42,10 @@
     "google-auth-library": "^7.9.2",
     "googleapis": "^169.0.0",
     "handlebars": "^4.0.10",
-    "jsonwebtoken": "^7.3.0",
+    "jsonwebtoken": "^9.0.3",
     "mongoose": "^8.19.3",
     "morgan": "^1.7.0",
     "multer": "^2.0.2",
-    "node-gyp": "^4.0.0",
-    "node-pre-gyp": "^0.13.0",
     "pg": "^8.0.3",
     "sequelize": "^4.44.0",
     "underscore": "^1.8.3",
@@ -53,7 +53,6 @@
     "uuid": "https://registry.npmjs.org/uuid/-/uuid-3.1.0.tgz",
     "winston": "^2.3.1"
   },
-  "false": {},
   "devDependencies": {
     "@babel/core": "^7.29.0",
     "@babel/preset-env": "^7.29.0",

@@ -63,6 +63,12 @@ class NotFound extends HTTPError {
   }
 }
 
+class Conflict extends HTTPError {
+  constructor(message) {
+    super(409, message || 'Conflict');
+  }
+}
+
 // class Unprocessable extends HTTPError {
 //   constructor(message) {
 //     super(422, message || 'Unprocessable request');
@@ -154,6 +160,7 @@ module.exports = {
   Unauthorized,
   Forbidden,
   NotFound,
+  Conflict,
   TooManyRequests,
   InternalServerError,
   NotImplemented,

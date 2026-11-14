@@ -1,4 +1,4 @@
-jest.mock('../app/api/v1/internship/models/InternshipApplication', () => ({
+jest.mock('../../app/api/v1/internship/models/InternshipApplication', () => ({
   InternshipApplication: {
     findById: jest.fn(),
     findByIdAndUpdate: jest.fn(),
@@ -7,7 +7,7 @@ jest.mock('../app/api/v1/internship/models/InternshipApplication', () => ({
   getCurrentApplicationCycle: jest.fn(() => '2026-2027'),
 }));
 
-jest.mock('../app/api/v1/internship/models/Committee', () => ({
+jest.mock('../../app/api/v1/internship/models/Committee', () => ({
   Committee: {
     findById: jest.fn(),
     find: jest.fn(),
@@ -16,12 +16,12 @@ jest.mock('../app/api/v1/internship/models/Committee', () => ({
 
 const {
   InternshipApplication,
-} = require('../app/api/v1/internship/models/InternshipApplication');
-const { Committee } = require('../app/api/v1/internship/models/Committee');
+} = require('../../app/api/v1/internship/models/InternshipApplication');
+const { Committee } = require('../../app/api/v1/internship/models/Committee');
 const {
   updateApplicationStatus,
   getOwnApplication,
-} = require('../app/api/v1/internship/controllers/applicationController');
+} = require('../../app/api/v1/internship/controllers/applicationController');
 
 function mockResponse() {
   const res = {};
@@ -83,7 +83,13 @@ describe('updateApplicationStatus', () => {
   });
 
   test('updates only the requested status field for an officer assigned to the selected committee', async () => {
-    const updatedApplication = mockApplication({ firstChoiceStatus: 'accepted' });
+    const updatedApplication = mockApplication({
+      firstChoiceStatus: 'accepted',
+      firstChoiceResponses: [{ answer: 'Hack answer' }],
+      secondChoiceResponses: [{ answer: 'Private answer' }],
+      secondChoiceOfficer1Rating: 4,
+      secondChoiceNotes: 'Private notes',
+    });
     InternshipApplication.findById.mockResolvedValue(mockApplication());
     InternshipApplication.findByIdAndUpdate.mockResolvedValue(updatedApplication);
     mockCommitteeFindById(mockCommittee());
@@ -121,6 +127,7 @@ describe('updateApplicationStatus', () => {
         thirdChoiceStatus: null,
       }),
     }));
+    expect(updatedApplication.secondChoiceResponses).toEqual([{ answer: 'Private answer' }]);
   });
 
   test('prevents officers from updating a status for a committee they do not manage', async () => {

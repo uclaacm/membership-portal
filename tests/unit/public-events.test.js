@@ -1,4 +1,4 @@
-jest.mock('../app/logger', () => ({
+jest.mock('../../app/logger', () => ({
   info: jest.fn(),
   warn: jest.fn(),
   error: jest.fn(),
@@ -6,16 +6,16 @@ jest.mock('../app/logger', () => ({
   log: jest.fn(),
 }));
 
-jest.mock('../app/db', () => ({
+jest.mock('../../app/db', () => ({
   Event: {
     getPublicEvents: jest.fn(),
     findPublicByUUID: jest.fn(),
   },
 }));
 
-const { Event } = require('../app/db');
-const { router } = require('../app/api/v1/public/events');
-const error = require('../app/error');
+const { Event } = require('../../app/db');
+const { router } = require('../../app/api/v1/public/events');
+const error = require('../../app/error');
 
 // Every field the event table carries, so a test can assert on what is *absent* from a
 // response rather than only on what is present. attendanceCode is the one that matters: it is

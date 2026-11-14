@@ -35,7 +35,7 @@ router.route('/event/:uuid').get((req, res, next) => {
 
   return Event.findByUUID(req.params.uuid)
     .then((event) => {
-      if (!event) throw new error.UserError('Event not found');
+      if (!event) throw new error.NotFound('Event not found');
 
       if (!req.user.isAdmin() && !canManageCommitteeResource(req.user, event.committee)) {
         throw new error.Forbidden('You do not have permission to view RSVPs for this event.');
@@ -79,16 +79,16 @@ router.route('/add').post((req, res, next) => {
   return Event.findByUUID(req.body.event.uuid)
     .then((event) => {
       if (!event) {
-        throw new error.UserError('Event not found');
+        throw new error.NotFound('Event not found');
       }
 
       const now = new Date();
-      if (now > event.startDate) throw new error.UserError('Cannot RSVP to an event that has already started');
+      if (now > event.startDate) throw new error.Conflict('Cannot RSVP to an event that has already started');
 
       // Check if the user has already RSVPed to this event
       return RSVP.userRSVPedEvent(req.user.uuid, event.uuid)
         .then((rsvped) => {
-          if (rsvped) throw new error.UserError('You have already RSVPed to this event');
+          if (rsvped) throw new error.Conflict('You have already RSVPed to this event');
 
           // Record the RSVP
           return RSVP.rsvpToEvent(req.user.uuid, event.uuid)
@@ -119,16 +119,16 @@ router.route('/:uuid').delete((req, res, next) => {
   return Event.findByUUID(req.params.uuid)
     .then((event) => {
       if (!event) {
-        throw new error.UserError('Event not found');
+        throw new error.NotFound('Event not found');
       }
 
       const now = new Date();
-      if (now > event.startDate) throw new error.UserError('Cannot cancel RSVP to an event that has already started');
+      if (now > event.startDate) throw new error.Conflict('Cannot cancel RSVP to an event that has already started');
 
       // Check if the user has RSVPed to this event
       return RSVP.userRSVPedEvent(req.user.uuid, event.uuid)
         .then((rsvped) => {
-          if (!rsvped) throw new error.UserError('You have not RSVPed to this event');
+          if (!rsvped) throw new error.NotFound('You have not RSVPed to this event');
 
           // Cancel the RSVP
           return RSVP.cancelRSVP(req.user.uuid, event.uuid)

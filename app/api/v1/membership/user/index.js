@@ -403,7 +403,13 @@ router.patch('/bulk', async (req, res, next) => {
       else nextCommittees = [...new Set([...current, ...committees])];
     }
 
-    const nextRole = role ?? (target.isAdmin() ? 'Admin' : (target.isOfficer() ? 'Officer' : 'Member'));
+    // No role in the request means the user keeps their current one.
+    let nextRole = role;
+    if (role === undefined) {
+      if (target.isAdmin()) nextRole = 'Admin';
+      else if (target.isOfficer()) nextRole = 'Officer';
+      else nextRole = 'Member';
+    }
 
     if (nextRole === 'Member') {
       // `committees` is officer/admin scope; a standard member has none. Only object when the
@@ -477,12 +483,11 @@ router.patch('/bulk', async (req, res, next) => {
       // an email address but is a single-character wildcard to LIKE, which could match the
       // wrong account.
       // eslint-disable-next-line no-await-in-loop
-      await applyTo(
-        await User.findOne({
-          where: Sequelize.where(Sequelize.fn('lower', Sequelize.col('email')), email),
-        }),
-        emails[i],
-      );
+      const target = await User.findOne({
+        where: Sequelize.where(Sequelize.fn('lower', Sequelize.col('email')), email),
+      });
+      // eslint-disable-next-line no-await-in-loop
+      await applyTo(target, emails[i]);
     }
 
     return res.json({ error: null, updated, failed });
