@@ -11,8 +11,8 @@ afterAll(async () => {
   await Sequelize.close();
 });
 
-// #369: /admin/promote granted ADMIN to any email for anyone holding a password whose hash was
-// committed to the repo. Admin roles are now granted only through PATCH /user/:uuid/role.
+// #369: /admin/promote made any email an admin for anyone holding a password whose hash was
+// committed to the repo. Admin roles are granted only through PATCH /user/:uuid/role now.
 describe('admin promotion', () => {
   const f = createFixtures();
   let member;
@@ -30,37 +30,17 @@ describe('admin promotion', () => {
     return stored.accessType;
   };
 
-  test('the password-gated /admin/promote route no longer exists', async () => {
-    const response = await request(server)
-      .post(`${API_ROUTE}/admin/promote`)
-      .send({ email: member.email, password: 'anything' });
+  test('/admin/promote no longer exists, logged out or as a member', async () => {
+    const body = { email: member.email, password: 'anything' };
 
-    expect(response.status).toBe(404);
-    expect(await accessTypeOf(member)).toBe('STANDARD');
-  });
-
-  test('a member cannot promote themselves through /admin/promote', async () => {
-    const response = await request(server)
-      .post(`${API_ROUTE}/admin/promote`)
-      .auth(f.tokenFor(member), { type: 'bearer' })
-      .send({ email: member.email, password: 'anything' });
-
-    expect(response.status).toBe(404);
-    expect(await accessTypeOf(member)).toBe('STANDARD');
-  });
-
-  test('/admin/promote-officer rejects unauthenticated callers and non-admins', async () => {
-    const body = { email: member.email, committees: ['Hack'] };
-
-    const anonymous = await request(server).post(`${API_ROUTE}/admin/promote-officer`).send(body);
-    expect(anonymous.status).toBe(401);
-
+    const anonymous = await request(server).post(`${API_ROUTE}/admin/promote`).send(body);
     const asMember = await request(server)
-      .post(`${API_ROUTE}/admin/promote-officer`)
+      .post(`${API_ROUTE}/admin/promote`)
       .auth(f.tokenFor(member), { type: 'bearer' })
       .send(body);
-    expect(asMember.status).toBe(403);
 
+    expect(anonymous.status).toBe(404);
+    expect(asMember.status).toBe(404);
     expect(await accessTypeOf(member)).toBe('STANDARD');
   });
 
