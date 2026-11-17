@@ -152,8 +152,29 @@ module.exports = (Sequelize, db) => {
         type: Sequelize.INTEGER,
         allowNull: false,
         validate: {
+          max: {
+            args: [500],
+            msg: 'The attendance points must be at most 500',
+          },
           notEmpty: {
             msg: 'The attendance points must be at least 0',
+          },
+        },
+      },
+
+      // Optional attendee ceiling.
+      //
+      // Advisory only: nothing blocks an RSVP past this number. It exists so staff can see
+      // "42/60 RSVPs" and judge whether a room will hold the turnout. Nullable because most
+      // events do not have a meaningful limit, and a null must render as a plain count with
+      // no denominator rather than "42/0".
+      capacity: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        validate: {
+          min: {
+            args: [0],
+            msg: 'Capacity cannot be negative',
           },
         },
       },
@@ -270,20 +291,30 @@ module.exports = (Sequelize, db) => {
       'endDate',
       'attendanceCode',
       'attendancePoints',
+      'capacity',
     ]);
-    if (sanitizedEvent.cover !== undefined && sanitizedEvent.cover.length === 0) {
+    // A blank capacity input arrives as '' and must clear the field rather than becoming 0 —
+    // "0 capacity" and "no limit set" mean very different things on a staff card.
+    if (sanitizedEvent.capacity !== undefined) {
+      const raw = String(sanitizedEvent.capacity).trim();
+      sanitizedEvent.capacity = raw === '' ? null : Number.parseInt(raw, 10);
+      if (Number.isNaN(sanitizedEvent.capacity)) sanitizedEvent.capacity = null;
+    }
+    // getPublic hands the edit form back nulls for these, and the form PATCHes them
+    // straight through, so an untouched field arrives as null rather than ''.
+    if (sanitizedEvent.cover !== undefined && !sanitizedEvent.cover) {
       sanitizedEvent.cover = null;
     }
-    if (sanitizedEvent.eventLink !== undefined && sanitizedEvent.eventLink.length === 0) {
+    if (sanitizedEvent.eventLink !== undefined && !sanitizedEvent.eventLink) {
       sanitizedEvent.eventLink = null;
     }
-    if (sanitizedEvent.description !== undefined && sanitizedEvent.description.length === 0) {
+    if (sanitizedEvent.description !== undefined && !sanitizedEvent.description) {
       sanitizedEvent.description = null;
     }
-    if (sanitizedEvent.committee !== undefined && sanitizedEvent.committee.length === 0) {
+    if (sanitizedEvent.committee !== undefined && !sanitizedEvent.committee) {
       delete sanitizedEvent.committee;
     }
-    if (sanitizedEvent.attendanceCode !== undefined && sanitizedEvent.attendanceCode.length === 0) {
+    if (sanitizedEvent.attendanceCode !== undefined && !sanitizedEvent.attendanceCode) {
       delete sanitizedEvent.attendanceCode;
     }
 
@@ -309,7 +340,72 @@ module.exports = (Sequelize, db) => {
       endDate: this.getDataValue('endDate'),
       attendanceCode: admin ? this.getDataValue('attendanceCode') : undefined,
       attendancePoints: this.getDataValue('attendancePoints'),
+      capacity: this.getDataValue('capacity'),
     };
+  };
+
+  /**
+   * The event as served by the unauthenticated public API.
+   *
+   * A separate serializer from getPublic() on purpose. getPublic gates the check-in code
+   * behind a boolean argument, which is fine inside the authenticated perimeter where every
+   * caller has already been through auth — but it leaves the code one truthy argument away
+   * from an anonymous response. This one takes no arguments and can only ever return the
+   * fields named here, so widening what the public sees requires editing this list.
+   *
+   * Deliberately omitted: attendanceCode (claiming points without attending), rsvpCount and
+   * capacity (turnout for every event, permanently scrapeable), id, organization, thumb,
+   * deleted.
+   */
+  Event.prototype.getPublicApi = function () {
+    return {
+      uuid: this.getDataValue('uuid'),
+      title: this.getDataValue('title'),
+      description: this.getDataValue('description'),
+      committee: this.getDataValue('committee'),
+      location: this.getDataValue('location'),
+      cover: this.getDataValue('cover'),
+      eventLink: this.getDataValue('eventLink'),
+      startDate: this.getDataValue('startDate'),
+      endDate: this.getDataValue('endDate'),
+      attendancePoints: this.getDataValue('attendancePoints'),
+    };
+  };
+
+  /**
+   * The only WHERE clause whose rows leave the authenticated perimeter.
+   *
+   * Kept as its own finder rather than a flag on getAll/getFutureEvents so that what the
+   * public can reach is legible in one place instead of being spread across the callers of a
+   * shared query.
+   *
+   * `deleted` is vestigial today — destroyByUUID hard-deletes and the model is not paranoid —
+   * but the column is the documented soft-delete flag, so filtering on it now means that
+   * turning soft-deletes back on later cannot silently republish deleted events.
+   */
+  Event.getPublicEvents = function ({
+    committee, from, to, offset = 0, limit = 50,
+  } = {}) {
+    const where = { deleted: false };
+
+    if (committee) where.committee = committee;
+
+    if (from || to) {
+      where.startDate = {};
+      if (from) where.startDate[Sequelize.Op.gte] = from;
+      if (to) where.startDate[Sequelize.Op.lte] = to;
+    }
+
+    return this.findAndCountAll({
+      where,
+      order: [['startDate', 'ASC']],
+      offset,
+      limit,
+    });
+  };
+
+  Event.findPublicByUUID = function (uuid) {
+    return this.findOne({ where: { uuid, deleted: false } });
   };
 
   return Event;

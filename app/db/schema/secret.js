@@ -16,14 +16,18 @@ module.exports = (Sequelize, db) => {
         allowNull: false,
       },
       // hash of secret
+      //
+      // Nullable: a settings row can exist with a transport selected but no credential stored
+      // yet (picking "none", or setting a from-address before the token arrives).
       hash: {
         type: Sequelize.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: {
-            msg: 'The password cannot be empty',
-          },
-        },
+        allowNull: true,
+      },
+
+      // Non-secret configuration belonging to this secret, as JSON. Holds things like the
+      // email transport, host and from-address — never the credential, which lives in `hash`.
+      meta: {
+        type: Sequelize.TEXT,
       },
     },
     {

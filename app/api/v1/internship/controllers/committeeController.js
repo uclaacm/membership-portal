@@ -1,13 +1,19 @@
 const { Committee } = require('../models/Committee');
+const { withRecruitmentStatus } = require('../utils/deadlineValidation');
 const { InternshipApplication } = require('../models/InternshipApplication');
 const { canManageCommitteeResource } = require('../../auth/committeeScope');
+const { CHOICE_FIELDS, officerCanManageCommittee } = require('./applicationController');
 const error = require('../../../../error');
+const { AuditLog, User } = require('../../../../db');
+const { recordAudit } = require('../../../../audit');
+const { GENERAL_COMMITTEE } = require('../../../../committees');
 
-// Count submitted (non-deleted) applications per committee across all 3 choice slots.
-// $setUnion dedupes per application so a committee selected in multiple slots only counts once.
+// Count submitted (non-deleted, non-archived) applications per committee across all 3 choice
+// slots. $setUnion dedupes per application so a committee selected in multiple slots only
+// counts once.
 async function getApplicationCountsByCommittee() {
   const counts = await InternshipApplication.aggregate([
-    { $match: { deletedAt: null, submissionStatus: 'submitted' } },
+    { $match: { archivedAt: null, submissionStatus: 'submitted' } },
     {
       $project: {
         committees: {
@@ -32,14 +38,43 @@ async function getApplicationCountsByCommittee() {
 
 async function getAllCommittees(req, res, next) {
   try {
-    const includeInactive = req.query.includeInactive === 'true' && req.user && req.user.isAdmin();
-    const filter = includeInactive ? {} : { isActive: true };
+    // Only admins and officers may see committees that aren't recruiting. For everyone else the
+    // query flag is ignored.
+    const includeInactive = req.query.includeInactive === 'true'
+      && Boolean(req.user) && (req.user.isAdmin() || req.user.isOfficer());
+    let filter = { isActive: true };
+    if (includeInactive) {
+      if (req.user.isAdmin()) {
+        filter = {};
+      } else if (req.user.isOfficer()) {
+        // An officer's own committee stays visible to them while recruitment is closed;
+        // hiding it is what left officers on "Could not find a committee matching ...".
+        filter = { $or: [{ isActive: true }, { name: { $in: req.user.committees || [] } }] };
+      }
+    }
 
     const committees = await Committee.find(filter).select('-__v').sort({ displayName: 1 });
 
+    const now = new Date();
+    const visibleCommittees = committees
+      .map((committee) => withRecruitmentStatus(committee, now))
+      .filter((committee) => includeInactive || committee.isActive);
+    res.json({ error: null, committees: visibleCommittees });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// Every committee's identity and styling, active or not. Event pages color and badge events
+// by committee even while recruitment is closed, so this can't share getAllCommittees' filter.
+async function getCommitteeDirectory(req, res, next) {
+  try {
+    const committees = await Committee.find({})
+      .select('name displayName color bannerUrl isActive')
+      .sort({ displayName: 1 });
     res.json({ error: null, committees });
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 }
 
@@ -50,79 +85,223 @@ async function getCommitteeById(req, res, next) {
       return res.status(404).json({ error: 'Committee not found' });
     }
 
-    return res.json({ error: null, committee });
-  } catch (error) {
-    return next(error);
+    return res.json({ error: null, committee: withRecruitmentStatus(committee) });
+  } catch (err) {
+    return next(err);
   }
 }
 
 async function createCommittees(req, res, next) {
   try {
+    const name = typeof req.body.name === 'string' ? req.body.name.trim() : '';
+    if (name.toLowerCase() === GENERAL_COMMITTEE.toLowerCase()) {
+      throw new error.BadRequest(`'${GENERAL_COMMITTEE}' is reserved for chapter-wide events.`);
+    }
     const committee = new Committee(req.body);
     await committee.save();
-    res.status(201).json({ error: null, committee });
-  } catch (error) {
-    next(error);
+    res.status(201).json({ error: null, committee: withRecruitmentStatus(committee) });
+  } catch (err) {
+    next(err);
   }
 }
 
 async function updateCommitteeQuestions(req, res, next) {
   try {
     const committee = await Committee.findById(req.params.id);
-    if(!committee) {
-      return res.status(404).json({error: "Committee not found"});
+    if (!committee) {
+      return res.status(404).json({ error: 'Committee not found' });
     }
-    if(!canManageCommitteeResource(req.user, committee.name)) {
+    if (!canManageCommitteeResource(req.user, committee.name)) {
       throw new error.Forbidden('You are not assigned to this committee.');
     }
 
-    const { customQuestions } = req.body
-    if(!Array.isArray(customQuestions)) {
+    const { customQuestions } = req.body;
+    if (!Array.isArray(customQuestions)) {
       throw new error.BadRequest('customQuestions must be an array.');
     }
 
     const updatedCommittee = await Committee.findByIdAndUpdate(
       req.params.id,
-      { $set: {customQuestions } },
+      { $set: { customQuestions } },
       { new: true, runValidators: true },
     );
 
-    return res.json({ error: null, committee: updatedCommittee });
-  } catch (e) {
-    return next(e);
+    return res.json({ error: null, committee: withRecruitmentStatus(updatedCommittee) });
+  } catch (err) {
+    return next(err);
   }
 }
 
+// Shows or hides this committee's statuses on applicants. Uses the same
+// committee check as status updates, so whoever can set a status can also release it.
+async function updateDecisionsReleased(req, res, next) {
+  try {
+    const { released } = req.body;
+    if (typeof released !== 'boolean') {
+      throw new error.BadRequest('released must be a boolean.');
+    }
+
+    const committee = await Committee.findById(req.params.id);
+    if (!committee) {
+      return res.status(404).json({ error: 'Committee not found' });
+    }
+    if (!req.user.isAdmin() && !officerCanManageCommittee(req.user, committee)) {
+      throw new error.Forbidden('You are not assigned to this committee.');
+    }
+
+    const updatedCommittee = await Committee.findByIdAndUpdate(
+      req.params.id,
+      { $set: { decisionsReleased: released } },
+      { new: true, runValidators: true },
+    );
+
+    if (committee.decisionsReleased !== released) {
+      recordAudit(AuditLog, req, {
+        action: released ? 'decisions.release' : 'decisions.hide',
+        target: committee.displayName,
+        detail: `Application statuses ${released ? 'released to' : 'hidden from'} applicants`,
+      });
+    }
+
+    return res.json({ error: null, committee: withRecruitmentStatus(updatedCommittee) });
+  } catch (err) {
+    return next(err);
+  }
+}
 
 async function updateCommitteeAdmin(req, res, next) {
   try {
+    const committee = await Committee.findById(req.params.id);
+    if (!committee) {
+      return res.status(404).json({ error: 'Committee not found' });
+    }
+
+    // `name` is the key officers and events reference, so it can never change. Edit
+    // displayName to relabel a committee.
+    const { name, ...updates } = req.body || {};
+    if (name !== undefined && String(name).trim() !== committee.name) {
+      throw new error.BadRequest('A committee\'s name cannot be changed. Edit its display name instead.');
+    }
+
     const updatedCommittee = await Committee.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      updates,
       { new: true, runValidators: true },
     );
     if (!updatedCommittee) {
       return res.status(404).json({ error: 'Committee not found' });
     }
-    return res.json({ error: null, committee: updatedCommittee });
-  } catch (error) {
-    return next(error);
+    return res.json({ error: null, committee: withRecruitmentStatus(updatedCommittee) });
+  } catch (err) {
+    return next(err);
   }
+}
+
+// Hard-deletes a committee and cascades to every application that chose it.
+// An application can list this committee as just one of up to 3 choices, so
+// deleting the committee shouldn't necessarily destroy the whole application
+// — only if this was the applicant's only choice.
+async function cascadeDeleteCommitteeFromApplications(committeeId) {
+  const affectedApplications = await InternshipApplication.find({
+    $or: CHOICE_FIELDS.map(({ committeeField }) => ({ [committeeField]: committeeId })),
+  });
+
+  let deletedApplications = 0;
+  let updatedApplications = 0;
+
+  await Promise.all(affectedApplications.map(async (application) => {
+    const remainingChoices = CHOICE_FIELDS
+      .map((choice) => ({
+        committeeId: application[choice.committeeField],
+        responses: application[choice.responsesField],
+        status: application[choice.statusField],
+        officer1Rating: application[choice.officer1RatingField],
+        officer2Rating: application[choice.officer2RatingField],
+        notes: application[choice.notesField],
+      }))
+      .filter((choice) => choice.committeeId
+        && choice.committeeId.toString() !== committeeId.toString());
+
+    if (remainingChoices.length === 0) {
+      await application.deleteOne();
+      deletedApplications += 1;
+      return;
+    }
+
+    const update = { lastModifiedAt: new Date() };
+    CHOICE_FIELDS.forEach((choice, index) => {
+      const remaining = remainingChoices[index] ?? null;
+      update[choice.committeeField] = remaining ? remaining.committeeId : null;
+      update[choice.responsesField] = remaining ? remaining.responses : [];
+      update[choice.statusField] = remaining ? remaining.status : 'pending';
+      update[choice.officer1RatingField] = remaining ? remaining.officer1Rating : null;
+      update[choice.officer2RatingField] = remaining ? remaining.officer2Rating : null;
+      update[choice.notesField] = remaining ? remaining.notes : '';
+    });
+
+    await InternshipApplication.findByIdAndUpdate(
+      application._id,
+      { $set: update },
+      { runValidators: true },
+    );
+    updatedApplications += 1;
+  }));
+
+  return { deletedApplications, updatedApplications };
+}
+
+// Drops a deleted committee from every user's committee list. An officer's role is their
+// committee scope, so one left with no committee at all is demoted to member rather than kept
+// as an officer of nothing. Events keep the old name as a historical label.
+async function cascadeDeleteCommitteeFromUsers(committeeName) {
+  const users = await User.findAll({ where: { committees: { $contains: [committeeName] } } });
+
+  let demotedOfficers = 0;
+  await Promise.all(users.map(async (user) => {
+    const remaining = (user.committees || []).filter((c) => c !== committeeName);
+    const update = { committees: remaining };
+    if (user.isOfficer() && !user.isAdmin() && remaining.length === 0) {
+      Object.assign(update, {
+        accessType: 'STANDARD', position: null, roleGrantedBy: null, roleGrantedAt: null,
+      });
+      demotedOfficers += 1;
+    }
+    await user.update(update);
+  }));
+
+  return { updatedUsers: users.length, demotedOfficers };
 }
 
 async function deleteCommittee(req, res, next) {
   try {
-    const committee = await Committee.findByIdAndUpdate(
-      req.params.id,
-      { isActive: false },
-      { new: true },
-    );
+    const committee = await Committee.findById(req.params.id);
     if (!committee) {
       return res.status(404).json({ error: 'Committee not found' });
     }
-    return res.json({ error: null, message: 'Committee deactivated' });
-  } catch (error) {
-    return next(error);
+
+    const { deletedApplications, updatedApplications } = (
+      await cascadeDeleteCommitteeFromApplications(committee._id)
+    );
+    const { updatedUsers, demotedOfficers } = await cascadeDeleteCommitteeFromUsers(committee.name);
+
+    await Committee.findByIdAndDelete(committee._id);
+
+    recordAudit(AuditLog, req, {
+      action: 'committee.delete',
+      target: committee.displayName,
+      detail: `Removed from ${updatedUsers} user(s); ${demotedOfficers} officer(s) left without a committee were demoted to member`,
+    });
+
+    return res.json({
+      error: null,
+      message: 'Committee deleted',
+      deletedApplications,
+      updatedApplications,
+      updatedUsers,
+      demotedOfficers,
+    });
+  } catch (err) {
+    return next(err);
   }
 }
 
@@ -142,14 +321,26 @@ async function bulkUpdateCommitteeStatus(req, res, next) {
     const filter = (Array.isArray(committeeIds) && committeeIds.length > 0)
       ? { _id: { $in: committeeIds } }
       : {};
+    filter.isActive = { $ne: isActive };
+
+    // Read the affected names before the write so the audit entry can name them; afterwards
+    // the filter no longer identifies which committees actually changed.
+    const affected = await Committee.find(filter).select('displayName');
 
     const result = await Committee.updateMany(filter, { $set: { isActive } });
-    // result.modifiedCount and result.nModified options are to support Mongoose 6+ and older versions of Mongoose
-    const modified = (result && (result.modifiedCount !== undefined ? result.modifiedCount : result.nModified)) || 0;
+    const modified = result.modifiedCount;
+
+    if (modified > 0) {
+      recordAudit(AuditLog, req, {
+        action: isActive ? 'committee.open' : 'committee.close',
+        target: affected.map((c) => c.displayName).join(', ') || 'All committees',
+        detail: `Recruitment ${isActive ? 'opened' : 'closed'} for ${modified} committee(s)`,
+      });
+    }
 
     return res.json({ success: true, modified });
-  } catch (e) {
-    return next(e);
+  } catch (err) {
+    return next(err);
   }
 }
 
@@ -160,24 +351,27 @@ async function getAllCommitteesAdmin(req, res, next) {
       getApplicationCountsByCommittee(),
     ]);
 
+    const now = new Date();
     const committeesWithCounts = committees.map((committee) => ({
-      ...committee.toObject(),
+      ...withRecruitmentStatus(committee, now),
       applicationCount: countByCommitteeId.get(committee._id.toString()) || 0,
     }));
 
     return res.json({ error: null, committees: committeesWithCounts });
-  } catch (error) {
-    return next(error);
+  } catch (err) {
+    return next(err);
   }
 }
 
 module.exports = {
   getAllCommittees,
+  getCommitteeDirectory,
   getAllCommitteesAdmin,
   getCommitteeById,
   createCommittees,
   updateCommitteeQuestions,
   updateCommitteeAdmin,
+  updateDecisionsReleased,
   deleteCommittee,
   bulkUpdateCommitteeStatus,
 };

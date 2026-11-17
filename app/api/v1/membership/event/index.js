@@ -1,9 +1,23 @@
 const express = require('express');
 const error = require('../../../../error');
-const { Event } = require('../../../../db');
+const {
+  Event, AuditLog, RSVP, Attendance, db: Sequelize,
+} = require('../../../../db');
 const { assertCanManageCommitteeResource, canManageCommitteeResource } = require('../../auth/committeeScope');
+const { recordAudit, describeEventChanges } = require('../../../../audit');
+// Shared with the public API, which serves the same covers to outside consumers.
+const { normalizeCover } = require('../../../../event-cover');
+const { GENERAL_COMMITTEE, findUnknownCommittees } = require('../../../../committees');
 
 const router = express.Router();
+
+// An event belongs to a real committee or to the chapter as a whole; anything else would
+// render with no color or banner and match no officer's scope.
+const assertKnownEventCommittee = async (committee) => {
+  if (!committee || committee === GENERAL_COMMITTEE) return;
+  const unknown = await findUnknownCommittees([committee]);
+  if (unknown.length > 0) throw new error.BadRequest(`Unknown committee: ${committee}`);
+};
 
 /**
  * Get all past events
@@ -37,7 +51,9 @@ router.route('/future').get((req, res, next) => {
   const limit = parseInt(req.query.limit, 10);
   return Event.getFutureEvents(offset, limit)
     .then((events) => {
-      res.json({ error: null, events: events.map((e) => e.getPublic()) });
+      const serialized = events.map((e) => e.getPublic());
+      serialized.forEach((e) => { e.cover = normalizeCover(e.cover); });
+      res.json({ error: null, events: serialized });
       return null;
     })
     .catch(next);
@@ -66,19 +82,35 @@ router
       ? Event.getCommitteeEvents(committee, offset, limit)
       : Event.getAll(offset, limit);
     return getEvents
-      .then((events) => {
-        events.forEach((e) => {
-          // reformat google drive file links
-          if (e.cover && e.cover.includes('drive.google.com')) {
-            const fileID = e.cover.match(/\/file\/d\/(.+?)\//)[1];
-            e.cover = `https://drive.google.com/thumbnail?id=${fileID}&sz=s1000`;
-          }
-        });
+      .then(async (events) => {
+        events.forEach((e) => { e.cover = normalizeCover(e.cover); });
 
-        res.json({
-          error: null,
-          events: events.map((e) => e.getPublic(canViewAttendanceCode)),
-        });
+        const serialized = events.map((e) => e.getPublic(canViewAttendanceCode));
+
+        // Staff-only engagement counts, used by the Control Panel's Events table. Two grouped
+        // COUNT queries rather than one pair per event, which was N+1 for a 27-event list.
+        if (canViewAttendanceCode && serialized.length > 0) {
+          const uuids = serialized.map((e) => e.uuid);
+          const tally = (rows) => new Map(
+            rows.map((row) => [row.get('event'), Number(row.get('count'))]),
+          );
+          const groupBy = (model) => model.findAll({
+            attributes: ['event', [Sequelize.fn('COUNT', Sequelize.col('id')), 'count']],
+            where: { event: { [Sequelize.Op.in]: uuids } },
+            group: ['event'],
+          });
+
+          const [rsvps, attendances] = await Promise.all([groupBy(RSVP), groupBy(Attendance)]);
+          const rsvpCounts = tally(rsvps);
+          const attendanceCounts = tally(attendances);
+
+          serialized.forEach((e) => {
+            e.rsvpCount = rsvpCounts.get(e.uuid) || 0;
+            e.attendanceCount = attendanceCounts.get(e.uuid) || 0;
+          });
+        }
+
+        res.json({ error: null, events: serialized });
         return null;
       })
       .catch(next);
@@ -119,11 +151,18 @@ router
       && new Date(req.body.event.startDate) > new Date(req.body.event.endDate)
     ) return next(new error.BadRequest('Start date must be before end date'));
 
-    return Event.create(Event.sanitize(req.body.event))
+    return assertKnownEventCommittee(req.body.event.committee)
+      .then(() => Event.create(Event.sanitize(req.body.event)))
       .then((event) => {
         res.json(
           { error: null, event: event.getPublic(req.user.isAdmin() || req.user.isOfficer()) },
         );
+        recordAudit(AuditLog, req, {
+          action: 'event.create',
+          target: event.title,
+          detail: `Created: ${describeEventChanges({}, event.get({ plain: true }), undefined, 'after')} · Event ID: ${event.uuid}`,
+          committee: event.committee,
+        });
         return null;
       })
       .catch(next);
@@ -169,8 +208,13 @@ router
       && new Date(req.body.event.startDate) > new Date(req.body.event.endDate)
     ) return next(new error.BadRequest('Start date must be before end date'));
 
-    // find the existing event by the given UUID
-    return Event.findByUUID(req.params.uuid)
+    // Serialize edits so the old values describe the row this request actually replaces.
+    let detail;
+    return Sequelize.transaction((transaction) => Event.findOne({
+      where: { uuid: req.params.uuid },
+      transaction,
+      lock: transaction.LOCK.UPDATE,
+    })
       .then((event) => {
         if (!event) throw new error.BadRequest('No such event found');
 
@@ -187,13 +231,29 @@ router
           throw new error.Forbidden('You do not have permission to move this event to another committee.');
         }
 
-        // update the event with the new information after sanitizing the input
-        return event.update(updates);
-      })
+        const before = { ...event.get({ plain: true }) };
+        const committeeCheck = updates.committee && updates.committee !== event.committee
+          ? assertKnownEventCommittee(updates.committee)
+          : Promise.resolve();
+        return committeeCheck
+          .then(() => event.update(updates, { transaction }))
+          .then((saved) => {
+            detail = describeEventChanges(before, saved.get({ plain: true }), Object.keys(updates));
+            return saved;
+          });
+      }))
       .then((event) => {
         res.json(
           { error: null, event: event.getPublic(req.user.isAdmin() || req.user.isOfficer()) },
         );
+        if (detail) {
+          recordAudit(AuditLog, req, {
+            action: 'event.update',
+            target: event.title,
+            detail: `${detail} · Event ID: ${event.uuid}`,
+            committee: event.committee,
+          });
+        }
         return null;
       })
       .catch(next);
@@ -217,6 +277,14 @@ router
         return Event.destroyByUUID(req.params.uuid)
           .then((numDeleted) => {
             res.json({ error: null, numDeleted });
+            if (numDeleted) {
+              recordAudit(AuditLog, req, {
+                action: 'event.delete',
+                target: event.title,
+                detail: `Deleted: ${describeEventChanges(event.get({ plain: true }), {}, undefined, 'before')} · Event ID: ${event.uuid}`,
+                committee: event.committee,
+              });
+            }
             return null;
           });
       })

@@ -1,0 +1,33 @@
+name: Unit Tests
+
+on:
+  # Called by ci.yml; can also be run by hand from the Actions tab.
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests:
+    name: jest
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        # Folder containing the package.json to test ('.' = repo root).
+        working-directory: .
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      # Installs node version and caches dependencies based on package-lock.json.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - run: npm ci
+      - run: npm run test:unit

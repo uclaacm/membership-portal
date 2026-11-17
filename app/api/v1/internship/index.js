@@ -8,27 +8,33 @@ const adminOrOfficer = require('../auth').isOfficerOrAdmin;
 const {
   createApplication,
   getAllApplications,
+  getApplicationStatusCounts,
   getApplicationById,
   updateApplication,
   updateApplicationStatus,
+  updateApplicationReview,
   deleteApplication,
   getOwnApplication,
   submitApplication,
 } = require('./controllers/applicationController');
 const {
   getAllCommittees,
+  getCommitteeDirectory,
   getAllCommitteesAdmin,
   getCommitteeById,
   createCommittees,
   updateCommitteeQuestions,
   updateCommitteeAdmin,
+  updateDecisionsReleased,
   deleteCommittee,
   bulkUpdateCommitteeStatus,
 } = require('./controllers/committeeController');
+const { getCycleInfo, advanceCycle } = require('./controllers/cycleController');
 const {
   validateCreateApplication,
   validateUpdateApplication,
   validateUpdateApplicationStatus,
+  validateUpdateApplicationReview,
   validateGetApplications,
   validateMongoId,
 } = require('./middleware/validation');
@@ -41,6 +47,9 @@ router.get('/applications', auth, adminOrOfficer, getApplicationsLimiter, valida
 
 // GET own application (authenticated non-admin user)
 router.get('/applications/me', auth, getApplicationsLimiter, getOwnApplication);
+
+// GET per-status application counts for a committee (officers and admins) - must be before /:id
+router.get('/applications/status-counts', auth, adminOrOfficer, getApplicationsLimiter, getApplicationStatusCounts);
 
 // GET a single application by ID (officers only)
 router.get('/applications/:id', auth, officer, getApplicationsLimiter, getApplicationById);
@@ -55,6 +64,9 @@ router.put('/applications/:id', auth, validateUpdateApplication, updateApplicati
 // PUT update review status for one committee choice (officers/admins only)
 router.put('/applications/:id/status', auth, adminOrOfficer, validateUpdateApplicationStatus, updateApplicationStatus);
 
+// PUT update an officer review field (yes/no rating or notes) for one committee choice
+router.put('/applications/:id/review', auth, adminOrOfficer, validateUpdateApplicationReview, updateApplicationReview);
+
 // POST submit a draft application (member+)
 router.post('/applications/:id/submit', auth, strictCreateApplicationLimiter, validateMongoId, submitApplication);
 
@@ -63,6 +75,9 @@ router.delete('/applications/:id', auth, deleteApplication);
 
 // GET all committees
 router.get('/committees', getAllCommittees);
+
+// GET every committee's name and styling, active or not (any signed-in user) - must be before /:id
+router.get('/committees/directory', getCommitteeDirectory);
 
 // GET all committees including inactive (admin only) - must be before /:id
 router.get('/committees/admin', auth, admin, getAllCommitteesAdmin);
@@ -83,7 +98,23 @@ router.put('/committees/:id/admin', auth, admin, committeeRateLimiter, updateCom
 // Only allows updating committee questions
 router.put('/committees/:id/questions', auth, adminOrOfficer, committeeRateLimiter, updateCommitteeQuestions);
 
+// PATCH show/hide a committee's statuses to applicants (admin or that committee's officers)
+router.patch(
+  '/committees/:id/decisions-released',
+  auth,
+  adminOrOfficer,
+  committeeRateLimiter,
+  validateMongoId,
+  updateDecisionsReleased,
+);
+
 // DELETE committee (admin only) - soft delete by setting isActive to false
 router.delete('/committees/:id', auth, admin, deleteCommittee);
+
+// GET the current/past application cycle info (admin only)
+router.get('/cycle', auth, admin, getCycleInfo);
+
+// POST advance to a new application cycle, archiving the outgoing cycle (admin only)
+router.post('/cycle/advance', auth, admin, committeeRateLimiter, advanceCycle);
 
 module.exports = { router };

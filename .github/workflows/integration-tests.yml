@@ -1,0 +1,81 @@
+name: Integration Tests
+
+on:
+  # Called by ci.yml; can also be run by hand from the Actions tab.
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  integration-tests:
+    name: jest
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: .
+
+    # Throwaway database containers that exist only for this job and are deleted when it ends.
+    # Every credential below is CI-only and unreachable from outside the runner: these are
+    # not secrets, and real (production/staging) credentials must never be put here.
+    services:
+      # Users, events, attendance, etc. (Sequelize). Same image as docker-compose.yml.
+      postgres:
+        image: postgres:9.6-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ci_throwaway_password
+          POSTGRES_DB: membership_portal_test
+        ports:
+          #VM Port : Container Port
+          #Not 5432 (the Postgres/Sequelize default) so CI fails if PG_PORT is ignored.
+          - 5433:5432
+        # Wait until Postgres accepts connections before running any steps.
+        options: >-
+          --health-cmd "pg_isready -h localhost"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      mongo:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      # Anything but 'production' counts as development, which enables POST /auth/dev-login.
+      NODE_ENV: test
+      HOST: 127.0.0.1
+      PORT: 8080
+      PG_HOST: localhost
+      PG_PORT: 5433
+      PG_USER: postgres
+      PG_PASSWORD: ci_throwaway_password
+      PG_DATABASE: membership_portal_test
+      MONGODB_URI: mongodb://localhost:27017/membership_portal_test
+      # Throwaway value; tokens only need to be signed and verified within this run.
+      SESSION_SECRET: ci_throwaway_session_secret
+      GOOGLE_CLIENT_ID: ''
+      GOOGLE_API_KEY: ''
+      GOOGLE_AUTH_DOMAIN: ''
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - run: npm ci
+      - run: node scripts/db-init.js
+      - run: npx sequelize-cli db:migrate --env test
+      - run: npm run test:integration

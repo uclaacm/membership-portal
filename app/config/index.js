@@ -3,6 +3,28 @@ const os = require('os');
 
 const env = process.env.NODE_ENV || 'development';
 
+const SESSION_SECRET_PATH = 'app/config/SESSION_SECRET';
+
+/**
+ * Resolves the token-signing secret.
+ *
+ * Environment first so deployments can pin a stable secret; the generated file is the
+ * local-dev fallback. Throws with an actionable message rather than the raw ENOENT if neither
+ * is present, since a missing secret means no user can authenticate at all.
+ */
+function readSessionSecret() {
+  const fromEnv = (process.env.SESSION_SECRET || '').trim();
+  if (fromEnv) return fromEnv;
+
+  try {
+    return fs.readFileSync(SESSION_SECRET_PATH).toString().trim();
+  } catch (err) {
+    throw new Error(
+      `No session secret available: set SESSION_SECRET in the environment, or generate ${SESSION_SECRET_PATH} (make setup does this).`,
+    );
+  }
+}
+
 /**
  * Application configuration
  *
@@ -41,9 +63,15 @@ module.exports = {
     password: process.env.PG_PASSWORD,
   },
 
-  // session secret for signing token (warning: assumes the file exists)
+  // Secret used to sign session tokens.
+  //
+  // Prefers SESSION_SECRET from the environment, falling back to the generated file. The file
+  // is gitignored, so it does not exist in a fresh checkout and the Dockerfile mints a new one
+  // at image build time — which silently invalidated every issued JWT on every deploy and
+  // forced all users to sign in again. Setting SESSION_SECRET in node.env keeps sessions alive
+  // across rebuilds; the file remains the local-dev default so `make dev` needs no setup.
   session: {
-    secret: fs.readFileSync('app/config/SESSION_SECRET').toString().trim(),
+    secret: readSessionSecret(),
   },
 
   // logging level
