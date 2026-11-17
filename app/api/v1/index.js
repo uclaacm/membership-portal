@@ -25,9 +25,6 @@ router.use('/sheets', auth, require('./membership/sheets').router);
 router.use('/audit', auth, require('./membership/audit').router);
 router.use('/settings', auth, require('./membership/settings').router);
 
-// Mount the admin routes
-router.use('/admin', require('./admin').router);
-
 router.use('/image', require('./membership/image').router);
 
 // Public API

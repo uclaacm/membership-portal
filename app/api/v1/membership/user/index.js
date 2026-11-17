@@ -316,7 +316,7 @@ router.get('/officers', async (req, res, next) => {
 /**
  * Grant or revoke an elevated role, with committee scope.
  *
- * Replaces the email-keyed addAdmin/removeAdmin/promote-officer trio with one uuid-keyed route.
+ * Replaces the old email-keyed admin and officer promotion routes with one uuid-keyed route.
  * Every call is audited, because every role change is a protected action under the matrix.
  *
  * Body: { role: 'Member'|'Officer'|'Admin', committees?: string[], position?: string }
