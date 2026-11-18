@@ -119,13 +119,12 @@ describe('updateApplicationStatus', () => {
     expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
       success: true,
       data: expect.objectContaining({
+        firstChoiceCommittee: 'committee-1',
         firstChoiceStatus: 'accepted',
-        firstChoiceResponses: [{ answer: 'Hack answer' }],
-        secondChoiceStatus: 'pending',
-        secondChoiceResponses: [],
-        secondChoiceOfficer1Rating: null,
-        secondChoiceNotes: '',
-        thirdChoiceResponses: [],
+        secondChoiceCommittee: null,
+        secondChoiceStatus: null,
+        thirdChoiceCommittee: null,
+        thirdChoiceStatus: null,
       }),
     }));
     expect(updatedApplication.secondChoiceResponses).toEqual([{ answer: 'Private answer' }]);
