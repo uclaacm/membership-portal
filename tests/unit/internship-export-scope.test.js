@@ -1,13 +1,13 @@
-jest.mock('../app/api/v1/internship/models/InternshipApplication', () => ({
+jest.mock('../../app/api/v1/internship/models/InternshipApplication', () => ({
   InternshipApplication: { find: jest.fn(), countDocuments: jest.fn() },
 }));
-jest.mock('../app/api/v1/internship/models/Committee', () => ({
+jest.mock('../../app/api/v1/internship/models/Committee', () => ({
   Committee: { find: jest.fn() },
 }));
 
-const { InternshipApplication } = require('../app/api/v1/internship/models/InternshipApplication');
-const { Committee } = require('../app/api/v1/internship/models/Committee');
-const { getAllApplications } = require('../app/api/v1/internship/controllers/applicationController');
+const { InternshipApplication } = require('../../app/api/v1/internship/models/InternshipApplication');
+const { Committee } = require('../../app/api/v1/internship/models/Committee');
+const { getAllApplications } = require('../../app/api/v1/internship/controllers/applicationController');
 
 const choices = ['firstChoice', 'secondChoice', 'thirdChoice'];
 let application;
@@ -56,14 +56,14 @@ test('admins receive every choice, answer, decision and review even with officer
 test.each([0, 1, 2])('officers receive only their committee choice in slot %i', async (ownedIndex) => {
   const result = await fetchApplications({ committees: [` TEAM ${ownedIndex} `] });
   expect(InternshipApplication.find).toHaveBeenCalledWith(expect.objectContaining({
-    $or: choices.map(choice => ({ [`${choice}Committee`]: { $in: [`committee-${ownedIndex}`] } })),
+    $or: choices.map((choice) => ({ [`${choice}Committee`]: { $in: [`committee-${ownedIndex}`] } })),
     submissionStatus: 'submitted',
   }));
   const exported = result.data[0];
   expect(exported.coverLetter).toBe(application.coverLetter);
   choices.forEach((choice, index) => {
     if (index === ownedIndex) {
-      Object.keys(application).filter(key => key.startsWith(choice)).forEach(key => {
+      Object.keys(application).filter((key) => key.startsWith(choice)).forEach((key) => {
         expect(exported[key]).toEqual(application[key]);
       });
     } else {
