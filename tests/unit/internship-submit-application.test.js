@@ -68,7 +68,7 @@ function mockApplication(overrides = {}) {
     university: 'UCLA',
     major: 'Computer Science',
     graduationYear: 2027,
-    resumeUrl: 'https://example.com/resume.pdf',
+    resume: { originalName: 'resume.pdf', size: 1234, uploadedAt: new Date('2026-10-01') },
     firstChoiceCommittee: 'committee-1',
     firstChoiceResponses: [
       {
@@ -139,7 +139,7 @@ describe('submitApplication', () => {
 
   test('rejects submission when resume is missing', async () => {
     InternshipApplication.findById.mockResolvedValue(mockApplication({
-      resumeUrl: undefined,
+      resume: null,
     }));
     mockCommitteeFind([mockCommittee()]);
     const req = {
@@ -159,9 +159,10 @@ describe('submitApplication', () => {
     expect(InternshipApplication.findOneAndUpdate).not.toHaveBeenCalled();
   });
 
-  test('rejects submission when resume is a blank string', async () => {
+  test('rejects a draft that only has a legacy resume link', async () => {
     InternshipApplication.findById.mockResolvedValue(mockApplication({
-      resumeUrl: '   ',
+      resume: null,
+      resumeUrl: 'https://example.com/resume.pdf',
     }));
     mockCommitteeFind([mockCommittee()]);
     const req = {

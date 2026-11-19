@@ -64,9 +64,24 @@ const InternshipApplicationSchema = new Schema(
       required: [true, 'Graduation year is required'],
       min: [MIN_GRADUATION_YEAR, `Graduation year must be ${MIN_GRADUATION_YEAR} or later`],
     },
+    // Legacy: applications from before resume uploads stored a link to an externally hosted
+    // file. No longer writable by applicants; kept so past applications still show their resume.
     resumeUrl: {
       type: String,
       trim: true,
+    },
+    // Metadata for the uploaded resume PDF. The bytes live in ResumeFile, keyed by this
+    // application's _id, and are served by GET /applications/:id/resume.
+    resume: {
+      type: new Schema(
+        {
+          originalName: { type: String, trim: true },
+          size: { type: Number, required: true },
+          uploadedAt: { type: Date, required: true },
+        },
+        { _id: false },
+      ),
+      default: null,
     },
     coverLetter: {
       type: String,
